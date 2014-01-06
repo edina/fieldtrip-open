@@ -1,0 +1,32 @@
+<form id="annotate-text-record" data-ajax="false">
+
+  <!-- note: class="fieldcontain" is required for record processing-->
+  <div class="fieldcontain" id="fieldcontain-text-1">
+    <label for="form-text-1">Title</label>
+    <input name="form-text-1"
+           id="form-text-1"
+           type="text"
+           required="true"
+           value="Text"
+           maxlength="40"/>
+  </div>
+
+  <!-- note: class="fieldcontain" is required for record processing-->
+  <div class="fieldcontain" id="fieldcontain-textarea-1">
+    <label for="form-textarea-1">Description</label>
+    <textarea name="form-textarea-1"
+              id="form-textarea-1"
+              placeholder="">
+    </textarea>
+  </div>
+
+  <div id="text-buttons" class="fieldcontain ui-grid-a">
+    <div class="ui-block-a">
+      <input data-theme="a" type="submit" value="Save"/>
+    </div>
+    <div class="ui-block-b">
+      <input data-theme="a" type="button" value="Cancel"/>
+    </div>
+  </div>
+
+</form>

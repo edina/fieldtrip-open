@@ -1,0 +1,248 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Fieldtrip GB</title>
+
+    <link rel="stylesheet" href="css/ext/jquery-mobile.css">
+    <link rel="stylesheet" href="css/ext/spectrum.css">
+
+    <link rel="stylesheet" href="css/themes/edina-mobile.css" />
+    <link rel="stylesheet" href="css/style.css" type="text/css"
+          media="screen" title="EDINA Mobile">
+
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="js/ext/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/ext/jquery-mobile.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/ext/iscroll.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/ext/jquery-mobile-iscrollview-amd.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/ext/proj4js.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/ext/openlayers.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/ext/spectrum.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="js/annotations.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/cache.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/database.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/map.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/mobile.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/softkeyboard.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/utils.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/device.dependent.js"></script>
+    <!-- <script type="text/javascript"  charset="utf-8" src="http://129.215.169.210:8080/target/target-script-min.js#anonymous"></script> -->
+    <!-- <script type="text/javascript"  charset="utf-8" src="http://129.215.169.33:8080/target/target-script-min.js#anonymous"></script> -->
+
+  </head>
+
+  <body>
+    <!-- put ios in container fixes page transition -->
+    <script>
+      if (navigator.userAgent.toLowerCase().match(/iphone/)
+      || navigator.userAgent.toLowerCase().match(/ipad/)) {
+      document.write('<div id="container" />');
+      }
+    </script>
+
+    <div id="home-page" data-role="page" data-theme="a">
+
+      <div data-role="header" data-position="fixed">
+        <h1>Fieldtrip GB</h1>
+        <div class="ui-header-buttons ui-btn-right" data-type="horizontal">
+          <a class="gpstrack-running"
+             data-role="button"
+             data-inline="true"
+             data-transition="none"
+             data-iconpos="notext"
+             data-shadow="false"
+             data-iconshadow="false"
+             style="display: none;">
+          </a>
+          <a id="home-exit" data-role="button" data-inline="true">Exit</a>
+        </div>
+      </div>
+
+      <div id="home-content" class="non-map-body" data-role="content">
+
+        <div class="non-map-body-start"></div>
+        <h2>Maps</h2>
+        <div class="nav-icons ui-grid-a">
+          <div class="ui-block-a">
+            <a href="map.html">
+              <img src="css/images/online.png" alt="View Map">
+            </a>
+            <p>Online</p>
+          </div>
+          <div class="ui-block-b">
+            <a href="saved-maps.html">
+              <img src="css/images/saved.png" alt="View Saved Maps">
+            </a>
+            <p>Saved</p>
+          </div>
+          <div class="ui-block-c help-block">
+            <a id="home-content-help" href="help/contents.html">
+              <img src="css/images/help.png" alt="Help Section">
+            </a>
+            <p>Help</p>
+          </div>
+        </div>
+        <h2>Capture</h2>
+        <div class="nav-icons ui-grid-b">
+          <div class="ui-block-a">
+            <a class="annotate-image-form" href="#">
+              <img src="css/images/images.png" alt="Capture Image"></a>
+            <p>Images</p>
+          </div>
+          <div class="ui-block-b">
+            <a class="annotate-audio-form" href="#">
+              <img src="css/images/audio.png" alt="Capture Audio"></a>
+            <p>Audio</p>
+          </div>
+          <div class="ui-block-c">
+            <a class="annotate-text-form" href="#">
+              <img src="css/images/text.png" alt="Capture Text">
+            </a>
+            <p>Text</p>
+          </div>
+          <div class="ui-block-d">
+            <a href="annotate-gps.html" class="gps-track-start">
+              <img src="css/images/gps.png" alt="Capture GPS Track">
+            </a>
+            <p>GPS Track</p>
+          </div>
+
+        </div>
+        <h2>Download and Sync</h2>
+        <div class="nav-icons ui-grid-d">
+          <div class="ui-block-a">
+            <a href="save-map.html">
+              <img src="css/images/downloadmaps.png" alt="Download Maps">
+            </a>
+            <p>Maps</p>
+          </div>
+          <div class="ui-block-b">
+            <a href="saved-annotations.html">
+              <img src="css/images/documents.png" alt="Sync Records">
+            </a>
+            <p>Records</p>
+          </div>
+          <div id="home-content-login" class="ui-block-c">
+            <a href="#">
+              <img src="css/images/login-large.png" alt="Login">
+            </a>
+            <p>Login</p>
+          </div>
+          <div id="home-content-upload" class="ui-block-d">
+            <a href="#">
+              <img src="css/images/uploadrecords-main.png" alt="Upload Records">
+            </a>
+            <p>Upload Records</p>
+          </div>
+          <div id="home-content-sync" class="ui-block-e">
+            <a href="#">
+              <img src="css/images/sync-large.png" alt="Sync Records and Editors">
+            </a>
+            <p>Sync</p>
+          </div>
+        </div>
+        <div id="home-page-dev">
+          <h2>Development</h2>
+          <div class="nav-icons ui-grid-a">
+            <div id="home-content-settings" class="ui-block-a">
+              <a href="settings.html">
+                <img src="css/images/settings.png" alt="Settings">
+              </a>
+              <p>Settings</p>
+            </div>
+            <div class="ui-block-b">
+              <a href="#test-page">
+                <img src="css/images/settings.png" alt="Settings">
+              </a>
+              <p>Test</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu" data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="index.html" class="home-button ui-btn-active"
+                   data-icon="custom">Home</a></li>
+            <li><a href="map.html" class="map-button" data-icon="custom">Map</a>
+            </li>
+            <li><a href="capture.html" class="capture-button"
+                   data-icon="custom">Capture</a></li>
+            <li><a href="download.html" class="download-button"
+                   data-icon="custom">Download</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div data-role="popup" id="splash-popup-dialog" data-overlay-theme="a"
+           data-theme="a" class="ui-corner-all">
+        <a id="close-splash-button"
+           data-role="button"
+           data-theme="a"
+           data-icon="delete"
+           data-iconpos="notext"
+           class="ui-btn-right">Close</a>
+        <div id="splash-popup-dialog-content">
+
+          <strong>Warning:</strong>
+          <p>Fieldtrip GB is designed for purpose of field data capture.
+            We DO NOT recommend Fieldtrip GB for navigation or way finding due
+            to possible inaccuracies and limited battery life.</p>
+
+          <p id="updateFromServer"></p>
+          <div>
+            <img src="css/images/edina-logo-sm.png" alt="EDINA logo" />
+            <img src="css/images/jisc-logo-sm.png" alt="JISC logo" />
+          </div>
+          <a data-role="button" data-inline="true" data-theme="a">OK</a>
+        </div>
+      </div>
+
+      <div id="home-sync-popup"
+           data-role="popup"
+           class="ui-corner-all">
+      </div>
+
+      <div id="home-exit-popup"
+           data-role="popup"
+           class="ui-corner-all">
+        <div class="ui-corner-all ui-content">
+          <p>Are you sure you want to exit Fieldtrip GB?</p>
+          <a data-role="button"
+             data-inline="true"
+             data-rel="back">Cancel</a>
+          <a id="home-exit-confirm"
+             data-role="button"
+             data-inline="true">Exit</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="test-page" data-role="page" data-fullscreen="false">
+      <div class="ui-grid-b">
+        <div  id="test-page-runall" class="ui-block-a">
+          <a data-role="button">Run All</a>
+        </div>
+        <div class="ui-block-b">
+          <a id="test-page-restart" data-role="button">Reload</a>
+        </div>
+        <div class="ui-block-c">
+          <a data-role="button" data-rel="back">Home</a>
+        </div>
+      </div>
+      <div id="qunit"></div>
+      <div id="qunit-fixture"></div>
+      <div>
+        <ul data-role="listview" id="qunit-tests-list"></ul>
+      </div>
+    </div>
+
+  </body>
+
+</html>

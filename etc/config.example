@@ -1,0 +1,51 @@
+[install]
+
+; name of the project
+name=FieldTripGB
+
+; the source of this file
+location=<user>@<domain>:<path of config.ini>
+
+; the java package of the abndroid application
+package=uk.ac.edina.mobile
+
+; the install directory
+runtime_dir=ftgb
+
+;details for config.xml
+author_email=edina@ed.ac.uk
+access_urls=<urls comma separated>
+version=<version>
+url=<url>
+
+#details for mapserver urls
+mapserver_urls=<urls comma separated>
+mapserver_names=<names for the urls above comma separated>
+
+#details for pcapi urls
+pcapi_urls=<urls comma separated>
+pcapi_names=<names for the urls above comma separated>
+
+[release]
+
+; the public release root URL
+url=<url for releases>
+
+; accounts and machine names hosting the release
+hosts=<hosts comma separated>
+
+; keystore for signing offical releases
+keystore=<user>@<domain>:<path for keystore file>
+
+; the filesystem directory holding releases
+dir=<path>
+
+; email notification details
+smtp=<smtp>
+sender=<email>
+
+; notified of beta release
+email_beta=<mailist>
+
+; notified of official release
+email_official=<email>

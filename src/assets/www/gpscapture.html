@@ -1,0 +1,96 @@
+<div id="gpscapture-page" class="map-page" data-role="page" data-theme="a">
+
+  <div data-role="header" data-position="fixed">
+    <h1>Fieldtrip GB</h1>
+    <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+      <a class="user-locate"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext"
+         data-shadow="false"
+         data-iconshadow="false">
+      </a>
+      <a href="search.html"
+         class="map-search"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext">
+      </a>
+    </div>
+  </div>
+
+  <div class="menu" data-role="navbar">
+	<ul id="gpscapture-header-control">
+	  <li>
+        <a id="gpscapture-stop-button"
+           href="#gpscapture-confirm-popup"
+           data-icon="custom"
+           data-rel="popup"
+           data-position-to="window">Stop</a>
+      </li>
+      <li>
+        <a id="gpscapture-pause-play"
+           data-icon="custom">
+          <span class="ui-btn-text">Pause</span>
+        </a>
+      </li>
+      <li>
+        <a id="gpscapture-toggle-route"
+           data-icon="custom">Show/Hide Route</a>
+      </li>
+	</ul>
+  </div>
+
+  <div data-role="content">
+
+    <div id="gpscapture-map" class="map"></div>
+
+    <div class="map-zoom-buttons">
+      <a data-role="button" class="map-zoom-button-in">+</a>
+      <a data-role="button" class="map-zoom-button-out">-</a>
+    </div>
+
+    <div id="gpscapture-confirm-popup" data-role="popup">
+      <p>Are you sure you want to save the track?</p>
+        <div class="gsp-track-dialog-buttons" >
+          <a id="gpscapture-confirm-save" data-role="button" href="#">Save</a>
+          <a id="gpscapture-confirm-cancel"
+             data-rel="back"
+             data-role="button"
+             href="#">Back</a>
+          <a id="gpscapture-confirm-discard"
+             data-role="button"
+             href="#">Discard</a>
+        </div>
+  </div>
+
+  <div class="menu" data-role="footer" data-position="fixed">
+	<div data-role="navbar">
+	  <ul>
+		<li>
+          <a href="index.html"
+             class="home-button"
+             data-icon="custom">Home</a>
+        </li>
+		<li>
+          <a href="map.html"
+             class="map-button"
+             data-icon="custom">Map</a>
+        </li>
+        <li>
+          <a href="capture.html"
+             class="capture-button ui-btn-active"
+             data-icon="custom">Capture</a>
+        </li>
+	    <li>
+          <a href="download.html"
+             class="download-button"
+             data-icon="custom">Download</a>
+        </li>
+	  </ul>
+	</div>
+  </div>
+
+</div>

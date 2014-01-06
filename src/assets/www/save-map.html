@@ -1,0 +1,110 @@
+<div id="save-map" class="map-page" data-role="page" data-theme="a">
+
+  <div data-role="header" data-position="fixed">
+	<h1>Fieldtrip GB</h1>
+    <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+      <a class="gpstrack-running"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext"
+         data-shadow="false"
+         data-iconshadow="false",
+         style="display: none;">
+      </a>
+      <a class="user-locate"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext"
+         data-shadow="false"
+         data-iconshadow="false">
+      </a>
+      <a href="search.html"
+         class="map-search"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext">
+      </a>
+    </div>
+  </div>
+
+  <div data-role="content">
+    <div id="save-map-map"></div>
+
+    <div class="map-zoom-buttons">
+      <a data-role="button" class="map-zoom-button-in">+</a>
+      <a data-role="button" class="map-zoom-button-out">-</a>
+    </div>
+
+    <div id="cache-preview" style="display: none;">
+      <div id="cache-preview-title">
+        <div id="cache-preview-left-title"></div>
+        <div id="cache-preview-centre-title"></div>
+        <div id="cache-preview-right-title"></div>
+      </div>
+
+      <div id="cache-preview-left"></div>
+      <div id="cache-preview-right"></div>
+      <div id="cache-preview-centre"></div>
+    </div>
+
+    <div id="save-map-buttons" class="ui-grid-b">
+      <div class="ui-block-a"></div>
+      <div class="ui-block-b"></div>
+      <div id="save-map-buttons-ok" class="ui-block-c">
+        <a data-role="button">Download Map</a>
+      </div>
+    </div>
+
+    <div id="cache-controls" style="display: none;">
+      <div class="ui-grid-a">
+      <div id="cache-save-details-title" class="ui-block-a">
+        <h2>Save Map (use offline)</h2>
+      </div>
+      <div id="cache-save-details-button-div" class="ui-block-b">
+        <a data-role="button"
+           href="save-map-name.html">Save</a>
+      </div>
+      <div id="cache-save-details-text" class="ui-block-a">
+        <label for="basic">Zoom Levels</label>
+        <input type="text" id="cache-save-details-zoom-level-but" value="1"  />
+      </div>
+      <div id="cache-save-details-text-stats" class="ui-block-b"></div>
+      </div>
+
+      <div id="cache-save-slider" class="ui-grid-solo">
+        <input type="range" name="slider" id="cache-slider" value="8" min="0" max="16" data-highlight="true" />
+      </div>
+    </div>
+  </div>
+
+  <div class="menu" data-role="footer" data-position="fixed">
+    <div data-role="navbar">
+      <ul>
+		<li>
+          <a href="index.html"
+             class="home-button"
+             data-icon="custom">Home</a>
+        </li>
+		<li>
+          <a href="map.html"
+             class="map-button"
+             data-icon="custom">Map</a>
+        </li>
+        <li>
+          <a href="capture.html"
+             class="capture-button"
+             data-icon="custom">Capture</a>
+        </li>
+	    <li>
+          <a href="download.html"
+             class="download-button ui-btn-active"
+             data-icon="custom">Download</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>

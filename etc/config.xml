@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="uk.ac.edina.mobile"
+        version="{{version}}"
+        versionCode="{{version_code}}"
+        xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+
+  <name>{{name}}</name>
+  <description>
+    {{name}} is a mobile mapping and data collection app.
+  </description>
+  <author email="{{author_email}}" href="{{url}}">
+    {{name}} Team
+  </author>
+
+{{access_urls}}
+
+  <preference name="webviewbounce" value="true" />
+  <content src="index.html" />
+</widget>
