@@ -79,7 +79,7 @@ fab deploy_android
 
 5. For releasing it to play store:
 ```
-fab fab release_android
+fab release_android
 ```
 
 License
