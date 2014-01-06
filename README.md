@@ -18,39 +18,11 @@ easy_install pip
 pip install fabric
 ```
 
-2. nodejs
- - Add this to your ~/.npmrc (create the file if it doesn't exist already):
-```
-root =    /home/YOUR-USERNAME/.local/lib/node_modules
-binroot = /home/YOUR-USERNAME/.local/bin
-manroot = /home/YOUR-USERNAME/.local/share/man
-```
- 
-  - Download the Nodejs source code from nodejs.org and install it under your ~/.local tree and install it like this:
-```
-tar xf node......
-cd node........
-./configure --prefix=~/.local
-make
-make install
-```
-
-  - Create ~/.node_modules symlink.
-```
-cd
-ln -s .local/lib/node_modules .node_modules
-```
-
-  - Check if npm is installed and where
-```
-which npm
-```
-
-  - If it says ~/.local/bin/npm, you're done. Otherwise, do this...
-```
-export PATH=$HOME/.local/bin:$PATH
-```
-...and add that line to your ~/.profile file, so it'll run every time you log in.
+2. nodejs/npm
+If you want to install it globally then follow the instructions here:
+http://nodejs.org/dist/v0.10.24/node-v0.10.24.tar.gz
+If you want to install it locally then you can follow these instructions:
+http://tnovelli.net/blog/blog.2011-08-27.node-npm-user-install.html
 
 3. Android
 
