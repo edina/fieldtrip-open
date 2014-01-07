@@ -1,0 +1,86 @@
+<div id="annotate-preview-page" data-role="page" data-theme="b">
+
+  <div data-role="header" data-position="fixed">
+    <h1>Fieldtrip GB</h1>
+    <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+      <a class="gpstrack-running"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext"
+         data-shadow="false"
+         data-iconshadow="false">
+      </a>
+      <a class="user-locate"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext">
+      </a>
+      <a href="search.html"
+         class="map-search"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext">
+      </a>
+    </div>
+  </div>
+
+  <div data-role="content">
+
+    <div class="non-map-body-white ui-overlay-shadow">
+      <h2 class="capitalise"></h2>
+      <div id="annotate-preview-detail">
+        <div id="annotate-preview-detail-image"></div>
+        <div id="annotate-preview-detail-meta"></div>
+      </div>
+
+      <div id="annotate-preview-map"></div>
+      
+      <div id="annotate-preview-buttons" class="ui-grid-a">
+        <div id="annotate-preview-map-tip" class="ui-block-a" >Drag pin to Reposition</div>
+        <div class="ui-block-b" ></div>
+        <div id="annotate-preview-ok" class="ui-block-a">
+          <input type="submit" data-theme="a" value="Save">
+        </div>
+        <div class="ui-block-b">
+          <a data-role="button" data-theme="a" data-rel="back">Cancel</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="map-zoom-buttons">
+      <a data-role="button" class="map-zoom-button-in">+</a>
+      <a data-role="button" class="map-zoom-button-out">-</a>
+    </div>
+  </div>
+
+  <div class="menu" data-role="footer" data-position="fixed">
+    <div data-role="navbar">
+      <ul>
+		<li>
+          <a href="index.html"
+             class="home-button"
+             data-icon="custom">Home</a>
+        </li>
+		<li>
+          <a href="map.html"
+             class="map-button"
+             data-icon="custom">Map</a>
+        </li>
+        <li>
+          <a href="capture.html"
+             class="capture-button ui-btn-active"
+             data-icon="custom">Capture</a>
+        </li>
+	    <li>
+          <a href="download.html"
+             class="download-button"
+             data-icon="custom">Download</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>

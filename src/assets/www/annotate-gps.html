@@ -1,0 +1,90 @@
+<div id="annotate-gps-page" data-role="page" data-theme="b">
+
+  <div data-role="header" data-position="fixed">
+	<h1>Fieldtrip GB</h1>
+    <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+      <a class="gpstrack-running"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext"
+         data-shadow="false"
+         data-iconshadow="false"
+         style="display: none;">
+      </a>
+    </div>
+  </div>
+  <div data-role="content">
+    <div class="non-map-body-white ui-overlay-shadow">
+      <form id="annotate-gps-form" data-ajax="false" accept-charset="utf-8">
+        <div>
+          <label for="annotate-gps-form-title">Title</label>
+          <input id="annotate-gps-form-title"
+                 type="text"
+                 value="track"
+                 required="true",
+                 maxlength="40">
+        </div>
+
+        <div>
+          <label for="annotate-gps-form-description">Description</label>
+          <textarea id="annotate-gps-form-description"></textarea>
+        </div>
+
+        <div class="ui-grid-b">
+          <div class="ui-block-a">
+            <a href="#" id="annotate-gps-form-ok">
+              <img src="css/images/startgpscapture.png" alt="Start GPS"></img>
+            </a>
+            <p>Start</p>
+          </div>
+
+          <div class="ui-block-b">
+	        <select id="annotate-gps-form-rate">
+		      <option value="5">5 seconds</option>
+		      <option value="10">10 seconds</option>
+		      <option value="20">20 seconds</option>
+		      <option value="30">30 seconds</option>
+		      <option value="60">1 minute</option>
+	        </select>
+	        <p>Capture Rate</p>
+          </div>
+
+          <div class="ui-block-c">
+            <div id="annotate-gps-colour-pick"></div>
+	        <p>Track Colour</p>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div class="menu" data-role="footer" data-position="fixed">
+	<div data-role="navbar">
+	  <ul>
+		<li>
+          <a href="index.html"
+             class="home-button"
+             data-icon="custom">Home</a>
+        </li>
+		<li>
+          <a href="map.html"
+             class="map-button"
+             data-icon="custom">Map</a>
+        </li>
+        <li>
+          <a href="capture.html"
+             class="capture-button ui-btn-active"
+             data-icon="custom">Capture</a>
+        </li>
+	    <li>
+          <a href="download.html"
+             class="download-button"
+             data-icon="custom">Download</a>
+        </li>
+	  </ul>
+	</div>
+  </div>
+
+</div>

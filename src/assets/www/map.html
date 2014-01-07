@@ -1,0 +1,83 @@
+<div id="map-page" data-role="page" data-theme="a">
+
+  <div data-role="header" data-position="fixed">
+	<h1>Fieldtrip GB</h1>
+    <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+      <a class="gpstrack-running"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext"
+         data-shadow="false"
+         data-iconshadow="false"
+         style="display: none;">
+      </a>
+      <a class="user-locate"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext">
+      </a>
+      <a href="search.html"
+         class="map-search"
+         data-role="button"
+         data-inline="true"
+         data-transition="none"
+         data-iconpos="notext">
+      </a>
+    </div>
+  </div>
+
+  <div data-role="content">
+    <div id="map" class="map" >
+
+    </div>
+
+    <div class="map-zoom-buttons">
+      <a data-role="button" class="map-zoom-button-in">+</a>
+      <a data-role="button" class="map-zoom-button-out">-</a>
+    </div>
+
+    <div id="map-annotations-buttons" class="ui-grid-b">
+      <div id="map-annotations-buttons-list" class="ui-block-a">
+        <a href="saved-annotations.html"  data-role="button">List View</a>
+      </div>
+      <div class="ui-block-b"></div>
+      <div id="map-annotations-buttons-ok" class="ui-block-c">
+        <a data-role="button">Show Records</a>
+      </div>
+    </div>
+
+    <!-- <div id="map-compass"> -->
+    <!--   <img alt="compass" src="css/images/compass.png"/> -->
+    <!-- </div> -->
+  </div>
+
+  <div class="menu" data-role="footer" data-position="fixed">
+	<div data-role="navbar">
+	  <ul>
+		<li>
+          <a href="index.html"
+             class="home-button"
+             data-icon="custom">Home</a>
+        </li>
+		<li>
+          <a href="map.html"
+             class="map-button ui-btn-active"
+             data-icon="custom">Map</a>
+        </li>
+        <li>
+          <a href="capture.html"
+             class="capture-button"
+             data-icon="custom">Capture</a>
+        </li>
+	    <li>
+          <a href="download.html"
+             class="download-button"
+             data-icon="custom">Download</a>
+        </li>
+	  </ul>
+	</div>
+  </div>
+
+</div>
