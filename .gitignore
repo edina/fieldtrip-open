@@ -1,8 +1,8 @@
-tmp
 .pyc
 .DS_Store
-bower_components
-node_modules
-bower_components/*
 *.keystore
-
+bower_components
+fieldtrip-example
+node_modules
+project
+tmp

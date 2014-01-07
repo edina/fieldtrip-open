@@ -21,7 +21,9 @@ PROJ4JS_VERSION    = '1.1.0'
 config = None
 
 
-def install_project(platforms='android', dist_dir='apps', target='local'):
+def install_project(platforms='android',
+                    dist_dir='apps',
+                    target='local'):
     """
     Install Cordova runtime
 
@@ -34,13 +36,12 @@ def install_project(platforms='android', dist_dir='apps', target='local'):
         _check_command('android')
     _check_command('cordova')
 
-    proj_home, src_dir, app_dir = _get_source()
+    root, proj_home, src_dir, app_dir = _get_source()
 
     # get config file
     _check_config()
 
     target_dir, runtime = _get_runtime(target)
-
     js_dir = os.sep.join(('www', 'js', 'ext'))
     css_dir = os.sep.join(('www', 'css', 'ext'))
 
@@ -104,10 +105,16 @@ def install_project(platforms='android', dist_dir='apps', target='local'):
     else:
         os.mkdir(runtime)
 
+    if not os.path.exists('project'):
+        proj = _config('project')
+        pro_name = proj[proj.rfind('/') + 1:]
+        local('git clone {}'.format(proj))
+        local('ln -s {0} {1}'.format(pro_name, 'project'))
+
     # install external js libraries
     local('bower install')
     bower = json.loads(open('bower.json').read())
-    bower_home = os.sep.join((proj_home, 'bower_components'))
+    bower_home = os.sep.join((root, 'bower_components'))
 
     # install cordova
     with lcd(target_dir):
@@ -141,8 +148,10 @@ def install_project(platforms='android', dist_dir='apps', target='local'):
         local('ln -s %s' % asset_dir)
 
         # install js/css dependencies
-        local('rm -f {0}/*'.format(js_dir))
-        local('rm -f {0}/*'.format(css_dir))
+        with settings(warn_only=True):
+            local('rm {0}/*'.format(js_dir))
+            local('rm {0}/*'.format(css_dir))
+
         for dep in bower['dependency_locations']:
             files = bower['dependency_locations'][dep]
             version = bower['dependencies'][dep]
@@ -226,7 +235,7 @@ def release_android(beta='True', overwrite='False', email=False):
     email - send email to ftgb mailing list?
     """
 
-    proj_home, src_dir, app_dir = _get_source()
+    root, proj_home, src_dir, app_dir = _get_source()
     _check_config()
     runtime = _get_runtime()[1];
 
@@ -334,6 +343,7 @@ def copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     else:
         put(apk, os.sep.join((target_dir, new_file_name)))
 
+
 def _check_command(cmd):
     """checks a command is in the path"""
     with settings(warn_only=True):
@@ -353,8 +363,8 @@ def _check_config():
     If config.ini exists update from remote location, otherwise prompt user for location
     """
 
-    proj_home = _get_source()[0]
-    conf_dir = os.sep.join((proj_home, 'etc'))
+    root = _get_source()[0]
+    conf_dir = os.sep.join((root, 'etc'))
     conf_file = os.sep.join((conf_dir, 'config.ini'))
     if not os.path.exists(conf_file):
         msg = '\nProvide location of config file > '
@@ -362,16 +372,17 @@ def _check_config():
         if len(answer) > 0:
             if answer.find('@') == -1:
                 if os.path.exists(answer):
-                    local('cp {0} {1}'.format(answer, conf_dir))
+                    local('cp {0} {1}'.format(answer, conf_file))
                 else:
                     print "File not found, can't continue."
                     exit(0)
             else:
                 local('scp {0} {1}'.format(answer, conf_dir))
     else:
-        # pick up any changes
+        # pick up any changes from remote config
         location = _config('location')
-        local('rsync -avz {0} {1}'.format(location, conf_dir))
+        if location.find('@') != -1:
+            local('rsync -avz {0} {1}'.format(location, conf_dir))
 
 
 def _config(var, section='install'):
@@ -431,14 +442,16 @@ def _get_source(app='android'):
     Get fieldtip source directories.
     Returns a tuple containing:
 
-    0) project home
-    1) directory containing source code
-    2) platform specific code
+    0) root
+    1) project home
+    2) directory containing source code
+    3) platform specific code
     """
 
-    proj_home = local('pwd', capture=True).strip();
-    src_dir = os.sep.join((proj_home, 'src'))
-    return proj_home, src_dir, os.sep.join((src_dir, app))
+    root = local('pwd', capture=True).strip();
+    proj_home = os.sep.join((root, 'project'))
+    src_dir = os.sep.join((root, 'cordova'))
+    return root, proj_home, src_dir, os.sep.join((src_dir, app))
 
 
 def str2bool(v):
