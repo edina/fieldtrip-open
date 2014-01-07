@@ -6,10 +6,10 @@ name=FieldTripExample
 ; the source of this file
 ; e.g <user>@<domain>:<path of config.ini>
 ; if file is on local filesystem then no syncing will be done
-location=config/example.ini
+location=etc/config.example
 
 ; git repository of project
-project = https://github.com/edina/fieldtrip-example
+project = ssh://git@github.com/edina/fieldtrip-example.git
 
 ; the java package of the abndroid application
 package=uk.ac.edina.mobile
@@ -25,11 +25,14 @@ url=
 
 ; details for mapserver urls
 ; mapserver_urls=<urls comma separated>
+mapserver_urls=
 ; mapserver_names=<names for the urls above comma separated>
+mapserver_names=
 
-; details for pcapi urls
-; pcapi_urls=<urls comma separated>
-; pcapi_names=<names for the urls above comma separated>
+; details for pcapi urls <urls comma separated>
+pcapi_urls=
+; <names for the urls above comma separated>
+pcapi_names=
 
 [release]
 

@@ -82,7 +82,7 @@ def install_project(platforms='android',
         access.append('<access origin="{0}" />'.format(url))
     filedata = filedata.replace('{{access_urls}}', "\n".join(access))
 
-    _write_data(os.sep.join((src_dir, 'assets', 'www', 'config.xml')), filedata)
+    _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
     #create settings.html
     filedata = _read_data(os.sep.join(('etc', 'settings.html')))
@@ -90,7 +90,7 @@ def install_project(platforms='android',
     filedata = _settings_options(filedata, 'mapserver_urls', 'mapserver_names', '{{mapserver_urls}}')
     filedata = _settings_options(filedata, 'pcapi_urls', 'pcapi_names', '{{pcapi_urls}}')
 
-    _write_data(os.sep.join((src_dir, 'assets', 'www', 'settings.html')), filedata)
+    _write_data(os.sep.join((src_dir, 'www', 'settings.html')), filedata)
 
     if os.path.exists(runtime):
         # check if they want to delete existing installation
@@ -107,8 +107,8 @@ def install_project(platforms='android',
 
     if not os.path.exists('project'):
         proj = _config('project')
-        pro_name = proj[proj.rfind('/') + 1:]
-        local('git clone {}'.format(proj))
+        pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
+        local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
 
     # install external js libraries
@@ -144,8 +144,8 @@ def install_project(platforms='android',
 
         # create sym link to assets
         local('rm -rf www')
-        asset_dir =  os.sep.join((src_dir, 'assets', 'www'))
-        local('ln -s %s' % asset_dir)
+        asset_dir =  os.sep.join((src_dir, 'www'))
+        local('ln -s {0}'.format(asset_dir))
 
         # install js/css dependencies
         with settings(warn_only=True):
@@ -442,16 +442,16 @@ def _get_source(app='android'):
     Get fieldtip source directories.
     Returns a tuple containing:
 
-    0) root
-    1) project home
-    2) directory containing source code
-    3) platform specific code
+    0) root                   (of source repo)
+    1) project home           (of project repo)
+    2) source code            (src)
+    3) platform specific code (android / ios)
     """
 
     root = local('pwd', capture=True).strip();
     proj_home = os.sep.join((root, 'project'))
-    src_dir = os.sep.join((root, 'cordova'))
-    return root, proj_home, src_dir, os.sep.join((src_dir, app))
+    src_dir = os.sep.join((root, 'src'))
+    return root, proj_home, src_dir, os.sep.join((proj_home, app))
 
 
 def str2bool(v):
