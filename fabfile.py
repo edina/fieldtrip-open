@@ -36,7 +36,7 @@ def install_project(platforms='android',
         _check_command('android')
     _check_command('cordova')
 
-    root, proj_home, src_dir, app_dir = _get_source()
+    root, proj_home, src_dir = _get_source()
 
     # get config file
     _check_config()
@@ -123,13 +123,11 @@ def install_project(platforms='android',
             _config('package'),
             _config('name')))
 
-    # add project specific files
-    update_app(app_dir, runtime)
-
     with lcd(runtime):
 
         # add platforms and plugins
         local('cordova platform add {0}'.format(platforms))
+
         _install_plugins([
             'cordova-plugin-device.git',
             'cordova-plugin-network-information',
@@ -164,6 +162,9 @@ def install_project(platforms='android',
                 else:
                     dest = os.sep.join((css_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
+
+    # add project specific files
+    update_app()
 
     # check if /home/<user>/<dist_dir> exists
     dist_path = os.sep.join((os.environ['HOME'], dist_dir))
@@ -235,11 +236,11 @@ def release_android(beta='True', overwrite='False', email=False):
     email - send email to ftgb mailing list?
     """
 
-    root, proj_home, src_dir, app_dir = _get_source()
+    root, proj_home, src_dir = _get_source()
     _check_config()
     runtime = _get_runtime()[1];
 
-    update_app(app_dir, runtime)
+    update_app()
 
     # get app version
     tree = ET.parse(os.sep.join((runtime, 'platforms', 'android', 'AndroidManifest.xml')))
@@ -308,14 +309,12 @@ def release_android(beta='True', overwrite='False', email=False):
         _email(new_file_name, version, beta)
 
 
-def update_app(app_dir=None, runtime=None):
+def update_app():
     """Update app with latest configuration"""
-    if not app_dir:
-        app_dir = _get_source()[2]
-    if not runtime:
-        runtime = _get_runtime()[1]
-
-    local('cp -rf %s/* %s ' % (app_dir, runtime))
+    proj_home = _get_source()[1]
+    runtime = _get_runtime()[1]
+    local('cp -rf {0} {1}'.format(os.sep.join((proj_home, 'platforms')),
+                                  runtime))
 
 
 def copy_apk_to_servers(version, file_name, new_file_name, overwrite):
@@ -445,13 +444,12 @@ def _get_source(app='android'):
     0) root                   (of source repo)
     1) project home           (of project repo)
     2) source code            (src)
-    3) platform specific code (android / ios)
     """
 
     root = local('pwd', capture=True).strip();
     proj_home = os.sep.join((root, 'project'))
     src_dir = os.sep.join((root, 'src'))
-    return root, proj_home, src_dir, os.sep.join((proj_home, app))
+    return root, proj_home, src_dir
 
 
 def str2bool(v):

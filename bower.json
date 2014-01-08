@@ -20,6 +20,7 @@
         "jquery-mobile-bower": "1.3.2",
         "iscroll": "4.2",
         "jquery-mobile-iscrollview-amd": "1.2.9",
+        "requirejs": "2.1.9",
         "spectrum": "1.1.0",
         "qunit": "1.11.0"
     },
@@ -36,6 +37,9 @@
         ],
         "jquery-mobile-iscrollview-amd": [
             "lib/jquery.mobile.iscrollview-closure-min.js"
+        ],
+        "requirejs": [
+            "require.js"
         ],
         "spectrum": [
             "spectrum.js",
