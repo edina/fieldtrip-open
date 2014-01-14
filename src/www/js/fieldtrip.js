@@ -1,25 +1,23 @@
 "use strict";
 
-requirejs.config({
-    //By default load any module IDs from js/lib
+define(function(){
+    return{
+        homePage: function(){
+            //$('.home-button').addClass('ui-btn-active')
+            toggleActive();
+        },
 
-    baseUrl: 'js/ext',
+        pageChange: function() {
+            $.get('footer.html', function(data){
+                $('div[data-role="footer"]').html(data).trigger('create');
+            });
+        },
 
-    //except, if the module ID starts with "app",
-    //load it from the js/app directory. paths
-    //config is relative to the baseUrl, and
-    //never includes a ".js" extension since
-    //the paths config could be for a directory.
-    paths: {
-        app: '../app'
+        toggleActive: function(){
+            console.log("=>");
+            $.each('div[data-role="navbar"]', function(d){
+                console.log(d);
+            });
+        }
     }
 });
-
-// Start the main app logic.
-requirejs(['jquery', 'jquery-mobile'], function($, jqm) {
-    console.log('=>');
-
-
-});
-
-

@@ -10,10 +10,6 @@ html, body {
     font-family:helvetica;
 }
 
-.ui-page {
-    background: white;
-}
-
 h1{
     font-size: 16px !important;
     font-weight: bold;
@@ -43,7 +39,7 @@ ul,li {
 }
 
 a:active, img:active{
-	box-shadow: 0px 0px 12px #ff0000 !important;
+    box-shadow: 0px 0px 12px #ff0000 !important;
 }
 
 .error{
@@ -82,21 +78,6 @@ a:active, img:active{
     text-align: center;
 }
 
-#header a {
-    color: #f3f3f3;
-    text-decoration: none;
-    font-weight: bold;
-    text-shadow: 0 -1px 0 rgba(0,0,0,0.5);
-}
-
-.ui-header {
-    z-index: 10000 !important;
-}
-
-.ui-header-buttons{
-    height: 92%;
-}
-
 .ui-header h1{
     text-align: left !important;
     margin: 0.2em 0 0.2em 1em !important;
@@ -104,29 +85,6 @@ a:active, img:active{
     width: 40%;
     background-image: url("images/icon.png");
     background-repeat: no-repeat;
-}
-
-.ui-header .ui-btn{
-    padding: 0;
-    margin: 0;
-    background-repeat: no-repeat;
-    background-color: transparent;
-    height: 90%;
-    width: 3.2em;
-}
-
-/* use id to override above */
-#help-div .ui-btn {
-    width:  6.2em;
-}
-
-.ui-header .ui-btn .override{
-    height: 20%;
-}
-
-#home-exit{
-    height: 80%;
-    width: 5em;
 }
 
 
@@ -137,10 +95,6 @@ body .ui-loader{
     background: white;
 }
 
-body #progressbar{
-    z-index: 10000 !important;
-    font-size: 62.5%;
-}
 
 /********* map Body *************/
 
@@ -166,97 +120,32 @@ body #progressbar{
     padding: 0 1em;
 }
 
-#map-annotations-buttons{
-    z-index: 10000;
-    position: absolute;
-    bottom: 15%;
-    width: 98%;
-    padding-left: 1%;
-}
+/* #map-annotations-buttons{ */
+/*     z-index: 10000; */
+/*     position: absolute; */
+/*     bottom: 15%; */
+/*     width: 98%; */
+/*     padding-left: 1%; */
+/* } */
 
-#map-annotations-buttons .ui-btn-text{
-    font-size: 14px;
-}
+/* #map-annotations-buttons .ui-btn-text{ */
+/*     font-size: 14px; */
+/* } */
 
-#map-annotations-buttons .ui-block-a{
-    width: 48%;
-}
+/* #map-annotations-buttons .ui-block-a{ */
+/*     width: 48%; */
+/* } */
 
-#map-annotations-buttons .ui-block-b{
-    width: 4%;
-}
+/* #map-annotations-buttons .ui-block-b{ */
+/*     width: 4%; */
+/* } */
 
-#map-annotations-buttons .ui-block-c{
-    width: 48%;
-}
-
-#map-buttons-draw .ui-slider-switch {
-    width: 12em;
-}
-
-#map-compass{
-    z-index: 1000;
-    position: absolute;
-    top: 18%;
-    left: 0.8%;
-}
-
-#search-content, #eula-content,
-#save-map-name-dialog [data-role="content"] {
-    color: #2c3f62;
-    background-color: white;
-}
-
-#save-map-name-dialog h1{
-    width: 80%;
-}
-
-#search-spinner{
-    position: relative;
-    float: right;
-    top: -3.4em;
-    right: 0.3em;
-}
-
-#search-spinner img{
-    height: 2.5em;
-    width: 2.5em;
-}
-
-/* force white text on menu bar */
-#map-menu .ui-btn-up-a  {
-    color: white;
-}
-
-.user-locate{
-    background-image: url("images/locate.png");
-}
-
-.map-search{
-    background-image: url("images/search.png");
-    background-size: 26px 26px;
-    background-position: 5px 5px;
-}
-
-.gpstrack-running{
-    background-image: url("images/gpsrunning.png");
-    background-position: 2px 0;
-    background-color: red !important;
-}
+/* #map-annotations-buttons .ui-block-c{ */
+/*     width: 48%; */
+/* } */
 
 
 /********* Non map page *********/
-
-/* .non-map-body{ */
-/*     position: relative; */
-/*     background-image: linear-gradient(top, #62738c, #294062); */
-/*     background-image: url("images/home-background.png"), -webkit-gradient(linear, left top, left bottom, color-stop(0%, #62738c), color-stop(100%, #294062)); */
-/*     background-image: url("images/home-background.png"), -webkit-linear-gradient(top, #62738c, #294062); */
-/*     background-image: url("images/home-background.png"), -moz-linear-gradient(top, #62738c, #294062); */
-/*     background-repeat: no-repeat; */
-/*     background-position: right bottom; */
-/*     color: white; */
-/* } */
 
 .non-map-body-white{
     position: relative;
@@ -431,41 +320,6 @@ body #progressbar{
     height: 48px;
 }
 
-
-/********* Lists ******************/
-
-#saved-annotations-page .ui-listview{
-    padding-top: 0.2em;
-    padding: 0;
-    margin: 0 !important;
-}
-
-#saved-annotations-page .ui-listview ul{
-    border: none;
-}
-
-#saved-annotations-page .ui-listview li{
-    margin: 0 !important;
-    padding: 0 !important;
-    margin-left: 0.5em !important;
-    margin-right: 0.5em !important;
-    border: none;
-    border-bottom: #2c3f62 solid 1px;
-}
-
-#saved-annotations-page .ui-listview a,
-#saved-maps-page .ui-listview a{
-    text-decoration: none;
-}
-
-#saved-annotations-page .ui-listview fieldset{
-    padding: 0;
-    margin: 0;
-}
-
-#saved-maps-page .ui-listview li{
-    border: none;
-}
 
 /********* Annotation ******************/
 

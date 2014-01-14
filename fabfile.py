@@ -315,6 +315,9 @@ def update_app():
     runtime = _get_runtime()[1]
     local('cp -rf {0} {1}'.format(os.sep.join((proj_home, 'platforms')),
                                   runtime))
+    local('cp -rf {0}/* {1}'.format(os.sep.join((proj_home, 'theme')),
+                                    os.sep.join((runtime, 'www'))))
+
 
 
 def copy_apk_to_servers(version, file_name, new_file_name, overwrite):
