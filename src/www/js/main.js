@@ -7,13 +7,22 @@ require(['fieldtrip'], function(ft) {
     $(document).on('pageinit', 'div[data-role="page"]', function(){
         console.log('pageinit');
     });
-    $(document).on('pagebeforeshow', 'div[data-role="page"]', function(){
-        console.log('pagebeforeshow');
+    $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
         ft.pageChange();
     });
     $(document).on('pageshow', 'div[data-role="page"]', function(){
         console.log('pageshow');
     });
 
-    console.log(ft.pageChange());
+    $(document).on('pageinit', '#home-page', function(){
+        ft.homePage();
+    });
+    $(document).on('pageinit', '#map-page', function(){
+        ft.mapPage();
+    });
+    $(document).on('pageinit', '#map-page', function(){
+        ft.mapPage();
+    });
+
+    ft.homePage();
 });
