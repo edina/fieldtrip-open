@@ -22,9 +22,6 @@ function onDeviceReady(){
 
 
     require(['fieldtrip', 'renderer'], function(ft, rndr) {
-        rndr.init('header');
-        rndr.init('footer');
-        
         $(document).on('pageinit', 'div[data-role="page"]', function(){
             console.log('pageinit');
         });

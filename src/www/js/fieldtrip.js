@@ -2,14 +2,17 @@
 
 define(['map'], function(map){
 
+
     return{
         homePage: function(){
             console.log('homePage');
             this.pageChange();
+            this.render_header_footer('home');
         },
 
         mapPage: function(){
             console.log('mapPage');
+            this.render_header_footer('map');
         },
 
         pageChange: function() {
@@ -31,5 +34,11 @@ define(['map'], function(map){
 
         updateFooter: function(){
         },
+        render_header_footer: function(page){
+            require(['renderer'], function(rndr) {
+                rndr.init(page, 'header');
+                rndr.init(page, 'footer');
+            });
+        }
     }
 });
