@@ -1,3 +1,34 @@
+"""
+Copyright (c) 2013, EDINA,
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this
+   list of conditions and the following disclaimer in the documentation and/or
+   other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software must
+   display the following acknowledgement: This product includes software
+   developed by the EDINA.
+4. Neither the name of the EDINA nor the names of its contributors may be used to
+   endorse or promote products derived from this software without specific prior
+   written permission.
+
+THIS SOFTWARE IS PROVIDED BY EDINA ''AS IS'' AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL EDINA BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+"""
+
 from email.mime.text import MIMEText
 
 from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings
@@ -148,7 +179,6 @@ def install_project(platform='android',
         asset_dir =  os.sep.join((src_dir, 'www'))
         local('ln -s {0}'.format(asset_dir))
 
-
         # install js/css dependencies
         _make_dirs([os.sep.join((src_dir, js_dir)), os.sep.join((src_dir, css_dir))])
         with settings(warn_only=True):
@@ -157,10 +187,22 @@ def install_project(platform='android',
             local('rm {0}/plugins/*'.format(asset_dir))
 
         # set up fieldtrip plugins
-        print open(os.sep.join((proj_home, 'plugins.json')))
         pobj = json.loads(open(os.sep.join((proj_home, 'plugins.json'))).read())
-        for plugin in pobj['plugins']:
-            src = os.sep.join((root, 'plugins', 'fieldtrip-plugins', plugin))
+        proot = os.sep.join((root, 'plugins'))
+        for plugin, details in pobj['plugins'].iteritems():
+            if len(details) == 0:
+                # plugin is from field trip
+                src = os.sep.join((proot, 'fieldtrip-plugins', plugin))
+            elif plugin[:3] == 'lib':
+                # TODO bower plugin
+                pass
+            else:
+                # git repository
+                src = os.sep.join((proot, plugin))
+                if not os.path.isdir(src):
+                    with lcd(proot):
+                        local('git clone {0} {1}'.format(details, plugin))
+
             if os.path.isdir(src):
                 dest = os.sep.join((asset_dir, 'plugins', plugin))
                 local('ln -s {0} {1}'.format(src, dest))
