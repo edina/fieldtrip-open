@@ -42,11 +42,14 @@ define(['map'], function(map){
 
         homePage: function(){
             console.log('homePage');
+            this.pageChange();
+            this.render_header_footer('home');
         },
 
         mapPage: function(){
             console.log('mapPage');
             map.display('map');
+            this.render_header_footer('map');
         },
 
         pageChange: function() {
@@ -78,5 +81,11 @@ define(['map'], function(map){
             $('[data-role=content]').css('height', h + 'px');
         },
 
+        render_header_footer: function(page){
+            require(['renderer'], function(rndr) {
+                rndr.init(page, 'header');
+                rndr.init(page, 'footer');
+            });
+        }
     }
 });
