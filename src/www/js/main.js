@@ -1,28 +1,54 @@
 "use strict";
 
-// Start the main app logic.
-require(['fieldtrip'], function(ft) {
-    console.log('=>');
+$(function() {
+    if (typeof (device) === 'undefined'){
+        onDeviceReady();
+    }
+    else{
+        require(['cordova'], function(){
+            document.addEventListener("deviceready", onDeviceReady, false);
+        });
+    }
+});
 
-    $(document).on('pageinit', 'div[data-role="page"]', function(){
-        console.log('pageinit');
-    });
-    $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
-        ft.pageChange();
-    });
-    $(document).on('pageshow', 'div[data-role="page"]', function(){
-        console.log('pageshow');
+function onDeviceReady(){
+    require.config({
+        paths: {
+            "plugins": "../plugins"
+        },
     });
 
-    $(document).on('pageinit', '#home-page', function(){
+    require(['fieldtrip'], function(ft) {
+        $(document).on('pageinit', 'div[data-role="page"]', function(){
+            console.log('pageinit');
+        });
+        $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
+            ft.pageChange();
+        });
+        $(document).on('pageshow', 'div[data-role="page"]', function(){
+            console.log('pageshow');
+        });
+
+        $(document).on('pageinit', '#home-page', function(){
+            ft.homePage();
+        });
+        $(document).on('pageinit', '#map-page', function(){
+            ft.mapPage();
+        });
+        $(document).on('pageinit', '#map-page', function(){
+            ft.mapPage();
+        });
+
+        $.get('plugins.json', function(f){
+            console.log(f);
+            $.each(f.plugins, function(i, data){
+                console.log(i, data);
+                require(["plugins/" + data + "/js/" + data], function(){
+                    console.log('=>');
+                });
+            });
+        });
+
         ft.homePage();
     });
-    $(document).on('pageinit', '#map-page', function(){
-        ft.mapPage();
-    });
-    $(document).on('pageinit', '#map-page', function(){
-        ft.mapPage();
-    });
-
-    ft.homePage();
-});
+};

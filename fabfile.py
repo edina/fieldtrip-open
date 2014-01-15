@@ -14,25 +14,25 @@ import smtplib
 import re, itertools
 
 
-CORDOVA_VERSION   = '3.2.0-0.4.0'
+CORDOVA_VERSION   = '3.3.1-0.1.2'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
 
 config = None
 
 
-def install_project(platforms='android',
+def install_project(platform='android',
                     dist_dir='apps',
                     target='local'):
     """
     Install Cordova runtime
 
-    platforms - list of supported platforms seperated by a space
+    platform - android or ios
     dist_dir - directory for unpacking openlayers
     target - runtime root
     """
 
-    if 'android' in platforms:
+    if platform == 'android':
         _check_command('android')
     _check_command('cordova')
 
@@ -84,14 +84,6 @@ def install_project(platforms='android',
 
     _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
-    #create settings.html
-    filedata = _read_data(os.sep.join(('etc', 'settings.html')))
-
-    filedata = _settings_options(filedata, 'mapserver_urls', 'mapserver_names', '{{mapserver_urls}}')
-    filedata = _settings_options(filedata, 'pcapi_urls', 'pcapi_names', '{{pcapi_urls}}')
-
-    _write_data(os.sep.join((src_dir, 'www', 'settings.html')), filedata)
-
     if os.path.exists(runtime):
         # check if they want to delete existing installation
         msg = 'Directory {0} exists.\nDo you wish to delete it(Y/n)? > '.format(runtime)
@@ -110,6 +102,17 @@ def install_project(platforms='android',
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
+        with settings(warn_only=True):
+            local('cp {0} {1}'.format(os.sep.join((proj_home, 'plugins.json')),
+                                      os.sep.join((src_dir, 'www'))))
+
+    if not os.path.exists('plugins'):
+        local('mkdir plugins')
+        with lcd('plugins'):
+            local('git clone git@github.com:edina/fieldtrip-plugins.git')
+        # TODO
+        # fetch git plugins not in fieldtrip-plugins
+
 
     # install external js libraries
     local('bower install')
@@ -125,19 +128,19 @@ def install_project(platforms='android',
 
     with lcd(runtime):
 
-        # add platforms and plugins
-        local('cordova platform add {0}'.format(platforms))
+        # add platform and plugins
+        local('cordova platform add {0}'.format(platform))
 
         _install_plugins([
             'cordova-plugin-device.git',
-            'cordova-plugin-network-information',
-            'cordova-plugin-geolocation.git',
-            'cordova-plugin-camera.git',
-        #'cordova-plugin-media-capture.git',
-            'cordova-plugin-media.git',
-            'cordova-plugin-file.git',
-            'cordova-plugin-file-transfer.git',
-            'cordova-plugin-inappbrowser.git',
+        #    'cordova-plugin-network-information',
+        #    'cordova-plugin-geolocation.git',
+        #    'cordova-plugin-camera.git',
+        #    'cordova-plugin-media-capture.git',
+        #    'cordova-plugin-media.git',
+        #    'cordova-plugin-file.git',
+        #    'cordova-plugin-file-transfer.git',
+        #    'cordova-plugin-inappbrowser.git',
             'cordova-plugin-console.git'])
 
         # create sym link to assets
@@ -145,11 +148,26 @@ def install_project(platforms='android',
         asset_dir =  os.sep.join((src_dir, 'www'))
         local('ln -s {0}'.format(asset_dir))
 
+
         # install js/css dependencies
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_dir))
-            local('rm {0}/*'.format(css_dir))
+            local('rm -r {0}/*'.format(css_dir))
+            local('rm {0}/plugins/*'.format(asset_dir))
 
+        # set up fieldtrip plugins
+        print open(os.sep.join((proj_home, 'plugins.json')))
+        pobj = json.loads(open(os.sep.join((proj_home, 'plugins.json'))).read())
+        for plugin in pobj['plugins']:
+            src = os.sep.join((root, 'plugins', 'fieldtrip-plugins', plugin))
+            if os.path.isdir(src):
+                dest = os.sep.join((asset_dir, 'plugins', plugin))
+                local('ln -s {0} {1}'.format(src, dest))
+            else:
+                print 'No such plugin: {0}'.format(src)
+                exit(-1)
+
+        # set up bower dependecies
         for dep in bower['dependency_locations']:
             files = bower['dependency_locations'][dep]
             version = bower['dependencies'][dep]

@@ -1,6 +1,7 @@
 "use strict";
 
-define(function(){
+define(['map'], function(map){
+
     return{
         homePage: function(){
             console.log('homePage');
@@ -12,10 +13,7 @@ define(function(){
         },
 
         pageChange: function() {
-            $.get('footer.html', $.proxy(function(data){
-                $('div[data-role="footer"]').html(data).trigger('create');
-                this.toggleActive();
-            }, this));
+
         },
 
         toggleActive: function(){
@@ -29,6 +27,9 @@ define(function(){
             else{
                 $('.home-button').addClass('ui-btn-active');
             }
+        },
+
+        updateFooter: function(){
         },
     }
 });
