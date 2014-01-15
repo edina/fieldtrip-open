@@ -40,10 +40,8 @@ function onDeviceReady(){
         });
 
         $.get('plugins.json', function(f){
-            console.log(f);
-            $.each(f.plugins, function(i, data){
-                console.log(i, data);
-                require(["plugins/" + data + "/js/" + data], function(){
+            $.each(f.plugins, function(name){
+                require(["plugins/" + name + "/js/" + name], function(){
                     console.log('=>');
                 });
             });

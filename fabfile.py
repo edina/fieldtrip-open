@@ -148,7 +148,6 @@ def install_project(platform='android',
         asset_dir =  os.sep.join((src_dir, 'www'))
         local('ln -s {0}'.format(asset_dir))
 
-
         # install js/css dependencies
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_dir))
@@ -156,10 +155,22 @@ def install_project(platform='android',
             local('rm {0}/plugins/*'.format(asset_dir))
 
         # set up fieldtrip plugins
-        print open(os.sep.join((proj_home, 'plugins.json')))
         pobj = json.loads(open(os.sep.join((proj_home, 'plugins.json'))).read())
-        for plugin in pobj['plugins']:
-            src = os.sep.join((root, 'plugins', 'fieldtrip-plugins', plugin))
+        proot = os.sep.join((root, 'plugins'))
+        for plugin, details in pobj['plugins'].iteritems():
+            if len(details) == 0:
+                # plugin is from field trip
+                src = os.sep.join((proot, 'fieldtrip-plugins', plugin))
+            elif plugin[:3] == 'lib':
+                # TODO bower plugin
+                pass
+            else:
+                # git repository
+                src = os.sep.join((proot, plugin))
+                if not os.path.isdir(src):
+                    with lcd(proot):
+                        local('git clone {0} {1}'.format(details, plugin))
+
             if os.path.isdir(src):
                 dest = os.sep.join((asset_dir, 'plugins', plugin))
                 local('ln -s {0} {1}'.format(src, dest))
