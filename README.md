@@ -1,9 +1,8 @@
-Fieldtrip-Open
-==============
+### Fieldtrip-Open
 
 Fieldtrip-Open is a mobile mapping and data collection app.
 
-# Software Dependencies
+### Software Dependencies
 
   - [Fabric](http://docs.fabfile.org)
   - [nodjs](http://nodejs.org/)
@@ -15,20 +14,20 @@ Fieldtrip-Open is a mobile mapping and data collection app.
 
 * Install
 ```
-fab install_project
+$ fab install_project
+$ Provide location of config file > etc/config.example
 ```
 
 * Deploy Android
 ```
-fab deploy_android
+$ fab deploy_android
 ```
 
-5. Release Android
+* Release Android
 ```
-fab release_android
+$ fab release_android
 ```
 
-License
-----
+### License
 
 [BSD](LICENSE)
