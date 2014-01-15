@@ -1,10 +1,10 @@
-define(function(where){
+define(function(){
     return {
-            init: function(where){
-                require(['templates/'+where, 'text!templates/'+where+'.html'], function(data, tmpl) {
-                    var template = _.template(tmpl);
-                    $("#home-"+where).html(template(data)).trigger('create');
-                });
-            }
+        init: function(where){
+            require(['templates/'+where, 'text!templates/'+where+'.html'], function(data, tmpl) {
+                var template = _.template(tmpl);
+                $("#home-"+where).html(template(data)).trigger('create');
+            });
         }
+    }
 });
