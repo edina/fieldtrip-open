@@ -150,6 +150,7 @@ def install_project(platform='android',
 
 
         # install js/css dependencies
+        _make_dirs([os.sep.join((src_dir, js_dir)), os.sep.join((src_dir, css_dir))])
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_dir))
             local('rm -r {0}/*'.format(css_dir))
@@ -471,6 +472,12 @@ def _get_source(app='android'):
     proj_home = os.sep.join((root, 'project'))
     src_dir = os.sep.join((root, 'src'))
     return root, proj_home, src_dir
+
+def _make_dirs(dirs):
+    """ make dirs if not exist"""
+    for d in dirs:
+        if not os.path.exists(d):
+            os.makedirs(d)
 
 
 def str2bool(v):

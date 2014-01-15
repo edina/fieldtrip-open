@@ -13,7 +13,7 @@ define(['map'], function(map){
         },
 
         pageChange: function() {
-
+            console.log('changePage');
         },
 
         toggleActive: function(){

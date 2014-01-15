@@ -14,11 +14,17 @@ $(function() {
 function onDeviceReady(){
     require.config({
         paths: {
-            "plugins": "../plugins"
+            "plugins": "../plugins",
+            "templates": "../templates",
         },
     });
 
-    require(['fieldtrip'], function(ft) {
+
+
+    require(['fieldtrip', 'renderer'], function(ft, rndr) {
+        rndr.init('header');
+        rndr.init('footer');
+        
         $(document).on('pageinit', 'div[data-role="page"]', function(){
             console.log('pageinit');
         });

@@ -1,0 +1,12 @@
+<div data-role="navbar">
+  <ul>
+    <% _.each(buttons, function(item){
+    %>
+      <li>
+      <a href="<%= item.url %>"
+         class="<%=item.class %>"
+         data-icon="<%= item.icon %>"><%= item.name %></a>
+      </li>
+    <% }) %>
+  </ul>
+</div>

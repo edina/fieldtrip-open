@@ -10,6 +10,8 @@
           media="screen" title="Fieldtrip ??">
     <link rel="stylesheet" href="css/ext/jquery-mobile.css">
 
+    <script src="js/ext/underscore-min.js"></script>
+    <script src="js/language.js"></script>
     <script src="js/ext/jquery.js"></script>
     <script src="js/ext/jquery-mobile.js"></script>
     <script data-main="js/main" src="js/ext/requirejs.js"></script>
@@ -18,17 +20,14 @@
   <body>
 
     <div id="home-page" data-role="page" data-theme="a">
-      <div data-role="header" data-position="fixed">
-        <h1>Fieldtrip ??</h1>
-        <div class="ui-header-buttons ui-btn-right" data-type="horizontal">
-        </div>
-      </div>
+      <div data-role="header" data-position="fixed" id="home-header"></div>
 
       <div id="home-content" class="non-map-body" data-role="content">
       </div>
 
-      <div class="menu" data-role="footer" data-position="fixed">
-      </div>
+      <div class="menu" data-role="footer" data-position="fixed" id="home-footer">
+      </div>  
+    </div>
 
   </body>
 
