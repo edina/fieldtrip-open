@@ -50,7 +50,7 @@ function onDeviceReady(){
         },
     });
 
-    require(['fieldtrip', 'renderer'], function(ft, rndr) {
+    require(['fieldtrip'], function(ft) {
         $(document).on('pageinit', 'div[data-role="page"]', function(){
             console.log('pageinit');
         });

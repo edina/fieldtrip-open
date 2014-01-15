@@ -42,7 +42,6 @@ define(['map'], function(map){
 
         homePage: function(){
             console.log('homePage');
-            this.pageChange();
             this.render_header_footer('home');
         },
 
@@ -55,7 +54,7 @@ define(['map'], function(map){
         pageChange: function() {
             console.log('changePage');
             this.toggleActive();
-            this.resizePage()
+            this.resizePage();
         },
 
         toggleActive: function(){

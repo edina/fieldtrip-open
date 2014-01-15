@@ -33,10 +33,10 @@ DAMAGE.
 
 define(function(){
     return {
-        init: function(where){
+        init: function(page, where){
             require(['templates/'+where, 'text!templates/'+where+'.html'], function(data, tmpl) {
                 var template = _.template(tmpl);
-                $("#home-"+where).html(template(data)).trigger('create');
+                $("#"+page+"-"+where).html(template(data)).trigger('create');
             });
         }
     }
