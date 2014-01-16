@@ -39,15 +39,58 @@ DAMAGE.
  * text after
  */
 define(['map'], function(map){
+    var portraitScreenHeight;
+    var landscapeScreenHeight;
 
-    map.init();
+    // record initial screen height
+    if(window.orientation === 0 || window.orientation === 180){
+        portraitScreenHeight = $(window).height();
+        landscapeScreenHeight = $(window).width();
+    }
+    else{
+        portraitScreenHeight = $(window).width();
+        landscapeScreenHeight = $(window).height();
+    }
 
     // work out page height
     var resizePage = function(){
-        var offset = 4;
+        var offset = 0;
 
         var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
         $('[data-role=content]').css('height', h + 'px');
+    };
+
+    /**
+     * Window has been resized, with by orientation change of by the appearance of
+     * the keyboard. A bug in JQM with some versions of android leaves the footer
+     * remains visible when the keyboard is visible. This function hides the footer.
+     */
+    var resizeWindow = function(){
+        console.log("********************");
+        // recording landscape height from potrait and vis-versa is not exact,
+        // so add a little tolerance
+        var tolerance = 30;
+        var keyboardVisible;
+
+        if((window.orientation === 0 || window.orientation === 180) &&
+           ((window.innerHeight + tolerance) < portraitScreenHeight)){
+            console.debug("keyboard visible: " + window.innerHeight + " : " +
+                          portraitScreenHeight);
+            keyboardVisible = true;
+        }
+        else if((window.innerHeight + tolerance) < landscapeScreenHeight){
+            console.debug("keyboard visible: " + window.innerHeight + " : " +
+                          landscapeScreenHeight);
+            keyboardVisible = true;
+        }
+
+        if(keyboardVisible){
+            $("[data-role=footer]").hide();
+        }
+        else{
+            $("[data-role=footer]").show();
+            resizePage();
+        }
     };
 
     // map zooming
@@ -58,7 +101,12 @@ define(['map'], function(map){
                    '.map-zoom-button-out',
                    $.proxy(map.zoomOut, map));
 
-return{
+    // listen for windows resizes
+    $(window).bind('resize', $.proxy(resizeWindow, _this));
+
+    map.init();
+
+var _this = {
     /**
      * TODO
      */
@@ -77,7 +125,7 @@ return{
      * TODO
      * text below
      */
-    mapPage: function(){
+    mapPageInit: function(){
         console.log('mapPage');
         //map.display('map');
         // set up buttons when records a visible on map
@@ -116,6 +164,10 @@ return{
         //this.map.updateSize();
 
         // TODO -remove
+        //map.display('map');
+    },
+
+    mapPageShow: function(){
         map.display('map');
     },
 
@@ -123,6 +175,9 @@ return{
      * TODO
      */
     pageChange: function() {
+        $("[data-role=header]").fixedtoolbar({tapToggle: false});
+        $("[data-role=footer]").fixedtoolbar({tapToggle: false});
+
         console.log("pageChange");
         this.renderHeaderFooter();
         this.toggleActive();
@@ -150,7 +205,9 @@ return{
      * with method
      */
     renderHeaderFooter: function(){
+        console.log("renderHeaderFooter");
         var page = $.mobile.activePage[0].id.split("-")[0];
+        console.log(page);
         require(['renderer'], function(rndr) {
             console.log("renderHeaderFooter");
             rndr.init(page, 'header');
@@ -158,4 +215,6 @@ return{
         });
     }
 }
+
+return _this;
 });
