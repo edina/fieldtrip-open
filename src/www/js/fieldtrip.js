@@ -42,17 +42,16 @@ define(['map'], function(map){
 
         homePage: function(){
             console.log('homePage');
-            this.render_header_footer('home');
         },
 
         mapPage: function(){
             console.log('mapPage');
             map.display('map');
-            this.render_header_footer('map');
         },
 
         pageChange: function() {
             console.log('changePage');
+            this.render_header_footer();
             this.toggleActive();
             this.resizePage();
         },
@@ -80,7 +79,8 @@ define(['map'], function(map){
             $('[data-role=content]').css('height', h + 'px');
         },
 
-        render_header_footer: function(page){
+        render_header_footer: function(){
+            var page = $.mobile.activePage[0].id.split("-")[0];
             require(['renderer'], function(rndr) {
                 rndr.init(page, 'header');
                 rndr.init(page, 'footer');

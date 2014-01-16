@@ -1,12 +1,12 @@
 <div data-role="navbar">
   <ul>
-    <% _.each(buttons, function(item){
+    <% for(items in data){
     %>
       <li>
-      <a href="<%= item.url %>"
-         class="<%=item.class %>"
-         data-icon="<%= item.icon %>"><%= item.name %></a>
+      <a href="<%= data[items].url %>"
+         class="<%=data[items].class %>"
+         data-icon="<%= data[items].icon %>"><%= data[items].name %></a>
       </li>
-    <% }) %>
+    <% } %>
   </ul>
 </div>

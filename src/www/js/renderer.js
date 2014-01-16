@@ -34,9 +34,10 @@ DAMAGE.
 define(function(){
     return {
         init: function(page, where){
-            require(['templates/'+where, 'text!templates/'+where+'.html'], function(data, tmpl) {
+            require(['templates/'+where, 'plugins/'+where, 'text!templates/'+where+'.html'], function(data, ndata, tmpl) {
                 var template = _.template(tmpl);
-                $("#"+page+"-"+where).html(template(data)).trigger('create');
+                $.extend(data, ndata);
+                $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
             });
         }
     }
