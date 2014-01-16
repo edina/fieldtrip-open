@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, EDINA,
+Copyright (c) 2014, EDINA.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -50,103 +50,112 @@ define(['map'], function(map){
         $('[data-role=content]').css('height', h + 'px');
     };
 
-    return{
-        /**
-         * TODO
-         */
-        capturePage: function(){
-            console.log('capturePage');
-        },
+    // map zooming
+    $(document).on('click',
+                   '.map-zoom-button-in',
+                   $.proxy(map.zoomIn, map));
+    $(document).on('click',
+                   '.map-zoom-button-out',
+                   $.proxy(map.zoomOut, map));
 
-        /**
-         * TODO
-         */
-        homePage: function(){
-            console.log('homePage');
-        },
+return{
+    /**
+     * TODO
+     */
+    capturePage: function(){
+        console.log('capturePage');
+    },
 
-        /**
-         * TODO
-         * text below
-         */
-        mapPage: function(){
-            console.log('mapPage');
-            //map.display('map');
-            // set up buttons when records a visible on map
-            var recordsVisible = function(){
-                $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
-                $('#map-records-buttons-list a').show();
-            }
+    /**
+     * TODO
+     */
+    homePage: function(){
+        console.log('homePage');
+    },
 
-            // set up buttons when records are hidden
-            var recordsHidden = function(){
-                $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
-                $('#map-records-buttons-list a').hide();
-            }
+    /**
+     * TODO
+     * text below
+     */
+    mapPage: function(){
+        console.log('mapPage');
+        //map.display('map');
+        // set up buttons when records a visible on map
+        var recordsVisible = function(){
+            $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
+            $('#map-records-buttons-list a').show();
+        }
 
-            $('#map-records-buttons-ok').click($.proxy(function(event){
-                var label = $('#map-records-buttons-ok .ui-btn-text').text();
-                if(label === 'Show Records'){
-                    map.showRecordsLayer();
-                    recordsVisible();
-                }
-                else{
-                    this.map.hideAnnotationsLayer();
-                    recordsHidden();
-                }
-            }, this));
+        // set up buttons when records are hidden
+        var recordsHidden = function(){
+            $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
+            $('#map-records-buttons-list a').hide();
+        }
 
-            if(map.getRecordsLayer().visibility){
+        $('#map-records-buttons-ok').click($.proxy(function(event){
+            var label = $('#map-records-buttons-ok .ui-btn-text').text();
+            if(label === 'Show Records'){
+                map.showRecordsLayer();
                 recordsVisible();
             }
             else{
+                map.hideRecordsLayer();
                 recordsHidden();
             }
+        }, this));
 
-            map.showAnnotateLayer();
-            //this.commonMapPageInit('map');
-            //this.map.updateSize();
-
-            // TODO -remove
-            map.display('map');
-        },
-
-        /**
-         * TODO
-         */
-        pageChange: function() {
-            this.renderHeaderFooter();
-            this.toggleActive();
-            resizePage();
-        },
-
-        /**
-         * with method
-         * @method blah
-         */
-        toggleActive: function(){
-            var id = $.mobile.activePage[0].id;
-            if(id === 'map-page'){
-                $('.map-button').addClass('ui-btn-active');
-            }
-            else if(id === 'capture-page'){
-                $('.capture-button').addClass('ui-btn-active');
-            }
-            else{
-                $('.home-button').addClass('ui-btn-active');
-            }
-        },
-
-        /**
-         * with method
-         * @param page jings
-         */
-        renderHeaderFooter: function(){
-            var page = $.mobile.activePage[0].id.split("-")[0];
-            require(['renderer'], function(rndr) {
-                rndr.init(page, 'header');
-                rndr.init(page, 'footer');
-            });
+        if(map.getRecordsLayer().visibility){
+            recordsVisible();
         }
+        else{
+            recordsHidden();
+        }
+
+        map.showAnnotateLayer();
+        //this.commonMapPageInit('map');
+        //this.map.updateSize();
+
+        // TODO -remove
+        map.display('map');
+    },
+
+    /**
+     * TODO
+     */
+    pageChange: function() {
+        console.log("pageChange");
+        this.renderHeaderFooter();
+        this.toggleActive();
+        resizePage();
+    },
+
+    /**
+     * with method
+     * @method blah
+     */
+    toggleActive: function(){
+        var id = $.mobile.activePage[0].id;
+        if(id === 'map-page'){
+            $('.map-button').addClass('ui-btn-active');
+        }
+        else if(id === 'capture-page'){
+            $('.capture-button').addClass('ui-btn-active');
+        }
+        else{
+            $('.home-button').addClass('ui-btn-active');
+        }
+    },
+
+    /**
+     * with method
+     */
+    renderHeaderFooter: function(){
+        var page = $.mobile.activePage[0].id.split("-")[0];
+        require(['renderer'], function(rndr) {
+            console.log("renderHeaderFooter");
+            rndr.init(page, 'header');
+            rndr.init(page, 'footer');
+        });
     }
+}
 });

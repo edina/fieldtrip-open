@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, EDINA,
+Copyright (c) 2014, EDINA.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -257,12 +257,29 @@ var _this = {
         this.map.render(div);
     },
 
+    /**
+     * Remove all annotations / records from map.
+     */
+    hideRecordsLayer: function(){
+        this.getRecordsLayer().setVisibility(false);
+
+        $.each(this.map.layers, function(i, layer){
+            // GPS tracks are on a seperate layer beginning with 'gps-track-'
+            if(layer.name.substr(0, 10) === 'gps-track-'){
+                layer.setVisibility(false);
+            }
+        });
+    },
+
+    /**
+     * TODO
+     */
     showAnnotateLayer: function(annotation){
         this.getAnnotateLayer().setVisibility(false);
     },
 
     /**
-     * Display records pn map.
+     * Display records on map.
      */
     showRecordsLayer: function(annotation){
         var layer = this.getRecordsLayer();
@@ -280,6 +297,21 @@ var _this = {
         layer.setVisibility(true);
         layer.refresh();
     },
+
+    /**
+     * Zoom map in one level.
+     */
+    zoomIn: function(){
+        this.map.zoomIn();
+    },
+
+    /**
+     * Zoom map out one level.
+     */
+    zoomOut: function(){
+        this.map.zoomOut();
+    },
+
 };
 
 return _this;

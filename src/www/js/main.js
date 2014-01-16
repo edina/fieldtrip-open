@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, EDINA,
+Copyright (c) 2014, EDINA.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -52,13 +52,13 @@ function onDeviceReady(){
 
     require(['ui'], function(ui) {
         $(document).on('pageinit', 'div[data-role="page"]', function(){
-            console.log('pageinit');
+            //console.log('pageinit');
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
             ui.pageChange();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(){
-            console.log('pageshow');
+            //console.log('pageshow');
         });
 
         $(document).on('pageinit', '#home-page', function(){
@@ -73,7 +73,7 @@ function onDeviceReady(){
             ui.mapPage();
         });
 
-        $(document).on('pageshow', '#capture-page', function(){
+        $(document).on('pageinit', '#capture-page', function(){
             ui.capturePage();
         });
 
