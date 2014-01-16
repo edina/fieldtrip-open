@@ -64,7 +64,6 @@ define(['map'], function(map){
          */
         homePage: function(){
             console.log('homePage');
-            this.render_header_footer('home');
         },
 
         /**
@@ -74,7 +73,6 @@ define(['map'], function(map){
         mapPage: function(){
             console.log('mapPage');
             map.display('map');
-            this.render_header_footer('map');
         },
 
         /**
@@ -82,6 +80,7 @@ define(['map'], function(map){
          */
         pageChange: function() {
             console.log('changePage');
+            this.renderHeaderFooter();
             this.toggleActive();
             resizePage();
         },
@@ -109,7 +108,9 @@ define(['map'], function(map){
          * with method
          * @param page jings
          */
-        render_header_footer: function(page){
+
+        renderHeaderFooter: function(){
+            var page = $.mobile.activePage[0].id.split("-")[0];
             require(['renderer'], function(rndr) {
                 rndr.init(page, 'header');
                 rndr.init(page, 'footer');
