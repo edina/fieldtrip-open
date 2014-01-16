@@ -31,34 +31,67 @@ DAMAGE.
 
 "use strict";
 
+/**
+ * text before
+ * @title This is a title
+ * @module ui
+ * @overview This is the overview with some `markdown` included, how nice!
+ * text after
+ */
 define(['map'], function(map){
 
     map.init();
 
+    var resizePage = function(){
+        // work out page height
+        var offset = 4;
+
+        var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
+        $('[data-role=content]').css('height', h + 'px');
+        console.log("resizepage");
+    };
+
     return{
+        /**
+         * TODO
+         */
         capturePage: function(){
             console.log('capturePage');
         },
 
+        /**
+         * TODO
+         */
         homePage: function(){
             console.log('homePage');
             this.render_header_footer('home');
         },
 
+        /**
+         * @method
+         * text below
+         */
         mapPage: function(){
             console.log('mapPage');
             map.display('map');
             this.render_header_footer('map');
         },
 
+        /**
+         * no at
+         */
         pageChange: function() {
             console.log('changePage');
             this.toggleActive();
-            this.resizePage();
+            resizePage();
         },
 
+        /**
+         * with method
+         * @method blah
+         */
         toggleActive: function(){
-            var id = $.mobile.activePage[0].id
+            var id = $.mobile.activePage[0].id;
             console.log(id);
             if(id === 'map-page'){
                 $('.map-button').addClass('ui-btn-active');
@@ -72,14 +105,10 @@ define(['map'], function(map){
             console.log('end');
         },
 
-        resizePage: function(){
-            // work out page height
-            var offset = 4;
-
-            var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
-            $('[data-role=content]').css('height', h + 'px');
-        },
-
+        /**
+         * with method
+         * @param page jings
+         */
         render_header_footer: function(page){
             require(['renderer'], function(rndr) {
                 rndr.init(page, 'header');

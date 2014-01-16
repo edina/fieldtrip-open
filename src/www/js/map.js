@@ -32,17 +32,33 @@ DAMAGE.
 "use strict";
 
 define(['ext/openlayers'],function(ol){
-    //var map;
+return {
 
-    return {
-        init: function(){
-            this.map = new OpenLayers.Map("map");
-            this.map.addLayer(new OpenLayers.Layer.OSM());
-            this.map.zoomTo(2);
-        },
 
-        display: function(div){
-            this.map.render(div);
-        }
+    init: function(){
+        this.map = new OpenLayers.Map("map");
+        this.map.addLayer(new OpenLayers.Layer.OSM());
+
+        //this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic: true}));
+
+        this.map.zoomTo(2);
+
+        //this.map.getNumZoomLevels = $.proxy(this.getNumZoomLevels, this);
+
+        // create default user position
+        // this.userLonLat = new OpenLayers.LonLat(
+        //     Map.DEFAULT_USER_LON,
+        //     Map.DEFAULT_USER_LAT);
+        // this.userLonLat.gpsPosition = {
+        //     longitude: Map.DEFAULT_USER_LON,
+        //     latitude: Map.DEFAULT_USER_LAT,
+        //     heading: 130,
+        //     altitude: 150
+        // };
+    },
+
+    display: function(div){
+        this.map.render(div);
     }
+}
 });

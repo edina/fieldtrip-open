@@ -203,7 +203,7 @@ def install_project(platform='android',
                     if not os.path.isdir(src):
                         with lcd(proot):
                             local('git clone {0} {1}'.format(details, plugin))
-    
+
                 if os.path.isdir(src):
                     dest = os.sep.join((asset_dir, 'plugins', plugin))
                     local('ln -s {0} {1}'.format(src, dest))
@@ -370,6 +370,12 @@ def release_android(beta='True', overwrite='False', email=False):
     if email:
         _email(new_file_name, version, beta)
 
+def generate_docs():
+    """
+    Auto generate javascript markdown documentation
+    """
+
+    local('jsdox --output docs/ src/www/js/')
 
 def update_app():
     """Update app with latest configuration"""

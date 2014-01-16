@@ -50,19 +50,19 @@ function onDeviceReady(){
         },
     });
 
-    require(['fieldtrip'], function(ft) {
+    require(['ui'], function(ui) {
         $(document).on('pageinit', 'div[data-role="page"]', function(){
             console.log('pageinit');
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
-            ft.pageChange();
+            ui.pageChange();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(){
             console.log('pageshow');
         });
 
         $(document).on('pageinit', '#home-page', function(){
-            ft.homePage();
+            ui.homePage();
         });
 
         $(document).on('pageinit', '#map-page', function(){
@@ -70,11 +70,11 @@ function onDeviceReady(){
         });
 
         $(document).on('pageshow', '#map-page', function(){
-            ft.mapPage();
+            ui.mapPage();
         });
 
         $(document).on('pageshow', '#capture-page', function(){
-            ft.campturePage();
+            ui.capturePage();
         });
 
         $.get('plugins.json', function(f){
@@ -85,7 +85,7 @@ function onDeviceReady(){
             });
         });
 
-        ft.homePage();
-        ft.pageChange();
+        ui.homePage();
+        ui.pageChange();
     });
 };
