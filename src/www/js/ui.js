@@ -32,8 +32,8 @@ DAMAGE.
 "use strict";
 
 /**
- * text before
- * @title This is a title
+ * TODO
+ * @title
  * @module ui
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
@@ -42,13 +42,12 @@ define(['map'], function(map){
 
     map.init();
 
+    // work out page height
     var resizePage = function(){
-        // work out page height
         var offset = 4;
 
         var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
         $('[data-role=content]').css('height', h + 'px');
-        console.log("resizepage");
     };
 
     return{
@@ -67,19 +66,55 @@ define(['map'], function(map){
         },
 
         /**
-         * @method
+         * TODO
          * text below
          */
         mapPage: function(){
             console.log('mapPage');
+            //map.display('map');
+            // set up buttons when records a visible on map
+            var recordsVisible = function(){
+                $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
+                $('#map-records-buttons-list a').show();
+            }
+
+            // set up buttons when records are hidden
+            var recordsHidden = function(){
+                $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
+                $('#map-records-buttons-list a').hide();
+            }
+
+            $('#map-records-buttons-ok').click($.proxy(function(event){
+                var label = $('#map-records-buttons-ok .ui-btn-text').text();
+                if(label === 'Show Records'){
+                    map.showRecordsLayer();
+                    recordsVisible();
+                }
+                else{
+                    this.map.hideAnnotationsLayer();
+                    recordsHidden();
+                }
+            }, this));
+
+            if(map.getRecordsLayer().visibility){
+                recordsVisible();
+            }
+            else{
+                recordsHidden();
+            }
+
+            map.showAnnotateLayer();
+            //this.commonMapPageInit('map');
+            //this.map.updateSize();
+
+            // TODO -remove
             map.display('map');
         },
 
         /**
-         * no at
+         * TODO
          */
         pageChange: function() {
-            console.log('changePage');
             this.renderHeaderFooter();
             this.toggleActive();
             resizePage();
@@ -91,7 +126,6 @@ define(['map'], function(map){
          */
         toggleActive: function(){
             var id = $.mobile.activePage[0].id;
-            console.log(id);
             if(id === 'map-page'){
                 $('.map-button').addClass('ui-btn-active');
             }
@@ -101,14 +135,12 @@ define(['map'], function(map){
             else{
                 $('.home-button').addClass('ui-btn-active');
             }
-            console.log('end');
         },
 
         /**
          * with method
          * @param page jings
          */
-
         renderHeaderFooter: function(){
             var page = $.mobile.activePage[0].id.split("-")[0];
             require(['renderer'], function(rndr) {
