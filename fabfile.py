@@ -80,18 +80,6 @@ def install_project(platform='android',
         for name in names:
             local('cordova plugin add https://git-wip-us.apache.org/repos/asf/{0}'.format(name))
 
-    def _read_data(fil):
-        with open(fil, 'r') as f:
-            filedata = f.read()
-            f.close()
-            return filedata
-        return None
-
-    def _write_data(fil, filedata):
-        f = open(fil, 'w')
-        f.write(filedata)
-        f.close()
-
     def _settings_options(filedata, _urls, _names, place):
         urls = _config(_urls).split(",")
         names = _config(_names).split(",")
@@ -227,6 +215,7 @@ def install_project(platform='android',
 
     # add project specific files
     update_app()
+    _create_structure()
 
     # check if /home/<user>/<dist_dir> exists
     dist_path = os.sep.join((os.environ['HOME'], dist_dir))
@@ -385,6 +374,11 @@ def update_app():
                                   runtime))
     local('cp -rf {0}/* {1}'.format(os.sep.join((proj_home, 'theme')),
                                     os.sep.join((runtime, 'www'))))
+    custom_folder = os.sep.join((runtime, 'www', 'templates', 'custom'))
+    if not os.path.exists(custom_folder):
+        os.makedirs(custom_folder)
+    local('cp -rf {0}/* {1}'.format(os.sep.join((proj_home, 'templates')),
+                                    custom_folder))
 
 
 
@@ -531,3 +525,34 @@ def _make_dirs(dirs):
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
+
+def _create_structure():
+    """ create structure of templates and data of core app and plugins"""
+    structure = {}
+    root, proj_home, src_dir = _get_source()
+    print root
+
+    structure["templates"] = _get_structure(os.sep.join((src_dir, 'www', 'templates')))
+    structure["plugins"] =  _get_structure(os.sep.join((root, 'plugins')))
+    _write_data(os.sep.join((src_dir, 'www', 'filesmap.json')), json.dumps(structure))
+
+def _get_structure(path):
+    
+    struct = {}
+    dirs = os.listdir(path)
+    for d in dirs:
+        if os.path.isdir(os.sep.join((path, d))):
+            struct[d] = os.listdir(os.sep.join((path, d)))
+    return struct
+
+def _read_data(fil):
+    with open(fil, 'r') as f:
+        filedata = f.read()
+        f.close()
+        return filedata
+    return None
+
+def _write_data(fil, filedata):
+    f = open(fil, 'w')
+    f.write(filedata)
+    f.close()

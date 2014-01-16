@@ -34,7 +34,7 @@ DAMAGE.
 define(function(){
     return {
         init: function(page, where){
-            require(['templates/'+where, 'plugins/'+where, 'text!templates/'+where+'.html'], function(data, ndata, tmpl) {
+            require(['templates/default/'+where, 'templates/custom/'+where, 'text!templates/default/'+where+'.html'], function(data, ndata, tmpl) {
                 var template = _.template(tmpl);
                 $.extend(data, ndata);
                 $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
