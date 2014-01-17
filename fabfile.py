@@ -531,10 +531,10 @@ def _create_structure():
     """ create structure of templates and data of core app and plugins"""
     structure = {}
     root, proj_home, src_dir = _get_source()
-    print root
 
-    structure["templates"] = _get_structure(os.sep.join((src_dir, 'www', 'templates')))
-    structure["plugins"] =  _get_structure(os.sep.join((root, 'plugins')))
+    structure["default-templates"] = _get_structure(os.sep.join((src_dir, 'www', 'templates')))
+    structure["custom-templates"] = _get_structure(os.sep.join((src_dir, 'www', 'theme', 'templates')))
+    #structure["plugins"] =  _get_structure(os.sep.join((root, 'plugins')))
     data = []
     data.append("define(function(){")
     data.append("    return {0}".format(json.dumps(structure)))
@@ -542,18 +542,15 @@ def _create_structure():
     _write_data(os.sep.join((src_dir, 'www', 'js', 'filesmap.js')), "\n".join(data))
 
 def _get_structure(path):
-
-    struct = {}
-    dirs = os.listdir(path)
+    new_list = []
     ignored = [".gitignore", ".git", "README.md"]
-    for d in dirs:
-        if os.path.isdir(os.sep.join((path, d))):
-            struct[d] = []
-            listed = os.listdir(os.sep.join((path, d)))
-            for f in listed:
-                if not f in ignored:
-                    struct[d].append(f)
-    return struct
+    for path, dirs, files in os.walk(path):
+        print path
+        print dirs
+        for f in files:
+             if not f in ignored:
+                new_list.append(f)
+    return new_list
 
 def _read_data(fil):
     with open(fil, 'r') as f:

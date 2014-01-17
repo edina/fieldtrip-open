@@ -35,8 +35,8 @@ define(function(){
 
     //check if js file exists in custom folder
     var checkForFile = function(where, files){
-        for(var f in files["templates"]["custom"]){
-            if(files["templates"]["custom"][f] === where+".js"){
+        for(var i=0; i<files["custom-templates"].length;i++){
+            if(files["custom-templates"][i] === where+"Data.js"){
                 return true;
             }
         }
@@ -45,7 +45,7 @@ define(function(){
 
     //create the array for the list in require call
     var getRequiredFiles = function(where, files){
-        var requiredFiles = ['underscore', 'templates/default/'+where+'Data', 'text!templates/default/'+where+'.html'];
+        var requiredFiles = ['underscore', 'templates/'+where+'Data', 'text!templates/'+where+'.html'];
         if(checkForFile(where, files)){
             requiredFiles.push('theme/templates/'+where+'Data')
         }
