@@ -30,6 +30,7 @@ DAMAGE.
 */
 
 "use strict";
+var filesdata = getFileStructure();
 
 $(function() {
     if (typeof (device) === 'undefined'){
@@ -89,3 +90,18 @@ function onDeviceReady(){
         ui.pageChange();
     });
 };
+
+//get file structure synchronously
+function getFileStructure(){
+    var filesdata;
+    $.ajax({
+        dataType: 'json',
+        url: 'filesmap.json',
+        async: false
+    }).done(function(data){
+        filesdata = data;
+    }).fail(function(){
+        console.log("filesmap failed");
+    });
+    return filesdata;
+}

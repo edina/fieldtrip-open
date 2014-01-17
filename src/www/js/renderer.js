@@ -32,9 +32,31 @@ DAMAGE.
 "use strict";
 
 define(function(){
+    console.log(filesdata);
+
+    //check if js file exists in custom folder
+    var checkForFile = function(where){
+        for(var f in filesdata["templates"]["custom"]){
+            if(filesdata["templates"]["custom"][f] === where+".js"){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //create the array for the list in require call
+    var getRequiredFiles = function(where){
+        var requiredFiles = ['templates/default/'+where, 'text!templates/default/'+where+'.html'];
+        if(checkForFile(where)){
+            requiredFiles.push('templates/custom/'+where)
+        }
+        return requiredFiles;
+    }
+
     return {
         init: function(page, where){
-            require(['templates/default/'+where, 'templates/custom/'+where, 'text!templates/default/'+where+'.html'], function(data, ndata, tmpl) {
+            var requiredFiles = getRequiredFiles(where);
+            require(requiredFiles, function(data, tmpl, ndata) {
                 var template = _.template(tmpl);
                 $.extend(data, ndata);
                 $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
