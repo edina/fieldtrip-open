@@ -32,12 +32,11 @@ DAMAGE.
 "use strict";
 
 define(function(){
-    console.log(filesdata);
 
     //check if js file exists in custom folder
-    var checkForFile = function(where){
-        for(var f in filesdata["templates"]["custom"]){
-            if(filesdata["templates"]["custom"][f] === where+".js"){
+    var checkForFile = function(where, files){
+        for(var f in files["templates"]["custom"]){
+            if(files["templates"]["custom"][f] === where+".js"){
                 return true;
             }
         }
@@ -45,9 +44,9 @@ define(function(){
     }
 
     //create the array for the list in require call
-    var getRequiredFiles = function(where){
+    var getRequiredFiles = function(where, files){
         var requiredFiles = ['templates/default/'+where, 'text!templates/default/'+where+'.html'];
-        if(checkForFile(where)){
+        if(checkForFile(where, files)){
             requiredFiles.push('templates/custom/'+where)
         }
         return requiredFiles;
@@ -55,11 +54,13 @@ define(function(){
 
     return {
         init: function(page, where){
-            var requiredFiles = getRequiredFiles(where);
-            require(requiredFiles, function(data, tmpl, ndata) {
-                var template = _.template(tmpl);
-                $.extend(data, ndata);
-                $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
+            require(['filesmap'], function(files){
+                var requiredFiles = getRequiredFiles(where, files);
+                require(requiredFiles, function(data, tmpl, ndata) {
+                    var template = _.template(tmpl);
+                    $.extend(data, ndata);
+                    $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
+                });
             });
         }
     }
