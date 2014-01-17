@@ -534,15 +534,24 @@ def _create_structure():
 
     structure["templates"] = _get_structure(os.sep.join((src_dir, 'www', 'templates')))
     structure["plugins"] =  _get_structure(os.sep.join((root, 'plugins')))
-    _write_data(os.sep.join((src_dir, 'www', 'filesmap.json')), json.dumps(structure))
+    data = []
+    data.append("define(function(){")
+    data.append("    return {0}".format(json.dumps(structure)))
+    data.append("});")
+    _write_data(os.sep.join((src_dir, 'www', 'js', 'filesmap.js')), "\n".join(data))
 
 def _get_structure(path):
     
     struct = {}
     dirs = os.listdir(path)
+    ignored = [".gitignore", ".git", "README.md"]
     for d in dirs:
         if os.path.isdir(os.sep.join((path, d))):
-            struct[d] = os.listdir(os.sep.join((path, d)))
+            struct[d] = []
+            listed = os.listdir(os.sep.join((path, d)))
+            for f in listed:
+                if not f in ignored:
+                    struct[d].append(f)
     return struct
 
 def _read_data(fil):
