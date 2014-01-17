@@ -66,7 +66,6 @@ define(['map'], function(map){
      * remains visible when the keyboard is visible. This function hides the footer.
      */
     var resizeWindow = function(){
-        console.log("********************");
         // recording landscape height from potrait and vis-versa is not exact,
         // so add a little tolerance
         var tolerance = 30;
@@ -103,6 +102,9 @@ define(['map'], function(map){
 
     // listen for windows resizes
     $(window).bind('resize', $.proxy(resizeWindow, _this));
+
+    // switch off page transitions
+    $.mobile.defaultPageTransition = 'none';
 
     map.init();
 
