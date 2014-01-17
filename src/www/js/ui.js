@@ -38,7 +38,7 @@ DAMAGE.
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
  */
-define(['map'], function(map){
+define(['map', 'utils'], function(map, utils){
     var portraitScreenHeight;
     var landscapeScreenHeight;
 
@@ -256,5 +256,23 @@ var _this = {
     }
 }
 
+var _ios = {
+
+}
+
+var _android = {
+
+}
+
+if(utils.isMobileDevice()){
+    if(utils.isIOSApp()){
+        $.extend(_this, _ios);
+    }
+    else{
+        $.extend(_this, _android);
+    }
+}
+
 return _this;
+
 });

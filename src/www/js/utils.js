@@ -50,7 +50,7 @@ String.prototype.hashCode = function(){
 };
 
 
-define('[settings]', function(settings){
+define(['settings'], function(settings){
 
     /******** private ***********************/
 
@@ -285,7 +285,7 @@ define('[settings]', function(settings){
          * @return Is the app running on a mobile device?
          */
         isMobileDevice: function(){
-            return isMobileDevice;
+            return isMobileApp;
         },
 
         /**
@@ -322,10 +322,12 @@ define('[settings]', function(settings){
         /**
          * @return true if client is ios
          */
-        isIOSApp : function (){
-            if(navigator.userAgent.toLowerCase().match(/iphone/) || navigator.userAgent.toLowerCase().match(/ipad/)) {
+        isIOSApp: function(){
+            if(navigator.userAgent.toLowerCase().match(/iphone/) ||
+               navigator.userAgent.toLowerCase().match(/ipad/)) {
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         },
@@ -478,45 +480,46 @@ define('[settings]', function(settings){
          * App version, updated by fab, do not edit.
          */
         'version': '1.4.0.0'
-    };
+    }
 });
 
-function initHomepageDisplay(){
-    //private
-    var FIELDTRIPGB_NEWS_FEED_URL = Utils.getServerUrl() + "/splash.html";
+//console.log("jings");
+// function initHomepageDisplay(){
+//     //private
+//     var FIELDTRIPGB_NEWS_FEED_URL = Utils.getServerUrl() + "/splash.html";
 
 
-    //public
-    return {
-        hideSyncAndShowLogin: function(){
-            $('#home-content-sync').hide();
-            $('#home-content-upload').hide();
+//     //public
+//     return {
+//         hideSyncAndShowLogin: function(){
+//             $('#home-content-sync').hide();
+//             $('#home-content-upload').hide();
 
 
-            //Bug 5997 have to use full url due to jqm issue
-            $('#home-content-login img').attr('src',  Utils.getDocumentBase() + 'css/images/login-large.png');
-            $('#home-content-login p').text('Login');
-        },
+//             //Bug 5997 have to use full url due to jqm issue
+//             $('#home-content-login img').attr('src',  Utils.getDocumentBase() + 'css/images/login-large.png');
+//             $('#home-content-login p').text('Login');
+//         },
 
-        showLogoutAndSync: function(){
+//         showLogoutAndSync: function(){
 
-            //Bug 5997 have to use full url due to jqm issue
-            $('#home-content-login img').attr('src',  Utils.getDocumentBase() + 'css/images/logout.png');
-            $('#home-content-login p').text('Logout');
+//             //Bug 5997 have to use full url due to jqm issue
+//             $('#home-content-login img').attr('src',  Utils.getDocumentBase() + 'css/images/logout.png');
+//             $('#home-content-login p').text('Logout');
 
-            //show sync button
-            $('#home-content-sync').show();
-            $('#home-content-upload').show();
-        },
-        getNewsFeed: function(selector){
+//             //show sync button
+//             $('#home-content-sync').show();
+//             $('#home-content-upload').show();
+//         },
+//         getNewsFeed: function(selector){
 
-            $.ajax({url:FIELDTRIPGB_NEWS_FEED_URL, success:function(result) {
-                if (result) {
-                   $(selector).html(result);
-                };
-            }, cache: false});
+//             $.ajax({url:FIELDTRIPGB_NEWS_FEED_URL, success:function(result) {
+//                 if (result) {
+//                    $(selector).html(result);
+//                 };
+//             }, cache: false});
 
-        }
+//         }
 
-    };
-};
+//     };
+// };

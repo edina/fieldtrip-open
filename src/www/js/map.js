@@ -32,7 +32,6 @@ DAMAGE.
 "use strict";
 
 define(['ext/openlayers', 'records', 'utils'],function(ol, records, utils){
-
     var DEFAULT_USER_LON = -2.421976;
     var DEFAULT_USER_LAT = 53.825564;
 
