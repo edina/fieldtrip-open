@@ -113,7 +113,7 @@ var _this = {
      * TODO
      */
     capturePage: function(){
-        console.log('capturePage');
+        //console.log('capturePage');
     },
 
     /**
@@ -121,6 +121,44 @@ var _this = {
      */
     homePage: function(){
         console.log('homePage');
+
+        // TODO
+        // if(event){
+        //     event.stopImmediatePropagation();
+        // }
+
+        //deviceDependent.setUpExitButton();
+
+        //Utils.touchScroll('#home-content');
+        // Utils.absoluteHeightScroller('#splash-popup-dialog-content');
+        // Utils.touchScroll('#splash-popup-dialog-content');
+
+        // $(document).on('click', '#splash-popup-dialog a', function() {
+        //     $('#splash-popup-dialog').popup('close');
+        // });
+
+        // the home page stays in memory so ui-btn-active must be added dynamically
+        //$('.menu a:first').addClass('ui-btn-active');
+
+        // check stored user id
+        // this.annotations.cloudCheckUser($.proxy(function(state){
+        //     if(state === 1){
+        //         homepageDisplay.showLogoutAndSync();
+        //     }
+        //     else{
+        //         this.logoutCloud();
+        //     }
+        // }, this));
+
+        // enable / disable GPS track button
+        //this.gpsButtonInit();
+
+        //this.capturePageListeners();
+
+        // $('#home-content-help').unbind();
+        // $('#home-content-help').on('taphold', function(){
+        //     $('#home-page-dev').show();
+        // });
     },
 
     /**
@@ -171,18 +209,21 @@ var _this = {
 
     mapPageShow: function(){
         map.display('map');
+        resizePage();
     },
 
     /**
-     * TODO
+     *  Triggered before the actual transition animation is kicked off.
      */
-    pageChange: function() {
-        $("[data-role=header]").fixedtoolbar({tapToggle: false});
-        $("[data-role=footer]").fixedtoolbar({tapToggle: false});
-
-        console.log("pageChange");
+    pageBeforeShow: function() {
         this.renderHeaderFooter();
         this.toggleActive();
+    },
+
+    /**
+     * Triggered on the page being initialized, after initialization occurs.
+     */
+    pageInit: function() {
         resizePage();
     },
 
@@ -207,11 +248,8 @@ var _this = {
      * with method
      */
     renderHeaderFooter: function(){
-        console.log("renderHeaderFooter");
         var page = $.mobile.activePage[0].id.split("-")[0];
-        console.log(page);
         require(['renderer'], function(rndr) {
-            console.log("renderHeaderFooter");
             rndr.init(page, 'header');
             rndr.init(page, 'footer');
         });

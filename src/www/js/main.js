@@ -53,10 +53,11 @@ function onDeviceReady(){
 
     require(['ui'], function(ui) {
         $(document).on('pageinit', 'div[data-role="page"]', function(){
-            //ui.pageChange();
+            ui.pageInit();
+            //console.log('pageshow');
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
-            ui.pageChange();
+            ui.pageBeforeShow();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(){
             //console.log('pageshow');
@@ -70,7 +71,6 @@ function onDeviceReady(){
             ui.mapPageInit();
         });
         $(document).on('pageshow', '#map-page', function(){
-            console.log('pageshow map-page');
             ui.mapPageShow();
         });
 
@@ -81,13 +81,14 @@ function onDeviceReady(){
         $.getJSON('theme/plugins.json', function(f){
             $.each(f.plugins, function(name){
                 require(["plugins/" + name + "/js/" + name], function(){
-                    console.log('=>');
+                    //console.log('=>');
                 });
             });
         });
 
         // initialise home page first time
         ui.homePage();
-        ui.pageChange();
+        ui.pageBeforeShow();
+        ui.pageInit();
     });
 };
