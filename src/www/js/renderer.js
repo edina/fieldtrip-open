@@ -45,9 +45,9 @@ define(function(){
 
     //create the array for the list in require call
     var getRequiredFiles = function(where, files){
-        var requiredFiles = ['underscore', 'templates/default/'+where, 'text!templates/default/'+where+'.html'];
+        var requiredFiles = ['underscore', 'templates/default/'+where+'Data', 'text!templates/default/'+where+'.html'];
         if(checkForFile(where, files)){
-            requiredFiles.push('templates/custom/'+where)
+            requiredFiles.push('theme/templates/'+where+'Data')
         }
         return requiredFiles;
     }
