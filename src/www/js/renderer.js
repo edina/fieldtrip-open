@@ -57,6 +57,10 @@ define(function(){
             require(['filesmap'], function(files){
                 var requiredFiles = getRequiredFiles(where, files);
                 require(requiredFiles, function(underscore, data, tmpl, ndata) {
+                    //rewrite header
+                    if(where === "header"){
+                        document.title = "Fieldtrip "+data.h1;
+                    }
                     var template = underscore.template(tmpl);
                     $.extend(data, ndata);
                     $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
