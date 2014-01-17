@@ -43,6 +43,9 @@
         "requirejs": [
             "require.js"
         ],
+        "requirejs-text": [
+            "text.js"
+        ],
         "underscore": [
             "underscore.js"
         ],

@@ -48,7 +48,14 @@ function onDeviceReady(){
             "plugins": "../plugins",
             "templates": "../templates",
             "theme": "../theme",
+            "underscore": "ext/underscore",
+            "text": "ext/requirejs-text"
         },
+        shim: {
+            "underscore": {
+                exports: "_"
+            }
+        }
     });
 
     require(['ui'], function(ui) {

@@ -45,7 +45,7 @@ define(function(){
 
     //create the array for the list in require call
     var getRequiredFiles = function(where, files){
-        var requiredFiles = ['templates/default/'+where, 'text!templates/default/'+where+'.html'];
+        var requiredFiles = ['underscore', 'templates/default/'+where, 'text!templates/default/'+where+'.html'];
         if(checkForFile(where, files)){
             requiredFiles.push('templates/custom/'+where)
         }
@@ -56,8 +56,8 @@ define(function(){
         init: function(page, where){
             require(['filesmap'], function(files){
                 var requiredFiles = getRequiredFiles(where, files);
-                require(requiredFiles, function(data, tmpl, ndata) {
-                    var template = _.template(tmpl);
+                require(requiredFiles, function(underscore, data, tmpl, ndata) {
+                    var template = underscore.template(tmpl);
                     $.extend(data, ndata);
                     $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
                 });
