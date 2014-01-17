@@ -35,8 +35,8 @@ define(function(){
 
     //check if js file exists in custom folder
     var checkForFile = function(where, files){
-        for(var f in files["custom-templates"]){
-            if(files["custom-templates"][f] === where+".js"){
+        for(var i=0; i<files["custom-templates"].length;i++){
+            if(files["custom-templates"][i] === where+"Data.js"){
                 return true;
             }
         }
