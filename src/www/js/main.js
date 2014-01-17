@@ -48,6 +48,7 @@ function onDeviceReady(){
         paths: {
             "plugins": "../plugins",
             "templates": "../templates",
+            "theme": "../theme",
         },
     });
 
@@ -78,7 +79,7 @@ function onDeviceReady(){
             ui.capturePage();
         });
 
-        $.getJSON('plugins.json', function(f){
+        $.getJSON('theme/plugins.json', function(f){
             $.each(f.plugins, function(name){
                 require(["plugins/" + name + "/js/" + name], function(){
                     console.log('=>');

@@ -121,9 +121,6 @@ def install_project(platform='android',
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
-        with settings(warn_only=True):
-            local('cp {0} {1}'.format(os.sep.join((proj_home, 'plugins.json')),
-                                      os.sep.join((src_dir, 'www'))))
 
     if not os.path.exists('plugins'):
         local('mkdir plugins')
@@ -167,6 +164,13 @@ def install_project(platform='android',
         asset_dir =  os.sep.join((src_dir, 'www'))
         local('ln -s {0}'.format(asset_dir))
 
+        # link to project theme
+        theme = os.sep.join((asset_dir, 'theme'))
+        if not os.path.exists(theme):
+            with lcd(asset_dir):
+                theme_src = os.sep.join((proj_home, 'theme'))
+                local('ln -s {0} theme'.format(theme_src))
+
         # install js/css dependencies
         _make_dirs([os.sep.join((src_dir, js_dir)), os.sep.join((src_dir, css_dir))])
         with settings(warn_only=True):
@@ -175,8 +179,8 @@ def install_project(platform='android',
             local('rm {0}/plugins/*'.format(asset_dir))
 
         # set up fieldtrip plugins
-        if os.path.exists(os.sep.join((proj_home, 'plugins.json'))):
-            pobj = json.loads(open(os.sep.join((proj_home, 'plugins.json'))).read())
+        if os.path.exists(os.sep.join((theme, 'plugins.json'))):
+            pobj = json.loads(open(os.sep.join((theme, 'plugins.json'))).read())
             proot = os.sep.join((root, 'plugins'))
             for plugin, details in pobj['plugins'].iteritems():
                 if len(details) == 0:
@@ -372,13 +376,10 @@ def update_app():
     runtime = _get_runtime()[1]
     local('cp -rf {0} {1}'.format(os.sep.join((proj_home, 'platforms')),
                                   runtime))
-    local('cp -rf {0}/* {1}'.format(os.sep.join((proj_home, 'theme')),
+
+    # miscellaneous dependencies not required for development
+    local('cp -rf {0}/* {1}'.format(os.sep.join((proj_home, 'deps')),
                                     os.sep.join((runtime, 'www'))))
-    custom_folder = os.sep.join((runtime, 'www', 'templates', 'custom'))
-    if not os.path.exists(custom_folder):
-        os.makedirs(custom_folder)
-    local('cp -rf {0}/* {1}'.format(os.sep.join((proj_home, 'templates')),
-                                    custom_folder))
 
 
 
@@ -537,7 +538,7 @@ def _create_structure():
     _write_data(os.sep.join((src_dir, 'www', 'filesmap.json')), json.dumps(structure))
 
 def _get_structure(path):
-    
+
     struct = {}
     dirs = os.listdir(path)
     for d in dirs:
