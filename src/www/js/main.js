@@ -31,21 +31,6 @@ DAMAGE.
 
 "use strict";
 
-require.config({
-    paths: {
-        "plugins": "../plugins",
-        "templates": "../templates",
-        "theme": "../theme",
-        "text": "ext/requirejs-text",
-        "underscore": "ext/underscore",
-
-    },
-    shim: {
-        "underscore": {
-            exports: "_"
-        }
-    }
-});
 
 $(function() {
     if(window.location.href.substr(0, 4) === 'http'){
@@ -55,12 +40,27 @@ $(function() {
         // problems with requirejs and cordova,
         // for the timebeing add it as a script tag
         $('head').append('<script src="' + 'cordova.js"></script>');
-
         document.addEventListener("deviceready", onDeviceReady, false);
     }
 });
 
 function onDeviceReady(){
+    require.config({
+        paths: {
+            "plugins": "../plugins",
+            "templates": "../templates",
+            "theme": "../theme",
+            "text": "ext/requirejs-text",
+            "underscore": "ext/underscore",
+
+        },
+        shim: {
+            "underscore": {
+                exports: "_"
+            }
+        }
+    });
+
     require(['ui'], function(ui) {
         $(document).on('pageinit', 'div[data-role="page"]', function(event){
             console.log("pageinit");

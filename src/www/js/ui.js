@@ -102,14 +102,14 @@ define(['map', 'renderer', 'utils'], function(map, renderer, utils){
                    $.proxy(map.zoomOut, map));
 
     // listen for windows resizes
-    $(window).bind('resize', $.proxy(resizeWindow, _this));
+    $(window).bind('resize', $.proxy(resizeWindow, _ui));
 
     // switch off page transitions
     $.mobile.defaultPageTransition = 'none';
 
     map.init();
 
-var _this = {
+var _ui = {
     /**
      * TODO
      */
@@ -273,21 +273,23 @@ var _this = {
 }
 
 var _ios = {
+    init: function(){
+    }
+}
 
-    // exit button
-    // $(document).on(
-    //     'vmousedown',
-    //     '#home-exit',
-    //     $.proxy(exitApp, _ios)
-    // ),
-    resizePage: function(){
-        //console.log("resize");
+var _android = {
+    init: function(){
+        console.log('android.init');
+        // exit button
+        $(document).on(
+            'vmousedown',
+            '#home-exit',
+            _android.exitApp
+        );
     },
 
-    /**
-     * Exit App.
-     */
     exitApp: function(){
+        console.log('home-exit-popup');
         $('#home-exit-popup').popup('open');
 
         $('#home-exit-confirm').off('vmousedown');
@@ -301,31 +303,23 @@ var _ios = {
                 navigator.app.exitApp();
             }, this)
         );
-    },
-
-}
-
-var _android = {
-    init: function(){
-        _this.init();
-        //console.log('android.init');
-    },
-
+    }
 }
 
 if(utils.isMobileDevice()){
+    var _this = {};
     if(utils.isIOSApp()){
-        $.extend(_this, _ios);
+        $.extend(_this, _ui, _ios);
     }
     else{
-        $.extend(_this, _android);
+        $.extend(_this, _ui, _android);
     }
+
+    _this.init();
+    return _this;
 }
-
-console.log('===> ' + utils.isMobileDevice());
-
-_this.init();
-
-return _this;
+else{
+    return _ui;
+}
 
 });
