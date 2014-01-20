@@ -232,11 +232,12 @@ var _this = {
         renderer.renderWithCallback(page, 'content', $.proxy(function(){
             if(page === "map"){
                 this.mapPageInit();
+                map.display('map');
             }
             this.toggleActive();
             console.log("**************************************")
             //resizePage();
-            map.display('map');
+            
         }, this));
     },
 
