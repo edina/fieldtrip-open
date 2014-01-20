@@ -54,7 +54,7 @@ define(['map', 'renderer', 'utils'], function(map, renderer, utils){
 
     // work out page height
     var resizePage = function(){
-        console.log("resize");
+        //console.log("resize");
         var offset = 0;
 
         var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
@@ -121,8 +121,6 @@ var _this = {
      * TODO
      */
     homePage: function(event){
-        console.log('homePage');
-
         this.pageInit("home-page");
 
         if(event){
@@ -165,7 +163,7 @@ var _this = {
     },
 
     init: function(){
-        console.log('ui.init');
+        //console.log('ui.init');
     },
 
     /**
@@ -220,12 +218,10 @@ var _this = {
     },
 
     pageBeforeShow: function(id){
-        console.log("pagebeforeshow: "+id);
         var page = id.split("-")[0];
     },
 
     pageInit: function(id){
-        console.log("pageinit: "+id);
         var page = id.split("-")[0];
         renderer.render(page, 'header');
         renderer.render(page, 'footer');
@@ -234,18 +230,21 @@ var _this = {
                 this.mapPageInit();
             }
             this.toggleActive();
-            console.log("**************************************")
             //resizePage();
             map.display('map');
+
+            console.log("**************************************")
+
+
         }, this));
     },
 
     pageShow: function(){
-        console.log("page show done");
+        //console.log("page show done");
     },
 
     pageChange: function() {
-        console.log("pageChange");
+        //console.log("pageChange");
         resizePage();
     },
 
@@ -285,7 +284,7 @@ var _ios = {
     //     $.proxy(exitApp, _ios)
     // ),
     resizePage: function(){
-        console.log("resize");
+        //console.log("resize");
     },
 
     /**
@@ -312,21 +311,19 @@ var _ios = {
 var _android = {
     init: function(){
         _this.init();
-        console.log('android.init');
+        //console.log('android.init');
     },
 
     resizePage: function(){
-        console.log("resize");
+        //console.log("resize");
     },
 }
 
 if(utils.isMobileDevice()){
-    console.log('=>');
     if(utils.isIOSApp()){
         $.extend(_this, _ios);
     }
     else{
-        console.log('==>');
         $.extend(_this, _android);
     }
 

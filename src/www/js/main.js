@@ -66,10 +66,11 @@ function onDeviceReady(){
             ui.pageInit(event.currentTarget.id);
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
-            console.log("****************pagebeforeshow "+$.mobile.activePage[0].id);
+            console.log("pagebeforeshow")
             ui.pageChange();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(event){
+            console.log("pageshow")
             console.log('pageshow: '+$.mobile.activePage[0].id);
         });
 
