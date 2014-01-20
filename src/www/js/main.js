@@ -31,43 +31,49 @@ DAMAGE.
 
 "use strict";
 
+require.config({
+    paths: {
+        "plugins": "../plugins",
+        "templates": "../templates",
+        "theme": "../theme",
+        "text": "ext/requirejs-text",
+        "underscore": "ext/underscore",
+
+    },
+    shim: {
+        "underscore": {
+            exports: "_"
+        }
+    }
+});
+
 $(function() {
-    if (typeof (device) === 'undefined'){
+    if(window.location.href.substr(0, 4) === 'http'){
         onDeviceReady();
     }
     else{
-        require(['cordova'], function(){
-            document.addEventListener("deviceready", onDeviceReady, false);
-        });
+        // problems with requirejs and cordova,
+        // for the timebeing add it as a script tag
+        $('head').append('<script src="' + 'cordova.js"></script>');
+
+        document.addEventListener("deviceready", onDeviceReady, false);
     }
 });
 
 function onDeviceReady(){
-    require.config({
-        paths: {
-            "plugins": "../plugins",
-            "templates": "../templates",
-            "theme": "../theme",
-            "underscore": "ext/underscore",
-            "text": "ext/requirejs-text"
-        },
-        shim: {
-            "underscore": {
-                exports: "_"
-            }
-        }
-    });
-
     require(['ui'], function(ui) {
-        $(document).on('pageinit', 'div[data-role="page"]', function(){
-            ui.pageInit();
-            //console.log('pageshow');
+        $(document).on('pageload', 'div[data-role="page"]', function(){
+            console.log('pagesload');
+        });
+        $(document).on('pageinit', 'div[data-role="page"]', function(event){
+            //ui.pageInit();
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
-            ui.pageBeforeShow();
+            console.log('pagebeforeshow');
+            //ui.pageBeforeShow();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(){
-            //console.log('pageshow');
+            console.log('pageshow');
         });
 
         $(document).on('pageinit', '#home-page', function(){

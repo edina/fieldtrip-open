@@ -54,6 +54,7 @@ define(['map', 'utils'], function(map, utils){
 
     // work out page height
     var resizePage = function(){
+        console.log("resize");
         var offset = 0;
 
         var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
@@ -119,19 +120,19 @@ var _this = {
     /**
      * TODO
      */
-    homePage: function(){
+    homePage: function(event){
         console.log('homePage');
 
+        if(event){
+            event.stopImmediatePropagation();
+        }
+
+        //this.setUpExitButton();
+
         // TODO
-        // if(event){
-        //     event.stopImmediatePropagation();
-        // }
-
-        //deviceDependent.setUpExitButton();
-
-        //Utils.touchScroll('#home-content');
-        // Utils.absoluteHeightScroller('#splash-popup-dialog-content');
-        // Utils.touchScroll('#splash-popup-dialog-content');
+        utils.touchScroll('#home-content');
+        utils.absoluteHeightScroller('#splash-popup-dialog-content');
+        utils.touchScroll('#splash-popup-dialog-content');
 
         // $(document).on('click', '#splash-popup-dialog a', function() {
         //     $('#splash-popup-dialog').popup('close');
@@ -159,6 +160,10 @@ var _this = {
         // $('#home-content-help').on('taphold', function(){
         //     $('#home-page-dev').show();
         // });
+    },
+
+    init: function(){
+        console.log('ui.init');
     },
 
     /**
@@ -253,25 +258,73 @@ var _this = {
             rndr.init(page, 'header');
             rndr.init(page, 'footer');
         });
+    },
+
+    // TODO can remove?
+    setUpExitButton: function(){
     }
+
 }
 
 var _ios = {
 
+    // exit button
+    // $(document).on(
+    //     'vmousedown',
+    //     '#home-exit',
+    //     $.proxy(exitApp, _ios)
+    // ),
+    resizePage: function(){
+        console.log("resize");
+    },
+
+    /**
+     * Exit App.
+     */
+    exitApp: function(){
+        $('#home-exit-popup').popup('open');
+
+        $('#home-exit-confirm').off('vmousedown');
+        $('#home-exit-confirm').on(
+            'vmousedown',
+            $.proxy(function(){
+                // TODO
+                // ensure any running track is completed
+                //this.annotations.gpsCaptureComplete();
+
+                navigator.app.exitApp();
+            }, this)
+        );
+    },
+
 }
 
 var _android = {
+    init: function(){
+        _this.init();
+        console.log('android.init');
+    },
 
+    resizePage: function(){
+        console.log("resize");
+    },
 }
 
 if(utils.isMobileDevice()){
+    console.log('=>');
     if(utils.isIOSApp()){
         $.extend(_this, _ios);
     }
     else{
+        console.log('==>');
         $.extend(_this, _android);
     }
+
+    _this.resizePage();
 }
+console.log('===> ' + utils.isMobileDevice());
+
+_this.init();
 
 return _this;
 
