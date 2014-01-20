@@ -171,7 +171,6 @@ var _this = {
      * text below
      */
     mapPageInit: function(){
-        console.log('mapPage');
         //map.display('map');
         // set up buttons when records a visible on map
         var recordsVisible = function(){
@@ -228,14 +227,12 @@ var _this = {
         renderer.renderWithCallback(page, 'content', $.proxy(function(){
             if(page === "map"){
                 this.mapPageInit();
+                //map.display('map');
             }
             this.toggleActive();
             //resizePage();
-            map.display('map');
 
-            console.log("**************************************")
-
-
+            console.log("********************");
         }, this));
     },
 
@@ -314,9 +311,6 @@ var _android = {
         //console.log('android.init');
     },
 
-    resizePage: function(){
-        //console.log("resize");
-    },
 }
 
 if(utils.isMobileDevice()){
@@ -326,8 +320,6 @@ if(utils.isMobileDevice()){
     else{
         $.extend(_this, _android);
     }
-
-    _this.resizePage();
 }
 
 console.log('===> ' + utils.isMobileDevice());

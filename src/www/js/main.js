@@ -63,31 +63,26 @@ $(function() {
 function onDeviceReady(){
     require(['ui'], function(ui) {
         $(document).on('pageinit', 'div[data-role="page"]', function(event){
+            console.log("pageinit");
             ui.pageInit(event.currentTarget.id);
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
-            console.log("pagebeforeshow")
+            console.log("pagebeforeshow");
             ui.pageChange();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(event){
-            console.log("pageshow")
-            console.log('pageshow: '+$.mobile.activePage[0].id);
+            console.log("pageshow");
         });
 
-        $(document).on('pageinit', '#home-page', function(){
+
+        $(document).on('pageshow', '#home-page', function(){
             //ui.homePage();
         });
-
-        //$(document).on('pageinit', '#map-page', function(){
-        //    console.log("mappageinit")
-        //    ui.mapPageInit();
-        //});
         $(document).on('pageshow', '#map-page', function(event){
             console.log('pageshow map-page');
-            //ui.mapPageShow();
+            ui.mapPageShow();
         });
-
-        $(document).on('pageinit', '#capture-page', function(){
+        $(document).on('pageshow', '#capture-page', function(){
             ui.capturePage();
         });
 
