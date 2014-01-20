@@ -31,7 +31,7 @@ DAMAGE.
 
 "use strict";
 
-define(function(){
+define(['filesmap', 'underscore'], function(files, underscore){
 
     //check if js file exists in custom folder
     var checkForFile = function(where, files){
@@ -44,27 +44,37 @@ define(function(){
     }
 
     //create the array for the list in require call
-    var getRequiredFiles = function(where, files){
-        var requiredFiles = ['underscore', 'templates/'+where+'Data', 'text!templates/'+where+'.html'];
-        if(checkForFile(where, files)){
-            requiredFiles.push('theme/templates/'+where+'Data')
+    var getRequiredFiles = function(page, section, files){
+        if(section === "content"){
+            section = page;
+        }
+        var requiredFiles = ['templates/'+section+'Data', 'text!templates/'+section+'.html'];
+        if(checkForFile(section, files)){
+            requiredFiles.push('theme/templates/'+section+'Data')
         }
         return requiredFiles;
     }
 
     return {
-        init: function(page, where){
-            require(['filesmap'], function(files){
-                var requiredFiles = getRequiredFiles(where, files);
-                require(requiredFiles, function(underscore, data, tmpl, ndata) {
-                    //rewrite header
-                    if(where === "header"){
-                        document.title = "Fieldtrip "+data.h1;
-                    }
-                    var template = underscore.template(tmpl);
-                    $.extend(data, ndata);
-                    $("#"+page+"-"+where).html(template({"data": data})).trigger('create');
-                });
+        render: function(page, section){
+            require(getRequiredFiles(page, section, files), function(data, tmpl, ndata) {
+                //rewrite header
+                if(section === "header"){
+                    document.title = "Fieldtrip "+data.h1;
+                }
+                var template = underscore.template(tmpl);
+                $.extend(data, ndata);
+                $("#"+page+"-"+section).append(template({"data": data})).trigger('create');
+                console.log("data are rendered");
+            });
+        },
+        renderWithCallback: function(page, section, callback){
+            require(getRequiredFiles(page, section, files), function(data, tmpl, ndata) {
+                var template = underscore.template(tmpl);
+                $.extend(data, ndata);
+                $("#"+page+"-"+section).append(template({"data": data})).trigger('create');
+                console.log("callback data are rendered");
+                callback();
             });
         }
     }

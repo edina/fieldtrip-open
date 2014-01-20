@@ -38,7 +38,7 @@ DAMAGE.
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
  */
-define(['map'], function(map){
+define(['map', 'renderer'], function(map, renderer){
     var portraitScreenHeight;
     var landscapeScreenHeight;
 
@@ -115,12 +115,35 @@ var _this = {
     capturePage: function(){
         console.log('capturePage');
     },
+    pageInit: function(id){
+        console.log("pageinit: "+id);
+        var page = id.split("-")[0];
+        renderer.render(page, 'header');
+        renderer.render(page, 'footer');
+        renderer.renderWithCallback(page, 'content', $.proxy(function(){
+            if(page === "map"){
+                this.mapPageInit();
+            }
+            this.toggleActive();
+            console.log("**************************************")
+            //resizePage();
+            map.display('map');
+        }, this));
+    },
+    pageBeforeShow: function(id){
+        console.log("pagebeforeshow: "+id);
+        var page = id.split("-")[0];
+    },
+    pageShow: function(){
+        console.log("page show done");
+    },
 
     /**
      * TODO
      */
     homePage: function(){
         console.log('homePage');
+        this.pageInit("home-page");
     },
 
     /**
@@ -177,12 +200,7 @@ var _this = {
      * TODO
      */
     pageChange: function() {
-        $("[data-role=header]").fixedtoolbar({tapToggle: false});
-        $("[data-role=footer]").fixedtoolbar({tapToggle: false});
-
         console.log("pageChange");
-        this.renderHeaderFooter();
-        this.toggleActive();
         resizePage();
     },
 
@@ -206,16 +224,6 @@ var _this = {
     /**
      * with method
      */
-    renderHeaderFooter: function(){
-        console.log("renderHeaderFooter");
-        var page = $.mobile.activePage[0].id.split("-")[0];
-        console.log(page);
-        require(['renderer'], function(rndr) {
-            console.log("renderHeaderFooter");
-            rndr.init(page, 'header');
-            rndr.init(page, 'footer');
-        });
-    }
 }
 
 return _this;
