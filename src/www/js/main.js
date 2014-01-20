@@ -62,29 +62,28 @@ $(function() {
 
 function onDeviceReady(){
     require(['ui'], function(ui) {
-        $(document).on('pageload', 'div[data-role="page"]', function(){
-            console.log('pagesload');
-        });
         $(document).on('pageinit', 'div[data-role="page"]', function(event){
-            //ui.pageInit();
+            ui.pageInit(event.currentTarget.id);
         });
-        $(document).on('pagebeforeshow', 'div[data-role="page"]', function(a){
-            console.log('pagebeforeshow');
-            //ui.pageBeforeShow();
+        $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
+            console.log("****************pagebeforeshow "+$.mobile.activePage[0].id);
+            ui.pageChange();
         });
-        $(document).on('pageshow', 'div[data-role="page"]', function(){
-            console.log('pageshow');
+        $(document).on('pageshow', 'div[data-role="page"]', function(event){
+            console.log('pageshow: '+$.mobile.activePage[0].id);
         });
 
         $(document).on('pageinit', '#home-page', function(){
-            ui.homePage();
+            //ui.homePage();
         });
 
-        $(document).on('pageinit', '#map-page', function(){
-            ui.mapPageInit();
-        });
-        $(document).on('pageshow', '#map-page', function(){
-            ui.mapPageShow();
+        //$(document).on('pageinit', '#map-page', function(){
+        //    console.log("mappageinit")
+        //    ui.mapPageInit();
+        //});
+        $(document).on('pageshow', '#map-page', function(event){
+            console.log('pageshow map-page');
+            //ui.mapPageShow();
         });
 
         $(document).on('pageinit', '#capture-page', function(){
@@ -101,7 +100,5 @@ function onDeviceReady(){
 
         // initialise home page first time
         ui.homePage();
-        ui.pageBeforeShow();
-        ui.pageInit();
     });
 };

@@ -1,6 +1,6 @@
 define(function() {
     return {
-        "h1": "Open",
-        "buttons" :[]
+        "list": "List Records",
+        "show" : "Show Records"
     };
 });

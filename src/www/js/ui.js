@@ -38,7 +38,7 @@ DAMAGE.
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
  */
-define(['map', 'utils'], function(map, utils){
+define(['map', 'renderer', 'utils'], function(map, renderer, utils){
     var portraitScreenHeight;
     var landscapeScreenHeight;
 
@@ -122,6 +122,8 @@ var _this = {
      */
     homePage: function(event){
         console.log('homePage');
+
+        this.pageInit("home-page");
 
         if(event){
             event.stopImmediatePropagation();
@@ -217,18 +219,33 @@ var _this = {
         resizePage();
     },
 
-    /**
-     *  Triggered before the actual transition animation is kicked off.
-     */
-    pageBeforeShow: function() {
-        this.renderHeaderFooter();
-        this.toggleActive();
+    pageBeforeShow: function(id){
+        console.log("pagebeforeshow: "+id);
+        var page = id.split("-")[0];
     },
 
-    /**
-     * Triggered on the page being initialized, after initialization occurs.
-     */
-    pageInit: function() {
+    pageInit: function(id){
+        console.log("pageinit: "+id);
+        var page = id.split("-")[0];
+        renderer.render(page, 'header');
+        renderer.render(page, 'footer');
+        renderer.renderWithCallback(page, 'content', $.proxy(function(){
+            if(page === "map"){
+                this.mapPageInit();
+            }
+            this.toggleActive();
+            console.log("**************************************")
+            //resizePage();
+            map.display('map');
+        }, this));
+    },
+
+    pageShow: function(){
+        console.log("page show done");
+    },
+
+    pageChange: function() {
+        console.log("pageChange");
         resizePage();
     },
 
@@ -252,13 +269,6 @@ var _this = {
     /**
      * with method
      */
-    renderHeaderFooter: function(){
-        var page = $.mobile.activePage[0].id.split("-")[0];
-        require(['renderer'], function(rndr) {
-            rndr.init(page, 'header');
-            rndr.init(page, 'footer');
-        });
-    },
 
     // TODO can remove?
     setUpExitButton: function(){
@@ -322,6 +332,7 @@ if(utils.isMobileDevice()){
 
     _this.resizePage();
 }
+
 console.log('===> ' + utils.isMobileDevice());
 
 _this.init();
