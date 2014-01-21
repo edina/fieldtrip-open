@@ -34,6 +34,7 @@ from email.mime.text import MIMEText
 from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
+from jinja2 import Environment, PackageLoader, FileSystemLoader
 
 import xml.etree.ElementTree as ET
 
@@ -563,3 +564,32 @@ def _write_data(fil, filedata):
     f = open(fil, 'w')
     f.write(filedata)
     f.close()
+
+
+#########################HTML GENERATION###################################
+def generate_templates():
+    """generate files"""
+    root, proj_home, src_dir = _get_source()
+    path = os.sep.join((root, 'templates'))
+    export_path = os.sep.join((src_dir, 'www', 'templates'))
+    environ = Environment(loader=FileSystemLoader(path))
+
+    header_data = json.loads(open(os.sep.join((path, 'headerData.json'))).read())
+    footer_data = json.loads(open(os.sep.join((path, 'footerData.json'))).read())
+    header_template = environ.get_template("header.html")
+    footer_template = environ.get_template("footer.html")
+
+    for path, dirs, files in os.walk(path):
+        for f in files:
+            #print f
+            if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
+                print f
+                fil = os.sep.join((path, f.split(".")[0]+"Data.json"))
+                if os.path.exists(fil):
+                    data = json.loads(open(fil).read())
+                    data["header"].update(header_data)
+                    data["footer"].update(footer_data)
+                    print footer_template.render(data=data["footer"])
+                    template = environ.get_template(f)
+                    _write_data(os.sep.join((export_path, f)), template.render(body=data["body"], popups=data["popups"], header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"])))
+    

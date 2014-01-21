@@ -1,0 +1,25 @@
+<div id="map-page" data-role="page" data-theme="a">
+  {{header}}
+
+  <div data-role="content">
+    <div id="map" class="map" ></div>
+
+    <div class="map-zoom-buttons">
+      <a data-role="button" class="map-zoom-button-in">+</a>
+      <a data-role="button" class="map-zoom-button-out">-</a>
+    </div>
+
+    <div id="map-annotations-buttons" class="ui-grid-b">
+      <div id="map-annotations-buttons-list" class="ui-block-a">
+        <a href="saved-annotations.html"  data-role="button">{{body["list"]}}</a>
+      </div>
+      <div class="ui-block-b"></div>
+      <div id="map-annotations-buttons-ok" class="ui-block-c">
+        <a data-role="button">{{body["show"]}}</a>
+      </div>
+    </div>
+
+  </div>
+
+  {{footer}}
+</div>

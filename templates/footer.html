@@ -1,0 +1,11 @@
+<div data-role="navbar">
+  <ul>
+    {% for key, value in data.iteritems() %}
+      <li>
+      <a href="{{value["url"] }}"
+         class="{{value["class"]}}"
+         data-icon="{{value["icon"]}}">{{value["name"]}}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

@@ -1,0 +1,25 @@
+<div id="capture-page" data-role="page" data-theme="a">
+
+  {{header}}
+
+  <div data-role="content" class="non-map-body">
+    <div class="non-map-body-start"></div>
+    <br/>
+    <h2>{{body["section1"]["title"]}}</h2>
+    <div class="nav-icons ui-grid-c">
+      {% for key, item in body["section1"]["items"].iteritems() %}
+      <div class="ui-block-{{item["grid"]}}">
+        <a class="{{item["class"]}}" href="{{item["url"]}}">
+          <img src="{{item["src"]}}" alt="{{item["alt"]}}">
+        </a>
+        <p>{{item["title"]}}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <h2>{{body["section2"]["title"]}}</h2>
+    <div id="capture-page-custom" class="nav-icons ui-grid-d"></div>
+  </div>
+
+  {{footer}}
+
+</div>

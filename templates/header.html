@@ -1,0 +1,18 @@
+<div data-role="header" data-position="fixed">
+  <h1>Fieldtrip {{data["title"]}}</h1>
+  <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+    {% for key, value in data["buttons"].iteritems() %}
+      <a href="{{value["url"] }}"
+          class="{{value["class"]}}"
+          data-icon="{{value["icon"]}}"
+          data-role="{{value["data-role"]}}"
+          data-inline="{{value["data-inline"]}}"
+          data-transition="{{value["data-transition"]}}"
+          data-iconpos="{{value["data-iconpos"]}}"
+          data-shadow="{{value["data-shadow"]}}"
+          data-iconshadow="{{value["data-iconshadow"]}}"
+          style="{{value["data-iconshadow"]}}"></a>
+    {% endfor %}
+    </a>
+  </div>
+</div>
