@@ -64,7 +64,6 @@ function onDeviceReady(){
     require(['ui'], function(ui) {
         $(document).on('pageinit', 'div[data-role="page"]', function(event){
             console.log("pageinit");
-            ui.pageInit(event.currentTarget.id);
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
             console.log("pagebeforeshow");
@@ -75,16 +74,15 @@ function onDeviceReady(){
         });
 
 
-        $(document).on('pageshow', '#home-page', function(){
-            //ui.homePage();
-        });
-        $(document).on('pageshow', '#map-page', function(event){
-            console.log('pageshow map-page');
-            ui.mapPageShow();
-        });
-        $(document).on('pageshow', '#capture-page', function(){
-            ui.capturePage();
-        });
+        $(document).on('pageshow',
+                       '#home-page',
+                       $.proxy(ui.homePage, ui));
+        $(document).on('pageshow',
+                       '#map-page',
+                       $.proxy(ui.mapPageShow, ui));
+        $(document).on('pageshow',
+                       '#capture-page',
+                       $.proxy(ui.capturePage, ui));
         $(document).on('pageshow',
                        '#annotate-page',
                        $.proxy(ui.annotatePage, ui));

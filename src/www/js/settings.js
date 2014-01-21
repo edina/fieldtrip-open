@@ -54,7 +54,7 @@ define(['config'], function(config){
         vals.pcapiUrl = config.server_url_default;
     }
     if(typeof(vals.mapserverUrl) === 'undefined'){
-        vals.mapserverUrl = server_url_default;
+        vals.mapserverUrl = config.server_url_default;
     }
 
 return{

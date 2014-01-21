@@ -356,8 +356,6 @@ var _ui = {
      * TODO
      */
     homePage: function(event){
-        this.pageInit("home-page");
-
         if(event){
             event.stopImmediatePropagation();
         }
@@ -466,22 +464,6 @@ var _ui = {
 
     pageBeforeShow: function(id){
         var page = id.split("-")[0];
-    },
-
-    pageInit: function(id){
-        var page = id.split("-")[0];
-        renderer.render(page, 'header');
-        renderer.render(page, 'footer');
-        renderer.renderWithCallback(page, 'content', $.proxy(function(){
-            if(page === "map"){
-                this.mapPageInit();
-                //map.display('map');
-            }
-            this.toggleActive();
-            //resizePage();
-
-            console.log("********************");
-        }, this));
     },
 
     pageShow: function(){

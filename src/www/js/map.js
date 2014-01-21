@@ -134,7 +134,7 @@ var _this = {
                     value: 'audio',
                 }),
                 symbolizer: {
-                    externalGraphic: 'css/images/audiomarker.png',
+                    externalGraphic: '/css/images/audiomarker.png',
                     graphicWidth: 35,
                     graphicHeight: 50,
                     graphicYOffset: -50
@@ -193,7 +193,7 @@ var _this = {
         positionMarkerStyle.graphicOpacity = 1;
         positionMarkerStyle.graphicWidth = 65;
         positionMarkerStyle.graphicHeight = 64;
-        positionMarkerStyle.externalGraphic = "css/images/marker.png";
+        positionMarkerStyle.externalGraphic = "/css/images/marker.png";
         positionMarkerStyle.graphicYOffset = -64;
 
         var positionMarkerLayer = new OpenLayers.Layer.Vector(

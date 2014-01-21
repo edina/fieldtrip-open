@@ -83,7 +83,7 @@ a:active, img:active{
     margin: 0.2em 0 0.2em 1em !important;
     padding: 0.4em 0 0.6em 2.4em !important;
     width: 40%;
-    background-image: url("images/icon.png");
+    background-image: url("/images/icon.png");
     background-repeat: no-repeat;
 }
 
