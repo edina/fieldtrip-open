@@ -1,19 +1,19 @@
 {
     "home": {
         "name": "Home",
-        "url": "index.html",
+        "href": "index.html",
         "class": "home-button",
         "icon": "custom"
     },
     "map": {
         "name": "Map",
-        "url": "templates/map.html",
+        "href": "templates/map.html",
         "class": "map-button",
         "icon": "custom"
     },
     "capture": {
         "name": "Capture",
-        "url": "templates/capture.html",
+        "href": "templates/capture.html",
         "class": "capture-button",
         "icon": "custom"
     }
