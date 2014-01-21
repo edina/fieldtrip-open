@@ -1,0 +1,64 @@
+{
+    "header": {
+        "buttons" : {
+            "gpstrack": {
+                "class": "gpstrack-running",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext",
+                "data-shadow": "false",
+                "data-iconshadow": "false",
+                "style": "display: none"
+            }
+        }
+    },
+    "body": {
+        "section1": {
+            "title": "Record",
+            "items": {
+                "item1": {
+                    "grid": "a",
+                    "class": "annotate-image-form",
+                    "url": "#",
+                    "src": "css/images/images.png",
+                    "alt": "Capture Image",
+                    "title": "Images"
+                },
+                "item2": {
+                    "grid": "b",
+                    "class": "annotate-audio-form",
+                    "url": "#",
+                    "src": "css/images/audio.png",
+                    "alt": "Capture Audio",
+                    "title": "Audio"
+                },
+                "item3": {
+                    "grid": "c",
+                    "class": "annotate-text-form",
+                    "url": "#",
+                    "src": "css/images/text.png",
+                    "alt": "Capture Text",
+                    "title": "Text"
+                },
+                "item4": {
+                    "grid": "d",
+                    "class": "gps-track-start",
+                    "url": "annotate-gps.html",
+                    "src": "css/images/gps.png",
+                    "alt": "Capture GPS Track",
+                    "title": "GPS Track"
+                }
+            }
+        },
+        "section2": {
+            "title": "Custom Forms"
+        }
+    },
+    "footer":{
+        
+    },
+    "popups": {
+        
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "header": {
+        "buttons" : {
+            "gpstrack": {
+                "class": "gpstrack-running",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext",
+                "data-shadow": "false",
+                "data-iconshadow": "false",
+                "style": "display: none"
+            },
+            "user-locate": {
+                "class": "user-locate",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext"
+            },
+            "map-search": {
+                "href": "search.html",
+                "class": "map-search",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos":"notext"
+            }
+        }
+    },
+    "body": {
+        "list": "List Records",
+        "show" : "Show Records"
+    },
+    "footer":{
+        
+    },
+    "popups": {
+        
+    }
+}
