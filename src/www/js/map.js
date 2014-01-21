@@ -450,6 +450,22 @@ var _this = {
     },
 
     /**
+     * Update annotate layer.
+     * @param lonlat The position (in national grid) of the annotation icon, if
+     * undefined use the centre of the map.
+     */
+    updateAnnotateLayer: function(lonlat){
+        if(lonlat === undefined){
+            lonlat = this.map.getCenter();
+        }
+
+        this.updateLayer(this.getAnnotateLayer(),
+                         Map.ANNOTATE_POSITION_ATTR,
+                         undefined,
+                         lonlat);
+    },
+
+    /**
      * Update a vector layer centred on users location.
      * @param layer The layer to update.
      * @id The id of the user icon feature.
@@ -497,6 +513,13 @@ var _this = {
         }
 
         this.updateLayer(this.getAnnotateLayer(), USER_POSITION_ATTR, zoom);
+    },
+
+    /**
+     * Update map size after dynamic change in map size.
+     */
+    updateSize: function(){
+        this.map.updateSize();
     },
 
     /**

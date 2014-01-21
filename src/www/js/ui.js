@@ -38,8 +38,9 @@ DAMAGE.
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
  */
-define(['map', 'renderer', 'utils', 'settings'],
-       function(map, renderer, utils, settings){
+define(['map', 'records', 'renderer', 'utils', 'settings'], function(
+    map, records, renderer, utils, settings){
+
     var portraitScreenHeight;
     var landscapeScreenHeight;
 
@@ -52,6 +53,43 @@ define(['map', 'renderer', 'utils', 'settings'],
         portraitScreenHeight = $(window).width();
         landscapeScreenHeight = $(window).height();
     }
+
+    /**
+     * Bind annotation form listeners.
+     */
+    var capturePageListeners = function(){
+        // note: obscure bug with dynamic loading of editors where the last form
+        // control was grabbing focus.  This was 'fixed' by specifying a 'fade'
+        // transition. see: http://devel.edina.ac.uk:7775/issues/4919
+
+        // unbind is required as this is used in the home page
+        $('.annotate-image-form').unbind();
+        $('.annotate-image-form').on('vmousedown', $.proxy(function(){
+            localStorage.setItem('annotate-form-type', 'image');
+            $.mobile.changePage('annotate.html', {transition: "fade"});
+        }, this));
+
+        $('.annotate-audio-form').unbind();
+        $('.annotate-audio-form').on('vmousedown', $.proxy(function(){
+            localStorage.setItem('annotate-form-type', 'audio');
+            $.mobile.changePage('annotate.html',  {transition: "fade"});
+        }, this));
+
+        $('.annotate-text-form').unbind();
+        $('.annotate-text-form').on('vmousedown', $.proxy(function(){
+            localStorage.setItem('annotate-form-type', 'text');
+            $.mobile.changePage('annotate.html',  {transition: "fade"});
+        }, this));
+
+        $('.annotate-custom-form').unbind();
+        $('.annotate-custom-form').on('vmousedown', $.proxy(function(event){
+            // get the custom form type from the element id
+            var id = $(event.target).parent().attr('id');
+            localStorage.setItem('annotate-form-type',
+                                 id.substr(id.lastIndexOf('-') + 1));
+            $.mobile.changePage('annotate.html', {transition: "fade"});
+        }, this));
+    };
 
     /**
      * Set map to user's location.
@@ -130,6 +168,183 @@ define(['map', 'renderer', 'utils', 'settings'],
     map.init();
 
 var _ui = {
+
+    /**
+     * Annotate option, show drag icon.
+     */
+    annotatePreviewPage: function(){
+        //this.commonMapPageInit('annotate-preview-map');
+
+        if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
+            map.updateAnnotateLayer();
+            localStorage.set('ignore-centre-on-annotation', false);
+        }
+        else {
+            geoLocate({
+                secretly: false,
+                updateAnnotateLayer: true,
+                useDefault: true
+            });
+        }
+
+        var addMeta = function(label, text){
+            $('#annotate-preview-detail-meta').append(
+                '<p><span>' + label + '</span>: ' + text + '</p>');
+        }
+
+        $('.non-map-body-white h2').text(this.currentAnnotation.record.name + ' Details');
+
+        $.each(this.currentAnnotation.record.fields, $.proxy(function(i, entry){
+            if(records.typeFromId(entry.id) === 'image'){
+                $('#annotate-preview-detail-image').append(
+                    '<img src="' + entry.val + '"></img>');
+            }
+            else{
+                addMeta(entry.label, entry.val);
+            }
+        }, this));
+
+        $('#annotate-preview-ok').click($.proxy(function(){
+            this.records.saveAnnotationWithCoords(this.currentAnnotation);
+            this.currentAnnotation = undefined;
+            $.mobile.changePage('map.html');
+        }, this));
+
+        utils.touchScroll('#annotate-preview-detail');
+
+        map.hideRecordsLayer();
+        map.updateSize();
+    },
+
+    /**
+     * Go to annotate screen.
+     */
+    annotatePage: function(){
+        var type = localStorage.getItem('annotate-form-type');
+        var id;
+
+        records.initPage(type, $.proxy(function(){
+            // replace photo form element with image
+            var showImage = function(id, url){
+                var parent = $('#' + id).parent();
+                $('#' + id).hide();
+                parent.append('<div class="annotate-image"><img src="' +
+                              url + '"</img></div>');
+            };
+
+            // replace audio form element with audio control
+            var showAudio = $.proxy(function(id, url){
+                var parent = $('#' + id).parent();
+                $('#' + id).hide();
+                parent.append(audioNode(url)).trigger('create');
+            }, this);
+
+            // listen for take photo click
+            $('.annotate-image-take').click($.proxy(function(event){
+                id = $(event.target).parents('.ui-grid-a').attr('id');
+                this.records.takePhoto(function(media){
+                    showImage(id, media);
+                });
+            }, this));
+
+            // listen for image gallery click
+            $('.annotate-image-get').click($.proxy(function(event){
+                id = $(event.target).parents('.ui-grid-a').attr('id');
+                this.records.getPhoto(function(media){
+                    showImage(id, media);
+                });
+            }, this));
+
+            // listen for audio click
+            $('.annotate-audio').click($.proxy(function(event){
+                id = $(event.target).parents('div').attr('id');
+                this.annotations.takeAudio(function(media){
+                    showAudio(id, media);
+                });
+            }, this));
+
+            // cancel button
+            $('input[value="Cancel"]').click($.proxy(function(){
+                plugins.SoftKeyBoard.hide();
+                // clear input fields
+                this.currentAnnotation = undefined;
+                window.history.back();
+            }, this));
+
+            // image size
+            $('input[name="radio-image-size"]').bind ("change", function (event){
+                if(this.value === Annotations.IMAGE_SIZE_FULL){
+                    localStorage.setItem(records.IMAGE_UPLOAD_SIZE,
+                                         records.IMAGE_SIZE_FULL);
+                    utils.inform('Note : Larger images will take a longer time to sync',
+                                 5000);
+                }
+                else{
+                    localStorage.setItem(records.IMAGE_UPLOAD_SIZE,
+                                         records.IMAGE_SIZE_NORMAL);
+
+                }
+            });
+
+
+            // submit form
+            $('#annotate-form').submit($.proxy(function(event){
+                // cancels the form submission
+                event.preventDefault();
+
+                if(typeof(plugins) !== 'undefined'){
+                    plugins.SoftKeyBoard.hide();
+                }
+
+                // process the form
+                this.currentAnnotation = records.processAnnotation(type);
+            }, this));
+
+            // if annotation in progress repopulate fields
+            if(this.currentAnnotation !== undefined){
+                $('#' + records.TITLE_ID).val(this.currentAnnotation.record.name);
+                $.each(this.currentAnnotation.record.fields, function(i, entry){
+                    var type = records.typeFromId(entry.id);
+                    if(type === 'text'){
+                        $('#' + entry.id + ' input').val(entry.val);
+                    }
+                    else if(type === 'textarea'){
+                        $('#' + entry.id + ' textarea').val(entry.val);
+                    }
+                    else if(type === 'image'){
+                        showImage('annotate-image-0', entry.val);
+                    }
+                    else if(type === 'audio'){
+                        showAudio('annotate-audio-0', entry.val);
+                    }
+                    else if(type === 'checkbox'){
+                        $.each(entry.val.split(','), function(j, name){
+                            $('input[value=' + name + ']').prop('checked', true).checkboxradio('refresh');
+                        });
+                    }
+                    else if(type === 'radio'){
+                        $('#' + entry.id + ' input[value=' + entry.val + ']').prop(
+                            "checked", true).checkboxradio("refresh");
+                    }
+                    else if(type === 'range'){
+                        $('#' + entry.id + ' input').val(entry.val);
+                        $('#' + entry.id + ' input').slider('refresh');
+                    }
+                    else if(type === 'select'){
+                        $('#' + entry.id + ' select').val(entry.val).attr(
+                            "selected", true).selectmenu("refresh");
+                    }
+                    else{
+                        console.warn("Unknown field type: " + type);
+                    }
+                });
+            }
+
+            // ensure page is scrollable
+            utils.touchScroll('#annotate-form');
+        }, this));
+    },
+
     /**
      * TODO
      */
@@ -174,7 +389,7 @@ var _ui = {
         // enable / disable GPS track button
         //this.gpsButtonInit();
 
-        //this.capturePageListeners();
+        capturePageListeners();
 
         // $('#home-content-help').unbind();
         // $('#home-content-help').on('taphold', function(){
@@ -276,6 +491,156 @@ var _ui = {
     pageChange: function() {
         //console.log("pageChange");
         resizePage();
+    },
+
+    /**
+     * Show Saved Records.
+     */
+    savedRecordsPage: function(){
+        //this.commonPageInit();
+        var annotations = records.getSavedRecords();
+        utils.printObj(annotations);
+        console.log('*************');
+
+        var addAnnotation = function(id, annotation){
+            $('#saved-records-list-list').append(
+                '<li id="' + id + '"><div class="ui-grid-b"> \
+<div class="ui-block-a saved-records-list-synced-' + annotation.isSynced + '">\
+</div>\
+<div class="ui-block-b saved-annotation-view">\
+<a href="#">' + annotation.record.name + '</a>\
+</div>\
+<div class="ui-block-c">\
+<a href="#" class="saved-record-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="a"></a>\
+</div>\
+</div></li>').trigger('create');
+        }
+
+        $.each(annotations, $.proxy(function(id, annotation){
+            if(annotation){
+                addAnnotation(id, annotation);
+            }
+            else{
+                // empty entry, just delete it
+                delete annotations[id];
+                this.records.setSavedAnnotations(annotations);
+            }
+        }, this));
+
+        // delete a saved annotation
+        $(document).off('vmousedown', '.saved-annotation-view');
+        $(document).on(
+            'vmousedown',
+            '.saved-annotation-delete',
+            $.proxy(function(event){
+                this.toBeDeleted = $(event.target).parents('li');
+
+                // open dialog for confirmation
+                $('#saved-annotation-delete-popup-name').text(
+                    "'" + this.toBeDeleted.find('.saved-annotation-view a').text() + "'");
+                $('#saved-annotation-delete-popup').popup('open');
+            }, this)
+        );
+
+        // delete confirm
+        $('#saved-annotation-delete-confirm').click($.proxy(function(event){
+            var id = $(this.toBeDeleted).attr('id');
+            this.annotations.deleteAnnotation(id, true);
+            $('#saved-annotation-delete-popup').popup('close');
+            this.toBeDeleted.slideUp('slow');
+        }, this));
+
+        // click on a record
+        $(document).off('tap', '.saved-annotation-view');
+        $(document).on(
+            'tap',
+            '.saved-annotation-view',
+            $.proxy(function(event){
+                if(this.isMobileApp){
+                    // this will prevent the event propagating to next screen
+                    event.stopImmediatePropagation();
+                }
+
+                var id = $(event.target).parents('li').attr('id');
+                var annotation = this.records.getSavedAnnotations()[id];
+                var type = records.getEditorId(annotation);
+
+                // TODO
+                // if(type === 'track'){
+                //     map.showGPSTrack(id, annotation);
+                // }
+
+                map.showAnnotationsLayer(annotation);
+                $.mobile.changePage('map.html');
+            }, this)
+        );
+
+        // TODO - move to plugin
+        // sync / login button
+        // $(document).off('vmousedown', '#saved-annotations-page-header-login-sync');
+        // $(document).on(
+        //     'vmousedown',
+        //     '#saved-annotations-page-header-login-sync',
+        //     $.proxy(function(event){
+        //         event.stopImmediatePropagation();
+        //         if($('#saved-annotations-page-header-login-sync.cloud-sync').length > 0){
+        //             this.sync({
+        //                 div: 'saved-annotation-sync-popup',
+        //                 callback: function(add, id, annotation){
+        //                     if(add){
+        //                         addAnnotation(id, annotation);
+        //                     }
+        //                     else{
+        //                         // if not add then delete
+        //                         $('#' + id).slideUp('slow');
+        //                     }
+        //                 },
+        //                 complete: function(){
+        //                     $('#saved-annotations-list-list').listview('refresh');
+        //                 }
+        //             });
+        //         }
+        //         else{
+        //             $.mobile.showPageLoadingMsg();
+
+        //             // TODO - move to plugin
+        //             this.records.cloudLogin($.proxy(function(){
+        //                 $.mobile.hidePageLoadingMsg();
+        //                 var userId = this.db.getCloudLogin().id;
+        //                 if(userId){
+        //                     $('#saved-annotations-page-header-login-sync').removeClass(
+        //                         'cloud-login');
+        //                     $('#saved-annotations-page-header-login-sync').addClass(
+        //                         'cloud-sync');
+        //                     $('#saved-annotations-page-header-upload').show();
+        //                 }
+        //             }, this));
+        //         }
+        //     }, this)
+        // );
+
+        // TODO - move to plugin
+        // upload only
+        // $(document).off('vmousedown', '#saved-annotations-page-header-upload');
+        // $(document).on(
+        //     'vmousedown',
+        //     '#saved-annotations-page-header-upload',
+        //     $.proxy(this.uploadRecords, this)
+        // );
+
+        // var userId = this.db.getCloudLogin().id;
+        // if(userId){
+        //     $('#saved-annotations-page-header-login-sync').addClass('cloud-sync');
+        //     $('#saved-annotations-page-header-upload').show();
+        // }
+        // else{
+        //     $('#saved-annotations-page-header-login-sync').addClass('cloud-login');
+        // }
+
+        // make records scrollable on touch screens
+        //Utils.touchScroll('#saved-annotations-list');
+
+        $('#saved-annotations-list-list').listview('refresh');
     },
 
     /**

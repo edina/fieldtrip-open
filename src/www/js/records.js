@@ -31,9 +31,78 @@ DAMAGE.
 
 "use strict";
 
-define(function(){
+define(['utils'], function(utils){
+    var GPS_AUTO_SAVE_THRESHOLD = 5;
+    var PCAPI_VERSION = '1.3';
 
 return{
+    IMAGE_UPLOAD_SIZE: "imageUploadSize",
+    IMAGE_SIZE_NORMAL: "imageSizeNormal",
+    IMAGE_SIZE_FULL: "imageSizeFull",
+    TITLE_ID: 'form-text-1',
+
+    /**
+     * Initialise annotate page.
+     * @param form Form name.
+     * @param callback Function to be invoked when editor has been loaded.
+     */
+    initPage: function(form, callback) {
+        var url;
+        var that = this;
+
+        if(form === 'image' || form === 'audio' || form === 'text'){
+            url = 'editors/' + form + '.edtr';
+        }
+        else{
+            url = this.editorsDir.fullPath + '/' + form + '.edtr';
+        }
+
+        $.ajax({
+            url: url,
+            dataType: "text",
+            success: function(data){
+                var form = $('#annotate-form').append(data);
+                $.each($('input[capture=camera]'), function(index, input){
+                    var btn = '<div id="annotate-image-' + index + '" class="image-chooser ui-grid-a">\
+<div class="ui-block-a">\
+<a class="annotate-image-take" href="#">\
+<img src="css/images/images.png"></a><p>Camera</p>\
+</div>\
+<div class="ui-block-b">\
+<a class="annotate-image-get" href="#">\
+<img src="css/images/gallery.png"></a><p>Gallery</p>\
+</div>'
+
+                    $(input).parent().append(btn + that.getImageSizeControl());
+                });
+                $.each($('input[capture=microphone]'), function(index, input){
+                    var btn = '<div id="annotate-audio-' + index + '">\
+<a class="annotate-audio" href="#">\
+<img src="css/images/audio.png"></a><p>Start</p>\
+</div>';
+
+                    $(input).parent().append(btn);
+                });
+                $.each($('input[capture=gps]'), function(index, input){
+                    var btn = '<div id="annotate-gps-' + index + '">\
+<a class="annotate-image-get" href="#">\
+<img src="css/images/audio.png"></a><p>Take</p>\
+</div>';
+
+                    $(input).parent().append(btn);
+                });
+
+                utils.appendDateTimeToInput("#form-text-1");
+
+                form.trigger('create');
+
+                // hide original input elements
+                $('input[capture]').parent().hide();
+
+                callback();
+            }
+        });
+    },
 
     /**
      * @param annotation Annotation record.
@@ -43,6 +112,29 @@ return{
         var record = annotation.record;
         return record.editor.substr(0, record.editor.indexOf('.'));
     },
+
+    /**
+     * TODO
+     */
+    getImageSizeControl:function (){
+        var fullSelected = '', normalSelected = '', CHECKED = 'checked';
+
+        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
+            fullSelected = CHECKED;
+        }
+        else{
+            normalSelected = CHECKED;
+        }
+        return '<div class="ui-block-c">\
+<fieldset data-role="controlgroup" data-type="horizontal"> \
+<input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected +' /> \
+<label for="radio-view-a">Normal</label> \
+<input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
+<label for="radio-view-b">Full</label>\
+</fieldset><p>Image Size</p>\
+</div>';
+    },
+
 
     /**
      * @return List of saved records in local storage.
@@ -67,6 +159,155 @@ return{
         }
 
         return savedAnnotations;
-    }
+    },
+
+    /**
+     * Process annotation/record from an HTML5 form.
+     * @param type Form type - image, text, audio or custom
+     */
+    processAnnotation: function(type){
+        var valid = true;
+        var annotation = {
+            "record": {
+                'editor': type + '.edtr',
+                'fields': []
+            },
+            "isSynced": false
+        };
+
+        $.each($('div[class=fieldcontain]'), function(i, entry){
+            var divId = $(entry).attr('id');
+            var start = divId.indexOf('-') + 1;
+            var end = divId.lastIndexOf('-');
+            var type = divId.substr(start, end - start);
+            var control;
+
+            var record = {
+                'id': divId
+            };
+
+            var setInputValue = function(control){
+                var val = control.val();
+                if(val){
+                    record['val'] = val.trim();
+                }
+            }
+
+            var doInput = function(controlType){
+                control = $(entry).find(controlType);
+                setInputValue(control);
+            };
+
+            var doLabel = function(id){
+                record['label'] = $(entry).find('label[for="' + id + '"]').text();
+            };
+
+            var doLegend = function(){
+                record['label'] = $(entry).find('legend').text();
+            };
+
+            var doTextField = function(controlType){
+                doInput(controlType);
+                doLabel(control.attr('id'));
+            };
+
+            if(type === 'text'){
+                doTextField('input');
+                if(control.attr('id') === this.TITLE_ID){
+                    if(control.val()){
+                        annotation.record['name'] = control.val();
+                    }
+                    record['val'] = '';
+                }
+            }
+            else if(type === 'textarea'){
+                doTextField(type);
+            }
+            else if(type === 'checkbox'){
+                doLegend();
+                $.each($(entry).find('input:checked'), function(j, checkbox){
+                    if(typeof(record['val']) === 'undefined'){
+                        record['val'] = $(checkbox).val();
+                    }
+                    else{
+                        record['val'] += ',' + $(checkbox).val();
+                    }
+                });
+            }
+            else if(type === 'radio'){
+                var control = $(entry).find('input:checked');
+                record['label'] = $(entry).find('div[role=heading]').text();
+                setInputValue(control);
+            }
+            else if(type === 'select'){
+                doLegend();
+                control = $(entry).find('select');
+                setInputValue(control);
+            }
+            else if(type === 'range'){
+                doTextField('input');
+            }
+            else if(type === 'image'){
+                control = $(entry).find('input');
+                record['val'] = $(entry).find('.annotate-image img').attr('src');
+                doLabel($(entry).find('input').attr('id'));
+
+
+            }
+            else if(type === 'audio'){
+                control = $(entry).find('input[capture=microphone]');
+                record['val'] = $(entry).find('.annotate-audio-taken input').attr('value');
+                doLabel($(control).attr('id'));
+            }
+            else{
+                console.warn("No such control type: " + type + ". div id = " + divId);
+            }
+
+            // do some validation
+            if($(control).attr('required') === 'true' || $(control).attr('required') === 'required'){
+                if(typeof(record.val) === 'undefined' || record.val.length === 0) {
+                    if($(control).attr('id') === this.TITLE_ID){
+                        if(typeof(annotation.record.name) === 'undefined'){
+                            $(entry).find('#' + this.TITLE_ID).addClass('ui-focus');
+                            valid = false;
+                            return false;
+                        }
+                    }
+                    else{
+                        $(control).addClass('ui-focus');
+                        valid = false;
+                        return false;
+                    }
+                }
+            }
+
+            if(typeof(record.val) !== 'undefined' && record.val.length > 0){
+                annotation.record['fields'].push(record);
+            }
+        });
+
+        if(valid){
+            // nasty I know: but changing page in a setTimeout allows
+            // time for the keyboard to close
+            setTimeout(function(){
+                $.mobile.changePage('annotate-preview.html');
+            }, 300);
+        }
+        else{
+            utils.inform('Required field not populated');
+        }
+
+        return annotation;
+    },
+
+    /**
+     * @param id Field div id.
+     * @return The control type for a field id.
+     */
+    typeFromId: function(id){
+        var s = id.indexOf('-') + 1;
+        return id.substr(s, id.lastIndexOf('-') - s);
+    },
+
 }
 });

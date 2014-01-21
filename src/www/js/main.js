@@ -85,6 +85,16 @@ function onDeviceReady(){
         $(document).on('pageshow', '#capture-page', function(){
             ui.capturePage();
         });
+        $(document).on('pageshow',
+                       '#annotate-page',
+                       $.proxy(ui.annotatePage, ui));
+        $(document).on('pageshow',
+                       '#annotate-preview-page',
+                       $.proxy(ui.annotatePreviewPage, ui));
+        $(document).on('pageinit',
+                       '#saved-records-page',
+                       $.proxy(ui.savedRecordsPage, ui));
+
 
         $.getJSON('theme/plugins.json', function(f){
             $.each(f.plugins, function(name){

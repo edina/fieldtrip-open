@@ -341,14 +341,23 @@ body .ui-loader{
     border-bottom: #2c3f62 solid 1px;
 }
 
+#saved-records-page .ui-listview a,
+    text-decoration: none;
+}
+
+#saved-records-page .ui-listview fieldset{
+    padding: 0;
+    margin: 0;
+}
+
 
 /********* Annotation ******************/
 
-#annotate-page label, #annotate-page legend{
-    font-size: 16px;
-    padding-bottom: 0.2em;
-    width: 100%;
-}
+/* #annotate-page label, #annotate-page legend{ */
+/*     font-size: 16px; */
+/*     padding-bottom: 0.2em; */
+/*     width: 100%; */
+/* } */
 
 #annotate-form{
     position: relative;
