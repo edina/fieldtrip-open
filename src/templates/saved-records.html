@@ -1,14 +1,12 @@
 <div id="saved-records-page" data-role="page" data-theme="b">
 
-  <div data-role="header" data-position="fixed">
-    <h1>Fieldtrip GB</h1>
-  </div>
+  {{header}}
 
   <div data-iscroll="" data-role="content">
     <div class="non-map-body-white ui-overlay-shadow">
       <div id="saved-records-page-header" class="ui-grid-a ui-header">
         <div class="ui-block-a">
-          <h2>View Records</h2>
+          <h2>{{body["view-records"]}}</h2>
         </div>
       </div>
 
@@ -19,33 +17,8 @@
     </div>
   </div>
 
-  <div id="saved-records-delete-popup"
-       data-role="popup"
-       data-overlay-theme="a"
-       class="ui-corner-all">
-    <div data-theme="d" class="ui-corner-all ui-content">
-      <p>Are you sure you want to delete record
-        <span id="saved-record-delete-popup-name"></span>?
-      </p>
-      <a href="#"
-         data-theme="a"
-         data-role="button"
-         data-inline="true"
-         data-rel="back">Cancel</a>
-      <a id="saved-record-delete-confirm"
-         href="#"
-         data-theme="a"
-         data-role="button"
-         data-inline="true">Delete</a>
-    </div>
-  </div>
+  {{popups}}
 
-  <div id="saved-record-sync-popup"
-       data-role="popup"
-       class="ui-corner-all">
-  </div>
-
-  <div class="menu" data-role="footer" data-position="fixed">
-  </div>
+  {{footer}}
 
 </div>

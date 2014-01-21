@@ -31,7 +31,7 @@ DAMAGE.
 
 from email.mime.text import MIMEText
 
-from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings
+from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings, task
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from jinja2 import Environment, PackageLoader, FileSystemLoader
@@ -52,7 +52,7 @@ PROJ4JS_VERSION    = '1.1.0'
 
 config = None
 
-
+@task
 def install_project(platform='android',
                     dist_dir='apps',
                     target='local'):
@@ -256,7 +256,7 @@ def install_project(platform='android',
         js_mobile = os.sep.join((runtime, js_dir, 'openlayers.js'))
         local('./build.py %s %s' % (cfg_file, js_mobile))
 
-
+@task
 def deploy_android():
     """
     Deploy android to device connected to machine
@@ -282,7 +282,7 @@ def deploy_android():
                 # retry install
                 local(cmd)
 
-
+@task
 def release_android(beta='True', overwrite='False', email=False):
     """
     Release version of field trip app
@@ -364,6 +364,7 @@ def release_android(beta='True', overwrite='False', email=False):
     if email:
         _email(new_file_name, version, beta)
 
+@task
 def generate_docs():
     """
     Auto generate javascript markdown documentation
@@ -371,6 +372,7 @@ def generate_docs():
 
     local('jsdox --output docs/ src/www/js/')
 
+@task
 def update_app():
     """Update app with latest configuration"""
     proj_home = _get_source()[1]
@@ -383,7 +385,7 @@ def update_app():
                                     os.sep.join((runtime, 'www'))))
 
 
-
+@task
 def copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     """
     Copy APK file to servers
@@ -567,6 +569,7 @@ def _write_data(fil, filedata):
 
 
 #########################HTML GENERATION###################################
+@task
 def generate_templates():
     """generate files"""
     root, proj_home, src_dir = _get_source()
@@ -584,9 +587,14 @@ def generate_templates():
             if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
                 fil = os.sep.join((path, f.split(".")[0]+"Data.json"))
                 if os.path.exists(fil):
+                    print "generating file {0}".format(f)
                     data = json.loads(open(fil).read())
                     data["header"].update(header_data)
                     data["footer"].update(footer_data)
                     template = environ.get_template(f)
-                    _write_data(os.sep.join((export_path, f)), template.render(body=data["body"], popups=data["popups"], header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"])))
+                    popups=[]
+                    for popup in data["popups"]:
+                        popup_template = environ.get_template(data["popups"][popup]["template"])
+                        popups.append(popup_template.render(data=data["popups"][popup]["data"]))
+                    _write_data(os.sep.join((export_path, f)), template.render(body=data["body"], popups="\n".join(popups), header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"])))
     
