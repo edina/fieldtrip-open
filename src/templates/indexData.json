@@ -1,0 +1,43 @@
+{
+    "header": {
+        "buttons" : {
+            "gpstrack": {
+                "class": "gpstrack-running",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext",
+                "data-shadow": "false",
+                "data-iconshadow": "false",
+                "style": "display: none",
+                "value": ""
+            },
+            "exit": {
+                "id": "home-exit",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext",
+                "value": "Exit"
+            }
+        }
+    },
+    "body": {
+        "section1": {
+            "title": "Maps",
+            "items": {
+                "item1": {
+                    "div": {"grid": "a"},
+                    "a": {"class": "ui-block-a", "url": "map.html"},
+                    "img": {"img-src": "css/images/online.png", "alt": "View Map"}
+                }
+            }
+        }
+    },
+    "footer":{
+        
+    },
+    "popups": {
+        
+    }
+}

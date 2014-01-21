@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Fieldtrip {{header["title"]}}</title>
+
+    <link rel="stylesheet" href="css/ext/jquery-mobile.css">
+    <link rel="stylesheet" href="css/style.css" type="text/css"
+          media="screen" title="Fieldtrip {{header["title"]}}">
+
+    <script src="js/ext/jquery.js"></script>
+    <script src="js/ext/jquery-mobile.js"></script>
+    <script data-main="js/main" src="js/ext/requirejs.js"></script>
+  </head>
+
+  <body>
+
+    <div id="home-page" data-role="page" data-theme="a">
+      {{header}}
+
+      <div id="home-content" class="non-map-body" data-role="content">
+        {% for key, sections in body.iteritems() %}
+          <h2>{{sections.title}}</h2>
+          <div class="nav-icons ui-grid-a">
+            
+          </div>
+        {% endfor %}
+      </div>
+
+      {{footer}}
+    </div>
+
+  </body>
+
+</html>
