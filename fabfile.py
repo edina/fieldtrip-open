@@ -570,8 +570,8 @@ def _write_data(fil, filedata):
 def generate_templates():
     """generate files"""
     root, proj_home, src_dir = _get_source()
-    path = os.sep.join((root, 'templates'))
-    export_path = os.sep.join((src_dir, 'www', 'templates'))
+    path = os.sep.join((src_dir, 'templates'))
+    export_path = os.sep.join((src_dir, 'www', 'html'))
     environ = Environment(loader=FileSystemLoader(path))
 
     header_data = json.loads(open(os.sep.join((path, 'headerData.json'))).read())
@@ -581,15 +581,12 @@ def generate_templates():
 
     for path, dirs, files in os.walk(path):
         for f in files:
-            #print f
             if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
-                print f
                 fil = os.sep.join((path, f.split(".")[0]+"Data.json"))
                 if os.path.exists(fil):
                     data = json.loads(open(fil).read())
                     data["header"].update(header_data)
                     data["footer"].update(footer_data)
-                    print footer_template.render(data=data["footer"])
                     template = environ.get_template(f)
                     _write_data(os.sep.join((export_path, f)), template.render(body=data["body"], popups=data["popups"], header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"])))
     
