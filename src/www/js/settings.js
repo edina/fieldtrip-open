@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, EDINA,
+Copyright (c) 2014, EDINA.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -31,12 +31,79 @@ DAMAGE.
 
 "use strict";
 
-define(function(){
+/**
+ * TODO
+ */
+define(['config'], function(config){
+    // TODO use config instead
+    var SERVER_URL_DEFAULT = 'http://fieldtripgb.edina.ac.uk';
+    var stored = localStorage.getItem('settings');
+    var vals;
 
+    if(stored){
+        vals = JSON.parse(stored);
+    }
+    else{
+        vals = {
+            locateInterval: 0,
+            debugGPS: false,
+        }
+    }
 
+    if(typeof(vals.pcapiUrl) === 'undefined'){
+        vals.pcapiUrl = config.server_url_default;
+    }
+    if(typeof(vals.mapserverUrl) === 'undefined'){
+        vals.mapserverUrl = server_url_default;
+    }
 
 return{
+    /**
+     * @return Should GPS capture be run in debug mode?
+     */
+    debugGPS: function(){
+        return vals.debugGPS;
+    },
 
-};
+    /**
+     * @return Locate interval.
+     */
+    getLocateInterval: function(){
+        return vals.locateInterval;
+    },
 
+    /**
+     * @return URL of the map server.
+     */
+    getMapServerUrl: function(){
+        return vals.mapserverUrl;
+    },
+
+    /**
+     * TODO
+     */
+    getPcapiUrl: function(){
+        return vals.pcapiUrl;
+    },
+
+    /**
+     * Restore saved settings.
+     */
+    restore: function(){
+        utils.selectVal("#settings-pcapi-url", vals.pcapiUrl);
+        utils.selectVal("#settings-mapserver-url", vals.mapserverUrl);
+        utils.sliderVal('#settings-debug-gps', vals.debugGPS);
+    },
+
+    /**
+     * Save current settings.
+     */
+    save: function(){
+        vals.debugGPS = $('#settings-debug-gps').val() === 'on';
+        vals.mapserverUrl = $('#settings-mapserver-url option:selected').val();
+        vals.pcapiUrl = $('#settings-pcapi-url option:selected').val();
+
+        localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
+    },
+}
 });

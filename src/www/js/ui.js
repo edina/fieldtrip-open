@@ -38,7 +38,8 @@ DAMAGE.
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
  */
-define(['map', 'renderer', 'utils'], function(map, renderer, utils){
+define(['map', 'renderer', 'utils', 'settings'],
+       function(map, renderer, utils, settings){
     var portraitScreenHeight;
     var landscapeScreenHeight;
 
@@ -51,6 +52,25 @@ define(['map', 'renderer', 'utils'], function(map, renderer, utils){
         portraitScreenHeight = $(window).width();
         landscapeScreenHeight = $(window).height();
     }
+
+    /**
+     * Set map to user's location.
+     * @param secrectly If true do not show page loading msg.
+     * @param updateAnnotateLayer Should annotate layer be updated after geolocate?
+     * @param if no user location found should default be used?
+     */
+    var geoLocate = function(options){
+        if(typeof(options.secretly) === 'undefined'){
+            options.secretly = false;
+        }
+
+        map.geoLocate({
+            interval: settings.getLocateInterval(),
+            secretly: options.secretly,
+            updateAnnotateLayer: options.updateAnnotateLayer,
+            useDefault: options.useDefault
+        });
+    };
 
     // work out page height
     var resizePage = function(){
@@ -163,7 +183,13 @@ var _ui = {
     },
 
     init: function(){
-        //console.log('ui.init');
+        console.log('ui.init');
+        geoLocate({
+            secretly: true,
+            updateAnnotateLayer: false,
+            useDefault: true
+        });
+
     },
 
     /**
@@ -214,6 +240,13 @@ var _ui = {
     mapPageShow: function(){
         map.display('map');
         resizePage();
+
+        // geoLocate({
+        //     secretly: false,
+        //     updateAnnotateLayer: false,
+        //     useDefault: true
+        // });
+
     },
 
     pageBeforeShow: function(id){
@@ -319,6 +352,7 @@ if(utils.isMobileDevice()){
     return _this;
 }
 else{
+    _ui.init();
     return _ui;
 }
 
