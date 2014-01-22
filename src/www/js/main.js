@@ -63,36 +63,34 @@ function onDeviceReady(){
 
     require(['ui'], function(ui) {
         $(document).on('pageinit', 'div[data-role="page"]', function(event){
-            console.log("pageinit");
+            //console.log("pageinit");
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
-            console.log("pagebeforeshow");
+            //console.log("pagebeforeshow");
             ui.pageChange();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(event){
-            console.log("pageshow");
+            //console.log("pageshow");
         });
 
+        $(document).on('pageinit', '#map-page', function(event){
+            ui.mapPageInit();
+        });
 
-        $(document).on('pageshow',
-                       '#home-page',
-                       $.proxy(ui.homePage, ui));
-        $(document).on('pageshow',
-                       '#map-page',
-                       $.proxy(ui.mapPageShow, ui));
-        $(document).on('pageshow',
-                       '#capture-page',
-                       $.proxy(ui.capturePage, ui));
-        $(document).on('pageshow',
-                       '#annotate-page',
-                       $.proxy(ui.annotatePage, ui));
-        $(document).on('pageshow',
-                       '#annotate-preview-page',
-                       $.proxy(ui.annotatePreviewPage, ui));
-        $(document).on('pageinit',
-                       '#saved-records-page',
-                       $.proxy(ui.savedRecordsPage, ui));
+        var onShows = {
+            'home-page': ui.homePage,
+            'map-page': ui.mapPage,
+            'capture-page': ui.capturePage,
+            'annotate-page': ui.annotatePage,
+            'annotate-preview-page': ui.annotatePreviewPage,
+            'saved-records-page': ui.savedRecordsPage,
+        };
 
+        $.each(onShows, function(id, func){
+            $(document).on('pageshow',
+                           '#' + id,
+                           $.proxy(func, ui));
+        });
 
         $.getJSON('theme/plugins.json', function(f){
             $.each(f.plugins, function(name){

@@ -410,7 +410,6 @@ var _ui = {
      * text below
      */
     mapPageInit: function(){
-        //map.display('map');
         // set up buttons when records a visible on map
         var recordsVisible = function(){
             $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
@@ -450,7 +449,7 @@ var _ui = {
         //map.display('map');
     },
 
-    mapPageShow: function(){
+    mapPage: function(){
         map.display('map');
         resizePage();
 
@@ -462,9 +461,9 @@ var _ui = {
 
     },
 
-    pageBeforeShow: function(id){
-        var page = id.split("-")[0];
-    },
+    // pageBeforeShow: function(id){
+    //     var page = id.split("-")[0];
+    // },
 
     pageShow: function(){
         //console.log("page show done");
