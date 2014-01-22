@@ -600,7 +600,7 @@ def generate_templates(platform="android"):
                     for popup in data["popups"]:
                         popup_template = environ.get_template(data["popups"][popup]["template"])
                         popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-                    output = template.render(body=data["body"], popups="\n".join(popups), platform=platform, header=header_template.render(data=data["header"],  platform=platform), footer=footer_template.render(data=data["footer"],  platform=platform))
+                    output = template.render(body=_sorted(data["body"]), popups="\n".join(popups), platform=platform, header=header_template.render(data=data["header"],  platform=platform), footer=footer_template.render(data=data["footer"],  platform=platform))
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
 def _prettify(output, indent='2'):
