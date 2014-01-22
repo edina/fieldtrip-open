@@ -577,6 +577,7 @@ def generate_templates(platform="android"):
     path = os.sep.join((src_dir, 'templates'))
     export_path = os.sep.join((src_dir, 'www'))
     environ = Environment(loader=FileSystemLoader(path))
+    environ.globals["_get_letter"] = _get_letter
 
     header_data = json.loads(open(os.sep.join((path, 'headerData.json'))).read())
     footer_data = json.loads(open(os.sep.join((path, 'footerData.json'))).read())
@@ -609,3 +610,8 @@ def _prettify(output, indent='2'):
         s = soup.div.prettify()
     r = re.compile(r'^(\s*)', re.MULTILINE)
     return r.sub(r'\1\1', s)
+
+def _get_letter(obj):
+    """ """
+    i = len(obj)
+    return chr(i+ord('a'))

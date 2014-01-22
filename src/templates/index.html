@@ -21,12 +21,18 @@
       {{header}}
 
       <div id="home-content" class="non-map-body" data-role="content">
-        {% for key, sections in body.iteritems() %}
-          <h2>{{sections.title}}</h2>
-          <div class="nav-icons ui-grid-a">
-
+      {% for key, sections in body.iteritems() %}
+        <h2>{{sections.title}}</h2>
+        <div class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
+        {% for item in sections["items"] %}
+          <div {% for key, value in sections["items"][item]["div"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+            <a {% for key, value in sections["items"][item]["a"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+              <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+            </a>
           </div>
         {% endfor %}
+        </div>
+      {% endfor %}
       </div>
 
       {{footer}}

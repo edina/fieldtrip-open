@@ -29,9 +29,34 @@
             "title": "Maps",
             "items": {
                 "item1": {
-                    "div": {"grid": "a"},
-                    "a": {"class": "ui-block-a", "url": "map.html"},
-                    "img": {"img-src": "css/images/online.png", "alt": "View Map"}
+                    "div": {"class": "ui-block-a"},
+                    "a": {"href": "map.html"},
+                    "img": {"src": "css/images/online.png", "alt": "View Map"}
+                }
+            }
+        },
+        "section2": {
+            "title": "Capture",
+            "items": {
+                "item1": {
+                    "div": {"class": "ui-block-a"},
+                    "a": {"class": "annotate-image-form", "href": "#"},
+                    "img": {"src": "css/images/images.png", "alt": "Capture Image"}
+                },
+                "item2": {
+                    "div": {"class": "ui-block-b"},
+                    "a": {"class": "annotate-audio-form", "href": "#"},
+                    "img": {"src": "css/images/audio.png", "alt": "Capture Audio"}
+                },
+                "item3": {
+                    "div": {"class": "ui-block-c"},
+                    "a": {"class": "annotate-text-form", "href": "#"},
+                    "img": {"src": "css/images/text.png", "alt": "Capture Text"}
+                },
+                "item4": {
+                    "div": {"class": "ui-block-d"},
+                    "a": {"class": "annotate-gps", "href": "annotate-gps.html"},
+                    "img": {"src": "css/images/images.png", "alt": "Capture GPS Track"}
                 }
             }
         }
