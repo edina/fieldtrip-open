@@ -1,0 +1,33 @@
+{
+    "header": {
+        "buttons" : {
+            "user-locate": {
+                "platforms": ["android", "ios"],
+                "class": "user-locate",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext"
+            },
+            "map-search": {
+                "platforms": ["android", "ios"],
+                "href": "search.html",
+                "class": "map-search",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos":"notext"
+            }
+        }
+    },
+    "body": {
+        "drag": "Drag pin to Reposition",
+        "cancel" : "Cancel"
+    },
+    "footer":{
+        
+    },
+    "popups": {
+        
+    }
+}
