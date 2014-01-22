@@ -91,6 +91,22 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
         }, this));
     };
 
+    var exitApp = function(){
+        $('#home-exit-popup').popup('open');
+
+        $('#home-exit-confirm').off('vmousedown');
+        $('#home-exit-confirm').on(
+            'vmousedown',
+            $.proxy(function(){
+                // TODO - the gps track plugin needs to do this
+                // ensure any running track is completed
+                //this.annotations.gpsCaptureComplete();
+
+                navigator.app.exitApp();
+            }, this)
+        );
+    };
+
     /**
      * Set map to user's location.
      * @param secrectly If true do not show page loading msg.
@@ -112,7 +128,6 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
 
     // work out page height
     var resizePage = function(){
-        //console.log("resize");
         var offset = 0;
 
         var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
@@ -150,6 +165,12 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
             resizePage();
         }
     };
+
+    // exit button
+    $(document).on('vmousedown', '#home-exit', function(){
+        console.log("=>");
+        exitApp();
+    });
 
     // map zooming
     $(document).on('click',
@@ -396,7 +417,6 @@ var _ui = {
     },
 
     init: function(){
-        console.log('ui.init');
         geoLocate({
             secretly: true,
             updateAnnotateLayer: false,
@@ -441,36 +461,21 @@ var _ui = {
             recordsHidden();
         }
 
-        map.showAnnotateLayer();
-        //this.commonMapPageInit('map');
-        //this.map.updateSize();
-
-        // TODO -remove
-        //map.display('map');
+        map.showLocateLayer();
     },
 
+    /**
+     * TODO
+     */
     mapPage: function(){
         map.display('map');
-        //resizePage();
-
-        // geoLocate({
-        //     secretly: false,
-        //     updateAnnotateLayer: false,
-        //     useDefault: true
-        // });
-
     },
 
-    // pageBeforeShow: function(id){
-    //     var page = id.split("-")[0];
-    // },
 
-    pageShow: function(){
-        //console.log("page show done");
-    },
-
+    /**
+     * TODO
+     */
     pageChange: function() {
-        console.log("pageChange");
         resizePage();
     },
 
@@ -481,7 +486,6 @@ var _ui = {
         //this.commonPageInit();
         var annotations = records.getSavedRecords();
         utils.printObj(annotations);
-        console.log('*************');
 
         var addAnnotation = function(id, annotation){
             $('#saved-records-list-list').append(
@@ -649,41 +653,17 @@ var _ui = {
     setUpExitButton: function(){
     }
 
-}
+};
 
 var _ios = {
     init: function(){
     }
-}
+};
 
 var _android = {
     init: function(){
-        console.log('android.init');
-        // exit button
-        $(document).on(
-            'vmousedown',
-            '#home-exit',
-            _android.exitApp
-        );
     },
-
-    exitApp: function(){
-        console.log('home-exit-popup');
-        $('#home-exit-popup').popup('open');
-
-        $('#home-exit-confirm').off('vmousedown');
-        $('#home-exit-confirm').on(
-            'vmousedown',
-            $.proxy(function(){
-                // TODO
-                // ensure any running track is completed
-                //this.annotations.gpsCaptureComplete();
-
-                navigator.app.exitApp();
-            }, this)
-        );
-    }
-}
+};
 
 if(utils.isMobileDevice()){
     var _this = {};

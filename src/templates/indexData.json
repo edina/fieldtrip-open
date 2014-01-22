@@ -1,18 +1,7 @@
 {
     "header": {
+        "title": "jings",
         "buttons" : {
-            "gpstrack": {
-                "platforms": ["android", "ios"],
-                "class": "gpstrack-running",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
-                "data-iconpos": "notext",
-                "data-shadow": "false",
-                "data-iconshadow": "false",
-                "style": "display: none",
-                "value": ""
-            },
             "exit": {
                 "platforms": ["android"],
                 "id": "home-exit",
@@ -51,19 +40,21 @@
                     "div": {"class": "ui-block-c"},
                     "a": {"class": "annotate-text-form", "href": "#"},
                     "img": {"src": "css/images/text.png", "alt": "Capture Text"}
-                },
-                "item4": {
-                    "div": {"class": "ui-block-d"},
-                    "a": {"class": "annotate-gps", "href": "annotate-gps.html"},
-                    "img": {"src": "css/images/images.png", "alt": "Capture GPS Track"}
                 }
             }
         }
     },
     "footer":{
-        
+
     },
     "popups": {
-        
+        "popup1":{
+            "template": "exit-popup.html",
+            "data": {
+                "question": "Are you sure you want to exit Fieldtrip Open?",
+                "cancel": "Cancel",
+                "exit": "Exit"
+            }
+        }
     }
 }

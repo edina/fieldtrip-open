@@ -229,6 +229,9 @@ def install_project(platform='android',
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
 
+    # generate html
+    generate_html()
+
     # install proj4js
     proj4js_path = os.sep.join((dist_path, 'proj4js'))
     if not os.path.exists(proj4js_path):
@@ -572,8 +575,8 @@ def _write_data(fil, filedata):
 
 #########################HTML GENERATION###################################
 @task
-def generate_templates(platform="android", cordova=False):
-    """generate files"""
+def generate_html(platform="android", cordova=False):
+    """Generate html from templates"""
     if isinstance(cordova, basestring):
         cordova = str2bool(cordova)
     root, proj_home, src_dir = _get_source()
@@ -604,7 +607,15 @@ def generate_templates(platform="android", cordova=False):
                         popup_template = environ.get_template(data["popups"][popup]["template"])
                         popups.append(popup_template.render(data=data["popups"][popup]["data"]))
                         
-                    output = template.render(header_data=header_data, body=_sorted(data["body"]), popups="\n".join(popups), platform=platform, header=header_template.render(data=data["header"],  platform=platform), footer=footer_template.render(data=data["footer"],  platform=platform))
+                    output = template.render(
+                        header_data=header_data,
+                        body=_sorted(data["body"]),
+                        popups="\n".join(popups),
+                        platform=platform,
+                        header=header_template.render(data=data["header"],
+                                                      platform=platform),
+                                                      footer=footer_template.render(data=data["footer"],
+                                                                                    platform=platform))
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
 def _prettify(output, indent='2'):

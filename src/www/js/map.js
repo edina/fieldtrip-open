@@ -32,6 +32,11 @@ DAMAGE.
 "use strict";
 
 define(['ext/openlayers', 'records', 'utils'],function(ol, records, utils){
+    var RESOLUTIONS = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
+
+    var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
+    var POST_LOCATE_ZOOM_TO = RESOLUTIONS.length - 1;
+
     var INTERNAL_PROJECTION = new OpenLayers.Projection("EPSG:900913")
     var EXTERNAL_PROJECTION = new OpenLayers.Projection("EPSG:4326")
 
@@ -88,6 +93,13 @@ var _this = {
     },
 
     /**
+     * @return layer with the user icon.
+     */
+    getLocateLayer: function(){
+        return this.getLayer('locate');
+    },
+
+    /**
      * @param layerName
      * @return Openlayers layer by name.
      */
@@ -134,7 +146,7 @@ var _this = {
                     value: 'audio',
                 }),
                 symbolizer: {
-                    externalGraphic: '/css/images/audiomarker.png',
+                    externalGraphic: 'css/images/audiomarker.png',
                     graphicWidth: 35,
                     graphicHeight: 50,
                     graphicYOffset: -50
@@ -193,7 +205,7 @@ var _this = {
         positionMarkerStyle.graphicOpacity = 1;
         positionMarkerStyle.graphicWidth = 65;
         positionMarkerStyle.graphicHeight = 64;
-        positionMarkerStyle.externalGraphic = "/css/images/marker.png";
+        positionMarkerStyle.externalGraphic = "css/images/marker.png";
         positionMarkerStyle.graphicYOffset = -64;
 
         var positionMarkerLayer = new OpenLayers.Layer.Vector(
@@ -242,7 +254,7 @@ var _this = {
             }
         }));
 
-        this.map.zoomTo(2);
+        //this.map.zoomTo(2);
 
         this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic: true}));
 
@@ -355,6 +367,13 @@ var _this = {
     geolocateTimeout: 3000,
 
     /**
+     * Hide annotation layer.
+     */
+    hideAnnotateLayer: function(){
+        this.getAnnotateLayer().setVisibility(false);
+    },
+
+    /**
      * Remove all annotations / records from map.
      */
     hideRecordsLayer: function(){
@@ -407,10 +426,17 @@ var _this = {
     },
 
     /**
-     * TODO
+     * Show annotation marker.
      */
-    showAnnotateLayer: function(annotation){
-        this.getAnnotateLayer().setVisibility(false);
+    showAnnotateLayer: function(){
+        this.getAnnotateLayer().setVisibility(true);
+    },
+
+    /**
+     * Show user's position.
+     */
+    showLocateLayer: function(){
+        this.getLocateLayer().setVisibility(true);
     },
 
     /**
@@ -475,7 +501,6 @@ var _this = {
     updateLayer: function(layer, id, zoom, lonLat){
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
         if(lonLat === undefined || lonLat === null){
-            // by default centre on user
             // TODO - what about OS
             //lonLat = toNationalGrid(this.userLonLat);
             lonLat = this.toMercator(this.userLonLat);
@@ -508,11 +533,11 @@ var _this = {
      */
     updateLocateLayer: function(){
         var zoom = this.map.getZoom();
-        if(zoom < Map.MIN_LOCATE_ZOOM_TO){
-            zoom = this.postLocateZoomTo;
+        if(zoom < MIN_LOCATE_ZOOM_TO){
+            zoom = POST_LOCATE_ZOOM_TO;
         }
 
-        this.updateLayer(this.getAnnotateLayer(), USER_POSITION_ATTR, zoom);
+        this.updateLayer(this.getLocateLayer(), USER_POSITION_ATTR, zoom);
     },
 
     /**
