@@ -37,14 +37,19 @@ $(function() {
         onDeviceReady();
     }
     else{
+        console.log("=>");
         // problems with requirejs and cordova,
         // for the timebeing add it as a script tag
-        $('head').append('<script src="' + 'cordova.js"></script>');
-        document.addEventListener("deviceready", onDeviceReady, false);
+        //$('head').append('<script src="' + 'cordova.js"></script>');
+        // $.getScript('../cordova.js', function(){
+        //     console.log("==>");
+        //     document.addEventListener("deviceready", onDeviceReady, false);
+        // });
     }
 });
 
 function onDeviceReady(){
+    console.log("==>");
     require.config({
         paths: {
             "plugins": "../plugins",

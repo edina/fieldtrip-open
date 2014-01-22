@@ -91,6 +91,22 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
         }, this));
     };
 
+    var exitApp = function(){
+        $('#home-exit-popup').popup('open');
+
+        $('#home-exit-confirm').off('vmousedown');
+        $('#home-exit-confirm').on(
+            'vmousedown',
+            $.proxy(function(){
+                // TODO - the gps track plugin needs to do this
+                // ensure any running track is completed
+                //this.annotations.gpsCaptureComplete();
+
+                navigator.app.exitApp();
+            }, this)
+        );
+    };
+
     /**
      * Set map to user's location.
      * @param secrectly If true do not show page loading msg.
@@ -149,6 +165,12 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
             resizePage();
         }
     };
+
+    // exit button
+    $(document).on('vmousedown', '#home-exit', function(){
+        console.log("=>");
+        exitApp();
+    });
 
     // map zooming
     $(document).on('click',
@@ -631,39 +653,17 @@ var _ui = {
     setUpExitButton: function(){
     }
 
-}
+};
 
 var _ios = {
     init: function(){
     }
-}
+};
 
 var _android = {
     init: function(){
-        // exit button
-        $(document).on(
-            'vmousedown',
-            '#home-exit',
-            _android.exitApp
-        );
     },
-
-    exitApp: function(){
-        $('#home-exit-popup').popup('open');
-
-        $('#home-exit-confirm').off('vmousedown');
-        $('#home-exit-confirm').on(
-            'vmousedown',
-            $.proxy(function(){
-                // TODO
-                // ensure any running track is completed
-                //this.annotations.gpsCaptureComplete();
-
-                navigator.app.exitApp();
-            }, this)
-        );
-    }
-}
+};
 
 if(utils.isMobileDevice()){
     var _this = {};

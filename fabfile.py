@@ -229,6 +229,9 @@ def install_project(platform='android',
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
 
+    # generate html
+    generate_html()
+
     # install proj4js
     proj4js_path = os.sep.join((dist_path, 'proj4js'))
     if not os.path.exists(proj4js_path):
@@ -572,8 +575,8 @@ def _write_data(fil, filedata):
 
 #########################HTML GENERATION###################################
 @task
-def generate_templates(platform="android"):
-    """generate files"""
+def generate_html(platform="android"):
+    """Generate html from templates"""
     root, proj_home, src_dir = _get_source()
     path = os.sep.join((src_dir, 'templates'))
     export_path = os.sep.join((src_dir, 'www'))
@@ -600,7 +603,15 @@ def generate_templates(platform="android"):
                     for popup in data["popups"]:
                         popup_template = environ.get_template(data["popups"][popup]["template"])
                         popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-                    output = template.render(header_title=data["header"]["title"], body=_sorted(data["body"]), popups="\n".join(popups), platform=platform, header=header_template.render(data=data["header"],  platform=platform), footer=footer_template.render(data=data["footer"],  platform=platform))
+                    output = template.render(
+                        header_title=data["header"]["title"],
+                        body=_sorted(data["body"]),
+                        popups="\n".join(popups),
+                        platform=platform,
+                        header=header_template.render(data=data["header"],
+                                                      platform=platform),
+                                                      footer=footer_template.render(data=data["footer"],
+                                                                                    platform=platform))
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
 def _prettify(output, indent='2'):
