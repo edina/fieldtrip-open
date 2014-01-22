@@ -21,8 +21,8 @@
         }
     },
     "body": {
-        "list": "List Records",
-        "show" : "Show Records"
+        "drag": "Drag pin to Reposition",
+        "cancel" : "Cancel"
     },
     "footer":{
         
