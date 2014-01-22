@@ -3,7 +3,7 @@
     <ul>
       {% for key, items in data.iteritems() %}
         <li>
-          <a {% for i, item in items.iteritems()%} {{i}}="{{item}}" {% endfor %}>{{items["name"]}}</a>
+          <a {% for i, item in items.iteritems()%} {%if i != "platforms" %}{{i}}="{{item}}" {% endif %}{% endfor %}>{{items["name"]}}</a>
         </li>
       {% endfor %}
     </ul>
