@@ -1,17 +1,8 @@
 {
     "header": {
         "buttons" : {
-            "gpstrack": {
-                "class": "gpstrack-running",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
-                "data-iconpos": "notext",
-                "data-shadow": "false",
-                "data-iconshadow": "false",
-                "style": "display: none"
-            },
             "user-locate": {
+                "platforms": ["android", "ios"],
                 "class": "user-locate",
                 "data-role": "button",
                 "data-inline": "true",
@@ -19,6 +10,7 @@
                 "data-iconpos": "notext"
             },
             "map-search": {
+                "platforms": ["android", "ios"],
                 "href": "search.html",
                 "class": "map-search",
                 "data-role": "button",
