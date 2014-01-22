@@ -571,7 +571,7 @@ def _write_data(fil, filedata):
 
 #########################HTML GENERATION###################################
 @task
-def generate_templates():
+def generate_templates(platform="android"):
     """generate files"""
     root, proj_home, src_dir = _get_source()
     path = os.sep.join((src_dir, 'templates'))
@@ -597,12 +597,15 @@ def generate_templates():
                     for popup in data["popups"]:
                         popup_template = environ.get_template(data["popups"][popup]["template"])
                         popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-                    output = template.render(body=data["body"], popups="\n".join(popups), header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"]))
+                    output = template.render(body=data["body"], popups="\n".join(popups), platform=platform, header=header_template.render(data=data["header"],  platform=platform), footer=footer_template.render(data=data["footer"],  platform=platform))
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
 def _prettify(output, indent='2'):
     """ custom indentation for BeautifulSoup"""
     soup = BeautifulSoup(output, "html5lib")
-    s = soup.div.prettify()
+    if len(soup.findAll('html')) > 0:
+        s = soup.prettify()
+    else:
+        s = soup.div.prettify()
     r = re.compile(r'^(\s*)', re.MULTILINE)
     return r.sub(r'\1\1', s)

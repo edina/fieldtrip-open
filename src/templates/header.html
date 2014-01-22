@@ -2,7 +2,9 @@
   <h1>Fieldtrip {{data["title"]}}</h1>
   <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
     {% for key, items in data["buttons"].iteritems() %}
-      <a {% for el, item in items.iteritems() %}{% if el != "value" %} {{el}}="{{item}}" {% endif %}{% endfor %}>{{items["value"]}}</a>
+      {% if platform in items["platforms"] %}
+      <a {% for el, item in items.iteritems() %}{% if el != "value" and el != "platforms" %} {{el}}="{{item}}" {% endif %}{% endfor %}>{{items["value"]}}</a>
+      {% endif %}
     {% endfor %}
     </a>
   </div>

@@ -2,6 +2,7 @@
     "header": {
         "buttons" : {
             "gpstrack": {
+                "platforms": ["android", "ios"],
                 "class": "gpstrack-running",
                 "data-role": "button",
                 "data-inline": "true",
@@ -13,6 +14,7 @@
                 "value": ""
             },
             "exit": {
+                "platforms": ["android"],
                 "id": "home-exit",
                 "data-role": "button",
                 "data-inline": "true",
