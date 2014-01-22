@@ -45,6 +45,7 @@ import json
 import os
 import smtplib
 import re, itertools
+import collections
 
 
 CORDOVA_VERSION   = '3.3.1-0.1.2'
@@ -578,6 +579,7 @@ def generate_templates(platform="android"):
     export_path = os.sep.join((src_dir, 'www'))
     environ = Environment(loader=FileSystemLoader(path))
     environ.globals["_get_letter"] = _get_letter
+    environ.globals["_sorted"] = _sorted
 
     header_data = json.loads(open(os.sep.join((path, 'headerData.json'))).read())
     footer_data = json.loads(open(os.sep.join((path, 'footerData.json'))).read())
@@ -604,7 +606,7 @@ def generate_templates(platform="android"):
 def _prettify(output, indent='2'):
     """ custom indentation for BeautifulSoup"""
     soup = BeautifulSoup(output, "html5lib")
-    if len(soup.findAll('html')) > 0:
+    if len(soup.findAll('script')) > 0:
         s = soup.prettify()
     else:
         s = soup.div.prettify()
@@ -613,5 +615,10 @@ def _prettify(output, indent='2'):
 
 def _get_letter(obj):
     """ """
-    i = len(obj)
+    i = len(obj)-1
     return chr(i+ord('a'))
+
+def _sorted(dic):
+    """ """
+    dic = collections.OrderedDict(sorted(dic.items(), key=lambda t: t[0]))
+    return dic

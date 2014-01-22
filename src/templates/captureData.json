@@ -18,41 +18,34 @@
             "title": "Record",
             "items": {
                 "item1": {
-                    "grid": "a",
-                    "class": "annotate-image-form",
-                    "url": "#",
-                    "src": "css/images/images.png",
-                    "alt": "Capture Image",
+                    "div": {"class": "ui-block-a"},
+                    "a": {"class": "annotate-image-form", "url": "#"},
+                    "img": {"src": "css/images/images.png", "alt": "Capture Image"},
                     "title": "Images"
                 },
                 "item2": {
-                    "grid": "b",
-                    "class": "annotate-audio-form",
-                    "url": "#",
-                    "src": "css/images/audio.png",
-                    "alt": "Capture Audio",
+                    "div": {"class": "ui-block-b"},
+                    "a": {"class": "annotate-audio-form", "url": "#"},
+                    "img": {"src": "css/images/audio.png", "alt": "Capture Audio"},
                     "title": "Audio"
                 },
                 "item3": {
-                    "grid": "c",
-                    "class": "annotate-text-form",
-                    "url": "#",
-                    "src": "css/images/text.png",
-                    "alt": "Capture Text",
+                    "div": {"class": "ui-block-c"},
+                    "a": {"class": "annotate-text-form", "url": "#"},
+                    "img": {"src": "css/images/text.png", "alt": "Capture Text"},
                     "title": "Text"
                 },
                 "item4": {
-                    "grid": "d",
-                    "class": "gps-track-start",
-                    "url": "annotate-gps.html",
-                    "src": "css/images/gps.png",
-                    "alt": "Capture GPS Track",
+                    "div": {"class": "ui-block-d"},
+                    "a": {"class": "gps-track-start", "url": "annotate-gps.html"},
+                    "img": {"src": "css/images/gps.png", "alt": "Capture GPS Track"},
                     "title": "GPS Track"
                 }
             }
         },
         "section2": {
-            "title": "Custom Forms"
+            "title": "Custom Forms",
+            "items": {}
         }
     },
     "footer":{

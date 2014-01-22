@@ -5,19 +5,18 @@
   <div data-role="content" class="non-map-body">
     <div class="non-map-body-start"></div>
     <br/>
-    <h2>{{body["section1"]["title"]}}</h2>
-    <div class="nav-icons ui-grid-c">
-      {% for key, item in body["section1"]["items"].iteritems() %}
-      <div class="ui-block-{{item["grid"]}}">
-        <a class="{{item["class"]}}" href="{{item["url"]}}">
-          <img src="{{item["src"]}}" alt="{{item["alt"]}}">
+    {% for key, sections in body.iteritems() %}
+    <h2>{{sections.title}}</h2>
+    <div class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
+      {% for item in _sorted(sections["items"]) %}
+      <div {% for key, value in sections["items"][item]["div"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+        <a {% for key, value in sections["items"][item]["a"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+          <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
         </a>
-        <p>{{item["title"]}}</p>
       </div>
       {% endfor %}
     </div>
-    <h2>{{body["section2"]["title"]}}</h2>
-    <div id="capture-page-custom" class="nav-icons ui-grid-d"></div>
+    {% endfor %}
   </div>
 
   {{footer}}
