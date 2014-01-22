@@ -1,71 +1,63 @@
-<div id="saved-records-page" data-role="page" data-theme="b">
-
-  <div data-role="header" data-position="fixed">
-  <h1>Fieldtrip Open</h1>
-  <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
-    
-    </a>
+<div data-role="page" data-theme="b" id="saved-records-page">
+  <div data-position="fixed" data-role="header">
+    <h1>
+      Fieldtrip Open
+    </h1>
+    <div class="ui-header-buttons ui-btn-right" data-type="horizontal">
+    </div>
   </div>
-</div>
-
   <div data-iscroll="" data-role="content">
     <div class="non-map-body-white ui-overlay-shadow">
-      <div id="saved-records-page-header" class="ui-grid-a ui-header">
+      <div class="ui-grid-a ui-header" id="saved-records-page-header">
         <div class="ui-block-a">
-          <h2>View Records</h2>
+          <h2>
+            View Records
+          </h2>
         </div>
       </div>
-
-      <div id="saved-records-list" class="non-map-content">
-        <ul id="saved-records-list-list" data-role="listview" data-filter="true">
+      <div class="non-map-content" id="saved-records-list">
+        <ul data-filter="true" data-role="listview" id="saved-records-list-list">
         </ul>
       </div>
     </div>
   </div>
-
-  <div id="saved-records-delete-popup"
-    data-role="popup"
-    data-overlay-theme="a"
-    class="ui-corner-all">
- <div data-theme="d" class="ui-corner-all ui-content">
-   <p>Are you sure you want to delete record
-     <span id="saved-record-delete-popup-name"></span>?
-   </p>
-   <a href="#"
-      data-theme="a"
-      data-role="button"
-      data-inline="true"
-      data-rel="back">Cancel</a>
-   <a id="saved-record-delete-confirm"
-      href="#"
-      data-theme="a"
-      data-role="button"
-      data-inline="true">Delete</a>
- </div>
-</div>
-<div id="saved-record-sync-popup"
-     data-role="popup"
-     class="ui-corner-all">
-</div>
-
-  <div class="menu" data-role="footer" data-position="fixed">
-  <div data-role="navbar">
-    <ul>
-      
-      <li>
-        <a  data-icon="custom"  href="index.html"  name="Home"  class="home-button" >Home</a>
-      </li>
-      
-      <li>
-        <a  data-icon="custom"  href="map.html"  name="Map"  class="map-button" >Map</a>
-      </li>
-      
-      <li>
-        <a  data-icon="custom"  href="capture.html"  name="Capture"  class="capture-button" >Capture</a>
-      </li>
-      
-    </ul>
+  <div class="ui-corner-all" data-overlay-theme="a" data-role="popup" id="saved-records-delete-popup">
+    <div class="ui-corner-all ui-content" data-theme="d">
+      <p>
+        Are you sure you want to delete record
+        <span id="saved-record-delete-popup-name">
+        </span>
+        ?
+      </p>
+      <a data-inline="true" data-rel="back" data-role="button" data-theme="a" href="#">
+        Cancel
+      </a>
+      <a data-inline="true" data-role="button" data-theme="a" href="#" id="saved-record-delete-confirm">
+        Delete
+      </a>
+    </div>
   </div>
-</div>
-
+  <div class="ui-corner-all" data-role="popup" id="saved-record-sync-popup">
+  </div>
+  <div class="menu" data-position="fixed" data-role="footer">
+    <div data-role="navbar">
+      <ul>
+        <li>
+          <a class="home-button" data-icon="custom" href="index.html" name="Home">
+            Home
+          </a>
+        </li>
+        <li>
+          <a class="map-button" data-icon="custom" href="map.html" name="Map">
+            Map
+          </a>
+        </li>
+        <li>
+          <a class="capture-button" data-icon="custom" href="capture.html" name="Capture">
+            Capture
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>

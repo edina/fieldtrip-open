@@ -1,55 +1,62 @@
-<div id="map-page" data-role="page" data-theme="a">
-  <div data-role="header" data-position="fixed">
-  <h1>Fieldtrip Open</h1>
-  <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
-    
-      <a  data-role="button"  data-iconpos="notext"  style="display: none"  data-iconshadow="false"  data-shadow="false"  data-inline="true"  data-transition="none"  class="gpstrack-running" ></a>
-    
-      <a  data-role="button"  data-iconpos="notext"  data-inline="true"  data-transition="none"  href="search.html"  class="map-search" ></a>
-    
-      <a  data-role="button"  data-inline="true"  class="user-locate"  data-iconpos="notext"  data-transition="none" ></a>
-    
-    </a>
+<div data-role="page" data-theme="a" id="map-page">
+  <div data-position="fixed" data-role="header">
+    <h1>
+      Fieldtrip Open
+    </h1>
+    <div class="ui-header-buttons ui-btn-right" data-type="horizontal">
+      <a class="gpstrack-running" data-iconpos="notext" data-iconshadow="false" data-inline="true" data-role="button" data-shadow="false" data-transition="none" style="display: none">
+      </a>
+      <a class="map-search" data-iconpos="notext" data-inline="true" data-role="button" data-transition="none" href="search.html">
+      </a>
+      <a class="user-locate" data-iconpos="notext" data-inline="true" data-role="button" data-transition="none">
+      </a>
+    </div>
   </div>
-</div>
-
   <div data-role="content">
-    <div id="map" class="map" ></div>
-
+    <div class="map" id="map">
+    </div>
     <div class="map-zoom-buttons">
-      <a data-role="button" class="map-zoom-button-in">+</a>
-      <a data-role="button" class="map-zoom-button-out">-</a>
+      <a class="map-zoom-button-in" data-role="button">
+        +
+      </a>
+      <a class="map-zoom-button-out" data-role="button">
+        -
+      </a>
     </div>
-
-    <div id="map-records-buttons" class="ui-grid-b">
-      <div id="map-records-buttons-list" class="ui-block-a">
-        <a href="saved-records.html"  data-role="button">List Records</a>
+    <div class="ui-grid-b" id="map-records-buttons">
+      <div class="ui-block-a" id="map-records-buttons-list">
+        <a data-role="button" href="saved-records.html">
+          List Records
+        </a>
       </div>
-      <div class="ui-block-b"></div>
-      <div id="map-records-buttons-ok" class="ui-block-c">
-        <a data-role="button">Show Records</a>
+      <div class="ui-block-b">
+      </div>
+      <div class="ui-block-c" id="map-records-buttons-ok">
+        <a data-role="button">
+          Show Records
+        </a>
       </div>
     </div>
-
   </div>
-
-  <div class="menu" data-role="footer" data-position="fixed">
-  <div data-role="navbar">
-    <ul>
-      
-      <li>
-        <a  data-icon="custom"  href="index.html"  name="Home"  class="home-button" >Home</a>
-      </li>
-      
-      <li>
-        <a  data-icon="custom"  href="map.html"  name="Map"  class="map-button" >Map</a>
-      </li>
-      
-      <li>
-        <a  data-icon="custom"  href="capture.html"  name="Capture"  class="capture-button" >Capture</a>
-      </li>
-      
-    </ul>
+  <div class="menu" data-position="fixed" data-role="footer">
+    <div data-role="navbar">
+      <ul>
+        <li>
+          <a class="home-button" data-icon="custom" href="index.html" name="Home">
+            Home
+          </a>
+        </li>
+        <li>
+          <a class="map-button" data-icon="custom" href="map.html" name="Map">
+            Map
+          </a>
+        </li>
+        <li>
+          <a class="capture-button" data-icon="custom" href="capture.html" name="Capture">
+            Capture
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
-</div>
 </div>

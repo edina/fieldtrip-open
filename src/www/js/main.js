@@ -92,8 +92,7 @@ function onDeviceReady(){
                            $.proxy(func, ui));
         });
 
-        console.log(utils.getDocumentBase() + 'theme/plugins.json');
-        $.getJSON(utils.getDocumentBase() + 'theme/plugins.json', function(f){
+        $.getJSON('theme/plugins.json', function(f){
             $.each(f.plugins, function(name){
                 require(["plugins/" + name + "/js/" + name], function(){
                     //console.log('=>');
