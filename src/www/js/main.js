@@ -61,7 +61,7 @@ function onDeviceReady(){
         }
     });
 
-    require(['ui'], function(ui) {
+    require(['ui', 'utils'], function(ui, utils) {
         $(document).on('pageinit', 'div[data-role="page"]', function(event){
             //console.log("pageinit");
         });
@@ -92,7 +92,8 @@ function onDeviceReady(){
                            $.proxy(func, ui));
         });
 
-        $.getJSON('theme/plugins.json', function(f){
+        console.log(utils.getDocumentBase() + 'theme/plugins.json');
+        $.getJSON(utils.getDocumentBase() + 'theme/plugins.json', function(f){
             $.each(f.plugins, function(name){
                 require(["plugins/" + name + "/js/" + name], function(){
                     //console.log('=>');

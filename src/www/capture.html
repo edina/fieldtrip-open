@@ -1,12 +1,72 @@
 <div id="capture-page" data-role="page" data-theme="a">
 
-  <div id="capture-header" data-role="header" data-position="fixed">
+  <div data-role="header" data-position="fixed">
+  <h1>Fieldtrip Open</h1>
+  <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+    
+      <a  data-role="button"  data-iconpos="notext"  style="display: none"  data-iconshadow="false"  data-shadow="false"  data-inline="true"  data-transition="none"  class="gpstrack-running" ></a>
+    
+    </a>
   </div>
+</div>
 
   <div data-role="content" class="non-map-body">
+    <div class="non-map-body-start"></div>
+    <br/>
+    <h2>Record</h2>
+    <div class="nav-icons ui-grid-c">
+      
+      <div class="ui-block-b">
+        <a class="annotate-audio-form" href="#">
+          <img src="css/images/audio.png" alt="Capture Audio">
+        </a>
+        <p>Audio</p>
+      </div>
+      
+      <div class="ui-block-c">
+        <a class="annotate-text-form" href="#">
+          <img src="css/images/text.png" alt="Capture Text">
+        </a>
+        <p>Text</p>
+      </div>
+      
+      <div class="ui-block-a">
+        <a class="annotate-image-form" href="#">
+          <img src="css/images/images.png" alt="Capture Image">
+        </a>
+        <p>Images</p>
+      </div>
+      
+      <div class="ui-block-d">
+        <a class="gps-track-start" href="annotate-gps.html">
+          <img src="css/images/gps.png" alt="Capture GPS Track">
+        </a>
+        <p>GPS Track</p>
+      </div>
+      
+    </div>
+    <h2>Custom Forms</h2>
+    <div id="capture-page-custom" class="nav-icons ui-grid-d"></div>
   </div>
 
-  <div id="capture-footer" class="menu" data-role="footer" data-position="fixed">
+  <div class="menu" data-role="footer" data-position="fixed">
+  <div data-role="navbar">
+    <ul>
+      
+      <li>
+        <a  data-icon="custom"  href="index.html"  name="Home"  class="home-button" >Home</a>
+      </li>
+      
+      <li>
+        <a  data-icon="custom"  href="map.html"  name="Map"  class="map-button" >Map</a>
+      </li>
+      
+      <li>
+        <a  data-icon="custom"  href="capture.html"  name="Capture"  class="capture-button" >Capture</a>
+      </li>
+      
+    </ul>
   </div>
+</div>
 
 </div>

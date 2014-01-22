@@ -1,8 +1,12 @@
 <div id="saved-records-page" data-role="page" data-theme="b">
 
   <div data-role="header" data-position="fixed">
-    <h1>Fieldtrip GB</h1>
+  <h1>Fieldtrip Open</h1>
+  <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+    
+    </a>
   </div>
+</div>
 
   <div data-iscroll="" data-role="content">
     <div class="non-map-body-white ui-overlay-shadow">
@@ -20,32 +24,48 @@
   </div>
 
   <div id="saved-records-delete-popup"
-       data-role="popup"
-       data-overlay-theme="a"
-       class="ui-corner-all">
-    <div data-theme="d" class="ui-corner-all ui-content">
-      <p>Are you sure you want to delete record
-        <span id="saved-record-delete-popup-name"></span>?
-      </p>
-      <a href="#"
-         data-theme="a"
-         data-role="button"
-         data-inline="true"
-         data-rel="back">Cancel</a>
-      <a id="saved-record-delete-confirm"
-         href="#"
-         data-theme="a"
-         data-role="button"
-         data-inline="true">Delete</a>
-    </div>
-  </div>
-
-  <div id="saved-record-sync-popup"
-       data-role="popup"
-       class="ui-corner-all">
-  </div>
+    data-role="popup"
+    data-overlay-theme="a"
+    class="ui-corner-all">
+ <div data-theme="d" class="ui-corner-all ui-content">
+   <p>Are you sure you want to delete record
+     <span id="saved-record-delete-popup-name"></span>?
+   </p>
+   <a href="#"
+      data-theme="a"
+      data-role="button"
+      data-inline="true"
+      data-rel="back">Cancel</a>
+   <a id="saved-record-delete-confirm"
+      href="#"
+      data-theme="a"
+      data-role="button"
+      data-inline="true">Delete</a>
+ </div>
+</div>
+<div id="saved-record-sync-popup"
+     data-role="popup"
+     class="ui-corner-all">
+</div>
 
   <div class="menu" data-role="footer" data-position="fixed">
+  <div data-role="navbar">
+    <ul>
+      
+      <li>
+        <a  data-icon="custom"  href="index.html"  name="Home"  class="home-button" >Home</a>
+      </li>
+      
+      <li>
+        <a  data-icon="custom"  href="map.html"  name="Map"  class="map-button" >Map</a>
+      </li>
+      
+      <li>
+        <a  data-icon="custom"  href="capture.html"  name="Capture"  class="capture-button" >Capture</a>
+      </li>
+      
+    </ul>
   </div>
+</div>
 
 </div>

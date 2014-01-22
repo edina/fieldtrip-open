@@ -451,7 +451,7 @@ var _ui = {
 
     mapPage: function(){
         map.display('map');
-        resizePage();
+        //resizePage();
 
         // geoLocate({
         //     secretly: false,
@@ -470,7 +470,7 @@ var _ui = {
     },
 
     pageChange: function() {
-        //console.log("pageChange");
+        console.log("pageChange");
         resizePage();
     },
 

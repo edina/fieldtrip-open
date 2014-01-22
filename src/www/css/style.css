@@ -83,7 +83,7 @@ a:active, img:active{
     margin: 0.2em 0 0.2em 1em !important;
     padding: 0.4em 0 0.6em 2.4em !important;
     width: 40%;
-    background-image: url("/css/images/icon.png");
+    background-image: url("../css/images/icon.png");
     background-repeat: no-repeat;
 }
 
@@ -281,22 +281,22 @@ body .ui-loader{
 }
 
 .home-button .ui-icon{
-    background: url("/css/images/home.png") 50% 50% no-repeat;
+    background: url("../css/images/home.png") 50% 50% no-repeat;
     background-size: 30px 30px;
 }
 
 .map-button .ui-icon{
-    background: url("/css/images/map.png") 50% 50% no-repeat;
+    background: url("../css/images/map.png") 50% 50% no-repeat;
     background-size: 30px 30px;
 }
 
 .capture-button .ui-icon{
-    background: url("/css/images/capture.png") 50% 50% no-repeat;
+    background: url("../css/images/capture.png") 50% 50% no-repeat;
     background-size: 30px 30px;
 }
 
 .download-button .ui-icon {
-    background: url("/css/images/download.png") 50% 50% no-repeat;
+    background: url("../css/images/download.png") 50% 50% no-repeat;
     background-size: 30px 30px;
 }
 
@@ -392,7 +392,7 @@ body .ui-loader{
 }
 
 .annotate-audio-stopped{
-    background-image: url("/css/images/play.png");
+    background-image: url("../css/images/play.png");
     background-repeat: no-repeat;
     background-position: 1em 1em;
     height: 4.6em;
@@ -400,7 +400,7 @@ body .ui-loader{
 }
 
 .annotate-audio-started{
-    background-image: url("/css/images/stop.png");
+    background-image: url("../css/images/stop.png");
     background-repeat: no-repeat;
     background-position: 1em 1em;
     height: 4.6em;

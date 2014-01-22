@@ -3,18 +3,18 @@
         "name": "Home",
         "href": "index.html",
         "class": "home-button",
-        "icon": "custom"
+        "data-icon": "custom"
     },
     "map": {
         "name": "Map",
-        "href": "templates/map.html",
+        "href": "map.html",
         "class": "map-button",
-        "icon": "custom"
+        "data-icon": "custom"
     },
     "capture": {
         "name": "Capture",
-        "href": "templates/capture.html",
+        "href": "capture.html",
         "class": "capture-button",
-        "icon": "custom"
+        "data-icon": "custom"
     }
 }

@@ -574,7 +574,7 @@ def generate_templates():
     """generate files"""
     root, proj_home, src_dir = _get_source()
     path = os.sep.join((src_dir, 'templates'))
-    export_path = os.sep.join((src_dir, 'www', 'html'))
+    export_path = os.sep.join((src_dir, 'www'))
     environ = Environment(loader=FileSystemLoader(path))
 
     header_data = json.loads(open(os.sep.join((path, 'headerData.json'))).read())
@@ -597,4 +597,4 @@ def generate_templates():
                         popup_template = environ.get_template(data["popups"][popup]["template"])
                         popups.append(popup_template.render(data=data["popups"][popup]["data"]))
                     _write_data(os.sep.join((export_path, f)), template.render(body=data["body"], popups="\n".join(popups), header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"])))
-    
+

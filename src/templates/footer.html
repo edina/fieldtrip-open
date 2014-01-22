@@ -1,9 +1,11 @@
-<div data-role="navbar">
-  <ul>
-    {% for key, items in data.iteritems() %}
+<div class="menu" data-role="footer" data-position="fixed">
+  <div data-role="navbar">
+    <ul>
+      {% for key, items in data.iteritems() %}
       <li>
         <a {% for i, item in items.iteritems()%} {{i}}="{{item}}" {% endfor %}>{{items["name"]}}</a>
       </li>
-    {% endfor %}
-  </ul>
+      {% endfor %}
+    </ul>
+  </div>
 </div>

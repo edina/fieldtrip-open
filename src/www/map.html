@@ -1,7 +1,55 @@
 <div id="map-page" data-role="page" data-theme="a">
-  <div id="map-header" data-role="header" data-position="fixed"></div>
-  <div data-role="content" id="map-content">
-    <div id="map" class="map"></div>
+  <div data-role="header" data-position="fixed">
+  <h1>Fieldtrip Open</h1>
+  <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+    
+      <a  data-role="button"  data-iconpos="notext"  style="display: none"  data-iconshadow="false"  data-shadow="false"  data-inline="true"  data-transition="none"  class="gpstrack-running" ></a>
+    
+      <a  data-role="button"  data-iconpos="notext"  data-inline="true"  data-transition="none"  href="search.html"  class="map-search" ></a>
+    
+      <a  data-role="button"  data-inline="true"  class="user-locate"  data-iconpos="notext"  data-transition="none" ></a>
+    
+    </a>
   </div>
-  <div class="menu" data-role="footer" data-position="fixed" id="map-footer"></div>
+</div>
+
+  <div data-role="content">
+    <div id="map" class="map" ></div>
+
+    <div class="map-zoom-buttons">
+      <a data-role="button" class="map-zoom-button-in">+</a>
+      <a data-role="button" class="map-zoom-button-out">-</a>
+    </div>
+
+    <div id="map-records-buttons" class="ui-grid-b">
+      <div id="map-records-buttons-list" class="ui-block-a">
+        <a href="saved-records.html"  data-role="button">List Records</a>
+      </div>
+      <div class="ui-block-b"></div>
+      <div id="map-records-buttons-ok" class="ui-block-c">
+        <a data-role="button">Show Records</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="menu" data-role="footer" data-position="fixed">
+  <div data-role="navbar">
+    <ul>
+      
+      <li>
+        <a  data-icon="custom"  href="index.html"  name="Home"  class="home-button" >Home</a>
+      </li>
+      
+      <li>
+        <a  data-icon="custom"  href="map.html"  name="Map"  class="map-button" >Map</a>
+      </li>
+      
+      <li>
+        <a  data-icon="custom"  href="capture.html"  name="Capture"  class="capture-button" >Capture</a>
+      </li>
+      
+    </ul>
+  </div>
+</div>
 </div>

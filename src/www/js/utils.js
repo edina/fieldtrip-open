@@ -121,9 +121,10 @@ define(['settings'], function(settings){
 
     return {
 
-
+        /**
+         * TODO
+         */
         getDocumentBase : function (){
-
             return documentBase;
         },
 
