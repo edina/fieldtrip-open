@@ -35,6 +35,7 @@ from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings, 
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from jinja2 import Environment, PackageLoader, FileSystemLoader
+from bs4 import BeautifulSoup
 
 import xml.etree.ElementTree as ET
 
@@ -596,5 +597,12 @@ def generate_templates():
                     for popup in data["popups"]:
                         popup_template = environ.get_template(data["popups"][popup]["template"])
                         popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-                    _write_data(os.sep.join((export_path, f)), template.render(body=data["body"], popups="\n".join(popups), header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"])))
-    
+                    output = template.render(body=data["body"], popups="\n".join(popups), header=header_template.render(data=data["header"]), footer=footer_template.render(data=data["footer"]))
+                    _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
+
+def _prettify(output, indent='2'):
+    """ custom indentation for BeautifulSoup"""
+    soup = BeautifulSoup(output, "html5lib")
+    s = soup.div.prettify()
+    r = re.compile(r'^(\s*)', re.MULTILINE)
+    return r.sub(r'\1\1', s)
