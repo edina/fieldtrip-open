@@ -175,7 +175,7 @@ return{
             "isSynced": false
         };
 
-        $.each($('div[class=fieldcontain]'), function(i, entry){
+        $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
             var divId = $(entry).attr('id');
             var start = divId.indexOf('-') + 1;
             var end = divId.lastIndexOf('-');
@@ -284,7 +284,7 @@ return{
             if(typeof(record.val) !== 'undefined' && record.val.length > 0){
                 annotation.record['fields'].push(record);
             }
-        });
+        }, this));
 
         if(valid){
             // nasty I know: but changing page in a setTimeout allows

@@ -8,26 +8,18 @@
                 "data-inline": "true",
                 "data-transition": "none",
                 "data-iconpos": "notext"
-            },
-            "map-search": {
-                "platforms": ["android", "ios"],
-                "href": "search.html",
-                "class": "map-search",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
-                "data-iconpos":"notext"
             }
         }
     },
     "body": {
         "drag": "Drag pin to Reposition",
-        "cancel" : "Cancel"
+        "cancel" : "Cancel",
+        "save" : "Save"
     },
     "footer":{
-        
+
     },
     "popups": {
-        
+
     }
 }

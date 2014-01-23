@@ -1,22 +1,15 @@
-<div id="capture-page" data-role="page" data-theme="a">
+<div id="annotate-page" data-role="page" data-theme="b">
 
   {{header}}
 
-  <div data-role="content" class="non-map-body">
-    <div class="non-map-body-start"></div>
-    <br/>
-    {% for key, sections in body.iteritems() %}
-    <h2>{{sections.title}}</h2>
-    <div class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
-      {% for item in _sorted(sections["items"]) %}
-      <div {% for key, value in sections["items"][item]["div"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
-        <a {% for key, value in sections["items"][item]["a"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
-          <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
-        </a>
+  <div data-role="content">
+    <div class="non-map-body-white ui-overlay-shadow">
+      <h2></h2>
+
+      <div id="annotate-form">
+
       </div>
-      {% endfor %}
     </div>
-    {% endfor %}
   </div>
 
   {{footer}}

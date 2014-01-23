@@ -197,53 +197,6 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
 var _ui = {
 
     /**
-     * Annotate option, show drag icon.
-     */
-    annotatePreviewPage: function(){
-        //this.commonMapPageInit('annotate-preview-map');
-
-        if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
-            map.updateAnnotateLayer();
-            localStorage.set('ignore-centre-on-annotation', false);
-        }
-        else {
-            geoLocate({
-                secretly: false,
-                updateAnnotateLayer: true,
-                useDefault: true
-            });
-        }
-
-        var addMeta = function(label, text){
-            $('#annotate-preview-detail-meta').append(
-                '<p><span>' + label + '</span>: ' + text + '</p>');
-        }
-
-        $('.non-map-body-white h2').text(this.currentAnnotation.record.name + ' Details');
-
-        $.each(this.currentAnnotation.record.fields, $.proxy(function(i, entry){
-            if(records.typeFromId(entry.id) === 'image'){
-                $('#annotate-preview-detail-image').append(
-                    '<img src="' + entry.val + '"></img>');
-            }
-            else{
-                addMeta(entry.label, entry.val);
-            }
-        }, this));
-
-        $('#annotate-preview-ok').click($.proxy(function(){
-            this.records.saveAnnotationWithCoords(this.currentAnnotation);
-            this.currentAnnotation = undefined;
-            $.mobile.changePage('map.html');
-        }, this));
-
-        utils.touchScroll('#annotate-preview-detail');
-
-        map.hideRecordsLayer();
-        map.updateSize();
-    },
-
-    /**
      * Go to annotate screen.
      */
     annotatePage: function(){
@@ -300,7 +253,7 @@ var _ui = {
 
             // image size
             $('input[name="radio-image-size"]').bind ("change", function (event){
-                if(this.value === Annotations.IMAGE_SIZE_FULL){
+                if(this.value === records.IMAGE_SIZE_FULL){
                     localStorage.setItem(records.IMAGE_UPLOAD_SIZE,
                                          records.IMAGE_SIZE_FULL);
                     utils.inform('Note : Larger images will take a longer time to sync',
@@ -312,7 +265,6 @@ var _ui = {
 
                 }
             });
-
 
             // submit form
             $('#annotate-form').submit($.proxy(function(event){
@@ -370,6 +322,51 @@ var _ui = {
             // ensure page is scrollable
             utils.touchScroll('#annotate-form');
         }, this));
+    },
+
+    /**
+     * Annotate option, show drag icon.
+     */
+    annotatePreviewPage: function(){
+        if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
+            map.updateAnnotateLayer();
+            localStorage.set('ignore-centre-on-annotation', false);
+        }
+        else {
+            geoLocate({
+                secretly: false,
+                updateAnnotateLayer: true,
+                useDefault: true
+            });
+        }
+
+        var addMeta = function(label, text){
+            $('#annotate-preview-detail-meta').append(
+                '<p><span>' + label + '</span>: ' + text + '</p>');
+        }
+        $('.non-map-body-white h2').text(this.currentAnnotation.record.name + ' Details');
+
+        $.each(this.currentAnnotation.record.fields, $.proxy(function(i, entry){
+            if(records.typeFromId(entry.id) === 'image'){
+                $('#annotate-preview-detail-image').append(
+                    '<img src="' + entry.val + '"></img>');
+            }
+            else{
+                addMeta(entry.label, entry.val);
+            }
+        }, this));
+
+        $('#annotate-preview-ok').click($.proxy(function(){
+            this.records.saveAnnotationWithCoords(this.currentAnnotation);
+            this.currentAnnotation = undefined;
+            $.mobile.changePage('map.html');
+        }, this));
+
+        utils.touchScroll('#annotate-preview-detail');
+
+        map.display('annotate-preview-map');
+        map.hideRecordsLayer();
+        map.updateSize();
     },
 
     /**
@@ -646,11 +643,14 @@ var _ui = {
      * @method blah
      */
     toggleActive: function(){
+        var MAP = ['map-page'];
+        var CAPTURE = ['capture-page', 'annotate-page'];
+
         var id = $.mobile.activePage[0].id;
-        if(id === 'map-page'){
+        if($.inArray(id, MAP) != -1){
             $('.map-button').addClass('ui-btn-active');
         }
-        else if(id === 'capture-page'){
+        else if($.inArray(id, CAPTURE) != -1){
             $('.capture-button').addClass('ui-btn-active');
         }
         else{
