@@ -174,6 +174,18 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
                    '.map-zoom-button-out',
                    $.proxy(map.zoomOut, map));
 
+    $(document).on(
+        'vmousedown',
+        '.user-locate',
+        function(){
+            geoLocate({
+                secretly: false,
+                updateAnnotateLayer: false,
+                useDefault: false
+            });
+        }
+    );
+
     // listen for windows resizes
     $(window).bind('resize', $.proxy(resizeWindow, _ui));
 
@@ -414,13 +426,23 @@ var _ui = {
         // });
     },
 
+    /**
+     * TODO
+     * text below
+     */
     init: function(){
         geoLocate({
             secretly: true,
             updateAnnotateLayer: false,
             useDefault: true
         });
+    },
 
+    /**
+     * TODO
+     */
+    mapPage: function(){
+        map.display('map');
     },
 
     /**
@@ -465,16 +487,9 @@ var _ui = {
     /**
      * TODO
      */
-    mapPage: function(){
-        map.display('map');
-    },
-
-
-    /**
-     * TODO
-     */
     pageChange: function() {
         resizePage();
+        this.toggleActive();
     },
 
     /**
@@ -653,31 +668,33 @@ var _ui = {
 
 };
 
-var _ios = {
-    init: function(){
-    }
-};
+// var _ios = {
+//     init: function(){
+//     }
+// };
 
-var _android = {
-    init: function(){
-    },
-};
+// var _android = {
+//     init: function(){
+//     },
+// };
 
-if(utils.isMobileDevice()){
-    var _this = {};
-    if(utils.isIOSApp()){
-        $.extend(_this, _ui, _ios);
-    }
-    else{
-        $.extend(_this, _ui, _android);
-    }
+// if(utils.isMobileDevice()){
+//     var _this = {};
+//     if(utils.isIOSApp()){
+//         $.extend(_this, _ui, _ios);
+//     }
+//     else{
+//         $.extend(_this, _ui, _android);
+//     }
 
-    _this.init();
-    return _this;
-}
-else{
+//     _this.init();
+//     return _this;
+// }
+// else{
+//     _ui.init();
+//     return _ui;
+// }
     _ui.init();
     return _ui;
-}
 
 });

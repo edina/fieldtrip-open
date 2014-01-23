@@ -152,8 +152,8 @@ def install_project(platform='android',
 
         _install_plugins([
             'cordova-plugin-device.git',
-        #    'cordova-plugin-network-information',
-        #    'cordova-plugin-geolocation.git',
+            # 'cordova-plugin-network-information',
+            'cordova-plugin-geolocation.git',
         #    'cordova-plugin-camera.git',
         #    'cordova-plugin-media-capture.git',
         #    'cordova-plugin-media.git',

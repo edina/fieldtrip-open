@@ -304,13 +304,13 @@ var _this = {
                 // timeout
                 console.debug("GPS timed out: " + error.code);
                 if(!options.secretly){
-                    utils.inform('GPS timed out',5000);
+                    utils.inform('GPS timed out', 5000);
                 }
             }
             else{
                 console.debug("GPS is not enabled");
                 if(!options.secretly){
-                    utils.inform('Your GPS needs to be enabled.',5000 );
+                    utils.inform('Your GPS needs to be enabled.', 5000);
                 }
             }
 
@@ -364,7 +364,7 @@ var _this = {
     /**
      * TODO
      */
-    geolocateTimeout: 3000,
+    geolocateTimeout: 10000,
 
     /**
      * Hide annotation layer.
@@ -412,6 +412,8 @@ var _this = {
 
         // update user position
         this.updateLocateLayer();
+
+        console.log("*");
 
         // if necessary update annotate pin
         if(updateAnnotateLayer){

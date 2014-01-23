@@ -349,7 +349,7 @@ define(['settings'], function(settings){
                     $('.ui-loader').removeClass('error');
                 }
 
-                $('.ui-loader h1').html('<h1>' + message + '</h1>');
+                $('.ui-loader h1').html(message);
                 return;
             }
 
@@ -358,9 +358,9 @@ define(['settings'], function(settings){
             }
 
             $.mobile.loading('show', {
-				text: message,
-				textonly: true,
-			});
+                text: message,
+                textonly: true,
+            });
 
             setTimeout(function(){
                 $.mobile.hidePageLoadingMsg();
@@ -484,7 +484,6 @@ define(['settings'], function(settings){
     }
 });
 
-//console.log("jings");
 // function initHomepageDisplay(){
 //     //private
 //     var FIELDTRIPGB_NEWS_FEED_URL = Utils.getServerUrl() + "/splash.html";

@@ -78,6 +78,21 @@ a:active, img:active{
     text-align: center;
 }
 
+#header a{
+    color: #f3f3f3;
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+}
+
+.ui-header{
+    z-index: 10000 !important;
+}
+
+.ui-header-buttons{
+    height: 92%;
+}
+
 .ui-header h1{
     text-align: left !important;
     margin: 0.2em 0 0.2em 1em !important;
@@ -87,12 +102,50 @@ a:active, img:active{
     background-repeat: no-repeat;
 }
 
+.ui-header .ui-btn{
+    padding: 0;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    height: 90%;
+    width: 3.2em;
+}
+
+.ui-header .ui-btn .override{
+    height: 20%;
+}
+
+#home-exit{
+    height: 80%;
+    width: 5em;
+}
+
 
 /********* Body *************/
 
 body .ui-loader{
     z-index: 2000;
+    color: black;
+    opacity: 1;
+    padding: 0;
+    width: auto;
+    height: auto;
+    max-width: 15em;
+}
+
+.ui-loading .ui.loader{
+    border: red solid 1px;
+}
+
+.ui-loader h1{
+    padding: 0.5em;
+    font-size: 2em;
+    width: 100%;
+    height: 100%;
+    position:relative;
     background: white;
+    border-radius: 15px;
+    border: black solid 1px;
 }
 
 
@@ -144,6 +197,9 @@ body .ui-loader{
     width: 48%;
 }
 
+.user-locate{
+   	background-image: url("images/locate.png");
+}
 
 /********* Non map page *********/
 

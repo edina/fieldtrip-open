@@ -8,15 +8,6 @@
                 "data-inline": "true",
                 "data-transition": "none",
                 "data-iconpos": "notext"
-            },
-            "map-search": {
-                "platforms": ["android", "ios"],
-                "href": "search.html",
-                "class": "map-search",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
-                "data-iconpos":"notext"
             }
         }
     },
