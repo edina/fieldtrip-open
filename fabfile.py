@@ -229,7 +229,7 @@ def install_project(platform='android',
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
 
-    # generate html
+    # process tempates
     generate_html()
 
     # install proj4js
@@ -271,6 +271,9 @@ def deploy_android():
     _check_command('adb')
     _check_command('cordova')
     _check_command('android')
+
+    # generate html for android
+    generate_html(cordova=True)
 
     with lcd(_get_runtime()[1]):
         device = None
@@ -606,16 +609,18 @@ def generate_html(platform="android", cordova=False):
                     for popup in data["popups"]:
                         popup_template = environ.get_template(data["popups"][popup]["template"])
                         popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-                        
+
                     output = template.render(
                         header_data=header_data,
                         body=_sorted(data["body"]),
                         popups="\n".join(popups),
                         platform=platform,
-                        header=header_template.render(data=data["header"],
-                                                      platform=platform),
-                                                      footer=footer_template.render(data=data["footer"],
-                                                                                    platform=platform))
+                        header=header_template.render(
+                            data=data["header"],
+                            platform=platform),
+                            footer=footer_template.render(
+                                data=data["footer"],
+                                platform=platform))
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
 def _prettify(output, indent='2'):

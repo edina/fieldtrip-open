@@ -1,6 +1,5 @@
 {
     "header": {
-        "title": "jings",
         "buttons" : {
             "exit": {
                 "platforms": ["android"],

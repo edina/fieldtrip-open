@@ -166,12 +166,6 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
         }
     };
 
-    // exit button
-    $(document).on('vmousedown', '#home-exit', function(){
-        console.log("=>");
-        exitApp();
-    });
-
     // map zooming
     $(document).on('click',
                    '.map-zoom-button-in',
@@ -409,6 +403,10 @@ var _ui = {
         //this.gpsButtonInit();
 
         capturePageListeners();
+
+        // exit button
+        $('#home-exit').unbind();
+        $('#home-exit').on('click', exitApp);
 
         // $('#home-content-help').unbind();
         // $('#home-content-help').on('taphold', function(){
