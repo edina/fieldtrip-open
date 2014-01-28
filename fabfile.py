@@ -68,6 +68,7 @@ def install_project(platform='android',
 
     if platform == 'android':
         _check_command('android')
+        _check_command('ant')
     _check_command('cordova')
 
     root, proj_home, src_dir = _get_source()
