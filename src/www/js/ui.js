@@ -357,7 +357,10 @@ var _ui = {
         }, this));
 
         $('#annotate-preview-ok').click($.proxy(function(){
-            this.records.saveAnnotationWithCoords(this.currentAnnotation);
+            records.saveAnnotationWithCoords(
+                this.currentAnnotation,
+                map.getAnnotationCoords(false));
+            map.refreshRecords(this.currentAnnotation);
             this.currentAnnotation = undefined;
             $.mobile.changePage('map.html');
         }, this));
@@ -479,6 +482,7 @@ var _ui = {
         }
 
         map.showLocateLayer();
+        map.hideAnnotateLayer();
     },
 
     /**

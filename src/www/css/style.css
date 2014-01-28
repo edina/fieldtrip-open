@@ -504,37 +504,38 @@ body .ui-loader{
 }
 
 /* sync icon */
-/* #saved-records-list .ui-block-a{ */
-/*     margin: 0; */
-/*     padding: 0; */
-/*     width: 15%; */
-/*     height: 3.4em; */
-/* } */
+#saved-records-list .ui-block-a{
+    margin: 0;
+    padding: 0;
+    width: 15%;
+    height: 3.4em;
+}
 
 /* record text */
-/* #saved-annotations-list .ui-block-b{ */
-/*     margin: 0; */
-/*     padding: 1em 0 0 0; */
-/*     text-overflow: ellipsis; */
-/*     white-space: nowrap; */
-/*     width: 70%; */
-/* } */
+#saved-records-list .ui-block-b{
+    margin: 0;
+    padding: 1em 0 0 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 70%;
+}
 
-/* #saved-annotations-list .ui-block-b a{ */
-/*     font-size: 16px; */
-/*     font-weight: 900; */
-/*     overflow: hidden; */
-/*     white-space: nowrap; */
-/*     text-overflow: ellipsis; */
-/*     display: inline-block; */
-/* } */
+#saved-records-list .ui-block-b a{
+    font-size: 16px;
+    font-weight: 900;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
 
 
 /* delete button */
-/* #saved-annotations-list .ui-block-c{ */
-/*     width: 15%; */
-/*     background-color: rgba(255, 255, 255, 1); */
-/* } */
+#saved-records-list .ui-block-c{
+    width: 15%;
+    background-color: rgba(255, 255, 255, 1);
+}
+
 
 /* .saved-annotations-list-synced-true{ */
 /*     background-image: url("images/uploaded.png"); */
@@ -560,7 +561,6 @@ body .ui-loader{
 #saved-records-page-header{
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    background: #2a2a2a;
     color: white;
     margin: 0;
     padding: 0;

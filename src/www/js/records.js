@@ -301,6 +301,52 @@ return{
     },
 
     /**
+     * Save annotations/record locally
+     * @param annotation Record object.
+     */
+    saveRecord: function(id, annotation){
+        var savedRecords = this.getSavedRecords();
+
+        if(id === undefined){
+            var date = new Date();
+            annotation.record['timestamp'] = date;
+            id = date.getTime().toString();
+        }
+
+        savedRecords[id] = annotation;
+        this.setSavedRecords(savedRecords);
+
+        return id;
+    },
+
+    /**
+     * Save annotation with the coords currently selected.
+     */
+    saveAnnotationWithCoords: function(annotation, coords){
+        annotation.record.point = {
+            'lon': coords.lon,
+            'lat': coords.lat
+        }
+
+        if(typeof(coords.gpsPosition) !== 'undefined'){
+            annotation.record.point.alt = coords.gpsPosition.altitude;
+        }
+
+        this.saveRecord(undefined, annotation);
+        //map.refreshAnnotations(annotation);
+    },
+
+    /**
+     * Save annotations to local storage.
+     * @annotations Hash of local records.
+     */
+    setSavedRecords: function(annotations){
+        //console.debug(JSON.stringify(annotations, undefined, 2));
+        localStorage.setItem('saved-annotations', JSON.stringify(annotations));
+    },
+
+
+    /**
      * @param id Field div id.
      * @return The control type for a field id.
      */

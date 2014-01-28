@@ -43,7 +43,10 @@ define(['ext/openlayers', 'records', 'utils'],function(ol, records, utils){
     var DEFAULT_USER_LON = -2.421976;
     var DEFAULT_USER_LAT = 53.825564;
     var GPS_ACCURACY_FLAG = false;
-    var GPS_LOCATE_TIMEOUT = 10000;
+    //var GPS_LOCATE_TIMEOUT = 10000;
+    var GPS_LOCATE_TIMEOUT = 3000;
+
+    var ANNOTATE_POSITION_ATTR = 'annotate_pos';
     var USER_POSITION_ATTR = 'user_pos';
 
     /**
@@ -90,6 +93,32 @@ var _this = {
      */
     getAnnotateLayer: function(){
         return this.getLayer('positionMarker');
+    },
+
+    /**
+     * get current annotation coords.
+     * @param wgs84 In WGS84? If not national grid.
+     * @return Current annotation coordinates.
+     */
+    getAnnotationCoords: function(wgs84){
+        var coords = undefined;
+        var features = this.getAnnotateLayer().getFeaturesByAttribute(
+            'id',
+            ANNOTATE_POSITION_ATTR);
+
+        if(features.length > 0){
+            var geom = features[0].geometry;
+            coords = new OpenLayers.LonLat(geom.x, geom.y);
+            if(wgs84){
+                coords = this.toWGS84(coords);
+            }
+
+            // give the annotation altitude the altitude of the user
+            // see https://redmine.edina.ac.uk/issues/5497
+            coords.gpsPosition = this.userLonLat.gpsPosition;
+        }
+
+        return coords;
     },
 
     /**
@@ -364,7 +393,7 @@ var _this = {
     /**
      * TODO
      */
-    geolocateTimeout: 10000,
+    geolocateTimeout: GPS_LOCATE_TIMEOUT,
 
     /**
      * Hide annotation layer.
@@ -428,6 +457,38 @@ var _this = {
     },
 
     /**
+     * Sledgehammer approach to refreshing annotations.
+     * @param annotation The annotation to centre on.
+     */
+    refreshRecords: function(annotation){
+        this.getRecordsLayer().removeAllFeatures();
+        this.showRecordsLayer(annotation);
+    },
+
+    /**
+     * Centre map with zoom level.
+     * @param lon
+     * @param lat
+     * @param zoom
+     * @param wgs84
+     */
+    setCentre: function(lon, lat, zoom, wgs84){
+        var lonlat;
+        if(wgs84){
+            lonlat = toNationalGrid(new OpenLayers.LonLat(lon, lat));
+        }
+        else{
+            lonlat = new OpenLayers.LonLat(lon, lat);
+        }
+
+        if(!zoom){
+            zoom = this.map.getZoom();
+        }
+
+        this.map.setCenter(lonlat, zoom);
+    },
+
+    /**
      * Show annotation marker.
      */
     showAnnotateLayer: function(){
@@ -478,6 +539,18 @@ var _this = {
     },
 
     /**
+     * Reproject a mercator latlon to wgs84.
+     * @param lonlat Mercator lonlat.
+     * @return WGS84 lonlat
+     */
+    toWGS84: function(lonlat){
+        return lonlat.clone().transform(
+            INTERNAL_PROJECTION, // from mercator
+            EXTERNAL_PROJECTION); // to WGS 1984
+    },
+
+
+    /**
      * Update annotate layer.
      * @param lonlat The position (in national grid) of the annotation icon, if
      * undefined use the centre of the map.
@@ -488,7 +561,7 @@ var _this = {
         }
 
         this.updateLayer(this.getAnnotateLayer(),
-                         Map.ANNOTATE_POSITION_ATTR,
+                         ANNOTATE_POSITION_ATTR,
                          undefined,
                          lonlat);
     },
