@@ -103,7 +103,7 @@ return{
 <div class="ui-block-b">\
 <a class="annotate-image-get" href="#">\
 <img src="css/images/gallery.png"></a><p>Gallery</p>\
-</div>'
+</div></div>'
 
                     $(input).parent().append(btn + that.getImageSizeControl());
                 });
@@ -157,13 +157,15 @@ return{
         else{
             normalSelected = CHECKED;
         }
-        return '<div class="ui-block-c">\
+        return '<div class="ui-grid-solo">\
+<div class="ui-block-a"> \
 <fieldset data-role="controlgroup" data-type="horizontal"> \
 <input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected +' /> \
 <label for="radio-view-a">Normal</label> \
 <input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
 <label for="radio-view-b">Full</label>\
 </fieldset><p>Image Size</p>\
+</div>\
 </div>';
     },
 
