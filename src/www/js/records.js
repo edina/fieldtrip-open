@@ -407,7 +407,22 @@ return{
                     callback(fileURI);
                 },
                 this.onFail,
-                this.getImageOptions()
+                this.getImageOptions(Camera.PictureSourceType.CAMERA, Camera.EncodingType.JPEG)
+            );
+        }
+    },
+
+    /**
+     * get photo from local filesystem
+     */
+    getPhoto: function(callback) {
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    callback(fileURI);
+                },
+                this.onFail,
+                this.getImageOptions(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM, navigator.camera.MediaType.PICTURE)
             );
         }
     },
@@ -415,12 +430,12 @@ return{
     /**
      * construct the object for the options of the image
      */
-    getImageOptions: function(){
+    getImageOptions: function(sourceType, encodingType){
         var options = {
             quality: 100,
             destinationType: Camera.DestinationType.FILE_URI,
-            sourceType : Camera.PictureSourceType.CAMERA,
-            encodingType: Camera.EncodingType.JPEG
+            sourceType : sourceType,
+            encodingType: encodingType
         }
         if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
             options.targetWidth = 640;
