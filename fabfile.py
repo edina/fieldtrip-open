@@ -602,14 +602,25 @@ def generate_html(platform="android", cordova=False):
                 if os.path.exists(fil):
                     print "generating file {0}".format(f)
                     data = json.loads(open(fil).read())
-                    data["header"].update(header_data)
-                    data["footer"].update(footer_data)
+
+                    if "header" in data:
+                        data["header"].update(header_data)
+                    else:
+                        data["header"] = header_data
+
+                    if "footer" in data:
+                        data["footer"].update(footer_data)
+                    else:
+                        data["footer"] = footer_data
+
                     template = environ.get_template(f)
-                    header_data = {"cordova": cordova, "title": data["header"]["title"]}
+                    header_data["cordova"] = {"cordova": cordova, "title": data["header"]["title"]}
+
                     popups=[]
-                    for popup in data["popups"]:
-                        popup_template = environ.get_template(data["popups"][popup]["template"])
-                        popups.append(popup_template.render(data=data["popups"][popup]["data"]))
+                    if "popups" in data:
+                        for popup in data["popups"]:
+                            popup_template = environ.get_template(data["popups"][popup]["template"])
+                            popups.append(popup_template.render(data=data["popups"][popup]["data"]))
 
                     output = template.render(
                         header_data=header_data,

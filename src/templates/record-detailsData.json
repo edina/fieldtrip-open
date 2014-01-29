@@ -1,15 +1,5 @@
 {
-    "header":{
-
-    },
     "body": {
-
-    },
-    "footer":{
-
-    },
-    "popups": {
-
+        "close": "Close"
     }
-
 }

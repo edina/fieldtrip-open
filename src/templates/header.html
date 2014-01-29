@@ -1,11 +1,13 @@
 <div data-role="header" data-position="fixed">
   <h1>{{data["title"]}}</h1>
   <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
+    {% if "buttons" in data %}
     {% for key, items in data["buttons"].iteritems() %}
       {% if platform in items["platforms"] %}
       <a {% for el, item in items.iteritems() %}{% if el != "value" and el != "platforms" %} {{el}}="{{item}}" {% endif %}{% endfor %}>{{items["value"]}}</a>
       {% endif %}
     {% endfor %}
+    {% endif %}
     </a>
   </div>
 </div>
