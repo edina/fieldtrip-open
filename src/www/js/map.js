@@ -265,7 +265,7 @@ var _this = {
                             locateLayer]);
 
         var TN = OpenLayers.Class(OpenLayers.Control.TouchNavigation, {
-            defaultClick: $.proxy(this.showAnnotationDetail, this),
+            defaultClick: $.proxy(this.showRecordDetail, this),
         });
 
         // this will allow non apps to work
@@ -500,6 +500,49 @@ var _this = {
      */
     showLocateLayer: function(){
         this.getLocateLayer().setVisibility(true);
+    },
+
+    /**
+     * Show details of a single annotation.
+     * @param evt Map Click event.
+     */
+    showRecordDetail: function(evt){
+        var feature = this.getRecordsLayer().getFeatureFromEvent(evt);
+        if(feature){
+            var annotation = records.getSavedRecord(feature.attributes.id);
+            $(document).off('pageinit', '#record-details-page');
+            $(document).on('pageinit', '#record-details-page', function(event) {
+                $('#record-details-detail').text('');
+                $('#record-details-header h1').text(annotation.record.name);
+                var width = $('#record-details-page').width() / 1.17;
+
+                $.each(annotation.record.fields, function(i, entry){
+                    var html;
+                    var type = typeFromId(entry.id);
+
+                    if(type === 'image'){
+                        html = '<img src="' + entry.val + '" width="' + width + '"/>';
+                    }
+                    else if(type === 'audio'){
+                        html = audioNode(entry.val, entry.label + ':');
+                    }
+                    else if(entry.id !== 'text0'){ // ignore title element
+                        html = '<p><span>' + entry.label + '</span>: ' +
+                            entry.val + '</p>';
+                    }
+
+                    $('#record-details-detail').append(html).trigger('create');
+                });
+            });
+
+            // TODO
+            // if(feature.attributes.type === 'track'){
+            //     this.showGPSTrack(feature.attributes.id, annotation);
+            // }
+            //else{
+            $.mobile.changePage('record-details.html', {role: "dialog"});
+            //}
+        }
     },
 
     /**

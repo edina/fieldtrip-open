@@ -47,7 +47,7 @@
             }
         },
         "section3": {
-            "title": "Download and Sync",
+            "title": "Records",
             "items": {
                 "item1": {
                     "div": {"class": "ui-block-a"},

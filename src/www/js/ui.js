@@ -563,7 +563,7 @@ var _ui = {
                 }
 
                 var id = $(event.target).parents('li').attr('id');
-                var annotation = this.records.getSavedAnnotations()[id];
+                var annotation = records.getSavedRecord(id);
                 var type = records.getEditorId(annotation);
 
                 // TODO
@@ -571,7 +571,7 @@ var _ui = {
                 //     map.showGPSTrack(id, annotation);
                 // }
 
-                map.showAnnotationsLayer(annotation);
+                map.showRecordsLayer(annotation);
                 $.mobile.changePage('map.html');
             }, this)
         );

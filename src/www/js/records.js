@@ -169,9 +169,16 @@ return{
 
 
     /**
+     * TODO
+     */
+    getSavedRecord: function(id){
+        return this.getSavedRecords()[id];
+    },
+
+    /**
      * @return List of saved records in local storage.
      */
-    getSavedRecords: function() {
+    getSavedRecords: function(){
         var KEY = 'saved-annotations';
         var savedAnnotations = {};
         var savedAnnotationsObj = localStorage.getItem(KEY);
