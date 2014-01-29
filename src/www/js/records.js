@@ -42,6 +42,38 @@ return{
     TITLE_ID: 'form-text-1',
 
     /**
+     * Delete annotation / record
+     * @param annotation id of record to be deleted.
+     */
+    deleteAnnotation: function(id){
+        var annotations = this.getSavedRecords();
+        var annotation = annotations[id];
+
+        if(annotation !== undefined){
+            // TODO: what about assets?
+            if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
+                if(typeof(annotation.file) !== 'undefined'){
+                    utils.deleteFile(
+                        annotation.file.substr(annotation.file.lastIndexOf('/') + 1),
+                        this.assetsDir,
+                        function(){
+                            console.debug("GPX file deleted: " + annotation.file);
+                        });
+                }
+            }
+
+            // remove annotation from hash
+            delete annotations[id];
+
+            // save to local storage
+            this.setSavedRecords(annotations);
+        }
+        else{
+            console.warn("Attempted to delete record that didn't exist: " + id);
+        }
+    },
+
+    /**
      * Initialise annotate page.
      * @param form Form name.
      * @param callback Function to be invoked when editor has been loaded.

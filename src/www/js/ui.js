@@ -506,7 +506,7 @@ var _ui = {
                 '<li id="' + id + '"><div class="ui-grid-b"> \
 <div class="ui-block-a saved-records-list-synced-' + annotation.isSynced + '">\
 </div>\
-<div class="ui-block-b saved-annotation-view">\
+<div class="ui-block-b saved-record-view">\
 <a href="#">' + annotation.record.name + '</a>\
 </div>\
 <div class="ui-block-c">\
@@ -526,34 +526,35 @@ var _ui = {
             }
         }, this));
 
-        // delete a saved annotation
-        $(document).off('vmousedown', '.saved-annotation-view');
+        // delete a saved record
+        $(document).off('vmousedown', '.saved-record-delete');
         $(document).on(
             'vmousedown',
-            '.saved-annotation-delete',
+            '.saved-record-delete',
             $.proxy(function(event){
                 this.toBeDeleted = $(event.target).parents('li');
 
                 // open dialog for confirmation
-                $('#saved-annotation-delete-popup-name').text(
-                    "'" + this.toBeDeleted.find('.saved-annotation-view a').text() + "'");
-                $('#saved-annotation-delete-popup').popup('open');
+                $('#saved-record-delete-popup-name').text(
+                    "'" + this.toBeDeleted.find('.saved-record-view a').text() + "'");
+                $('#saved-records-delete-popup').popup('open');
             }, this)
         );
 
         // delete confirm
-        $('#saved-annotation-delete-confirm').click($.proxy(function(event){
+        $('#saved-record-delete-confirm').click($.proxy(function(event){
             var id = $(this.toBeDeleted).attr('id');
-            this.annotations.deleteAnnotation(id, true);
-            $('#saved-annotation-delete-popup').popup('close');
+            records.deleteAnnotation(id, true);
+            map.refreshRecords();
+            $('#saved-records-delete-popup').popup('close');
             this.toBeDeleted.slideUp('slow');
         }, this));
 
         // click on a record
-        $(document).off('tap', '.saved-annotation-view');
+        $(document).off('tap', '.saved-record-view');
         $(document).on(
             'tap',
-            '.saved-annotation-view',
+            '.saved-record-view',
             $.proxy(function(event){
                 if(this.isMobileApp){
                     // this will prevent the event propagating to next screen
