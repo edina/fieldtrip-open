@@ -514,22 +514,29 @@ var _this = {
                 $('#record-details-header h1').text(annotation.record.name);
                 var width = $('#record-details-page').width() / 1.17;
 
+                var showRecord = function(html){
+                    $('#record-details-detail').append(html).trigger('create');
+                };
+
                 $.each(annotation.record.fields, function(i, entry){
                     var html;
                     var type = records.typeFromId(entry.id);
 
                     if(type === 'image'){
                         html = '<img src="' + entry.val + '" width="' + width + '"/>';
+                        showRecord(html);
                     }
                     else if(type === 'audio'){
-                        html = audioNode(entry.val, entry.label + ':');
+                        require(['audio'], function(audio){
+                            html = audio.getNode(entry.val, entry.label + ':');
+                            showRecord(html);
+                        });
                     }
                     else if(entry.id !== 'text0'){ // ignore title element
                         html = '<p><span>' + entry.label + '</span>: ' +
                             entry.val + '</p>';
+                        showRecord(html);
                     }
-
-                    $('#record-details-detail').append(html).trigger('create');
                 });
             });
 

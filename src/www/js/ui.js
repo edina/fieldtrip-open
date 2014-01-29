@@ -220,10 +220,6 @@ var _ui = {
 
                 require(['audio'], function(audio){
                     parent.append(audio.getNode(url)).trigger('create');
-
-                    $('#annotate-audio-button').click(function(){
-                        audio.playAudio();
-                    });
                 });
             }, this);
 

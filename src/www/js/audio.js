@@ -1,7 +1,4 @@
 define(function(){
-    // current/last played audio
-    var currentAudio;
-
 return{
 
     /**
@@ -17,41 +14,43 @@ return{
         return '<div class="annotate-audio-taken">' + label + '\
 <input type="hidden" value="' + url + '"/>\
 <p id="annotate-audio-position">0.0 sec</p>\
-<a id="annotate-audio-button" class="annotate-audio-stopped" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
+<a id="annotate-audio-button" class="annotate-audio-stopped" onclick="playAudio();" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
 </div>';
     },
-
-    /**
-     * Play audio track.
-     */
-    playAudio: function(){
-        var url = $('.annotate-audio-taken input').attr('value');
-
-        // for android ensure url begins with file:///
-        url = url.replace("file:/m", "file:///m");
-
-        if(this.currentAudio){
-            if(this.currentAudio.src !== url){
-                this.currentAudio.destroy();
-                this.currentAudio = new Audio(url);
-            }
-        }
-        else{
-            this.currentAudio = new Audio(url);
-        }
-
-        if(this.currentAudio.status === Media.MEDIA_RUNNING ||
-           this.currentAudio.status === Media.MEDIA_STARTING){
-            this.currentAudio.stop();
-        }
-        else{
-            this.currentAudio.play();
-        }
-    },
-
 }
 
 });
+
+// current/last played audio
+var currentAudio;
+
+/**
+ * Play audio track.
+ */
+function playAudio(){
+    var url = $('.annotate-audio-taken input').attr('value');
+
+    // for android ensure url begins with file:///
+    url = url.replace("file:/m", "file:///m");
+
+    if(currentAudio){
+        if(currentAudio.src !== url){
+            currentAudio.destroy();
+            currentAudio = new Audio(url);
+        }
+    }
+    else{
+        currentAudio = new Audio(url);
+    }
+
+    if(currentAudio.status === Media.MEDIA_RUNNING ||
+       currentAudio.status === Media.MEDIA_STARTING){
+        currentAudio.stop();
+    }
+    else{
+        currentAudio.play();
+    }
+};
 
 /**
  * Audio media class.
