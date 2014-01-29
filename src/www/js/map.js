@@ -442,8 +442,6 @@ var _this = {
         // update user position
         this.updateLocateLayer();
 
-        console.log("*");
-
         // if necessary update annotate pin
         if(updateAnnotateLayer){
             // TODO
@@ -518,7 +516,7 @@ var _this = {
 
                 $.each(annotation.record.fields, function(i, entry){
                     var html;
-                    var type = typeFromId(entry.id);
+                    var type = records.typeFromId(entry.id);
 
                     if(type === 'image'){
                         html = '<img src="' + entry.val + '" width="' + width + '"/>';

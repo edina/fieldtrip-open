@@ -92,7 +92,7 @@ def install_project(platform='android',
             options.append('<option value="{0}">{1}</option>'.format(url, name))
         return filedata.replace(place, "\n\t\t".join(options))
 
-    #create config.xml
+    # create config.xml
     filedata = _read_data(os.sep.join(('etc', 'config.xml')))
     filedata = filedata.replace('{{name}}', _config('name'))
     filedata = filedata.replace('{{version}}', _config('version'))

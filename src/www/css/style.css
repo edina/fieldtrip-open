@@ -527,6 +527,7 @@ body .ui-loader{
     white-space: nowrap;
     text-overflow: ellipsis;
     display: inline-block;
+    text-decoration: none;
 }
 
 

@@ -376,7 +376,6 @@ var _ui = {
      * TODO
      */
     capturePage: function(){
-        //console.log('capturePage');
         capturePageListeners();
     },
 
@@ -443,7 +442,11 @@ var _ui = {
      * TODO
      */
     mapPage: function(){
+        // map render must happen in pageshow
         map.display('map');
+
+        // force redraw, specifically for closing of record details dialog
+        resizePage();
     },
 
     /**
@@ -489,7 +492,10 @@ var _ui = {
     /**
      * TODO
      */
-    pageChange: function() {
+    pageChange: function(){
+        $("[data-role=header]").fixedtoolbar({tapToggle: false});
+        $("[data-role=footer]").fixedtoolbar({tapToggle: false});
+
         resizePage();
         this.toggleActive();
     },
@@ -507,11 +513,11 @@ var _ui = {
                 '<li id="' + id + '"><div class="ui-grid-b"> \
 <div class="ui-block-a saved-records-list-synced-' + annotation.isSynced + '">\
 </div>\
-<div class="ui-block-b saved-record-view">\
+<div class="ui-block-b saved-records-view">\
 <a href="#">' + annotation.record.name + '</a>\
 </div>\
 <div class="ui-block-c">\
-<a href="#" class="saved-record-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="a"></a>\
+<a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="a"></a>\
 </div>\
 </div></li>').trigger('create');
         }
@@ -528,15 +534,15 @@ var _ui = {
         }, this));
 
         // delete a saved record
-        $(document).off('vmousedown', '.saved-record-delete');
+        $(document).off('vmousedown', '.saved-records-delete');
         $(document).on(
             'vmousedown',
-            '.saved-record-delete',
+            '.saved-records-delete',
             $.proxy(function(event){
                 this.toBeDeleted = $(event.target).parents('li');
 
                 // open dialog for confirmation
-                $('#saved-record-delete-popup-name').text(
+                $('#saved-records-delete-popup-name').text(
                     "'" + this.toBeDeleted.find('.saved-record-view a').text() + "'");
                 $('#saved-records-delete-popup').popup('open');
             }, this)
@@ -552,10 +558,10 @@ var _ui = {
         }, this));
 
         // click on a record
-        $(document).off('tap', '.saved-record-view');
+        $(document).off('tap', '.saved-records-view');
         $(document).on(
             'tap',
-            '.saved-record-view',
+            '.saved-records-view',
             $.proxy(function(event){
                 if(this.isMobileApp){
                     // this will prevent the event propagating to next screen
