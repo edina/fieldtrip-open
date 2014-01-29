@@ -34,18 +34,8 @@
                     "a": {"class": "annotate-text-form", "url": "#"},
                     "img": {"src": "css/images/text.png", "alt": "Capture Text"},
                     "title": "Text"
-                },
-                "item4": {
-                    "div": {"class": "ui-block-d"},
-                    "a": {"class": "gps-track-start", "url": "annotate-gps.html"},
-                    "img": {"src": "css/images/gps.png", "alt": "Capture GPS Track"},
-                    "title": "GPS Track"
                 }
             }
-        },
-        "section2": {
-            "title": "Custom Forms",
-            "items": {}
         }
     },
     "footer":{

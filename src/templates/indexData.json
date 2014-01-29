@@ -30,19 +30,30 @@
                     "div": {"class": "ui-block-a"},
                     "a": {"class": "annotate-image-form", "href": "#"},
                     "img": {"src": "css/images/images.png", "alt": "Capture Image"},
-                    "name": "Images"
+                    "title": "Images"
                 },
                 "item2": {
                     "div": {"class": "ui-block-b"},
                     "a": {"class": "annotate-audio-form", "href": "#"},
                     "img": {"src": "css/images/audio.png", "alt": "Capture Audio"},
-                    "name": "Audio"
+                    "title": "Audio"
                 },
                 "item3": {
                     "div": {"class": "ui-block-c"},
                     "a": {"class": "annotate-text-form", "href": "#"},
                     "img": {"src": "css/images/text.png", "alt": "Capture Text"},
-                    "name": "Text"
+                    "title": "Text"
+                }
+            }
+        },
+        "section3": {
+            "title": "Download and Sync",
+            "items": {
+                "item1": {
+                    "div": {"class": "ui-block-a"},
+                    "a": {"href": "saved-records.html"},
+                    "img": {"src": "css/images/documents.png", "alt": "Sync Records"},
+                    "title": "Records"
                 }
             }
         }
