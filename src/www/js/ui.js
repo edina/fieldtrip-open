@@ -230,7 +230,7 @@ var _ui = {
             // listen for take photo click
             $('.annotate-image-take').click($.proxy(function(event){
                 id = $(event.target).parents('.ui-grid-a').attr('id');
-                this.records.takePhoto(function(media){
+                records.takePhoto(function(media){
                     showImage(id, media);
                 });
             }, this));
@@ -238,7 +238,7 @@ var _ui = {
             // listen for image gallery click
             $('.annotate-image-get').click($.proxy(function(event){
                 id = $(event.target).parents('.ui-grid-a').attr('id');
-                this.records.getPhoto(function(media){
+                records.getPhoto(function(media){
                     showImage(id, media);
                 });
             }, this));

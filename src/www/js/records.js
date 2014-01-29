@@ -103,7 +103,7 @@ return{
 <div class="ui-block-b">\
 <a class="annotate-image-get" href="#">\
 <img src="css/images/gallery.png"></a><p>Gallery</p>\
-</div>'
+</div></div>'
 
                     $(input).parent().append(btn + that.getImageSizeControl());
                 });
@@ -157,13 +157,15 @@ return{
         else{
             normalSelected = CHECKED;
         }
-        return '<div class="ui-block-c">\
+        return '<div class="ui-grid-solo">\
+<div class="ui-block-a"> \
 <fieldset data-role="controlgroup" data-type="horizontal"> \
 <input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected +' /> \
 <label for="radio-view-a">Normal</label> \
 <input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
 <label for="radio-view-b">Full</label>\
 </fieldset><p>Image Size</p>\
+</div>\
 </div>';
     },
 
@@ -409,6 +411,54 @@ return{
         var s = id.indexOf('-') + 1;
         return id.substr(s, id.lastIndexOf('-') - s);
     },
+
+    /**
+     * take photo action
+     */
+    takePhoto: function(callback){
+        console.log("takePhoto");
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    callback(fileURI);
+                },
+                this.onFail,
+                this.getImageOptions(Camera.PictureSourceType.CAMERA, Camera.EncodingType.JPEG)
+            );
+        }
+    },
+
+    /**
+     * get photo from local filesystem
+     */
+    getPhoto: function(callback) {
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    callback(fileURI);
+                },
+                this.onFail,
+                this.getImageOptions(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM, navigator.camera.MediaType.PICTURE)
+            );
+        }
+    },
+
+    /**
+     * construct the object for the options of the image
+     */
+    getImageOptions: function(sourceType, encodingType){
+        var options = {
+            quality: 100,
+            destinationType: Camera.DestinationType.FILE_URI,
+            sourceType : sourceType,
+            encodingType: encodingType
+        }
+        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
+            options.targetWidth = 640;
+            options.targetHeight = 480;
+        }
+        return options;
+    }
 
 }
 });
