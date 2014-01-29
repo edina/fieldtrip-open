@@ -394,5 +394,38 @@ return{
         return id.substr(s, id.lastIndexOf('-') - s);
     },
 
+    /**
+     * take photo action
+     */
+    takePhoto: function(callback){
+        console.log("takePhoto");
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    callback(fileURI);
+                },
+                this.onFail,
+                this.getImageOptions()
+            );
+        }
+    },
+
+    /**
+     * construct the object for the options of the image
+     */
+    getImageOptions: function(){
+        var options = {
+            quality: 100,
+            destinationType: Camera.DestinationType.FILE_URI,
+            sourceType : Camera.PictureSourceType.CAMERA,
+            encodingType: Camera.EncodingType.JPEG
+        }
+        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
+            options.targetWidth = 640;
+            options.targetHeight = 480;
+        }
+        return options;
+    }
+
 }
 });

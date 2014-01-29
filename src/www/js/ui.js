@@ -222,7 +222,7 @@ var _ui = {
             // listen for take photo click
             $('.annotate-image-take').click($.proxy(function(event){
                 id = $(event.target).parents('.ui-grid-a').attr('id');
-                this.records.takePhoto(function(media){
+                records.takePhoto(function(media){
                     showImage(id, media);
                 });
             }, this));
