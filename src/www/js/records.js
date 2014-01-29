@@ -384,6 +384,22 @@ return{
         localStorage.setItem('saved-annotations', JSON.stringify(annotations));
     },
 
+    /**
+     * Invoke the device's audio recorder
+     * @param callback Function executed after successful recording.
+     */
+    takeAudio: function(callback){
+        console.log("*");
+        if (navigator.device !== undefined){
+            navigator.device.capture.captureAudio(
+                function(mediaFiles){
+                    callback(mediaFiles[0].fullPath);
+                },
+                this.onFail,
+                {limit: 1}
+            );
+        }
+    },
 
     /**
      * @param id Field div id.

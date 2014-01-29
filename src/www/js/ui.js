@@ -91,6 +91,7 @@ define(['map', 'records', 'renderer', 'utils', 'settings'], function(
         }, this));
     };
 
+    // exit app, only appies to android
     var exitApp = function(){
         $('#home-exit-popup').popup('open');
 
@@ -216,7 +217,14 @@ var _ui = {
             var showAudio = $.proxy(function(id, url){
                 var parent = $('#' + id).parent();
                 $('#' + id).hide();
-                parent.append(audioNode(url)).trigger('create');
+
+                require(['audio'], function(audio){
+                    parent.append(audio.getNode(url)).trigger('create');
+
+                    $('#annotate-audio-button').click(function(){
+                        audio.playAudio();
+                    });
+                });
             }, this);
 
             // listen for take photo click
@@ -238,7 +246,7 @@ var _ui = {
             // listen for audio click
             $('.annotate-audio').click($.proxy(function(event){
                 id = $(event.target).parents('div').attr('id');
-                this.annotations.takeAudio(function(media){
+                records.takeAudio(function(media){
                     showAudio(id, media);
                 });
             }, this));

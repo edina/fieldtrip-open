@@ -52,7 +52,7 @@
                 "item1": {
                     "div": {"class": "ui-block-a"},
                     "a": {"href": "saved-records.html"},
-                    "img": {"src": "css/images/documents.png", "alt": "Sync Records"},
+                    "img": {"src": "css/images/documents.png", "alt": "Saved Records"},
                     "title": "Records"
                 }
             }
