@@ -377,6 +377,7 @@ var _ui = {
      */
     capturePage: function(){
         //console.log('capturePage');
+        capturePageListeners();
     },
 
     /**
