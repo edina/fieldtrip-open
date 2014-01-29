@@ -10,20 +10,21 @@ Fieldtrip-Open is a mobile mapping and data collection platform.
 
 [Install notes](INSTALL_DEPS.md)
 
-### Installation instructions of app
+### Install
 
-* Install
 ```
 $ fab install_project
 $ Provide location of config file > etc/config.example
 ```
 
-* Deploy Android
+### Deploy Android
+
 ```
 $ fab deploy_android
 ```
 
-* Release Android
+### Release Android
+
 ```
 $ fab release_android
 ```
