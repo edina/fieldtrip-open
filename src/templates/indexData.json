@@ -19,7 +19,7 @@
                     "div": {"class": "ui-block-a"},
                     "a": {"href": "map.html"},
                     "img": {"src": "css/images/online.png", "alt": "View Map"},
-                    "name": "Online"
+                    "title": "Online"
                 }
             }
         },

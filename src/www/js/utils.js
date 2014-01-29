@@ -121,15 +121,11 @@ define(['settings'], function(settings){
 
     return {
 
+        /*********** public ***********************/
+
         /**
          * TODO
          */
-        getDocumentBase : function (){
-            return documentBase;
-        },
-
-        /*********** public ***********************/
-
         absoluteHeightScroller: function(selector){
             var box = $(selector);
             var padding = 100;
@@ -137,7 +133,18 @@ define(['settings'], function(settings){
             var maxHeight = $(window).height() * 0.60;//60%
             var boxHeight = boxHeight < maxHeight ? boxHeight : maxHeight  ;
             box.css('height', boxHeight+'px');
-            console.debug(boxHeight);
+        },
+
+        /**
+         * TODO
+         */
+        appendDateTimeToInput: function(inputId){
+            var $inputId = $(inputId);
+            var prefix = $inputId.attr('value');
+
+            if(prefix){
+                $inputId.attr('value', prefix + this.getSimpleDate());
+            }
 
         },
 
@@ -205,6 +212,23 @@ define(['settings'], function(settings){
         },
 
         /**
+         * TODO
+         */
+        getDocumentBase : function (){
+            return documentBase;
+        },
+
+        /**
+         * @param cache Is this a map cache request?
+         * @return Standard parameters to map cache.
+         */
+        getLoggingParams: function(cache) {
+            return '?version=' + Utils.version +
+                '&id=' + userId +
+                '&app=free&cache=' + cache;
+        },
+
+        /**
          * @return The field trip GB map server URL.
          */
         getMapServerUrl: function() {
@@ -223,6 +247,15 @@ define(['settings'], function(settings){
         },
 
         /**
+         * Get permanent root directory
+         * @param callback function to be executed when persistent root is found
+         * @return Persistent file system.
+         */
+        getPersistentRoot: function(callback){
+            return getFileSystemRoot(callback, LocalFileSystem.PERSISTENT);
+        },
+
+        /**
          * @return The field trip GB server web server URL. This is currently the
          * pcapi URL in settings.
          */
@@ -234,35 +267,6 @@ define(['settings'], function(settings){
                 return 'http://' + location.hostname + '/ftgb';
             }
 
-        },
-
-        /**
-         * @param cache Is this a map cache request?
-         * @return Standard parameters to map cache.
-         */
-        getLoggingParams: function(cache) {
-            return '?version=' + Utils.version +
-                '&id=' + userId +
-                '&app=free&cache=' + cache;
-        },
-
-        /**
-         * Get temporary root directory, this is secure and deleted if application is
-         * uninstalled.
-         * @param callback The function to be called when filesystem is retrieved.
-         * @return Temporary file system.
-         */
-        getTemporaryRoot: function(callback){
-            return getFileSystemRoot(callback, LocalFileSystem.TEMPORARY);
-        },
-
-        /**
-         * Get permanent root directory
-         * @param callback function to be executed when persistent root is found
-         * @return Persistent file system.
-         */
-        getPersistentRoot: function(callback){
-            return getFileSystemRoot(callback, LocalFileSystem.PERSISTENT);
         },
 
         /**
@@ -280,6 +284,16 @@ define(['settings'], function(settings){
             var yyyy = today.getFullYear();
             if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} if(h<10){h='0'+h} if(m<10){m='0'+m} if(s<10){s='0'+s} today = ' ('+ dd+'-'+mm+'-'+yyyy+' '+h+'h'+m+'m'+s+'s)';
             return today;
+        },
+
+        /**
+         * Get temporary root directory, this is secure and deleted if application is
+         * uninstalled.
+         * @param callback The function to be called when filesystem is retrieved.
+         * @return Temporary file system.
+         */
+        getTemporaryRoot: function(callback){
+            return getFileSystemRoot(callback, LocalFileSystem.TEMPORARY);
         },
 
         /**
@@ -368,6 +382,23 @@ define(['settings'], function(settings){
         },
 
         /**
+         * Use jquery modal loader popup for error alert. Note: Cannot be used in
+         * pageinit.
+         * @param message The text to display.
+         */
+        informError: function(message){
+            this.inform(message, 2000, true);
+        },
+
+        /**
+         * Print out javascript object as a string.
+         * @param obj Javascript object.
+         */
+        printObj: function(obj){
+            console.debug(JSON.stringify(obj, undefined, 2));
+        },
+
+        /**
          * Helper function that sets the unique value of a JQM select element.
          * @param selector Jquery selector.
          * @param value The new value.
@@ -396,23 +427,6 @@ define(['settings'], function(settings){
         },
 
         /**
-         * Use jquery modal loader popup for error alert. Note: Cannot be used in
-         * pageinit.
-         * @param message The text to display.
-         */
-        informError: function(message){
-            Utils.inform(message, 2000, true);
-        },
-
-        /**
-         * Print out javascript object as a string.
-         * @param obj Javascript object.
-         */
-        printObj: function(obj){
-            console.debug(JSON.stringify(obj, undefined, 2));
-        },
-
-        /**
          * @return whether the device support HTML5 canvas and toDataURL?
          */
         supportsToDataURL: function (){
@@ -427,14 +441,13 @@ define(['settings'], function(settings){
 
             return support;
         },
-        appendDateTimeToInput: function(inputId){
-            var $inputId = $(inputId);
-            var prefix = $inputId.attr('value');
 
-            if(prefix){
-                $inputId.attr('value', prefix + this.getSimpleDate());
-            }
-
+       /**
+        * Used for making the file system fiendly fileName.
+        */
+        santiseForFilename: function(text){
+            var filename = text.replace(/[^-a-z0-9_\.]/gi, '_');
+            return filename;
         },
 
         /**
@@ -467,14 +480,6 @@ define(['settings'], function(settings){
                     this.scrollLeft = scrollStartPosX - e.originalEvent.touches[0].pageX;
                 });
             }
-        },
-
-       /**
-        * Used for making the file system fiendly fileName.
-        */
-        santiseForFilename: function(text){
-            var filename = text.replace(/[^-a-z0-9_\.]/gi, '_');
-            return filename;
         },
 
         /**
