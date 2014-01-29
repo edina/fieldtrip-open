@@ -155,8 +155,8 @@ def install_project(platform='android',
             'cordova-plugin-device.git',
             # 'cordova-plugin-network-information',
             'cordova-plugin-geolocation.git',
-        #    'cordova-plugin-camera.git',
-        #    'cordova-plugin-media-capture.git',
+            'cordova-plugin-camera.git',
+            'cordova-plugin-media-capture.git',
         #    'cordova-plugin-media.git',
         #    'cordova-plugin-file.git',
         #    'cordova-plugin-file-transfer.git',
@@ -614,7 +614,7 @@ def generate_html(platform="android", cordova=False):
                         data["footer"] = footer_data
 
                     template = environ.get_template(f)
-                    header_data["cordova"] = {"cordova": cordova, "title": data["header"]["title"]}
+                    header_data = {"cordova": cordova, "title": data["header"]["title"]}
 
                     popups=[]
                     if "popups" in data:
