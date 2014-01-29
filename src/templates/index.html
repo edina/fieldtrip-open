@@ -32,6 +32,7 @@
             <a {% for key, value in sections["items"][item]["a"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
               <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
             </a>
+            <p>{{sections["items"][item]["name"]}}</p>
           </div>
         {% endfor %}
         </div>
