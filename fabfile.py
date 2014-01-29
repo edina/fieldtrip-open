@@ -95,6 +95,7 @@ def install_project(platform='android',
     # create config.xml
     filedata = _read_data(os.sep.join(('etc', 'config.xml')))
     filedata = filedata.replace('{{name}}', _config('name'))
+    filedata = filedata.replace('{{package}}', _config('package'))
     filedata = filedata.replace('{{version}}', _config('version'))
     filedata = filedata.replace('{{version_code}}', _config('version').replace(".", ""))
     filedata = filedata.replace('{{author_email}}', _config('author_email'))

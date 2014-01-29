@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="uk.ac.edina.mobile"
+<widget id="{{package}}"
         version="{{version}}"
         versionCode="{{version_code}}"
         xmlns="http://www.w3.org/ns/widgets"
@@ -13,7 +13,7 @@
     {{name}} Team
   </author>
 
-{{access_urls}}
+  {{access_urls}}
 
   <preference name="webviewbounce" value="true" />
   <content src="index.html" />
