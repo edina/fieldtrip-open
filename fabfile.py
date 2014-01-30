@@ -268,13 +268,22 @@ def install_project(platform='android',
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
 
+    # do some checks on the project
+    theme_src = os.sep.join((proj_home, 'theme'))
+    if not os.path.exists(os.sep.join((theme_src, 'plugins.json'))):
+        print "\n*** WARNING: No plugins.json found in project"
+    theme_css = os.sep.join((theme_src, 'css'))
+    if not os.path.exists(os.sep.join((theme_css, 'jqm-style.css'))):
+        print "\n*** WARNING: No jqm-style.css found in project: {0}".format(theme_css)
+    if not os.path.exists(os.sep.join((theme_css, 'style.css'))):
+        print "\n*** WARNING: No style.css found in project"
+
     if not os.path.exists('plugins'):
         local('mkdir plugins')
         with lcd('plugins'):
             local('git clone git@github.com:edina/fieldtrip-plugins.git')
         # TODO
         # fetch git plugins not in fieldtrip-plugins
-
 
     # install external js libraries
     local('bower install')
@@ -314,7 +323,6 @@ def install_project(platform='android',
         theme = os.sep.join((asset_dir, 'theme'))
         if not os.path.exists(theme):
             with lcd(asset_dir):
-                theme_src = os.sep.join((proj_home, 'theme'))
                 if os.path.exists(theme_src):
                     local('ln -s {0} theme'.format(theme_src))
                 else:
@@ -322,7 +330,6 @@ def install_project(platform='android',
                     exit(-1)
 
         # install js/css dependencies
-        _make_dirs([os.sep.join((src_dir, js_dir)), os.sep.join((src_dir, css_dir))])
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_dir))
             local('rm -r {0}/*'.format(css_dir))
@@ -517,11 +524,12 @@ def update_app():
         print "\nProject has no platforms directory: {0}".format(platforms)
         exit(-1)
 
-    deps = os.sep.join((proj_home, 'deps'))
-    if os.path.exists(deps):
-        # miscellaneous dependencies not required for development
-        local('cp -rf {0}/* {1}'.format(deps,
-                                        os.sep.join((runtime, 'www'))))
+    # TODO remove
+    # deps = os.sep.join((proj_home, 'deps'))
+    # if os.path.exists(deps):
+    #     # miscellaneous dependencies not required for development
+    #     local('cp -rf {0}/* {1}'.format(deps,
+    #                                     os.sep.join((runtime, 'www'))))
 def _check_command(cmd):
     """checks a command is in the path"""
     with settings(warn_only=True):

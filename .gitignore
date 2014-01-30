@@ -2,6 +2,7 @@
 .DS_Store
 *.keystore
 bower_components
+config.ini
 fieldtrip-*
 node_modules
 plugins
