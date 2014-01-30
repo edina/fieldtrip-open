@@ -154,7 +154,7 @@ var _this = {
      * Set up openlayer map.
      */
     init: function(){
-        this.map = new OpenLayers.Map("map");
+        this.map = new OpenLayers.Map("map", {theme: null});
         this.map.addLayer(new OpenLayers.Layer.OSM());
 
         // styles for records
