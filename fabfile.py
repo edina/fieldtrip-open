@@ -585,11 +585,14 @@ def _write_data(fil, filedata):
     f.write(filedata)
     f.close()
 
-
-#########################HTML GENERATION###################################
 @task
 def generate_html(platform="android", cordova=False):
-    """Generate html from templates"""
+    """
+    Generate html from templates
+
+    platform - android or ios
+    cordova - should cordova.js be used?
+    """
     if isinstance(cordova, basestring):
         cordova = str2bool(cordova)
     root, proj_home, src_dir = _get_source()
@@ -599,15 +602,15 @@ def generate_html(platform="android", cordova=False):
     environ.globals["_get_letter"] = _get_letter
     environ.globals["_sorted"] = _sorted
 
-    header_data = json.loads(open(os.sep.join((path, 'headerData.json'))).read())
-    footer_data = json.loads(open(os.sep.join((path, 'footerData.json'))).read())
+    header_data = json.loads(open(os.sep.join((path, 'header.json'))).read())
+    footer_data = json.loads(open(os.sep.join((path, 'footer.json'))).read())
     header_template = environ.get_template("header.html")
     footer_template = environ.get_template("footer.html")
 
     for path, dirs, files in os.walk(path):
         for f in files:
             if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
-                filename = f.split(".")[0]+"Data.json"
+                filename = '{0}.json'.format(f.split(".")[0])
                 fil = os.sep.join((path, filename))
 
                 if os.path.exists(fil):
