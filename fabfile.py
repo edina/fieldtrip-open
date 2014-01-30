@@ -681,6 +681,7 @@ def _walk_dict(d,depth=0):
         else:
             print ("  ")*depth + "%s %s" % (k, v)
 
+#http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge
 def _merge(a, b, path=None):
     "merges b into a"
     if path is None: path = []
