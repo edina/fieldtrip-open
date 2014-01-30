@@ -332,7 +332,7 @@ def install_project(platform='android',
         # install js/css dependencies
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_dir))
-            local('rm -r {0}/*'.format(css_dir))
+            local('rm {0}/*.css'.format(css_dir))
             local('rm {0}/plugins/*'.format(asset_dir))
 
         # set up fieldtrip plugins
