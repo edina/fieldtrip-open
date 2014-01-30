@@ -599,10 +599,16 @@ def generate_html(platform="android", cordova=False):
     for path, dirs, files in os.walk(path):
         for f in files:
             if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
-                fil = os.sep.join((path, f.split(".")[0]+"Data.json"))
+                filename = f.split(".")[0]+"Data.json"
+                fil = os.sep.join((path, filename))
+
                 if os.path.exists(fil):
                     print "generating file {0}".format(f)
                     data = json.loads(open(fil).read())
+
+                    if filename in os.listdir(os.sep.join((proj_home, 'theme'))):
+                        new_data = json.loads(open(os.sep.join((proj_home, 'theme', filename))).read())
+                        _merge(dict(data), new_data)
 
                     if "header" in data:
                         data["header"].update(header_data)
@@ -655,3 +661,27 @@ def _sorted(dic):
     """ """
     dic = collections.OrderedDict(sorted(dic.items(), key=lambda t: t[0]))
     return dic
+
+def _walk_dict(d,depth=0):
+    for k,v in sorted(d.items(),key=lambda x: x[0]):
+        if isinstance(v, dict):
+            print ("  ")*depth + ("%s" % k)
+            _walk_dict(v,depth+1)
+        else:
+            print ("  ")*depth + "%s %s" % (k, v)
+
+def _merge(a, b, path=None):
+    "merges b into a"
+    if path is None: path = []
+    for key in b:
+        if key in a:
+            if isinstance(a[key], dict) and isinstance(b[key], dict):
+                merge(a[key], b[key], path + [str(key)])
+            elif a[key] == b[key]:
+                pass # same leaf value
+            else:
+                #raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+                a[key] = b[key]
+        else:
+            a[key] = b[key]
+    return a
