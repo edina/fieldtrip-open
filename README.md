@@ -8,7 +8,7 @@ Fieldtrip-Open is a mobile mapping and data collection platform.
   - [nodejs](http://nodejs.org/)
   - [android](http://developer.android.com/index.html) and/or [xcode](https://developer.apple.com/xcode/)
 
-[Install notes](INSTALL_DEPS.md)
+[Install dependencies notes](INSTALL_DEPS.md)
 
 ### Install
 
@@ -23,8 +23,12 @@ $ Provide location of config file > etc/config.example
 $ fab deploy_android
 ```
 
-### Release Android
+### Deploy IOS
 
 ```
-$ fab release_android
+$ fab deploy_ios
 ```
+
+### Project
+
+[Project notes](PROJECTS.md)

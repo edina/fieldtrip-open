@@ -266,7 +266,7 @@ def install_project(platform='android',
 @task
 def deploy_android():
     """
-    Deploy android to device connected to machine
+    Deploy to android device connected to machine
     """
 
     _check_command('ant')
@@ -291,6 +291,14 @@ def deploy_android():
 
                 # retry install
                 local(cmd)
+
+@task
+def deploy_ios():
+    """
+    Deploy to ios device connected to machine
+    """
+    # TODO
+    print 'Waiting for someone to do this.'
 
 @task
 def release_android(beta='True', overwrite='False', email=False):

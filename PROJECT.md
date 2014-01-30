@@ -1,0 +1,36 @@
+### Projects
+
+A project is instance of fieldtrip open. It contains a theme and a list of plugins it wishes to enable.
+
+### Theme ###
+
+A fieldtrip theme contains two stylesheets:
+
+* A jQuery Mobile Theme, preferably create by [ThemeRoller](http://themeroller.jquerymobile.com/). The stylesheet will be found at: theme/css/jqm-style.css
+* A stylesheet for overriding the [core stylesheet](https://github.com/edina/fieldtrip-open/blob/master/src/www/css/style.css). It will be found at: theme/css/style.css
+
+### Plugins
+
+The json file theme/plugins.json will define a list of plugins the project wishes to enable. The following is an example:
+
+```
+{
+    "plugins": {
+        "offline-maps": "",
+        "ft-sync", "1.0.1",
+        "my-plugin": "git@github.com:gmh04/fieldtrip-plugins-test.git",
+    }
+}
+```
+
+* offline-maps: will use the master branch of the plugin found at: [https://github.com/edina/fieldtrip-plugins](https://github.com/edina/fieldtrip-plugins).
+* ft-sync: will install the plugin as a [bower](http://bower.io/) dependency.
+* my-plugin: will use the master branch of the plugin found at the defined git repository.
+
+[Plugin development documentation](PLUGINS.md)
+
+### Examples
+
+* [Basic Example](https://github.com/edina/fieldtrip-example)
+* [Fieldtrip GB](https://github.com/edina/fieldtrip-gb)
+* [COBWEB]()
