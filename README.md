@@ -27,4 +27,4 @@ $ fab deploy_ios
 
 ### Project
 
-[Project notes](PROJECTS.md)
+[Project documentation](PROJECTS.md)

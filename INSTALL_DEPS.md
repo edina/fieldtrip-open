@@ -1,6 +1,4 @@
-### Fabric and related dependencies:
-
-If [pip](https://pypi.python.org/pypi/pip) is not already installed:
+### [pip](https://pypi.python.org/pypi/pip) (if not already installed):
 
 #### apt
 
@@ -15,6 +13,8 @@ TODO
 ```
 sudo easy_install pip
 ```
+
+### Fabric and related dependencies:
 
 ```
 pip install fabric jinja2 beautifulsoup4 html5lib

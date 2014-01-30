@@ -2,7 +2,7 @@
 .DS_Store
 *.keystore
 bower_components
-fieldtrip-example
+fieldtrip-*
 node_modules
 plugins
 project

@@ -55,6 +55,155 @@ PROJ4JS_VERSION    = '1.1.0'
 config = None
 
 @task
+def clean():
+    """
+    Tidy up app. This should be run before switching projects.
+    """
+    root, project, src = _get_source()
+
+    def delete_repo(repo):
+        if os.path.exists(repo):
+            with lcd(repo):
+                out = local('git status', capture=True)
+                if len(out.splitlines()) > 2:
+                    print "\nWon't delete {0} until there a no uncommitted changes".format(repo)
+                    exit(-1)
+                else:
+                    local('rm -rf {0}'.format(repo))
+
+    with settings(warn_only=True):
+        www = os.sep.join((src, 'www'))
+        local('rm {0}*.html'.format(os.sep.join((www, ''))))
+        local('rm {0}'.format(os.sep.join((www, 'theme'))))
+        local('rm {0}'.format(os.sep.join((root, 'etc', 'config.ini'))))
+
+    with lcd(root):
+        if os.path.exists('project'):
+            proj_repo = local('readlink project', capture=True)
+            print proj_repo
+            delete_repo(os.sep.join((root, proj_repo)))
+            local('rm project')
+
+    plugins = os.sep.join((root, 'plugins'))
+    if os.path.exists(plugins):
+        with lcd(plugins):
+            for plugin in os.listdir(plugins):
+                delete_repo(os.sep.join((plugins, plugin)))
+
+@task
+def deploy_android():
+    """
+    Deploy to android device connected to machine
+    """
+
+    _check_command('ant')
+    _check_command('adb')
+    _check_command('cordova')
+    _check_command('android')
+
+    # generate html for android
+    generate_html(cordova=True)
+
+    with lcd(_get_runtime()[1]):
+        device = None
+        local('cordova build')
+
+        with settings(warn_only=True):
+            cmd = 'cordova run android 2>&1'
+            out = local(cmd, capture=True)
+
+            if out and out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
+                # app is installed with wrong certificate try and uninstall app
+                local('adb uninstall {0}'.format(_config('package')))
+
+                # retry install
+                local(cmd)
+
+@task
+def deploy_ios():
+    """
+    Deploy to ios device connected to machine
+    """
+    # TODO
+    print 'Waiting for someone to do this.'
+
+@task
+def generate_docs():
+    """
+    Auto generate javascript markdown documentation
+    """
+
+    local('jsdox --output docs/ src/www/js/')
+
+@task
+def generate_html(platform="android", cordova=False):
+    """
+    Generate html from templates
+
+    platform - android or ios
+    cordova - should cordova.js be used?
+    """
+    if isinstance(cordova, basestring):
+        cordova = _str2bool(cordova)
+    root, proj_home, src_dir = _get_source()
+    path = os.sep.join((src_dir, 'templates'))
+    export_path = os.sep.join((src_dir, 'www'))
+    environ = Environment(loader=FileSystemLoader(path))
+    environ.globals["_get_letter"] = _get_letter
+    environ.globals["_sorted"] = _sorted
+
+    header_data = json.loads(open(os.sep.join((path, 'header.json'))).read())
+    footer_data = json.loads(open(os.sep.join((path, 'footer.json'))).read())
+    header_template = environ.get_template("header.html")
+    footer_template = environ.get_template("footer.html")
+
+    for path, dirs, files in os.walk(path):
+        for f in files:
+            if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
+                filename = '{0}.json'.format(f.split(".")[0])
+                fil = os.sep.join((path, filename))
+
+                if os.path.exists(fil):
+                    print "generating file {0}".format(f)
+                    data = json.loads(open(fil).read())
+
+                    if filename in os.listdir(os.sep.join((proj_home, 'theme'))):
+                        new_data = json.loads(open(os.sep.join((proj_home, 'theme', filename))).read())
+                        _merge(dict(data), new_data)
+
+                    if "header" in data:
+                        data["header"].update(header_data)
+                    else:
+                        data["header"] = header_data
+
+                    if "footer" in data:
+                        data["footer"].update(footer_data)
+                    else:
+                        data["footer"] = footer_data
+
+                    template = environ.get_template(f)
+                    header_data = {"cordova": cordova, "title": data["header"]["title"]}
+
+                    popups=[]
+                    if "popups" in data:
+                        for popup in data["popups"]:
+                            popup_template = environ.get_template(data["popups"][popup]["template"])
+                            popups.append(popup_template.render(data=data["popups"][popup]["data"]))
+
+                    output = template.render(
+                        header_data=header_data,
+                        body=_sorted(data["body"]),
+                        popups="\n".join(popups),
+                        platform=platform,
+                        header=header_template.render(
+                            data=data["header"],
+                            platform=platform),
+                            footer=footer_template.render(
+                                data=data["footer"],
+                                platform=platform))
+                    _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
+
+@task
 def install_project(platform='android',
                     dist_dir='apps',
                     target='local'):
@@ -83,14 +232,6 @@ def install_project(platform='android',
     def _install_plugins(names):
         for name in names:
             local('cordova plugin add https://git-wip-us.apache.org/repos/asf/{0}'.format(name))
-
-    def _settings_options(filedata, _urls, _names, place):
-        urls = _config(_urls).split(",")
-        names = _config(_names).split(",")
-        options = []
-        for name, url in itertools.izip(names, urls):
-            options.append('<option value="{0}">{1}</option>'.format(url, name))
-        return filedata.replace(place, "\n\t\t".join(options))
 
     # create config.xml
     filedata = _read_data(os.sep.join(('etc', 'config.xml')))
@@ -174,7 +315,11 @@ def install_project(platform='android',
         if not os.path.exists(theme):
             with lcd(asset_dir):
                 theme_src = os.sep.join((proj_home, 'theme'))
-                local('ln -s {0} theme'.format(theme_src))
+                if os.path.exists(theme_src):
+                    local('ln -s {0} theme'.format(theme_src))
+                else:
+                    print '\nYour project must have a theme at {0}'.format(theme_src)
+                    exit(-1)
 
         # install js/css dependencies
         _make_dirs([os.sep.join((src_dir, js_dir)), os.sep.join((src_dir, css_dir))])
@@ -224,7 +369,6 @@ def install_project(platform='android',
 
     # add project specific files
     update_app()
-    _create_structure()
 
     # check if /home/<user>/<dist_dir> exists
     dist_path = os.sep.join((os.environ['HOME'], dist_dir))
@@ -264,46 +408,9 @@ def install_project(platform='android',
         local('./build.py %s %s' % (cfg_file, js_mobile))
 
 @task
-def deploy_android():
-    """
-    Deploy to android device connected to machine
-    """
-
-    _check_command('ant')
-    _check_command('adb')
-    _check_command('cordova')
-    _check_command('android')
-
-    # generate html for android
-    generate_html(cordova=True)
-
-    with lcd(_get_runtime()[1]):
-        device = None
-        local('cordova build')
-
-        with settings(warn_only=True):
-            cmd = 'cordova run android 2>&1'
-            out = local(cmd, capture=True)
-
-            if out and out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
-                # app is installed with wrong certificate try and uninstall app
-                local('adb uninstall {0}'.format(_config('package')))
-
-                # retry install
-                local(cmd)
-
-@task
-def deploy_ios():
-    """
-    Deploy to ios device connected to machine
-    """
-    # TODO
-    print 'Waiting for someone to do this.'
-
-@task
 def release_android(beta='True', overwrite='False', email=False):
     """
-    Release version of field trip app
+    Release android version of fieldtrip app
 
     beta - BETA release or LIVE?
     overwrite - should current apk file be overwitten?
@@ -339,7 +446,7 @@ def release_android(beta='True', overwrite='False', email=False):
         apk_name = _config('package').replace('.', '')
 
         # do the build
-        if str2bool(beta):
+        if _str2bool(beta):
             file_name = '{0}-debug.apk'.format(apk_name)
             new_file_name = '{0}-debug.apk'.format(_config('name'))
             local('cordova build')
@@ -376,60 +483,45 @@ def release_android(beta='True', overwrite='False', email=False):
     hosts = _config('hosts', section='release')
     env.hosts = _config('hosts', section='release').split(',')
     if len(env.hosts) > 0:
-        execute('copy_apk_to_servers', version, file_name, new_file_name, str2bool(overwrite))
+        execute('_copy_apk_to_servers',
+                version,
+                file_name,
+                new_file_name,
+                _str2bool(overwrite))
 
     # inform of release
     if email:
         _email(new_file_name, version, beta)
 
 @task
-def generate_docs():
+def release_ios():
     """
-    Auto generate javascript markdown documentation
+    Release ios version of fieldtrip app
     """
 
-    local('jsdox --output docs/ src/www/js/')
+    # TODO
+    print 'Waiting for someone to do this.'
 
 @task
 def update_app():
     """Update app with latest configuration"""
     proj_home = _get_source()[1]
     runtime = _get_runtime()[1]
-    local('cp -rf {0} {1}'.format(os.sep.join((proj_home, 'platforms')),
-                                  runtime))
 
-    # miscellaneous dependencies not required for development
-    local('cp -rf {0}/* {1}'.format(os.sep.join((proj_home, 'deps')),
-                                    os.sep.join((runtime, 'www'))))
+    platforms = os.sep.join((proj_home, 'platforms'))
 
-
-@task
-def copy_apk_to_servers(version, file_name, new_file_name, overwrite):
-    """
-    Copy APK file to servers
-
-    version - app version
-    file_name - apk file name, as generated from build
-    new_file_name - the new, user friendly, name for the apk file
-    overwrite - should current apk file be overwitten?
-    """
-
-    runtime = _get_runtime()[1];
-    apk = os.sep.join((runtime, 'platforms', 'android', 'bin', file_name))
-
-    # copy to server
-    target_dir = '{0}/{1}'.format(_config('dir', section='release'), version)
-    if not exists(target_dir):
-        run('mkdir {0}'.format(target_dir))
-
-    target_file = os.sep.join((target_dir, file_name))
-    if exists(target_file) and not overwrite:
-        print '\nVersion {0} already exists at {1}'.format(version, target_file)
-        print '*** Unable to release to {0} ***\n'.format(env.host_string)
+    if os.path.exists(platforms):
+        local('cp -rf {0} {1}'.format(platforms,
+                                      runtime))
     else:
-        put(apk, os.sep.join((target_dir, new_file_name)))
+        print "\nProject has no platforms directory: {0}".format(platforms)
+        exit(-1)
 
-
+    deps = os.sep.join((proj_home, 'deps'))
+    if os.path.exists(deps):
+        # miscellaneous dependencies not required for development
+        local('cp -rf {0}/* {1}'.format(deps,
+                                        os.sep.join((runtime, 'www'))))
 def _check_command(cmd):
     """checks a command is in the path"""
     with settings(warn_only=True):
@@ -469,9 +561,13 @@ def _check_config():
         location = _config('location')
         if location.find('@') != -1:
             local('rsync -avz {0} {1}'.format(location, conf_dir))
-
+            config = None # make sure it is re-read
 
 def _config(var, section='install'):
+    """
+    TODO
+    """
+
     global config
     if config == None:
         config = ConfigParser.ConfigParser()
@@ -480,16 +576,43 @@ def _config(var, section='install'):
 
     return config.get(section, var)
 
+def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
+    """
+    Copy APK file to servers
+
+    version - app version
+    file_name - apk file name, as generated from build
+    new_file_name - the new, user friendly, name for the apk file
+    overwrite - should current apk file be overwitten?
+    """
+
+    runtime = _get_runtime()[1];
+    apk = os.sep.join((runtime, 'platforms', 'android', 'bin', file_name))
+
+    # copy to server
+    target_dir = '{0}/{1}'.format(_config('dir', section='release'), version)
+    if not exists(target_dir):
+        run('mkdir {0}'.format(target_dir))
+
+    target_file = os.sep.join((target_dir, file_name))
+    if exists(target_file) and not overwrite:
+        print '\nVersion {0} already exists at {1}'.format(version, target_file)
+        print '*** Unable to release to {0} ***\n'.format(env.host_string)
+    else:
+        put(apk, os.sep.join((target_dir, new_file_name)))
 
 def _email(file_name,
            version,
            beta='True',
            platform='Android'):
+    """
+    TODO
+    """
 
     url = _config('url', section='release')
 
     title = '{0} {1}'.format(platform, _config('name'))
-    if str2bool(beta):
+    if _str2bool(beta):
         title = '{0} beta release'.format(title)
         to = _config('email_beta', section='release')
     else:
@@ -508,6 +631,10 @@ def _email(file_name,
     s.sendmail(sender, [to], msg.as_string())
     s.quit()
 
+def _get_letter(obj):
+    """ TODO """
+    i = len(obj)-1
+    return chr(i+ord('a'))
 
 def _get_runtime(target='local'):
     """
@@ -521,7 +648,6 @@ def _get_runtime(target='local'):
     runtime_dir = _config('runtime_dir')
     target_dir = os.sep.join((os.environ['HOME'], target))
     return target_dir, os.sep.join((target_dir, runtime_dir))
-
 
 def _get_source(app='android'):
     """
@@ -544,114 +670,20 @@ def _make_dirs(dirs):
         if not os.path.exists(d):
             os.makedirs(d)
 
-
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
-
-def _create_structure():
-    """ create structure of templates and data of core app and plugins"""
-    structure = {}
-    root, proj_home, src_dir = _get_source()
-
-    structure["default-templates"] = _get_structure(os.sep.join((src_dir, 'www', 'templates')))
-    structure["custom-templates"] = _get_structure(os.sep.join((src_dir, 'www', 'theme', 'templates')))
-    #structure["plugins"] =  _get_structure(os.sep.join((root, 'plugins')))
-    data = []
-    data.append("define(function(){")
-    data.append("    return {0}".format(json.dumps(structure)))
-    data.append("});")
-    _write_data(os.sep.join((src_dir, 'www', 'js', 'filesmap.js')), "\n".join(data))
-
-def _get_structure(path):
-    new_list = []
-    ignored = [".gitignore", ".git", "README.md"]
-    for path, dirs, files in os.walk(path):
-        print path
-        print dirs
-        for f in files:
-             if not f in ignored:
-                new_list.append(f)
-    return new_list
-
-def _read_data(fil):
-    with open(fil, 'r') as f:
-        filedata = f.read()
-        f.close()
-        return filedata
-    return None
-
-def _write_data(fil, filedata):
-    f = open(fil, 'w')
-    f.write(filedata)
-    f.close()
-
-@task
-def generate_html(platform="android", cordova=False):
-    """
-    Generate html from templates
-
-    platform - android or ios
-    cordova - should cordova.js be used?
-    """
-    if isinstance(cordova, basestring):
-        cordova = str2bool(cordova)
-    root, proj_home, src_dir = _get_source()
-    path = os.sep.join((src_dir, 'templates'))
-    export_path = os.sep.join((src_dir, 'www'))
-    environ = Environment(loader=FileSystemLoader(path))
-    environ.globals["_get_letter"] = _get_letter
-    environ.globals["_sorted"] = _sorted
-
-    header_data = json.loads(open(os.sep.join((path, 'header.json'))).read())
-    footer_data = json.loads(open(os.sep.join((path, 'footer.json'))).read())
-    header_template = environ.get_template("header.html")
-    footer_template = environ.get_template("footer.html")
-
-    for path, dirs, files in os.walk(path):
-        for f in files:
-            if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
-                filename = '{0}.json'.format(f.split(".")[0])
-                fil = os.sep.join((path, filename))
-
-                if os.path.exists(fil):
-                    print "generating file {0}".format(f)
-                    data = json.loads(open(fil).read())
-
-                    if filename in os.listdir(os.sep.join((proj_home, 'theme'))):
-                        new_data = json.loads(open(os.sep.join((proj_home, 'theme', filename))).read())
-                        _merge(dict(data), new_data)
-
-                    if "header" in data:
-                        data["header"].update(header_data)
-                    else:
-                        data["header"] = header_data
-
-                    if "footer" in data:
-                        data["footer"].update(footer_data)
-                    else:
-                        data["footer"] = footer_data
-
-                    template = environ.get_template(f)
-                    header_data = {"cordova": cordova, "title": data["header"]["title"]}
-
-                    popups=[]
-                    if "popups" in data:
-                        for popup in data["popups"]:
-                            popup_template = environ.get_template(data["popups"][popup]["template"])
-                            popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-
-                    output = template.render(
-                        header_data=header_data,
-                        body=_sorted(data["body"]),
-                        popups="\n".join(popups),
-                        platform=platform,
-                        header=header_template.render(
-                            data=data["header"],
-                            platform=platform),
-                            footer=footer_template.render(
-                                data=data["footer"],
-                                platform=platform))
-                    _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
+def _merge(a, b, path=None):
+    """merges b into a"""
+    if path is None: path = []
+    for key in b:
+        if key in a:
+            if isinstance(a[key], dict) and isinstance(b[key], dict):
+                _merge(a[key], b[key], path + [str(key)])
+            elif a[key] == b[key]:
+                pass # same leaf value
+            else:
+                a[key] = b[key]
+        else:
+            a[key] = b[key]
+    return a
 
 def _prettify(output, indent='2'):
     """ custom indentation for BeautifulSoup"""
@@ -663,17 +695,27 @@ def _prettify(output, indent='2'):
     r = re.compile(r'^(\s*)', re.MULTILINE)
     return r.sub(r'\1\1', s)
 
-def _get_letter(obj):
-    """ """
-    i = len(obj)-1
-    return chr(i+ord('a'))
+def _read_data(fil):
+    """ TODO """
+    with open(fil, 'r') as f:
+        filedata = f.read()
+        f.close()
+        return filedata
+    return None
 
 def _sorted(dic):
-    """ """
+    """ TODO """
     dic = collections.OrderedDict(sorted(dic.items(), key=lambda t: t[0]))
     return dic
 
+def _str2bool(v):
+    """
+    Convert v into boolean.
+    """
+    return v.lower() in ("yes", "true", "t", "1")
+
 def _walk_dict(d,depth=0):
+    """ TODO """
     for k,v in sorted(d.items(),key=lambda x: x[0]):
         if isinstance(v, dict):
             print ("  ")*depth + ("%s" % k)
@@ -681,18 +723,8 @@ def _walk_dict(d,depth=0):
         else:
             print ("  ")*depth + "%s %s" % (k, v)
 
-def _merge(a, b, path=None):
-    "merges b into a"
-    if path is None: path = []
-    for key in b:
-        if key in a:
-            if isinstance(a[key], dict) and isinstance(b[key], dict):
-                _merge(a[key], b[key], path + [str(key)])
-            elif a[key] == b[key]:
-                pass # same leaf value
-            else:
-                #raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
-                a[key] = b[key]
-        else:
-            a[key] = b[key]
-    return a
+def _write_data(fil, filedata):
+    """ TODO """
+    f = open(fil, 'w')
+    f.write(filedata)
+    f.close()

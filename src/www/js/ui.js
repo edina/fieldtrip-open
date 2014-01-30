@@ -391,8 +391,6 @@ var _ui = {
             event.stopImmediatePropagation();
         }
 
-        //this.setUpExitButton();
-
         // TODO
         utils.touchScroll('#home-content');
         utils.absoluteHeightScroller('#splash-popup-dialog-content');
@@ -655,8 +653,7 @@ var _ui = {
     },
 
     /**
-     * with method
-     * @method blah
+     * TODO
      */
     toggleActive: function(){
         var MAP = ['map-page'];
@@ -673,15 +670,6 @@ var _ui = {
             $('.home-button').addClass('ui-btn-active');
         }
     },
-
-    /**
-     * with method
-     */
-
-    // TODO can remove?
-    setUpExitButton: function(){
-    }
-
 };
 
 // var _ios = {
