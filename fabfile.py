@@ -671,7 +671,11 @@ def _make_dirs(dirs):
             os.makedirs(d)
 
 def _merge(a, b, path=None):
-    """merges b into a"""
+    """
+    merges b into a
+
+    #http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge
+    """
     if path is None: path = []
     for key in b:
         if key in a:

@@ -659,15 +659,16 @@ var _ui = {
         var MAP = ['map-page'];
         var CAPTURE = ['capture-page', 'annotate-page'];
 
+        $(".ui-footer .ui-btn").removeClass('ui-btn-active');
         var id = $.mobile.activePage[0].id;
         if($.inArray(id, MAP) != -1){
-            $('.map-button').addClass('ui-btn-active');
+            $('#'+id+' .map-button').addClass('ui-btn-active');
         }
         else if($.inArray(id, CAPTURE) != -1){
-            $('.capture-button').addClass('ui-btn-active');
+            $('#'+id+' .capture-button').addClass('ui-btn-active');
         }
         else{
-            $('.home-button').addClass('ui-btn-active');
+            $('#'+id+' .home-button').addClass('ui-btn-active');
         }
     },
 };
