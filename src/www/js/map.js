@@ -31,13 +31,12 @@ DAMAGE.
 
 "use strict";
 
-define(['ext/openlayers', 'records', 'utils'],function(ol, records, utils){
+define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol, records, utils, config, proj4js){
     var RESOLUTIONS = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
-
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
     var POST_LOCATE_ZOOM_TO = RESOLUTIONS.length - 1;
 
-    var INTERNAL_PROJECTION = new OpenLayers.Projection("EPSG:900913")
+    var INTERNAL_PROJECTION;
     var EXTERNAL_PROJECTION = new OpenLayers.Projection("EPSG:4326")
 
     var DEFAULT_USER_LON = -2.421976;
@@ -48,6 +47,30 @@ define(['ext/openlayers', 'records', 'utils'],function(ol, records, utils){
 
     var ANNOTATE_POSITION_ATTR = 'annotate_pos';
     var USER_POSITION_ATTR = 'user_pos';
+
+    var baseLayer;
+    if(config.map_baselayer === 'osm'){
+        INTERNAL_PROJECTION = new OpenLayers.Projection('EPSG:900913')
+        baseLayer = new OpenLayers.Layer.OSM();
+    }
+    else{
+        // TODO - this should be put into config
+
+        var proj = "EPSG:27700";
+        proj4js.defs[proj] = "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs";
+        console.log(proj4js);
+        INTERNAL_PROJECTION = new OpenLayers.Projection(proj)
+        baseLayer = new OpenLayers.Layer.TMS(
+            "osOpen",
+            "http://fieldtripgb.edina.ac.uk/mapcache/tms",
+            {
+                layername: "fieldtripgb@BNG",
+                type: "jpg",
+                serviceVersion: "1.0.0",
+                isBaseLayer: true,
+            }
+        );
+    }
 
     /**
      * Display all annotations on speficied layer.
@@ -81,81 +104,20 @@ define(['ext/openlayers', 'records', 'utils'],function(ol, records, utils){
 var _this = {
 
     /**
-     * Render the map on a defined div.
-     * @param div The div id.
-     */
-    display: function(div){
-        this.map.render(div);
-    },
-
-    /**
-     * @return layer with the draggable icon.
-     */
-    getAnnotateLayer: function(){
-        return this.getLayer('positionMarker');
-    },
-
-    /**
-     * get current annotation coords.
-     * @param wgs84 In WGS84? If not national grid.
-     * @return Current annotation coordinates.
-     */
-    getAnnotationCoords: function(wgs84){
-        var coords = undefined;
-        var features = this.getAnnotateLayer().getFeaturesByAttribute(
-            'id',
-            ANNOTATE_POSITION_ATTR);
-
-        if(features.length > 0){
-            var geom = features[0].geometry;
-            coords = new OpenLayers.LonLat(geom.x, geom.y);
-            if(wgs84){
-                coords = this.toWGS84(coords);
-            }
-
-            // give the annotation altitude the altitude of the user
-            // see https://redmine.edina.ac.uk/issues/5497
-            coords.gpsPosition = this.userLonLat.gpsPosition;
-        }
-
-        return coords;
-    },
-
-    /**
-     * @return layer with the user icon.
-     */
-    getLocateLayer: function(){
-        return this.getLayer('locate');
-    },
-
-    /**
-     * @param layerName
-     * @return Openlayers layer by name.
-     */
-    getLayer: function(layerName){
-        var layer = this.map.getLayersByName(layerName);
-
-        if(layer){
-            return layer[0];
-        }
-        else{
-            return;
-        }
-    },
-
-    /**
-     * @return Records vector layer.
-     */
-    getRecordsLayer: function(){
-        return this.getLayer('recordsLayer');
-    },
-
-    /**
      * Set up openlayer map.
      */
     init: function(){
-        this.map = new OpenLayers.Map("map", {theme: null});
-        this.map.addLayer(new OpenLayers.Layer.OSM());
+        var options = {
+            controls: [],
+            projection: INTERNAL_PROJECTION,
+            units: 'm',
+            resolutions: RESOLUTIONS,
+            maxExtent: new OpenLayers.Bounds (0,0,700000,1300000),
+            theme: null,
+        }
+
+        this.map = new OpenLayers.Map("map", options);
+        this.map.addLayer(baseLayer);
 
         // styles for records
         var recordsStyle = new OpenLayers.Style({
@@ -301,6 +263,76 @@ var _this = {
         var drag = new OpenLayers.Control.DragFeature(positionMarkerLayer);
         this.map.addControl(drag);
         drag.activate();
+    },
+
+    /**
+     * Render the map on a defined div.
+     * @param div The div id.
+     */
+    display: function(div){
+        this.map.render(div);
+    },
+
+    /**
+     * @return layer with the draggable icon.
+     */
+    getAnnotateLayer: function(){
+        return this.getLayer('positionMarker');
+    },
+
+    /**
+     * get current annotation coords.
+     * @param wgs84 In WGS84? If not national grid.
+     * @return Current annotation coordinates.
+     */
+    getAnnotationCoords: function(wgs84){
+        var coords = undefined;
+        var features = this.getAnnotateLayer().getFeaturesByAttribute(
+            'id',
+            ANNOTATE_POSITION_ATTR);
+
+        if(features.length > 0){
+            var geom = features[0].geometry;
+            coords = new OpenLayers.LonLat(geom.x, geom.y);
+            if(wgs84){
+                coords = this.toWGS84(coords);
+            }
+
+            // give the annotation altitude the altitude of the user
+            // see https://redmine.edina.ac.uk/issues/5497
+            coords.gpsPosition = this.userLonLat.gpsPosition;
+        }
+
+        return coords;
+    },
+
+    /**
+     * @return layer with the user icon.
+     */
+    getLocateLayer: function(){
+        return this.getLayer('locate');
+    },
+
+    /**
+     * @param layerName
+     * @return Openlayers layer by name.
+     */
+    getLayer: function(layerName){
+        var layer = this.map.getLayersByName(layerName);
+
+        if(layer){
+            return layer[0];
+        }
+        else{
+            return;
+        }
+    },
+
+    /**
+     * @return Records vector layer.
+     */
+    getRecordsLayer: function(){
+        return this.getLayer('recordsLayer');
     },
 
     /**
@@ -576,7 +608,7 @@ var _this = {
     toMercator: function(lonlat){
         var clone = lonlat.clone();
         clone.transform(
-            EXTERNAL_PROJECTION,   // transform from WGS 1984
+            EXTERNAL_PROJECTION,   //
             INTERNAL_PROJECTION);  // to mercator
 
         if(typeof(clone.gpsPosition) !== 'undefined'){
@@ -594,7 +626,7 @@ var _this = {
     toWGS84: function(lonlat){
         return lonlat.clone().transform(
             INTERNAL_PROJECTION, // from mercator
-            EXTERNAL_PROJECTION); // to WGS 1984
+            EXTERNAL_PROJECTION); //
     },
 
 

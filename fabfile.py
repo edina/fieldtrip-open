@@ -302,7 +302,7 @@ def install_project(platform='android',
     _check_config()
 
     target_dir, runtime = _get_runtime(target)
-    js_dir = os.sep.join(('www', 'js', 'ext'))
+    js_ext_dir = os.sep.join(('www', 'js', 'ext'))
     css_dir = os.sep.join(('www', 'css', 'ext'))
 
     # create config.xml
@@ -380,7 +380,7 @@ def install_project(platform='android',
 
         # clean up old installs
         with settings(warn_only=True):
-            local('rm {0}/*'.format(js_dir))
+            local('rm {0}/*'.format(js_ext_dir))
             local('rm {0}/*.css'.format(css_dir))
             local('rm {0}/plugins/*'.format(asset_dir))
 
@@ -393,10 +393,19 @@ def install_project(platform='android',
                 src = os.sep.join((bower_home, dep, f))
                 f_name = dep.replace('-bower', '')
                 if f[len(f) - 2:] == 'js':
-                    dest = os.sep.join((js_dir, '{0}.js'.format(f_name)))
+                    dest = os.sep.join((js_ext_dir, '{0}.js'.format(f_name)))
                 else:
                     dest = os.sep.join((css_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
+
+    # generate config js
+    values = dict(config.items('app'))
+    templates = os.sep.join((src_dir, 'templates'))
+    out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
+    environ = Environment(loader=FileSystemLoader(templates))
+    template = environ.get_template("config.js")
+    output = template.render(config=values)
+    _write_data(out_file, output)
 
     # set up cordova/fieldtrip plugins
     install_plugins(target)
@@ -422,7 +431,7 @@ def install_project(platform='android',
     with lcd(runtime):
         # copy it to ext folder
         local('cp {0} {1}'.format(os.sep.join((proj4js_path, 'lib', 'proj4js-compressed.js')),
-                                  os.sep.join((js_dir, 'proj4js.js'))))
+                                  os.sep.join((js_ext_dir, 'proj4js.js'))))
 
     # check if openlayers is installed
     ol_dir = 'OpenLayers-%s' % OPENLAYERS_VERSION
@@ -438,7 +447,7 @@ def install_project(platform='android',
 
     with lcd(os.sep.join((ol_path, 'build'))):
         cfg_file = os.sep.join((src_dir, 'etc', 'openlayers-mobile.cfg'))
-        js_mobile = os.sep.join((runtime, js_dir, 'openlayers.js'))
+        js_mobile = os.sep.join((runtime, js_ext_dir, 'openlayers.js'))
         local('./build.py %s %s' % (cfg_file, js_mobile))
 
 @task
@@ -598,9 +607,12 @@ def _check_config():
             local('rsync -avz {0} {1}'.format(location, conf_dir))
             config = None # make sure it is re-read
 
-def _config(var, section='install'):
+def _config(key, section='install'):
     """
-    TODO
+    Get config value for key.
+
+    key - config key
+    section - config section, e.g install, release or app
     """
 
     global config
@@ -609,7 +621,7 @@ def _config(var, section='install'):
         conf_file = os.sep.join((_get_source()[0], 'etc', 'config.ini'))
         config.read(conf_file)
 
-    return config.get(section, var)
+    return config.get(section, key)
 
 def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     """

@@ -48,4 +48,4 @@ For details on fieldtrip plugin development see [plugin development documentatio
 
 * [Basic Example](https://github.com/edina/fieldtrip-example)
 * [Fieldtrip GB](https://github.com/edina/fieldtrip-gb)
-* [COBWEB]()
+* [COBWEB](https://github.com/edina/fieldtrip-cobweb)

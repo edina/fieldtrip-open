@@ -25,6 +25,6 @@ $ fab deploy_android
 $ fab deploy_ios
 ```
 
-### Project
+### Project/Theme
 
 [Project documentation](PROJECTS.md)
