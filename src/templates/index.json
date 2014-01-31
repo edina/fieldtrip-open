@@ -58,9 +58,6 @@
             }
         }
     },
-    "footer":{
-
-    },
     "popups": {
         "popup1":{
             "template": "exit-popup.html",

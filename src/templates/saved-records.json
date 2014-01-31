@@ -1,12 +1,6 @@
 {
-    "header": {
-        "buttons": {
-        }
-    },
     "body": {
         "view-records": "View Records"
-    },
-    "footer":{
     },
     "popups": {
         "popup1":{

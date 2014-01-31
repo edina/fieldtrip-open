@@ -145,16 +145,30 @@ def generate_html(platform="android", cordova=False):
     cordova - should cordova.js be used?
     """
     if isinstance(cordova, basestring):
-        cordova = _str2bool(cordova)
+        cordova = str2bool(cordova)
     root, proj_home, src_dir = _get_source()
     path = os.sep.join((src_dir, 'templates'))
     export_path = os.sep.join((src_dir, 'www'))
     environ = Environment(loader=FileSystemLoader(path))
     environ.globals["_get_letter"] = _get_letter
-    environ.globals["_sorted"] = _sorted
+    #environ.globals["_sorted"] = _sorted
+    new_templates_path = os.path.join(proj_home, 'theme', 'templates')
 
-    header_data = json.loads(open(os.sep.join((path, 'header.json'))).read())
-    footer_data = json.loads(open(os.sep.join((path, 'footer.json'))).read())
+    def _do_merge(filename, data):
+        if filename in os.listdir(new_templates_path):
+            with open(os.path.join(new_templates_path, filename), 'r') as f:
+                new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
+            return _merge(data, new_data)
+        else:
+            return data
+
+    def _get_data(filename):
+        with open(os.path.join(path, filename),'r') as f:
+            return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict))
+
+    header_data = _get_data('header.json')
+    footer_data = _get_data('footer.json')
+
     header_template = environ.get_template("header.html")
     footer_template = environ.get_template("footer.html")
 
@@ -162,28 +176,20 @@ def generate_html(platform="android", cordova=False):
         for f in files:
             if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
                 filename = '{0}.json'.format(f.split(".")[0])
-                fil = os.sep.join((path, filename))
+                fil = os.path.join(path, filename)
 
                 if os.path.exists(fil):
                     print "generating file {0}".format(f)
-                    data = json.loads(open(fil).read())
-
-                    if filename in os.listdir(os.sep.join((proj_home, 'theme'))):
-                        new_data = json.loads(open(os.sep.join((proj_home, 'theme', filename))).read())
-                        _merge(dict(data), new_data)
+                    data = _get_data(filename)
 
                     if "header" in data:
-                        data["header"].update(header_data)
-                    else:
-                        data["header"] = header_data
+                        header_data = _merge(header_data, data["header"])
 
                     if "footer" in data:
-                        data["footer"].update(footer_data)
-                    else:
-                        data["footer"] = footer_data
+                        footer_data = _merge(footer_data, data["footer"])
 
                     template = environ.get_template(f)
-                    header_data = {"cordova": cordova, "title": data["header"]["title"]}
+                    indexheader_data = {"cordova": cordova, "title": header_data["title"]}
 
                     popups=[]
                     if "popups" in data:
@@ -192,15 +198,15 @@ def generate_html(platform="android", cordova=False):
                             popups.append(popup_template.render(data=data["popups"][popup]["data"]))
 
                     output = template.render(
-                        header_data=header_data,
+                        header_data=indexheader_data,
                         body=_sorted(data["body"]),
                         popups="\n".join(popups),
                         platform=platform,
                         header=header_template.render(
-                            data=data["header"],
+                            data=header_data,
                             platform=platform),
                             footer=footer_template.render(
-                                data=data["footer"],
+                                data=footer_data,
                                 platform=platform))
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
@@ -747,14 +753,6 @@ def _str2bool(v):
     """
     return v.lower() in ("yes", "true", "t", "1")
 
-def _walk_dict(d,depth=0):
-    """ TODO """
-    for k,v in sorted(d.items(),key=lambda x: x[0]):
-        if isinstance(v, dict):
-            print ("  ")*depth + ("%s" % k)
-            _walk_dict(v,depth+1)
-        else:
-            print ("  ")*depth + "%s %s" % (k, v)
 
 def _write_data(fil, filedata):
     """ TODO """
