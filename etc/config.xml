@@ -13,7 +13,9 @@
     {{name}} Team
   </author>
 
-  {{access_urls}}
+  {%for url in access_urls%}
+  <access origin="{{url}}" />
+  {%endfor%}
 
   <preference name="webviewbounce" value="true" />
   <content src="index.html" />
