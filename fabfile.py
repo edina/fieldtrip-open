@@ -155,13 +155,12 @@ def generate_html(platform="android", cordova=False):
     new_templates_path = os.path.join(proj_home, 'theme', 'templates')
 
     def _do_merge(filename, data):
-        if os.path.exists(new_templates_path):
-            if filename in os.listdir(new_templates_path):
-                with open(os.path.join(new_templates_path, filename), 'r') as f:
-                    new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
-                return _merge(data, new_data)
-            else:
-                return data
+        if os.path.exists(new_templates_path) and filename in os.listdir(new_templates_path):
+            with open(os.path.join(new_templates_path, filename), 'r') as f:
+                new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
+            return _merge(data, new_data)
+        else:
+            return data
 
     def _get_data(filename):
         with open(os.path.join(path, filename),'r') as f:
@@ -184,10 +183,14 @@ def generate_html(platform="android", cordova=False):
                     data = _get_data(filename)
 
                     if "header" in data:
-                        header_data = _merge(header_data, data["header"])
+                        _merge(data["header"], header_data)
+                    else:
+                        data["header"] = header_data
 
                     if "footer" in data:
-                        footer_data = _merge(footer_data, data["footer"])
+                        _merge(data["footer"], footer_data)
+                    else:
+                        data["footer"] = footer_data
 
                     template = environ.get_template(f)
                     indexheader_data = {"cordova": cordova, "title": header_data["title"]}
@@ -204,10 +207,10 @@ def generate_html(platform="android", cordova=False):
                         popups="\n".join(popups),
                         platform=platform,
                         header=header_template.render(
-                            data=header_data,
+                            data=data["header"],
                             platform=platform),
                             footer=footer_template.render(
-                                data=footer_data,
+                                data=data["footer"],
                                 platform=platform))
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
