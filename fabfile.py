@@ -155,12 +155,13 @@ def generate_html(platform="android", cordova=False):
     new_templates_path = os.path.join(proj_home, 'theme', 'templates')
 
     def _do_merge(filename, data):
-        if filename in os.listdir(new_templates_path):
-            with open(os.path.join(new_templates_path, filename), 'r') as f:
-                new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
-            return _merge(data, new_data)
-        else:
-            return data
+        if os.path.exists(new_templates_path):
+            if filename in os.listdir(new_templates_path):
+                with open(os.path.join(new_templates_path, filename), 'r') as f:
+                    new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
+                return _merge(data, new_data)
+            else:
+                return data
 
     def _get_data(filename):
         with open(os.path.join(path, filename),'r') as f:
@@ -302,19 +303,15 @@ def install_project(platform='android',
     css_dir = os.sep.join(('www', 'css', 'ext'))
 
     # create config.xml
-    filedata = _read_data(os.sep.join(('etc', 'config.xml')))
-    filedata = filedata.replace('{{name}}', _config('name'))
-    filedata = filedata.replace('{{package}}', _config('package'))
-    filedata = filedata.replace('{{version}}', _config('version'))
-    filedata = filedata.replace('{{version_code}}', _config('version').replace(".", ""))
-    filedata = filedata.replace('{{author_email}}', _config('author_email'))
-    filedata = filedata.replace('{{url}}', _config('url'))
-    access_urls = _config('access_urls').split(",")
-    access = []
-    for url in access_urls:
-        access.append('<access origin="{0}" />'.format(url))
-    filedata = filedata.replace('{{access_urls}}', "\n".join(access))
-
+    environ = Environment(loader=FileSystemLoader('etc'))
+    config_template = environ.get_template("config.xml")
+    filedata = config_template.render(name=_config('name'),
+                           package=_config('package'),
+                           version=_config('version'),
+                           version_code=_config('version').replace(".", ""),
+                           author_email=_config('author_email'),
+                           url=_config('url'),
+                           access_urls = _config('access_urls').split(","))
     _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
     if os.path.exists(runtime):
