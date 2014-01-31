@@ -1,9 +1,9 @@
-### [pip](https://pypi.python.org/pypi/pip) (if not already installed):
+### [pip](https://pypi.python.org/pypi/pip) [html5lib](https://pypi.python.org/pypi/html5lib) [ant](http://ant.apache.org/)
 
 #### apt
 
 ```
-sudo apt-get install python-setuptools python2.7-dev  # for easy_install/html5lib
+sudo apt-get install python-setuptools python2.7-dev ant
 ```
 
 #### MAC
@@ -14,10 +14,10 @@ TODO
 sudo easy_install pip
 ```
 
-### Fabric and related dependencies:
+### [Fabric](http://docs.fabfile.org) and related dependencies:
 
 ```
-pip install fabric jinja2 beautifulsoup4 html5lib
+sudo pip install fabric jinja2 beautifulsoup4 html5lib
 ```
 
 ### nodejs
@@ -33,16 +33,6 @@ npm install -g cordova bower
 [Android install](http://developer.android.com/sdk/installing/index.html)
 
 Ensure the sdk/tools directory is in your path and [apache ant](http://ant.apache.org/) is installed.
-
-#### apt
-
-```
-sudo apt-get install ant
-```
-
-#### MAC
-
-TODO
 
 ### IOS
 

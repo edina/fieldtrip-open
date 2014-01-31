@@ -34,6 +34,7 @@ pcapi_urls=
 ; <names for the urls above comma separated>
 pcapi_names=
 
+
 [release]
 
 ; the public release root URL
@@ -57,3 +58,9 @@ email_beta=<mailist>
 
 ; notified of official release
 email_official=<email>
+
+
+; the values in the app section becomes config.js in the application
+[app]
+
+map_baselayer=osm

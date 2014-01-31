@@ -38,8 +38,8 @@ DAMAGE.
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
  */
-define(['map', 'records', 'renderer', 'utils', 'settings'], function(
-    map, records, renderer, utils, settings){
+define(['map', 'records', 'utils', 'settings'], function(
+    map, records, utils, settings){
 
     var portraitScreenHeight;
     var landscapeScreenHeight;
