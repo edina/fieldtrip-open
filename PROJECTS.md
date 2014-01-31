@@ -15,7 +15,16 @@ The json file theme/plugins.json will define a list of plugins the project wishe
 
 ```
 {
-    "plugins": {
+    "cordova": [
+        "cordova-plugin-device.git",
+        "cordova-plugin-geolocation.git",
+        "cordova-plugin-camera.git",
+        "cordova-plugin-media-capture.git",
+        "cordova-plugin-media.git",
+        "cordova-plugin-file.git",
+        "cordova-plugin-console.git"
+    ],
+    "fieldtrip": {
         "offline-maps": "",
         "ft-sync", "1.0.1",
         "my-plugin": "git@github.com:gmh04/fieldtrip-plugins-test.git",
@@ -23,11 +32,17 @@ The json file theme/plugins.json will define a list of plugins the project wishe
 }
 ```
 
+#### Cordova
+
+[Cordova plugins documentation](http://cordova.apache.org/docs/en/3.3.0/guide_hybrid_plugins_index.md.html#Plugin%20Development%20Guide_native_interfaces)
+
+#### Fieldtrip
+
 * offline-maps: will use the master branch of the plugin found at: [https://github.com/edina/fieldtrip-plugins](https://github.com/edina/fieldtrip-plugins).
 * ft-sync: will install the plugin as a [bower](http://bower.io/) dependency.
 * my-plugin: will use the master branch of the plugin found at the defined git repository.
 
-[Plugin development documentation](PLUGINS.md)
+For details on fieldtrip plugin development see [plugin development documentation](PLUGINS.md).
 
 ### Examples
 

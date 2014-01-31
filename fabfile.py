@@ -89,6 +89,7 @@ def clean():
         with lcd(plugins):
             for plugin in os.listdir(plugins):
                 delete_repo(os.sep.join((plugins, plugin)))
+        local('rmdir plugins')
 
 @task
 def deploy_android():
@@ -204,6 +205,71 @@ def generate_html(platform="android", cordova=False):
                     _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
 @task
+def install_plugins(target='local', cordova=True):
+    """
+    Set up project plugins
+
+    target - runtime root
+    cordova - flag to switch on/off fetching of cordova plugins
+    """
+
+    runtime = _get_runtime(target)[1]
+    root, proj_home, src_dir = _get_source()
+    asset_dir =  os.sep.join((src_dir, 'www'))
+    theme = os.sep.join((asset_dir, 'theme'))
+
+    with settings(warn_only=True):
+        # remove old sym links
+        local('rm {0}/plugins/*'.format(asset_dir))
+
+    with lcd(root):
+        if not os.path.exists('plugins'):
+            local('pwd')
+            local('mkdir plugins')
+            with lcd('plugins'):
+                local('git clone git@github.com:edina/fieldtrip-plugins.git')
+            # TODO
+            # fetch git plugins not in fieldtrip-plugins
+
+    # process project json file
+    json_file = os.sep.join((theme, 'plugins.json'))
+    print json_file
+    if os.path.exists(json_file):
+        pobj = json.loads(open(json_file).read())
+
+        if cordova:
+            with lcd(runtime):
+                # do cordova plugins
+                for name in pobj['cordova']:
+                    local('cordova plugin add https://git-wip-us.apache.org/repos/asf/{0}'.format(name))
+
+        # do fieldtrip plugins
+        proot = os.sep.join((root, 'plugins'))
+        for plugin, details in pobj['fieldtrip'].iteritems():
+            if len(details) == 0:
+                # plugin is from field trip
+                src = os.sep.join((proot, 'fieldtrip-plugins', plugin))
+            elif plugin[:3] == 'lib':
+                # TODO bower plugin
+                pass
+            else:
+                # git repository
+                src = os.sep.join((proot, plugin))
+                if not os.path.isdir(src):
+                    with lcd(proot):
+                        local('git clone {0} {1}'.format(details, plugin))
+
+            if os.path.isdir(src):
+                dest = os.sep.join((asset_dir, 'plugins', plugin))
+                local('ln -s {0} {1}'.format(src, dest))
+            else:
+                print 'No such plugin: {0}'.format(src)
+                exit(-1)
+    else:
+        print 'Where is the plugins file?: {0}'.format(json_file)
+        exit(-1)
+
+@task
 def install_project(platform='android',
                     dist_dir='apps',
                     target='local'):
@@ -228,10 +294,6 @@ def install_project(platform='android',
     target_dir, runtime = _get_runtime(target)
     js_dir = os.sep.join(('www', 'js', 'ext'))
     css_dir = os.sep.join(('www', 'css', 'ext'))
-
-    def _install_plugins(names):
-        for name in names:
-            local('cordova plugin add https://git-wip-us.apache.org/repos/asf/{0}'.format(name))
 
     # create config.xml
     filedata = _read_data(os.sep.join(('etc', 'config.xml')))
@@ -278,13 +340,6 @@ def install_project(platform='android',
     if not os.path.exists(os.sep.join((theme_css, 'style.css'))):
         print "\n*** WARNING: No style.css found in project"
 
-    if not os.path.exists('plugins'):
-        local('mkdir plugins')
-        with lcd('plugins'):
-            local('git clone git@github.com:edina/fieldtrip-plugins.git')
-        # TODO
-        # fetch git plugins not in fieldtrip-plugins
-
     # install external js libraries
     local('bower install')
     bower = json.loads(open('bower.json').read())
@@ -299,20 +354,8 @@ def install_project(platform='android',
 
     with lcd(runtime):
 
-        # add platform and plugins
+        # add platform and cordova plugins
         local('cordova platform add {0}'.format(platform))
-
-        _install_plugins([
-            'cordova-plugin-device.git',
-            # 'cordova-plugin-network-information',
-            'cordova-plugin-geolocation.git',
-            'cordova-plugin-camera.git',
-            'cordova-plugin-media-capture.git',
-            'cordova-plugin-media.git',
-            'cordova-plugin-file.git',
-        #    'cordova-plugin-file-transfer.git',
-        #    'cordova-plugin-inappbrowser.git',
-            'cordova-plugin-console.git'])
 
         # create sym link to assets
         local('rm -rf www')
@@ -329,36 +372,11 @@ def install_project(platform='android',
                     print '\nYour project must have a theme at {0}'.format(theme_src)
                     exit(-1)
 
-        # install js/css dependencies
+        # clean up old installs
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_dir))
             local('rm {0}/*.css'.format(css_dir))
             local('rm {0}/plugins/*'.format(asset_dir))
-
-        # set up fieldtrip plugins
-        if os.path.exists(os.sep.join((theme, 'plugins.json'))):
-            pobj = json.loads(open(os.sep.join((theme, 'plugins.json'))).read())
-            proot = os.sep.join((root, 'plugins'))
-            for plugin, details in pobj['plugins'].iteritems():
-                if len(details) == 0:
-                    # plugin is from field trip
-                    src = os.sep.join((proot, 'fieldtrip-plugins', plugin))
-                elif plugin[:3] == 'lib':
-                    # TODO bower plugin
-                    pass
-                else:
-                    # git repository
-                    src = os.sep.join((proot, plugin))
-                    if not os.path.isdir(src):
-                        with lcd(proot):
-                            local('git clone {0} {1}'.format(details, plugin))
-
-                if os.path.isdir(src):
-                    dest = os.sep.join((asset_dir, 'plugins', plugin))
-                    local('ln -s {0} {1}'.format(src, dest))
-                else:
-                    print 'No such plugin: {0}'.format(src)
-                    exit(-1)
 
         # set up bower dependecies
         for dep in bower['dependency_locations']:
@@ -373,6 +391,9 @@ def install_project(platform='android',
                 else:
                     dest = os.sep.join((css_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
+
+    # set up cordova/fieldtrip plugins
+    install_plugins(target)
 
     # add project specific files
     update_app()
