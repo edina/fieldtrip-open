@@ -47,7 +47,6 @@ function onDeviceReady(){
             "plugins": "../plugins",
             "templates": "../templates",
             "theme": "../theme",
-            "text": "ext/requirejs-text", // TODO - do we need this Panos?
             "proj4js": "ext/proj4js"
         },
         shim: {

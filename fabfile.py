@@ -149,9 +149,6 @@ def generate_html(platform="android", cordova=False):
     root, proj_home, src_dir = _get_source()
     path = os.sep.join((src_dir, 'templates'))
     export_path = os.sep.join((src_dir, 'www'))
-    environ = Environment(loader=FileSystemLoader(path))
-    environ.globals["_get_letter"] = _get_letter
-    #environ.globals["_sorted"] = _sorted
     new_templates_path = os.path.join(proj_home, 'theme', 'templates')
 
     def _do_merge(filename, data):
@@ -162,57 +159,73 @@ def generate_html(platform="android", cordova=False):
         else:
             return data
 
-    def _get_data(filename):
+    def _get_data(path, filename):
         with open(os.path.join(path, filename),'r') as f:
             return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict))
 
-    header_data = _get_data('header.json')
-    footer_data = _get_data('footer.json')
+    def _get_header_footer_data():
+        environ = Environment(loader=FileSystemLoader(path))
+        environ.globals["_get_letter"] = _get_letter
+        #environ.globals["_sorted"] = _sorted
 
-    header_template = environ.get_template("header.html")
-    footer_template = environ.get_template("footer.html")
+        header_data = _get_data(path, 'header.json')
+        footer_data = _get_data(path, 'footer.json')
 
-    for path, dirs, files in os.walk(path):
-        for f in files:
-            if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
-                filename = '{0}.json'.format(f.split(".")[0])
-                fil = os.path.join(path, filename)
+        header_template = environ.get_template("header.html")
+        footer_template = environ.get_template("footer.html")
+        return header_data, footer_data, header_template, footer_template
 
-                if os.path.exists(fil):
-                    print "generating file {0}".format(f)
-                    data = _get_data(filename)
+    def _create_html(path):
+        environ = Environment(loader=FileSystemLoader(path))
+        environ.globals["_get_letter"] = _get_letter
+        #environ.globals["_sorted"] = _sorted
 
-                    if "header" in data:
-                        _merge(data["header"], header_data)
-                    else:
-                        data["header"] = header_data
+        header_data, footer_data, header_template, footer_template = _get_header_footer_data()
 
-                    if "footer" in data:
-                        _merge(data["footer"], footer_data)
-                    else:
-                        data["footer"] = footer_data
+        for path, dirs, files in os.walk(path):
+            for f in files:
+                if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
+                    filename = '{0}.json'.format(f.split(".")[0])
+                    fil = os.path.join(path, filename)
+    
+                    if os.path.exists(fil):
+                        print "generating file {0}".format(f)
+                        data = _get_data(path, filename)
+    
+                        if "header" in data:
+                            _merge(data["header"], header_data)
+                        else:
+                            data["header"] = header_data
+    
+                        if "footer" in data:
+                            _merge(data["footer"], footer_data)
+                        else:
+                            data["footer"] = footer_data
+    
+                        template = environ.get_template(f)
+                        indexheader_data = {"cordova": cordova, "title": header_data["title"]}
+    
+                        popups=[]
+                        if "popups" in data:
+                            for popup in data["popups"]:
+                                popup_template = environ.get_template(data["popups"][popup]["template"])
+                                popups.append(popup_template.render(data=data["popups"][popup]["data"]))
+    
+                        output = template.render(
+                            header_data=indexheader_data,
+                            body=_sorted(data["body"]),
+                            popups="\n".join(popups),
+                            platform=platform,
+                            header=header_template.render(
+                                data=data["header"],
+                                platform=platform),
+                                footer=footer_template.render(
+                                    data=data["footer"],
+                                    platform=platform))
+                        _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
-                    template = environ.get_template(f)
-                    indexheader_data = {"cordova": cordova, "title": header_data["title"]}
-
-                    popups=[]
-                    if "popups" in data:
-                        for popup in data["popups"]:
-                            popup_template = environ.get_template(data["popups"][popup]["template"])
-                            popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-
-                    output = template.render(
-                        header_data=indexheader_data,
-                        body=_sorted(data["body"]),
-                        popups="\n".join(popups),
-                        platform=platform,
-                        header=header_template.render(
-                            data=data["header"],
-                            platform=platform),
-                            footer=footer_template.render(
-                                data=data["footer"],
-                                platform=platform))
-                    _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
+    _create_html(path)
+    _create_html(new_templates_path)
 
 @task
 def install_plugins(target='local', cordova=True):
