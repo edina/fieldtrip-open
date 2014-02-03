@@ -149,40 +149,37 @@ def generate_html(platform="android", cordova=False):
     root, proj_home, src_dir = _get_source()
     path = os.sep.join((src_dir, 'templates'))
     export_path = os.sep.join((src_dir, 'www'))
-    new_templates_path = os.path.join(proj_home, 'theme', 'templates')
+    templates_path = os.path.join(proj_home, 'src', 'templates')
 
-    def _do_merge(filename, data):
-        if os.path.exists(new_templates_path) and filename in os.listdir(new_templates_path):
-            with open(os.path.join(new_templates_path, filename), 'r') as f:
+    def _do_merge(filename, data, path):
+        if os.path.exists(path) and filename in os.listdir(path):
+            with open(os.path.join(path, filename), 'r') as f:
                 new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
             return _merge(data, new_data)
         else:
             return data
 
-    def _get_data(path, filename):
-        with open(os.path.join(path, filename),'r') as f:
-            return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict))
+    def _get_data(path1, filename, path2):
+        with open(os.path.join(path1, filename),'r') as f:
+            return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict), path2)
 
-    def _get_header_footer_data():
+    def _get_header_footer_data(path, templates_path):
         environ = Environment(loader=FileSystemLoader(path))
         environ.globals["_get_letter"] = _get_letter
-        #environ.globals["_sorted"] = _sorted
 
-        header_data = _get_data(path, 'header.json')
-        footer_data = _get_data(path, 'footer.json')
+        header_data = _get_data(path, 'header.json', templates_path)
+        footer_data = _get_data(path, 'footer.json', templates_path)
 
         header_template = environ.get_template("header.html")
         footer_template = environ.get_template("footer.html")
         return header_data, footer_data, header_template, footer_template
 
-    def _create_html(path):
-        environ = Environment(loader=FileSystemLoader(path))
+    def _create_html(path1, path2, header_data, footer_data, header_template, footer_template):
+        environ = Environment(loader=FileSystemLoader(path1))
         environ.globals["_get_letter"] = _get_letter
         #environ.globals["_sorted"] = _sorted
 
-        header_data, footer_data, header_template, footer_template = _get_header_footer_data()
-
-        for path, dirs, files in os.walk(path):
+        for path, dirs, files in os.walk(path1):
             for f in files:
                 if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
                     filename = '{0}.json'.format(f.split(".")[0])
@@ -190,15 +187,15 @@ def generate_html(platform="android", cordova=False):
     
                     if os.path.exists(fil):
                         print "generating file {0}".format(f)
-                        data = _get_data(path, filename)
+                        data = _get_data(path, filename, path2)
     
                         if "header" in data:
-                            _merge(data["header"], header_data)
+                            _merge(data["header"], header_data, path2)
                         else:
                             data["header"] = header_data
     
                         if "footer" in data:
-                            _merge(data["footer"], footer_data)
+                            _merge(data["footer"], footer_data, path2)
                         else:
                             data["footer"] = footer_data
     
@@ -224,8 +221,14 @@ def generate_html(platform="android", cordova=False):
                                     platform=platform))
                         _write_data(os.sep.join((export_path, f)), _prettify(output, 2))
 
-    _create_html(path)
-    _create_html(new_templates_path)
+    header_data, footer_data, header_template, footer_template = _get_header_footer_data(path, templates_path)
+    _create_html(path, templates_path, header_data, footer_data, header_template, footer_template)
+    _create_html(templates_path, path, header_data, footer_data, header_template, footer_template)
+    #plugins = os.sep.join((root, 'plugins'))
+    #if os.path.exists(plugins):
+    #    with lcd(plugins):
+    #        for plugin in os.listdir(plugins):
+    #            print plugin
 
 @task
 def install_plugins(target='local', cordova=True):
