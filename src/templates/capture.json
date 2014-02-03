@@ -19,19 +19,19 @@
             "items": {
                 "item1": {
                     "div": {"class": "ui-block-a"},
-                    "a": {"class": "annotate-image-form", "url": "#"},
+                    "a": {"class": "annotate-image-form", "href": "#"},
                     "img": {"src": "css/images/images.png", "alt": "Capture Image"},
                     "title": "Images"
                 },
                 "item2": {
                     "div": {"class": "ui-block-b"},
-                    "a": {"class": "annotate-audio-form", "url": "#"},
+                    "a": {"class": "annotate-audio-form", "href": "#"},
                     "img": {"src": "css/images/audio.png", "alt": "Capture Audio"},
                     "title": "Audio"
                 },
                 "item3": {
                     "div": {"class": "ui-block-c"},
-                    "a": {"class": "annotate-text-form", "url": "#"},
+                    "a": {"class": "annotate-text-form", "href": "#"},
                     "img": {"src": "css/images/text.png", "alt": "Capture Text"},
                     "title": "Text"
                 }

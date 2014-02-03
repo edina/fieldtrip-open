@@ -352,11 +352,6 @@ body .ui-loader{
     background-size: 30px 30px;
 }
 
-.download-button .ui-icon {
-    background: url("../css/images/download.png") 50% 50% no-repeat;
-    background-size: 30px 30px;
-}
-
 /* #gpscapture-stop-button .ui-icon{ */
 /*     background: url("/css/images/stop.png") 50% 50% no-repeat; */
 /*     background-size: 20px 20px; */
