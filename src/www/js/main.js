@@ -87,12 +87,17 @@ function onDeviceReady(){
                            $.proxy(func, ui));
         });
 
+
         $.getJSON('theme/plugins.json', function(f){
             $.each(f.fieldtrip, function(name){
                 require(["plugins/" + name + "/js/" + name], function(){
                     //console.log('=>');
                 });
             });
+        });
+
+        $.getJSON('theme/menu-ids.json', function(ids){
+            ui.toggleActiveInit(ids);
         });
 
         // initialise home page first time

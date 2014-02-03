@@ -263,6 +263,11 @@ var _this = {
         var drag = new OpenLayers.Control.DragFeature(positionMarkerLayer);
         this.map.addControl(drag);
         drag.activate();
+
+        this.setCentre(DEFAULT_USER_LON,
+                       DEFAULT_USER_LAT,
+                       MIN_LOCATE_ZOOM_TO,
+                       true);
     },
 
     /**
@@ -295,7 +300,7 @@ var _this = {
             var geom = features[0].geometry;
             coords = new OpenLayers.LonLat(geom.x, geom.y);
             if(wgs84){
-                coords = this.toWGS84(coords);
+                coords = this.toExternal(coords);
             }
 
             // give the annotation altitude the altitude of the user
@@ -477,7 +482,7 @@ var _this = {
         // if necessary update annotate pin
         if(updateAnnotateLayer){
             // TODO
-            this.updateAnnotateLayer(this.toMercator(this.userLonLat));
+            this.updateAnnotateLayer(this.toInternal(this.userLonLat));
             //this.updateAnnotateLayer(this.userLonLat);
 
         }
@@ -505,7 +510,7 @@ var _this = {
     setCentre: function(lon, lat, zoom, wgs84){
         var lonlat;
         if(wgs84){
-            lonlat = toNationalGrid(new OpenLayers.LonLat(lon, lat));
+            lonlat = this.toInternal(new OpenLayers.LonLat(lon, lat));
         }
         else{
             lonlat = new OpenLayers.LonLat(lon, lat);
@@ -605,11 +610,11 @@ var _this = {
     /**
      * TODO
      */
-    toMercator: function(lonlat){
+    toInternal: function(lonlat){
         var clone = lonlat.clone();
         clone.transform(
-            EXTERNAL_PROJECTION,   //
-            INTERNAL_PROJECTION);  // to mercator
+            EXTERNAL_PROJECTION,
+            INTERNAL_PROJECTION);
 
         if(typeof(clone.gpsPosition) !== 'undefined'){
             clone.gpsPosition = lonlat.gpsPosition;
@@ -623,10 +628,10 @@ var _this = {
      * @param lonlat Mercator lonlat.
      * @return WGS84 lonlat
      */
-    toWGS84: function(lonlat){
+    toExternal: function(lonlat){
         return lonlat.clone().transform(
-            INTERNAL_PROJECTION, // from mercator
-            EXTERNAL_PROJECTION); //
+            INTERNAL_PROJECTION,
+            EXTERNAL_PROJECTION);
     },
 
 
@@ -656,9 +661,7 @@ var _this = {
     updateLayer: function(layer, id, zoom, lonLat){
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
         if(lonLat === undefined || lonLat === null){
-            // TODO - what about OS
-            //lonLat = toNationalGrid(this.userLonLat);
-            lonLat = this.toMercator(this.userLonLat);
+            lonLat = this.toInternal(this.userLonLat);
         }
 
         var point = new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat);

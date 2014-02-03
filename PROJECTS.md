@@ -44,6 +44,18 @@ The json file theme/plugins.json will define a list of plugins the project wishe
 
 For details on fieldtrip plugin development see [plugin development documentation](PLUGINS.md).
 
+### Templates
+
+All HTML in fieldtrip open is [templated](https://github.com/edina/fieldtrip-open/tree/master/src/templates) and the core provides bare bone templates and data json files as a starting point for the project. In addition, plugins will also provide templates and default data files for new pages that they wish to introduce. It is the role of the project to provide the content of the main landing pages that diverges from the default layout.
+
+#### Add New Button
+
+TODO
+
+#### Add New Footer Tab
+
+TODO
+
 ### Examples
 
 * [Basic Example](https://github.com/edina/fieldtrip-example)

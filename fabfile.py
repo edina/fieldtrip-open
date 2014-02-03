@@ -429,13 +429,13 @@ def install_project(platform='android',
     # add project specific files
     update_app()
 
+    # process tempates
+    generate_html()
+
     # check if /home/<user>/<dist_dir> exists
     dist_path = os.sep.join((os.environ['HOME'], dist_dir))
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
-
-    # process tempates
-    generate_html()
 
     # install proj4js
     proj4js_path = os.sep.join((dist_path, 'proj4js'))

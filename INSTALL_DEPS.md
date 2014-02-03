@@ -1,4 +1,4 @@
-### [pip](https://pypi.python.org/pypi/pip) [html5lib](https://pypi.python.org/pypi/html5lib) [ant](http://ant.apache.org/)
+### [Pip](https://pypi.python.org/pypi/pip), [html5lib](https://pypi.python.org/pypi/html5lib) dependency and [Apache Ant](http://ant.apache.org/) (android only)
 
 #### apt
 
@@ -32,7 +32,7 @@ npm install -g cordova bower
 
 [Android install](http://developer.android.com/sdk/installing/index.html)
 
-Ensure the sdk/tools directory is in your path and [apache ant](http://ant.apache.org/) is installed.
+Ensure the sdk/tools directory is in your path.
 
 ### IOS
 

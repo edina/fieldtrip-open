@@ -44,6 +44,12 @@ define(['map', 'records', 'utils', 'settings'], function(
     var portraitScreenHeight;
     var landscapeScreenHeight;
 
+    var menuIds = {
+        'home': ['home-page'],
+        'map': ['map-page'],
+        'capture': ['capture-page', 'annotate-page']
+    }
+
     // record initial screen height
     if(window.orientation === 0 || window.orientation === 180){
         portraitScreenHeight = $(window).height();
@@ -653,23 +659,25 @@ var _ui = {
     },
 
     /**
-     * TODO
+     * Toggle current active tab.
      */
     toggleActive: function(){
-        var MAP = ['map-page'];
-        var CAPTURE = ['capture-page', 'annotate-page'];
-
         $(".ui-footer .ui-btn").removeClass('ui-btn-active');
         var id = $.mobile.activePage[0].id;
-        if($.inArray(id, MAP) != -1){
-            $('#'+id+' .map-button').addClass('ui-btn-active');
-        }
-        else if($.inArray(id, CAPTURE) != -1){
-            $('#'+id+' .capture-button').addClass('ui-btn-active');
-        }
-        else{
-            $('#'+id+' .home-button').addClass('ui-btn-active');
-        }
+        $.each(menuIds, function(menu, ids){
+            if($.inArray(id, ids) != -1){
+                $('#' + id + ' .' + menu + '-button').addClass('ui-btn-active');
+                return;
+            }
+        });
+    },
+
+    /**
+     * Initialise toggle active list.
+     * @param projectIds Project id list.
+     */
+    toggleActiveInit: function(projectIds){
+        $.extend(menuIds, projectIds);
     },
 };
 
