@@ -243,12 +243,11 @@ def generate_html(platform="android", cordova=False):
 
     with open(os.path.join(src_dir, 'www', 'theme', 'plugins.json'),'r') as f:
         plgins = json.load(f)
-        for p in plgins:
-            if p != 'cordova':
-                for key, value in plgins[p].iteritems():
-                    plugins_path = os.path.join(src_dir, 'www', 'plugins', key, 'src', 'templates')
-                    #print plugins_path
-                    _create_html(plugins_path, path, header_data, footer_data, header_template, footer_template)
+        for d in os.listdir(os.path.join(root, 'plugins')):
+            d1 = os.path.join(root, 'plugins', d)
+            for dire in os.listdir(d1):
+                if os.path.isdir(os.path.join(d1, dire)) and not dire.startswith("."):
+                    _create_html(os.path.join(d1, dire, 'src', 'templates'), path, header_data, footer_data, header_template, footer_template)
 
 @task
 def install_plugins(target='local', cordova=True):
