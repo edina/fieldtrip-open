@@ -169,6 +169,37 @@ return{
 </div>';
     },
 
+    /**
+     * construct the object for the options of the image
+     */
+    getImageOptions: function(sourceType, encodingType){
+        var options = {
+            quality: 100,
+            destinationType: Camera.DestinationType.FILE_URI,
+            sourceType : sourceType,
+            encodingType: encodingType
+        }
+        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
+            options.targetWidth = 640;
+            options.targetHeight = 480;
+        }
+        return options;
+    },
+
+    /**
+     * get photo from local filesystem
+     */
+    getPhoto: function(callback) {
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    callback(fileURI);
+                },
+                this.onFail,
+                this.getImageOptions(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM, navigator.camera.MediaType.PICTURE)
+            );
+        }
+    },
 
     /**
      * TODO
@@ -404,15 +435,6 @@ return{
     },
 
     /**
-     * @param id Field div id.
-     * @return The control type for a field id.
-     */
-    typeFromId: function(id){
-        var s = id.indexOf('-') + 1;
-        return id.substr(s, id.lastIndexOf('-') - s);
-    },
-
-    /**
      * take photo action
      */
     takePhoto: function(callback){
@@ -429,35 +451,12 @@ return{
     },
 
     /**
-     * get photo from local filesystem
+     * @param id Field div id.
+     * @return The control type for a field id.
      */
-    getPhoto: function(callback) {
-        if (navigator.camera !== undefined){
-            navigator.camera.getPicture(
-                function(fileURI){
-                    callback(fileURI);
-                },
-                this.onFail,
-                this.getImageOptions(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM, navigator.camera.MediaType.PICTURE)
-            );
-        }
-    },
-
-    /**
-     * construct the object for the options of the image
-     */
-    getImageOptions: function(sourceType, encodingType){
-        var options = {
-            quality: 100,
-            destinationType: Camera.DestinationType.FILE_URI,
-            sourceType : sourceType,
-            encodingType: encodingType
-        }
-        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
-            options.targetWidth = 640;
-            options.targetHeight = 480;
-        }
-        return options;
+    typeFromId: function(id){
+        var s = id.indexOf('-') + 1;
+        return id.substr(s, id.lastIndexOf('-') - s);
     }
 
 }

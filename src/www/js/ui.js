@@ -38,8 +38,9 @@ DAMAGE.
  * @overview This is the overview with some `markdown` included, how nice!
  * text after
  */
-define(['map', 'records', 'utils', 'settings'], function(
-    map, records, utils, settings){
+define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html'], function(
+    map, records, utils, settings, _, recrowtemplate){
+
 
     var portraitScreenHeight;
     var landscapeScreenHeight;
@@ -517,17 +518,8 @@ var _ui = {
         utils.printObj(annotations);
 
         var addAnnotation = function(id, annotation){
-            $('#saved-records-list-list').append(
-                '<li id="' + id + '"><div class="ui-grid-b"> \
-<div class="ui-block-a saved-records-list-synced-' + annotation.isSynced + '">\
-</div>\
-<div class="ui-block-b saved-records-view">\
-<a href="#">' + annotation.record.name + '</a>\
-</div>\
-<div class="ui-block-c">\
-<a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="a"></a>\
-</div>\
-</div></li>').trigger('create');
+            var template = _.template(recrowtemplate);
+            $('#saved-records-list-list').append(template({"id": id, "annotation": annotation})).trigger('create');
         }
 
         $.each(annotations, $.proxy(function(id, annotation){

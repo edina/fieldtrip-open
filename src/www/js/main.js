@@ -47,11 +47,16 @@ function onDeviceReady(){
             "plugins": "../plugins",
             "templates": "../templates",
             "theme": "../theme",
-            "proj4js": "ext/proj4js"
+            "proj4js": "ext/proj4js",
+            "underscore": "ext/underscore",
+            "text": "ext/requirejs-text"
         },
         shim: {
             "proj4js":{
                 exports: "Proj4js"
+            },
+            "underscore": {
+                exports: "_"
             }
         }
     });

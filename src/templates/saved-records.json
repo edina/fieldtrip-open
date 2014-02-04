@@ -14,8 +14,10 @@
         "popup2":{
             "template": "saved-records-popup2.html",
             "data": {
-
             }
         }
+    },
+    "templates": {
+        "saved-records-list-template": "saved-records-list-template.html"
     }
 }
