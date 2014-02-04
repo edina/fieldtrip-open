@@ -294,7 +294,7 @@ def install_plugins(target='local', cordova=True):
         for plugin, details in pobj['fieldtrip'].iteritems():
             if len(details) == 0:
                 # plugin is from field trip
-                src = os.sep.join((proot, 'fieldtrip-plugins', plugin))
+                src = os.sep.join((proot, 'fieldtrip-plugins', plugin, 'src', 'www'))
             elif plugin[:3] == 'lib':
                 # TODO bower plugin
                 pass
