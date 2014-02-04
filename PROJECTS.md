@@ -46,15 +46,47 @@ For details on fieldtrip plugin development see [plugin development documentatio
 
 ### Templates
 
-All HTML in fieldtrip open is [templated](https://github.com/edina/fieldtrip-open/tree/master/src/templates) and the core provides bare bone templates and data json files as a starting point for the project. In addition, plugins will also provide templates and default data files for new pages that they wish to introduce. It is the role of the project to provide the content of the main landing pages that diverges from the default layout.
+All HTML in fieldtrip open is [templated](https://github.com/edina/fieldtrip-open/tree/master/src/templates) with the core providing bare bone templates and data json files as a starting point for a project. In addition, plugins can also provide templates and default data files for new pages that they wish to introduce to the app. It is the role of the project to provide the content of the main landing pages that diverge from the default layout.
 
 #### Add New Button
 
-TODO
+A project can add a new button to the _Home_ page by adding an index.json to src/templates. The following json object adds a _Saved_ button that will open saved-maps.html when clicked:
+
+{
+    "body": {
+        "section1": {
+            "items": {
+                "item2": {
+                    "div": {"class": "ui-block-b"},
+                    "a": {"href": "saved-maps.html"},
+                    "img": {"src": "css/images/saved.png", "alt": "Save Map"},
+                    "title": "Saved"
+                }
+            }
+        }
+    }
+}
+
+* section1: refers to the _Maps_ section of the _Home_ page
+* item2: is the id of the button and should be unique if the button is new or the same if replacing an existing button
+* ui-block-b: places the button in the second column of the section, see [JQM Grid Layoit docs](http://api.jquerymobile.com/grid-layout/#Grid%20Layout)
+
+A project can add a new button to the _Capture_ page by adding an capture.json in src/templates.
 
 #### Add New Footer Tab
 
-TODO
+A project can add a new footer new tab, and landing page for the tab, by providing a footer.json in src/templates. The following json object adds a _Download_ tab that will open download.html when clicked:
+
+```
+{
+    "download": {
+        "name": "Download",
+        "href": "download.html",
+        "class": "download-button",
+        "data-icon": "custom"
+    }
+}
+```
 
 ### Examples
 

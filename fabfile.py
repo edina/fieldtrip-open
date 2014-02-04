@@ -66,7 +66,7 @@ def clean():
             with lcd(repo):
                 out = local('git status', capture=True)
                 if len(out.splitlines()) > 2:
-                    print "\nWon't delete {0} until there a no uncommitted changes".format(repo)
+                    print "\nWon't delete {0} until there are uncommitted changes".format(repo)
                     exit(-1)
                 else:
                     local('rm -rf {0}'.format(repo))
@@ -184,30 +184,30 @@ def generate_html(platform="android", cordova=False):
                 if f.endswith("html") and not f.startswith("header") and not f.startswith("footer"):
                     filename = '{0}.json'.format(f.split(".")[0])
                     fil = os.path.join(path, filename)
-    
+
                     if os.path.exists(fil):
                         print "generating file {0}".format(f)
                         data = _get_data(path, filename, path2)
-    
+
                         if "header" in data:
                             _merge(data["header"], header_data, path2)
                         else:
                             data["header"] = header_data
-    
+
                         if "footer" in data:
                             _merge(data["footer"], footer_data, path2)
                         else:
                             data["footer"] = footer_data
-    
+
                         template = environ.get_template(f)
                         indexheader_data = {"cordova": cordova, "title": header_data["title"]}
-    
+
                         popups=[]
                         if "popups" in data:
                             for popup in data["popups"]:
                                 popup_template = environ.get_template(data["popups"][popup]["template"])
                                 popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-    
+
                         output = template.render(
                             header_data=indexheader_data,
                             body=_sorted(data["body"]),
@@ -600,6 +600,7 @@ def _check_config():
     """
     If config.ini exists update from remote location, otherwise prompt user for location
     """
+    global config
 
     root = _get_source()[0]
     conf_dir = os.sep.join((root, 'etc'))
@@ -616,12 +617,12 @@ def _check_config():
                     exit(0)
             else:
                 local('scp {0} {1}'.format(answer, conf_dir))
-    else:
-        # pick up any changes from remote config
-        location = _config('location')
-        if location.find('@') != -1:
-            local('rsync -avz {0} {1}'.format(location, conf_dir))
-            config = None # make sure it is re-read
+
+    # pick up any changes from remote config
+    location = _config('location')
+    if location.find('@') != -1:
+        local('rsync -avz {0} {1}'.format(location, conf_dir))
+        config = None # make sure it is re-read
 
 def _config(key, section='install'):
     """

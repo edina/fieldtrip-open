@@ -2,7 +2,7 @@
 
 Fieldtrip-Open is a mobile mapping and data collection platform.
 
-### Software Dependencies
+### Dependencies
 
 [Install dependencies notes](INSTALL_DEPS.md)
 
