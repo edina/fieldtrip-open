@@ -45,6 +45,9 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
     //var GPS_LOCATE_TIMEOUT = 10000;
     var GPS_LOCATE_TIMEOUT = 3000;
 
+    var tileMapCapabilities;
+    var serviceVersion = "1.0.0"; // TODO needs parameterised
+
     var ANNOTATE_POSITION_ATTR = 'annotate_pos';
     var USER_POSITION_ATTR = 'user_pos';
 
@@ -58,7 +61,6 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
 
         var proj = "EPSG:27700";
         proj4js.defs[proj] = "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs";
-        console.log(proj4js);
         INTERNAL_PROJECTION = new OpenLayers.Projection(proj)
         baseLayer = new OpenLayers.Layer.TMS(
             "osOpen",
@@ -66,11 +68,59 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
             {
                 layername: "fieldtripgb@BNG",
                 type: "jpg",
-                serviceVersion: "1.0.0",
+                serviceVersion: serviceVersion,
                 isBaseLayer: true,
             }
         );
     }
+
+    /**
+     * Fetch TMS capabilities from server and store as this.tileMapCapabilities.
+     */
+    var fetchCapabilities = function(){
+        var baseLayerName = map.baselayer.layername;
+
+        tileMapCapabilities = {'tileSet': []};
+
+        var applyDefaults = $.proxy(function(){
+            this.tileMapCapabilities.tileFormat = {
+                'height': 256,
+                'width': 256
+            }
+            this.tileMapCapabilities.tileSet = Map.RESOLUTIONS;
+        }, this);
+
+        this.baseMapFullURL = Utils.getMapServerUrl() + Map.TMS_URL + serviceVersion + '/' + baseLayerName + '/';
+
+        // fetch capabilities
+        $.ajax({
+            type: "GET",
+            url: utils.getMapServerUrl() + serviceVersion + '/' + baseLayerName + '/',
+            dataType: "xml",
+            timeout: 10000,
+            success: $.proxy(function(xml) {
+                var tileFormat = $(xml).find('TileFormat')[0];
+                this.tileMapCapabilities.tileFormat = {
+                    'height': $(tileFormat).attr('height'),
+                    'width': $(tileFormat).attr('width')
+                }
+
+                $(xml).find('TileSet').each($.proxy(function(i, element){
+                    // store units per pixel of each zoom level
+                    this.tileMapCapabilities.tileSet[i] = $(element).attr('units-per-pixel');
+                }, this));
+
+                if(this.tileMapCapabilities.tileSet.length === 0){
+                    console.debug("Capabilities does not contain tileset details. Use defaults.");
+                    applyDefaults();
+                }
+            }, this),
+            error: function(){
+                console.debug("Capabilities not found. Use defaults.");
+                applyDefaults();
+            }
+        });
+    };
 
     /**
      * Display all annotations on speficied layer.
@@ -271,6 +321,35 @@ var _this = {
     },
 
     /**
+     * TODO
+     */
+    addLayer: function(options){
+        // TODO - should support more styles
+        if(typeof(options.style.colour) === 'undefined'){
+            options.style.colour = 'black';
+        }
+
+        if(typeof(options.visible) === 'undefined'){
+            options.visible = false;
+        }
+
+        // layer displaying extent of saved maps
+        var olStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+        olStyle.fillOpacity = 0;
+        olStyle.strokeWidth = 2;
+        olStyle.strokeColor = options.style.colour;
+        var layer = new OpenLayers.Layer.Vector(
+            options.id,
+            {
+                visibility: options.visible,
+                style: olStyle,
+            }
+        );
+
+        return layer;
+    },
+
+    /**
      * Render the map on a defined div.
      * @param div The div id.
      */
@@ -433,10 +512,21 @@ var _this = {
     geolocateTimeout: GPS_LOCATE_TIMEOUT,
 
     /**
+     * @return The map tileset capabilities object.
+     */
+    getTileMapCapabilities: function(){
+        return tileMapCapabilities;
+    },
+
+    /**
      * Hide annotation layer.
      */
     hideAnnotateLayer: function(){
-        this.getAnnotateLayer().setVisibility(false);
+        this.hideLayer(this.getAnnotateLayer());
+    },
+
+    hideLayer: function(layer){
+        layer.setVisibility(false);
     },
 
     /**
@@ -501,6 +591,13 @@ var _this = {
     },
 
     /**
+     * TODO
+     */
+    removeAllFeatures: function(layer){
+        layer.removeAllFeatures();
+    },
+
+    /**
      * Centre map with zoom level.
      * @param lon
      * @param lat
@@ -528,6 +625,26 @@ var _this = {
      */
     showAnnotateLayer: function(){
         this.getAnnotateLayer().setVisibility(true);
+    },
+
+    /**
+     * TODO
+     */
+    showBBox: function(layer, bounds, poi){
+        layer.removeAllFeatures();
+        layer.setVisibility(true);
+
+        var geom = new OpenLayers.Bounds(bounds.left,
+                                         bounds.bottom,
+                                         bounds.right,
+                                         bounds.top).toGeometry();
+
+        layer.addFeatures([new OpenLayers.Feature.Vector(geom)]);
+        layer.redraw();
+
+        this.setCentre(poi.centre.lon, poi.centre.lat, poi.zoom);
+        this.map.zoomTo(this.map.getZoom() - 2);
+
     },
 
     /**
