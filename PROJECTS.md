@@ -52,6 +52,7 @@ All HTML in fieldtrip open is [templated](https://github.com/edina/fieldtrip-ope
 
 A project can add a new button to the _Home_ page by adding an index.json to src/templates. The following json object adds a _Saved_ button that will open saved-maps.html when clicked:
 
+```
 {
     "body": {
         "section1": {
@@ -66,10 +67,11 @@ A project can add a new button to the _Home_ page by adding an index.json to src
         }
     }
 }
+```
 
 * section1: refers to the _Maps_ section of the _Home_ page
 * item2: is the id of the button and should be unique if the button is new or the same if replacing an existing button
-* ui-block-b: places the button in the second column of the section, see [JQM Grid Layoit docs](http://api.jquerymobile.com/grid-layout/#Grid%20Layout)
+* ui-block-b: places the button in the second column of the section, see [JQM Grid Layout docs](http://api.jquerymobile.com/grid-layout/#Grid%20Layout)
 
 A project can add a new button to the _Capture_ page by adding an capture.json in src/templates.
 
@@ -86,6 +88,14 @@ A project can add a new footer new tab, and landing page for the tab, by providi
         "data-icon": "custom"
     }
 }
+```
+
+#### Generate HTML
+
+The generate_html fabric task will need to be run after a change to templates or data files:
+
+```
+fab generate_html
 ```
 
 ### Examples

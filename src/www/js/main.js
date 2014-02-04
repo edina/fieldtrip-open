@@ -42,6 +42,7 @@ $(function() {
 });
 
 function onDeviceReady(){
+    // set up requirejs config
     require.config({
         paths: {
             "plugins": "../plugins",
@@ -62,18 +63,31 @@ function onDeviceReady(){
     });
 
     require(['ui', 'utils'], function(ui, utils) {
+        // set up fieldtrip plugins
+        $.getJSON('theme/plugins.json', function(f){
+            $.each(f.fieldtrip, function(name){
+                require(["plugins/" + name + "/js/" + name], function(){
+                    //console.log('=>');
+                });
+            });
+        });
+
+        $.getJSON('theme/menu-ids.json', function(ids){
+            ui.toggleActiveInit(ids);
+        });
+
         $(document).on('pageinit', 'div[data-role="page"]', function(event){
-            //console.log("pageinit");
+            // no use for this yet
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
-            //console.log("pagebeforeshow");
             ui.pageChange();
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(event){
-            //console.log("pageshow");
+            // no use for this yet
         });
 
         $(document).on('pageinit', '#map-page', function(event){
+            // map page is special case, need to setup up openlayers before onshow
             ui.mapPageInit();
         });
 
@@ -90,19 +104,6 @@ function onDeviceReady(){
             $(document).on('pageshow',
                            '#' + id,
                            $.proxy(func, ui));
-        });
-
-
-        $.getJSON('theme/plugins.json', function(f){
-            $.each(f.fieldtrip, function(name){
-                require(["plugins/" + name + "/js/" + name], function(){
-                    //console.log('=>');
-                });
-            });
-        });
-
-        $.getJSON('theme/menu-ids.json', function(ids){
-            ui.toggleActiveInit(ids);
         });
 
         // initialise home page first time
