@@ -67,7 +67,7 @@ function onDeviceReady(){
         $.getJSON('theme/plugins.json', function(f){
             $.each(f.fieldtrip, function(name){
                 require(["plugins/" + name + "/js/" + name], function(){
-                    //console.log('=>');
+                    console.debug(name + " loaded");
                 });
             });
         });

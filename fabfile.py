@@ -66,7 +66,7 @@ def clean():
             with lcd(repo):
                 out = local('git status', capture=True)
                 if len(out.splitlines()) > 2:
-                    print "\nWon't delete {0} until there are uncommitted changes".format(repo)
+                    print "\nWon't delete {0} until there are no uncommitted changes".format(repo)
                     exit(-1)
                 else:
                     local('rm -rf {0}'.format(repo))
@@ -223,7 +223,7 @@ def generate_html(platform="android", cordova=False):
                             for popup in data["popups"]:
                                 popup_template = environ.get_template(data["popups"][popup]["template"])
                                 popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-    
+
                         output = template.render(
                             header_data=indexheader_data,
                             body=body,
