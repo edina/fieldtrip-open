@@ -78,19 +78,20 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
      * Fetch TMS capabilities from server and store as this.tileMapCapabilities.
      */
     var fetchCapabilities = function(){
-        var baseLayerName = map.baselayer.layername;
+        var map = _this.map;
+        var baseLayerName = map.baseLayer.layername;
 
         tileMapCapabilities = {'tileSet': []};
 
         var applyDefaults = $.proxy(function(){
-            this.tileMapCapabilities.tileFormat = {
+            tileMapCapabilities.tileFormat = {
                 'height': 256,
                 'width': 256
             }
-            this.tileMapCapabilities.tileSet = Map.RESOLUTIONS;
+            tileMapCapabilities.tileSet = RESOLUTIONS;
         }, this);
 
-        this.baseMapFullURL = Utils.getMapServerUrl() + Map.TMS_URL + serviceVersion + '/' + baseLayerName + '/';
+        //this.baseMapFullURL = utils.getMapServerUrl() + Map.TMS_URL + serviceVersion + '/' + baseLayerName + '/';
 
         // fetch capabilities
         $.ajax({
@@ -168,6 +169,8 @@ var _this = {
 
         this.map = new OpenLayers.Map("map", options);
         this.map.addLayer(baseLayer);
+
+        fetchCapabilities();
 
         // styles for records
         var recordsStyle = new OpenLayers.Style({
@@ -318,6 +321,8 @@ var _this = {
                        DEFAULT_USER_LAT,
                        MIN_LOCATE_ZOOM_TO,
                        true);
+
+        //fetchCapabilities();
     },
 
     /**
@@ -391,6 +396,32 @@ var _this = {
     },
 
     /**
+     * @return openlayers base layer.
+     */
+    getBaseLayer: function(){
+        return this.map.baseLayer;
+    },
+
+    /**
+     * Get the current centre and zoom level of the map.
+     * @param wgs84 In WGS84?
+     * @returns:
+     * {Object} Object with two properties: centre and zoom level.
+     */
+    getCentre: function(wgs84){
+        var centre = this.map.getCenter();
+
+        if(wgs84){
+            centre = toWGS84(centre);
+        }
+
+        return {
+            centre: centre,
+            zoom: this.map.getZoom(),
+        }
+    },
+
+    /**
      * @return layer with the user icon.
      */
     getLocateLayer: function(){
@@ -410,6 +441,13 @@ var _this = {
         else{
             return;
         }
+    },
+
+    /**
+     * @return map options
+     */
+    getOptions: function(){
+        return this.map.options;
     },
 
     /**
@@ -512,10 +550,27 @@ var _this = {
     geolocateTimeout: GPS_LOCATE_TIMEOUT,
 
     /**
+     * @return Current map extent ({<OpenLayers.Bounds>}).
+     */
+    getExtent: function(){
+        return this.map.getExtent();
+    },
+
+    /**
      * @return The map tileset capabilities object.
      */
     getTileMapCapabilities: function(){
         return tileMapCapabilities;
+    },
+
+    /**
+     * @return Zoom level details.
+     */
+    getZoomLevels: function(){
+        return {
+            current: this.map.getZoom(),
+            max: this.map.getNumZoomLevels() - 1
+        }
     },
 
     /**
@@ -588,6 +643,15 @@ var _this = {
     refreshRecords: function(annotation){
         this.getRecordsLayer().removeAllFeatures();
         this.showRecordsLayer(annotation);
+    },
+
+    /**
+     * Register an object and function to recieve map zoom change updates.
+     * @param obj
+     * @param func
+     */
+    registerZoom: function(obj, func){
+        this.map.events.register('zoomend', obj, func);
     },
 
     /**
