@@ -38,7 +38,7 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
 
     var INTERNAL_PROJECTION;
     var EXTERNAL_PROJECTION = new OpenLayers.Projection("EPSG:4326")
-
+    var TMS_URL = "/mapcache/tms";
     var DEFAULT_USER_LON = -2.421976;
     var DEFAULT_USER_LAT = 53.825564;
     var GPS_ACCURACY_FLAG = false;
@@ -91,7 +91,7 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
             tileMapCapabilities.tileSet = RESOLUTIONS;
         }, this);
 
-        //this.baseMapFullURL = utils.getMapServerUrl() + Map.TMS_URL + serviceVersion + '/' + baseLayerName + '/';
+        _this.baseMapFullURL = utils.getMapServerUrl() + TMS_URL + serviceVersion + '/' + baseLayerName + '/';
 
         // fetch capabilities
         $.ajax({
@@ -403,6 +403,14 @@ var _this = {
     },
 
     /**
+     * @return openlayers base layer.
+     */
+    getBaseMapFullURL: function(){
+        return this.baseMapFullURL;
+    },
+
+
+    /**
      * Get the current centre and zoom level of the map.
      * @param wgs84 In WGS84?
      * @returns:
@@ -455,6 +463,20 @@ var _this = {
      */
     getRecordsLayer: function(){
         return this.getLayer('recordsLayer');
+    },
+
+    /**
+     * @return Base stack type.
+     */
+    getStackType: function(){
+        return this.getTileMapCapabilities()['stack'];
+    },
+
+    /**
+     * @return The tile file type of the base layer.
+     */
+    getTileFileType: function(){
+        return this.getBaseLayer().type;
     },
 
     /**
