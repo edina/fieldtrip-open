@@ -196,7 +196,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
     // switch off page transitions
     $.mobile.defaultPageTransition = 'none';
 
-    map.init();
+    //map.init();
 
 var _ui = {
 

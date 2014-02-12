@@ -169,8 +169,7 @@ var _this = {
 
         this.map = new OpenLayers.Map("map", options);
         this.map.addLayer(baseLayer);
-
-        fetchCapabilities();
+        //fetchCapabilities();
 
         // styles for records
         var recordsStyle = new OpenLayers.Style({
@@ -323,6 +322,13 @@ var _this = {
                        true);
 
         //fetchCapabilities();
+    },
+
+    /**
+     * TODO
+     */
+    postInit: function(){
+        fetchCapabilities();
     },
 
     /**
@@ -692,6 +698,10 @@ var _this = {
         layer.removeAllFeatures();
     },
 
+    setBaseLayer: function(layer){
+        baseLayer = layer;
+    },
+
     /**
      * Centre map with zoom level.
      * @param lon
@@ -833,13 +843,11 @@ var _this = {
             this.map.removeLayer(this.map.baseLayer);
         }
 
-        console.debug("switch to base layer to " + layer.options.url);
+        console.debug("switch base layer to " + layer.url);
 
         layer.setVisibility(false);
         this.map.addLayer(layer);
         this.map.setBaseLayer(layer);
-
-        fetchCapabilities();
 
         this.postLocateZoomTo = POST_LOCATE_ZOOM_TO;
 

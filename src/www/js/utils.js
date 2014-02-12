@@ -68,19 +68,6 @@ define(['settings'], function(settings){
     documentBase =documentBase.replace("index.html", "");
 
     /**
-     * @return Is this device a touch device?
-     */
-    var isTouchDevice = function(){
-        try{
-            document.createEvent("TouchEvent");
-            return true;
-        }
-        catch(e){
-            return false;
-        }
-    };
-
-    /**
      * Get application root directory.
      * @param callback Function executed after root has been retrieved.
      * @param type LocalFileSystem.PERSISTENT or LocalFileSystem.TEMPORARY
@@ -91,7 +78,7 @@ define(['settings'], function(settings){
             0,
             function(fileSystem){
                 fileSystem.root.getDirectory(
-                    deviceDependent.getRootDir(),
+                    _this.getRootDir(),
                     {create: true, exclusive: false},
                     function(dir){
                         callback(dir);
@@ -103,7 +90,20 @@ define(['settings'], function(settings){
             function(error){
                 alert('Failed to get file system:' + error);
             });
-    }
+    };
+
+    /**
+     * @return Is this device a touch device?
+     */
+    var isTouchDevice = function(){
+        try{
+            document.createEvent("TouchEvent");
+            return true;
+        }
+        catch(e){
+            return false;
+        }
+    };
 
     /**
      * Prepend number with zeros.
@@ -119,374 +119,402 @@ define(['settings'], function(settings){
         return number + ""; // always return a string
     };
 
-    return {
+var _base = {
 
-        /*********** public ***********************/
+    /*********** public ***********************/
 
-        /**
-         * TODO
-         */
-        absoluteHeightScroller: function(selector){
-            var box = $(selector);
-            var padding = 100;
-            var boxHeight = box.height() + padding;
-            var maxHeight = $(window).height() * 0.60;//60%
-            var boxHeight = boxHeight < maxHeight ? boxHeight : maxHeight  ;
-            box.css('height', boxHeight+'px');
-        },
+    /**
+     * TODO
+     */
+    absoluteHeightScroller: function(selector){
+        var box = $(selector);
+        var padding = 100;
+        var boxHeight = box.height() + padding;
+        var maxHeight = $(window).height() * 0.60;//60%
+        var boxHeight = boxHeight < maxHeight ? boxHeight : maxHeight  ;
+        box.css('height', boxHeight+'px');
+    },
 
-        /**
-         * TODO
-         */
-        appendDateTimeToInput: function(inputId){
-            var $inputId = $(inputId);
-            var prefix = $inputId.attr('value');
+    /**
+     * TODO
+     */
+    appendDateTimeToInput: function(inputId){
+        var $inputId = $(inputId);
+        var prefix = $inputId.attr('value');
 
-            if(prefix){
-                $inputId.attr('value', prefix + this.getSimpleDate());
+        if(prefix){
+            $inputId.attr('value', prefix + this.getSimpleDate());
+        }
+
+    },
+
+    /**
+     * Convert number of bytes to a readable text string.
+     * @param bytes
+     * @return String representation of bytes.
+     */
+    bytesToSize: function(bytes) {
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes === 0) return 'n/a';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, i), 2) + sizes[[i]];
+    },
+
+    /**
+     * Confirm yes/no dialogue helper.
+     * @param title Confirm dialogue title.
+     * @param test The text content.
+     * @param object The object to envoke when ok is applied.
+     * @param func The function to execute when ok is applied.
+     * @param args The arguments to the above function.
+     */
+    confirm: function(title, text, object, func, args){
+        $(document).off('pageinit', '#confirm-page');
+        $(document).on('pageinit', '#confirm-page', function(event){
+            $('#confirm-page-header h1').text(title);
+            $('#confirm-page-content h1').text(title);
+            $('#confirm-page-content p').text(text);
+
+            $('#confirm-ok').unbind('click');
+            $('#confirm-ok').click(function(){
+                func.apply(object, args);
+            });
+        });
+
+        $.mobile.changePage('confirm.html', {role: "dialog"});
+    },
+
+    /**
+     * @return Internet connection status.
+     * {object} val - cordova connection state value, str - a textual value.
+     */
+    getConnectionStatus: function() {
+        var current = {
+            val: -1,
+            str: 'Unknown connection: Not a mobile app?'
+        };
+        var states = {};
+
+        if(typeof(Connection) !== 'undefined'){
+            states[Connection.UNKNOWN]  = 'Unknown connection';
+            states[Connection.ETHERNET] = 'Ethernet connection';
+            states[Connection.WIFI]     = 'WiFi connection';
+            states[Connection.CELL_2G]  = 'Cell 2G connection';
+            states[Connection.CELL_3G]  = 'Cell 3G connection';
+            states[Connection.CELL_4G]  = 'Cell 4G connection';
+            states[Connection.NONE]     = 'No network connection';
+
+            current['val'] = navigator.connection.type;
+            current['str'] = states[navigator.connection.type];
+        }
+
+        return current;
+    },
+
+    /**
+     * TODO
+     */
+    getDocumentBase : function (){
+        return documentBase;
+    },
+
+    /**
+     * @param cache Is this a map cache request?
+     * @return Standard parameters to map cache.
+     */
+    getLoggingParams: function(cache) {
+        return '?version=' + this.version +
+            '&id=' + userId +
+            '&app=free&cache=' + cache;
+    },
+
+    /**
+     * @return The field trip GB map server URL.
+     */
+    getMapServerUrl: function() {
+        if(isMobileApp){
+            return settings.getMapServerUrl();
+        }
+        else{
+            var url = 'http://' + location.hostname;
+
+            if(location.port){
+                url += ':' + location.port
             }
 
-        },
+            return url += '/ftgb';
+        }
+    },
 
-        /**
-         * Convert number of bytes to a readable text string.
-         * @param bytes
-         * @return String representation of bytes.
-         */
-         bytesToSize: function(bytes) {
-            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            if (bytes === 0) return 'n/a';
-            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-            return Math.round(bytes / Math.pow(1024, i), 2) + sizes[[i]];
-        },
+    /**
+     * Get permanent root directory
+     * @param callback function to be executed when persistent root is found
+     * @return Persistent file system.
+     */
+    getPersistentRoot: function(callback){
+        return getFileSystemRoot(callback, LocalFileSystem.PERSISTENT);
+    },
 
-        /**
-         * Confirm yes/no dialogue helper.
-         * @param title Confirm dialogue title.
-         * @param test The text content.
-         * @param object The object to envoke when ok is applied.
-         * @param func The function to execute when ok is applied.
-         * @param args The arguments to the above function.
-         */
-        confirm: function(title, text, object, func, args){
-            $(document).off('pageinit', '#confirm-page');
-            $(document).on('pageinit', '#confirm-page', function(event){
-                $('#confirm-page-header h1').text(title);
-                $('#confirm-page-content h1').text(title);
-                $('#confirm-page-content p').text(text);
+    /**
+     *
+     */
+    getRootDir: function(){
+        return "edina"
+    },
 
-                $('#confirm-ok').unbind('click');
-                $('#confirm-ok').click(function(){
-                    func.apply(object, args);
-                });
+    /**
+     * @return The field trip GB server web server URL. This is currently the
+     * pcapi URL in settings.
+     */
+    getServerUrl: function() {
+        if(isMobileApp){
+            return settings.getPcapiUrl();
+        }
+        else{
+            return 'http://' + location.hostname + '/ftgb';
+        }
+
+    },
+
+    /**
+     * TODO
+     */
+    getSimpleDate: function(){
+
+        var today = new Date();
+        var h = today.getHours();
+        var m = today.getMinutes();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1;
+        var s = today.getSeconds() //January is 0!
+
+        var yyyy = today.getFullYear();
+        if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} if(h<10){h='0'+h} if(m<10){m='0'+m} if(s<10){s='0'+s} today = ' ('+ dd+'-'+mm+'-'+yyyy+' '+h+'h'+m+'m'+s+'s)';
+        return today;
+    },
+
+    /**
+     * Get temporary root directory, this is secure and deleted if application is
+     * uninstalled.
+     * @param callback The function to be called when filesystem is retrieved.
+     * @return Temporary file system.
+     */
+    getTemporaryRoot: function(callback){
+        return getFileSystemRoot(callback, LocalFileSystem.TEMPORARY);
+    },
+
+    /**
+     * @return Is the app running on a mobile device?
+     */
+    isMobileDevice: function(){
+        return isMobileApp;
+    },
+
+    /**
+     * @return Current date in ISO 8601 format.
+     * http://en.wikipedia.org/wiki/ISO_8601
+     */
+    isoDate: function(date){
+
+        if(!date){
+            date= new Date();
+        }
+
+        return date.getUTCFullYear() + '-' +
+            zeroFill(date.getUTCMonth() + 1, 2) + '-' +
+            zeroFill(date.getUTCDate(), 2) + 'T' +
+            zeroFill(date.getUTCHours(), 2) + ':' +
+            zeroFill(date.getUTCMinutes(), 2) + ':' +
+            zeroFill(date.getUTCSeconds(), 2) + 'Z';
+    },
+
+    /**
+     * @return true If user's uuid is in the list of privileged users.
+     */
+    isPrivilegedUser: function(){
+
+        if(isMobileApp && $.inArray(device.uuid, PRIVILIGED_USERS) === -1){
+            return false;
+        }
+        else{
+            return true;
+        }
+    },
+
+    /**
+     * @return true if client is ios
+     */
+    isIOSApp: function(){
+        if(navigator.userAgent.toLowerCase().match(/iphone/) ||
+           navigator.userAgent.toLowerCase().match(/ipad/)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+
+    /**
+     * Use jquery modal loader popup for inform alert. Note: Cannot be used in
+     * pageinit.
+     * @param message The text to display.
+     * @param duration The duration of the message in milliseconds. Default is 2
+     * secs.
+     */
+    inform: function(message, duration, error){
+        if($('.ui-loader').is(":visible")){
+            if(typeof(error) !== 'undefined' && error){
+                $('.ui-loader').addClass('error');
+            }
+            else{
+                $('.ui-loader').removeClass('error');
+            }
+
+            $('.ui-loader h1').html(message);
+            return;
+        }
+
+        if(duration === undefined){
+            duration = 2000;
+        }
+
+        $.mobile.loading('show', {
+            text: message,
+            textonly: true,
+        });
+
+        setTimeout(function(){
+            $.mobile.hidePageLoadingMsg();
+        }, duration);
+    },
+
+    /**
+     * Use jquery modal loader popup for error alert. Note: Cannot be used in
+     * pageinit.
+     * @param message The text to display.
+     */
+    informError: function(message){
+        this.inform(message, 2000, true);
+    },
+
+    /**
+     * Print out javascript object as a string.
+     * @param obj Javascript object.
+     */
+    printObj: function(obj){
+        console.debug(JSON.stringify(obj, undefined, 2));
+    },
+
+    /**
+     * Helper function that sets the unique value of a JQM select element.
+     * @param selector Jquery selector.
+     * @param value The new value.
+     */
+    selectVal: function(selector, value){
+        $(selector).val(value).attr('selected', true).siblings('option').removeAttr('selected');
+        $(selector).selectmenu("refresh", true);
+    },
+
+    /**
+     * Loading dialog with different text.
+     * @param message The text to display.
+     */
+    showPageLoadingMsg: function(message){
+        $.mobile.loading('show', {text: message});
+    },
+
+    /**
+     * Helper function that sets the value of a JQM slider on/off element.
+     * @param selector Jquery selector.
+     * @param value true or false.
+     */
+    sliderVal: function(selector, value){
+        $(selector).val(value ? 'on' : 'off');
+        $(selector).slider('refresh');
+    },
+
+    /**
+     * @return whether the device support HTML5 canvas and toDataURL?
+     */
+    supportsToDataURL: function (){
+        var support = false;
+
+        if(document.createElement('canvas').getContext !== undefined)
+        {
+            var c = document.createElement("canvas");
+            var data = c.toDataURL("image/png");
+            support = data.indexOf("data:image/png") === 0;
+        }
+
+        return support;
+    },
+
+    /**
+     * Used for making the file system fiendly fileName.
+     */
+    santiseForFilename: function(text){
+        var filename = text.replace(/[^-a-z0-9_\.]/gi, '_');
+        return filename;
+    },
+
+    /**
+     * Android workaround for overflow: auto support. See http://chris-barr.com/index.php/entry/scrolling_a_overflowauto_element_on_a_touch_screen_device/
+     */
+    touchScroll: function(selector) {
+        if(isTouchDevice()){
+            var scrollStartPosY = 0;
+            var scrollStartPosX = 0;
+
+            $('body').delegate(selector, 'touchstart', function(e) {
+                scrollStartPosY = this.scrollTop + e.originalEvent.touches[0].pageY;
+                scrollStartPosX = this.scrollLeft + e.originalEvent.touches[0].pageX;
             });
 
-            $.mobile.changePage('confirm.html', {role: "dialog"});
-        },
-
-        /**
-         * @return Internet connection status.
-         * {object} val - cordova connection state value, str - a textual value.
-         */
-        getConnectionStatus: function() {
-            var current = {
-                val: -1,
-                str: 'Unknown connection: Not a mobile app?'
-            };
-            var states = {};
-
-            if(typeof(Connection) !== 'undefined'){
-                states[Connection.UNKNOWN]  = 'Unknown connection';
-                states[Connection.ETHERNET] = 'Ethernet connection';
-                states[Connection.WIFI]     = 'WiFi connection';
-                states[Connection.CELL_2G]  = 'Cell 2G connection';
-                states[Connection.CELL_3G]  = 'Cell 3G connection';
-                states[Connection.CELL_4G]  = 'Cell 4G connection';
-                states[Connection.NONE]     = 'No network connection';
-
-                current['val'] = navigator.connection.type;
-                current['str'] = states[navigator.connection.type];
-            }
-
-            return current;
-        },
-
-        /**
-         * TODO
-         */
-        getDocumentBase : function (){
-            return documentBase;
-        },
-
-        /**
-         * @param cache Is this a map cache request?
-         * @return Standard parameters to map cache.
-         */
-        getLoggingParams: function(cache) {
-            return '?version=' + Utils.version +
-                '&id=' + userId +
-                '&app=free&cache=' + cache;
-        },
-
-        /**
-         * @return The field trip GB map server URL.
-         */
-        getMapServerUrl: function() {
-            if(isMobileApp){
-                return settings.getMapServerUrl();
-            }
-            else{
-                var url = 'http://' + location.hostname;
-
-                if(location.port){
-                    url += ':' + location.port
+            $('body').delegate(selector, 'touchmove', function(e) {
+                if ((this.scrollTop < this.scrollHeight - this.offsetHeight &&
+                     this.scrollTop + e.originalEvent.touches[0].pageY < scrollStartPosY-5) ||
+                    (this.scrollTop != 0 && this.scrollTop+e.originalEvent.touches[0].pageY > scrollStartPosY+5)){
+                    e.preventDefault();
+                }
+                if ((this.scrollLeft < this.scrollWidth - this.offsetWidth &&
+                     this.scrollLeft+e.originalEvent.touches[0].pageX < scrollStartPosX-5) ||
+                    (this.scrollLeft != 0 && this.scrollLeft+e.originalEvent.touches[0].pageX > scrollStartPosX+5)){
+                    e.preventDefault();
                 }
 
-                return url += '/ftgb';
-            }
-        },
 
-        /**
-         * Get permanent root directory
-         * @param callback function to be executed when persistent root is found
-         * @return Persistent file system.
-         */
-        getPersistentRoot: function(callback){
-            return getFileSystemRoot(callback, LocalFileSystem.PERSISTENT);
-        },
-
-        /**
-         * @return The field trip GB server web server URL. This is currently the
-         * pcapi URL in settings.
-         */
-        getServerUrl: function() {
-            if(isMobileApp){
-                return settings.getPcapiUrl();
-            }
-            else{
-                return 'http://' + location.hostname + '/ftgb';
-            }
-
-        },
-
-        /**
-         * TODO
-         */
-        getSimpleDate: function(){
-
-            var today = new Date();
-            var h = today.getHours();
-            var m = today.getMinutes();
-            var dd = today.getDate();
-            var mm = today.getMonth()+1;
-            var s = today.getSeconds() //January is 0!
-
-            var yyyy = today.getFullYear();
-            if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} if(h<10){h='0'+h} if(m<10){m='0'+m} if(s<10){s='0'+s} today = ' ('+ dd+'-'+mm+'-'+yyyy+' '+h+'h'+m+'m'+s+'s)';
-            return today;
-        },
-
-        /**
-         * Get temporary root directory, this is secure and deleted if application is
-         * uninstalled.
-         * @param callback The function to be called when filesystem is retrieved.
-         * @return Temporary file system.
-         */
-        getTemporaryRoot: function(callback){
-            return getFileSystemRoot(callback, LocalFileSystem.TEMPORARY);
-        },
-
-        /**
-         * @return Is the app running on a mobile device?
-         */
-        isMobileDevice: function(){
-            return isMobileApp;
-        },
-
-        /**
-         * @return Current date in ISO 8601 format.
-         * http://en.wikipedia.org/wiki/ISO_8601
-         */
-        isoDate: function(date){
-
-            if(!date){
-                date= new Date();
-            }
-
-            return date.getUTCFullYear() + '-' +
-                zeroFill(date.getUTCMonth() + 1, 2) + '-' +
-                zeroFill(date.getUTCDate(), 2) + 'T' +
-                zeroFill(date.getUTCHours(), 2) + ':' +
-                zeroFill(date.getUTCMinutes(), 2) + ':' +
-                zeroFill(date.getUTCSeconds(), 2) + 'Z';
-        },
-
-        /**
-         * @return true If user's uuid is in the list of privileged users.
-         */
-        isPrivilegedUser: function(){
-
-            if(isMobileApp && $.inArray(device.uuid, PRIVILIGED_USERS) === -1){
-                return false;
-            }
-            else{
-                return true;
-            }
-        },
-
-        /**
-         * @return true if client is ios
-         */
-        isIOSApp: function(){
-            if(navigator.userAgent.toLowerCase().match(/iphone/) ||
-               navigator.userAgent.toLowerCase().match(/ipad/)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        },
-
-        /**
-         * Use jquery modal loader popup for inform alert. Note: Cannot be used in
-         * pageinit.
-         * @param message The text to display.
-         * @param duration The duration of the message in milliseconds. Default is 2
-         * secs.
-         */
-        inform: function(message, duration, error){
-            if($('.ui-loader').is(":visible")){
-                if(typeof(error) !== 'undefined' && error){
-                    $('.ui-loader').addClass('error');
-                }
-                else{
-                    $('.ui-loader').removeClass('error');
-                }
-
-                $('.ui-loader h1').html(message);
-                return;
-            }
-
-            if(duration === undefined){
-                duration = 2000;
-            }
-
-            $.mobile.loading('show', {
-                text: message,
-                textonly: true,
+                this.scrollTop = scrollStartPosY - e.originalEvent.touches[0].pageY;
+                this.scrollLeft = scrollStartPosX - e.originalEvent.touches[0].pageX;
             });
+        }
+    },
 
-            setTimeout(function(){
-                $.mobile.hidePageLoadingMsg();
-            }, duration);
-        },
+    /**
+     * App version, updated by fab, do not edit.
+     */
+    'version': '1.4.0.0'
 
-        /**
-         * Use jquery modal loader popup for error alert. Note: Cannot be used in
-         * pageinit.
-         * @param message The text to display.
-         */
-        informError: function(message){
-            this.inform(message, 2000, true);
-        },
+}
 
-        /**
-         * Print out javascript object as a string.
-         * @param obj Javascript object.
-         */
-        printObj: function(obj){
-            console.debug(JSON.stringify(obj, undefined, 2));
-        },
-
-        /**
-         * Helper function that sets the unique value of a JQM select element.
-         * @param selector Jquery selector.
-         * @param value The new value.
-         */
-        selectVal: function(selector, value){
-            $(selector).val(value).attr('selected', true).siblings('option').removeAttr('selected');
-            $(selector).selectmenu("refresh", true);
-        },
-
-        /**
-         * Loading dialog with different text.
-         * @param message The text to display.
-         */
-        showPageLoadingMsg: function(message){
-            $.mobile.loading('show', {text: message});
-        },
-
-        /**
-         * Helper function that sets the value of a JQM slider on/off element.
-         * @param selector Jquery selector.
-         * @param value true or false.
-         */
-        sliderVal: function(selector, value){
-            $(selector).val(value ? 'on' : 'off');
-            $(selector).slider('refresh');
-        },
-
-        /**
-         * @return whether the device support HTML5 canvas and toDataURL?
-         */
-        supportsToDataURL: function (){
-            var support = false;
-
-            if(document.createElement('canvas').getContext !== undefined)
-            {
-                var c = document.createElement("canvas");
-                var data = c.toDataURL("image/png");
-                support = data.indexOf("data:image/png") === 0;
-            }
-
-            return support;
-        },
-
-       /**
-        * Used for making the file system fiendly fileName.
-        */
-        santiseForFilename: function(text){
-            var filename = text.replace(/[^-a-z0-9_\.]/gi, '_');
-            return filename;
-        },
-
-        /**
-         * Android workaround for overflow: auto support. See http://chris-barr.com/index.php/entry/scrolling_a_overflowauto_element_on_a_touch_screen_device/
-         */
-        touchScroll: function(selector) {
-            if(isTouchDevice()){
-                var scrollStartPosY = 0;
-                var scrollStartPosX = 0;
-
-                $('body').delegate(selector, 'touchstart', function(e) {
-                    scrollStartPosY = this.scrollTop + e.originalEvent.touches[0].pageY;
-                    scrollStartPosX = this.scrollLeft + e.originalEvent.touches[0].pageX;
-                });
-
-                $('body').delegate(selector, 'touchmove', function(e) {
-                    if ((this.scrollTop < this.scrollHeight - this.offsetHeight &&
-                         this.scrollTop + e.originalEvent.touches[0].pageY < scrollStartPosY-5) ||
-                        (this.scrollTop != 0 && this.scrollTop+e.originalEvent.touches[0].pageY > scrollStartPosY+5)){
-                        e.preventDefault();
-                    }
-                    if ((this.scrollLeft < this.scrollWidth - this.offsetWidth &&
-                         this.scrollLeft+e.originalEvent.touches[0].pageX < scrollStartPosX-5) ||
-                        (this.scrollLeft != 0 && this.scrollLeft+e.originalEvent.touches[0].pageX > scrollStartPosX+5)){
-                        e.preventDefault();
-                    }
-
-
-                    this.scrollTop = scrollStartPosY - e.originalEvent.touches[0].pageY;
-                    this.scrollLeft = scrollStartPosX - e.originalEvent.touches[0].pageX;
-                });
-            }
-        },
-
-        /**
-         * App version, updated by fab, do not edit.
-         */
-        'version': '1.4.0.0'
+var _this = {};
+var _android = {
+    /**
+     * TODO
+     */
+    getRootDir: function(){
+        return "Android/data/uk.ac.edina.mobile";
     }
+};
+
+if(_base.isIOSApp()){
+    _this = _base;
+}
+else{
+    $.extend(_this, _base, _android);
+}
+
+return _this;
+
 });
 
 // function initHomepageDisplay(){

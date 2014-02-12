@@ -1,3 +1,0 @@
-### Fieldtrip Open Plugins
-
-TODO

@@ -51,13 +51,14 @@ define(['config'], function(config){
     }
 
     if(typeof(vals.pcapiUrl) === 'undefined'){
-        vals.pcapiUrl = config.server_url_default;
+        vals.pcapiUrl = SERVER_URL_DEFAULT;
     }
     if(typeof(vals.mapserverUrl) === 'undefined'){
-        vals.mapserverUrl = config.server_url_default;
+        vals.mapserverUrl = SERVER_URL_DEFAULT;
     }
 
 return{
+
     /**
      * @return Should GPS capture be run in debug mode?
      */

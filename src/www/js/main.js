@@ -62,14 +62,30 @@ function onDeviceReady(){
         }
     });
 
-    require(['ui', 'utils'], function(ui, utils) {
+    require(['ui', 'map'], function(ui, map) {
+        map.init();
+
         // set up fieldtrip plugins
         $.getJSON('theme/plugins.json', function(f){
-            $.each(f.fieldtrip, function(name){
-                require(["plugins/" + name + "/js/" + name], function(){
-                    console.debug(name + " loaded");
+            var noOfPlugins = Object.keys(f.fieldtrip).length;
+
+            if(noOfPlugins > 0){
+                var loaded = 0;
+                $.each(f.fieldtrip, function(name){
+                    require(["plugins/" + name + "/js/" + name], function(){
+                        console.debug(name + " loaded");
+                        ++loaded;
+
+                        if(loaded === noOfPlugins){
+                            // when all plugins are finished loading finialise map
+                            map.postInit();
+                        }
+                    });
                 });
-            });
+            }
+            else{
+                map.postInit();
+            }
         });
 
         $.getJSON('theme/menu-ids.json', function(ids){

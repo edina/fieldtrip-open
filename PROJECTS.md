@@ -42,7 +42,7 @@ The json file theme/plugins.json will define a list of plugins the project wishe
 * ft-sync: will install the plugin as a [bower](http://bower.io/) dependency.
 * my-plugin: will use the master branch of the plugin found at the defined git repository.
 
-For details on fieldtrip plugin development see [plugin development documentation](PLUGINS.md).
+For details on fieldtrip plugin development see [plugin development documentation](https://github.com/edina/fieldtrip-plugins/PLUGINS.md).
 
 ### Templates
 
@@ -74,6 +74,10 @@ A project can add a new button to the _Home_ page by adding an index.json to src
 * ui-block-b: places the button in the second column of the section, see [JQM Grid Layout docs](http://api.jquerymobile.com/grid-layout/#Grid%20Layout)
 
 A project can add a new button to the _Capture_ page by adding an capture.json in src/templates.
+
+#### Add Header Button
+
+TODO
 
 #### Add New Footer Tab
 
