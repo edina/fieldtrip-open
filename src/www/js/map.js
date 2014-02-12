@@ -91,7 +91,7 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
             tileMapCapabilities.tileSet = RESOLUTIONS;
         }, this);
 
-        _this.baseMapFullURL = utils.getMapServerUrl() + TMS_URL + serviceVersion + '/' + baseLayerName + '/';
+        _this.baseMapFullURL = _this.getTMSURL() + serviceVersion + '/' + baseLayerName + '/';
 
         // fetch capabilities
         $.ajax({
@@ -351,6 +351,8 @@ var _this = {
             }
         );
 
+        this.map.addLayer(layer);
+
         return layer;
     },
 
@@ -477,6 +479,13 @@ var _this = {
      */
     getTileFileType: function(){
         return this.getBaseLayer().type;
+    },
+
+    /**
+     * TODO
+     */
+    getTMSURL: function(){
+        return utils.getMapServerUrl() + TMS_URL
     },
 
     /**
@@ -716,21 +725,22 @@ var _this = {
     /**
      * TODO
      */
-    showBBox: function(layer, bounds, poi){
-        layer.removeAllFeatures();
-        layer.setVisibility(true);
+    showBBox: function(options){
+        var layer = options.layer;
+        var bounds = options.bounds;
+        var poi = options.poi;
 
+        layer.removeAllFeatures();
         var geom = new OpenLayers.Bounds(bounds.left,
                                          bounds.bottom,
                                          bounds.right,
                                          bounds.top).toGeometry();
 
         layer.addFeatures([new OpenLayers.Feature.Vector(geom)]);
-        layer.redraw();
+        //layer.redraw();
 
         this.setCentre(poi.centre.lon, poi.centre.lat, poi.zoom);
         this.map.zoomTo(this.map.getZoom() - 2);
-
     },
 
     /**
@@ -808,6 +818,36 @@ var _this = {
 
         layer.setVisibility(true);
         layer.refresh();
+    },
+
+    /**
+     * Switch base layers.
+     * @param layer New base layer.
+     */
+    switchBaseLayer: function(layer){
+        if(this.map.baseLayer !== null){
+            if(layer.options.url === this.map.baseLayer.url){
+                return;
+            }
+
+            this.map.removeLayer(this.map.baseLayer);
+        }
+
+        console.debug("switch to base layer to " + layer.options.url);
+
+        layer.setVisibility(false);
+        this.map.addLayer(layer);
+        this.map.setBaseLayer(layer);
+
+        fetchCapabilities();
+
+        this.postLocateZoomTo = POST_LOCATE_ZOOM_TO;
+
+        // make sure switching to closed doesn't leave
+        // the user at a zoom level that is not available
+        if(this.map.getZoom() > POST_LOCATE_ZOOM_TO){
+            this.map.setCenter(this.userLonLat, this.postLocateZoomTo);
+        }
     },
 
     /**

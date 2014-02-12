@@ -33,10 +33,6 @@ DAMAGE.
 
 /**
  * TODO
- * @title
- * @module ui
- * @overview This is the overview with some `markdown` included, how nice!
- * text after
  */
 define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html'], function(
     map, records, utils, settings, _, recrowtemplate){
@@ -450,9 +446,13 @@ var _ui = {
     /**
      * TODO
      */
-    mapPage: function(){
+    mapPage: function(divId){
+        if(typeof(divId) !== 'string'){
+            divId = 'map';
+        }
+
         // map render must happen in pageshow
-        map.display('map');
+        map.display(divId);
 
         // force redraw, specifically for closing of record details dialog
         resizePage();
