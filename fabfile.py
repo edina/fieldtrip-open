@@ -265,16 +265,11 @@ def install_plugins(target='local', cordova=True):
 
     with settings(warn_only=True):
         # remove old sym links
-        local('rm {0}/plugins/*'.format(asset_dir))
+        local('rm -r {0}/plugins/*'.format(asset_dir))
 
     with lcd(root):
         if not os.path.exists('plugins'):
-            local('pwd')
             local('mkdir plugins')
-            #with lcd('plugins'):
-            #    local('git clone git@github.com:edina/fieldtrip-plugins.git')
-            # TODO
-            # fetch git plugins not in fieldtrip-plugins
 
     # process project json file
     json_file = os.sep.join((theme, 'plugins.json'))
@@ -282,7 +277,7 @@ def install_plugins(target='local', cordova=True):
     if os.path.exists(json_file):
         pobj = json.loads(open(json_file).read())
 
-        if cordova:
+        if _str2bool(cordova):
             with lcd(runtime):
                 # do cordova plugins
                 for name in pobj['cordova']:
@@ -291,23 +286,30 @@ def install_plugins(target='local', cordova=True):
         # do fieldtrip plugins
         proot = os.sep.join((root, 'plugins'))
         for plugin, details in pobj['fieldtrip'].iteritems():
-            if isinstance(plugin, (int, float)):
-                # TODO bower plugin
-                pass
+            dest = os.sep.join((asset_dir, 'plugins', plugin))
+            if not details[0:3] == 'git':
+                # bower plugin
+                name = 'fieldtrip-{0}'.format(plugin)
+                local('bower install {0}#{1}'.format(name, details))
+                local('mkdir {0}'.format(dest))
+                src = os.sep.join((root, 'bower_components', name, 'src', 'www'))
+                local('cp -r {0}/* {1}'.format(src, dest))
             else:
                 # git repository
                 src = os.sep.join((proot, plugin))
                 if not os.path.isdir(src):
                     with lcd(proot):
                         local('git clone {0} {1}'.format(details, plugin))
-                        src = os.sep.join((proot, plugin, 'src', 'www'))
 
-                        if os.path.isdir(src):
-                            dest = os.sep.join((asset_dir, 'plugins', plugin))
-                            local('ln -s {0} {1}'.format(src, dest))
-                        else:
-                            print 'No such plugin: {0}'.format(src)
-                            exit(-1)
+                www = os.sep.join((proot, plugin, 'src', 'www'))
+                if os.path.exists(www):
+                    # create sym link to repos www dir
+                    local('ln -s {0} {1}'.format(www, dest))
+                else:
+                    print 'Plugin has no www dir: {0}'.format(www)
+                    exit(-1)
+
+
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
