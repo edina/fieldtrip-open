@@ -250,7 +250,7 @@ def generate_html(platform="android", cordova=False):
                     _create_html(os.path.join(d1, dire, 'src', 'templates'), path, header_data, footer_data, header_template, footer_template)
 
 @task
-def install_plugins(target='local', cordova=True):
+def install_plugins(target='local', cordova="True"):
     """
     Set up project plugins
 
