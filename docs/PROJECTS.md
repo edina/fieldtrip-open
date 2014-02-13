@@ -42,7 +42,7 @@ The json file theme/plugins.json will define a list of plugins the project wishe
 * ft-sync: will install the plugin as a [bower](http://bower.io/) dependency.
 * my-plugin: will use the master branch of the plugin found at the defined git repository.
 
-For details on fieldtrip plugin development see [plugin development documentation](https://github.com/edina/fieldtrip-plugins/blob/master/README.md).
+For details on fieldtrip plugin development see [plugin development documentation](PLUGINS.md).
 
 ### Templates
 

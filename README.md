@@ -4,7 +4,7 @@ Fieldtrip-Open is a mobile mapping and data collection platform.
 
 ### Dependencies
 
-[Install notes](INSTALL_DEPS.md)
+[Install notes](docs/INSTALL_DEPS.md)
 
 ### Install
 
@@ -27,4 +27,4 @@ $ fab deploy_ios
 
 ### Project/Theme
 
-[Project documentation](PROJECTS.md)
+[Project documentation](docs/PROJECTS.md)
