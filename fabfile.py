@@ -267,49 +267,51 @@ def install_plugins(target='local', cordova=True):
         # remove old sym links
         local('rm {0}/plugins/*'.format(asset_dir))
 
-    with lcd(root):
-        if not os.path.exists('plugins'):
-            local('pwd')
-            local('mkdir plugins')
-            with lcd('plugins'):
-                local('git clone git@github.com:edina/fieldtrip-plugins.git')
-            # TODO
-            # fetch git plugins not in fieldtrip-plugins
-
+    
     # process project json file
     json_file = os.sep.join((theme, 'plugins.json'))
     print json_file
     if os.path.exists(json_file):
         pobj = json.loads(open(json_file).read())
 
-        if cordova:
-            with lcd(runtime):
-                # do cordova plugins
-                for name in pobj['cordova']:
-                    local('cordova plugin add https://git-wip-us.apache.org/repos/asf/{0}'.format(name))
-
-        # do fieldtrip plugins
-        proot = os.sep.join((root, 'plugins'))
-        for plugin, details in pobj['fieldtrip'].iteritems():
-            if len(details) == 0:
-                # plugin is from field trip
-                src = os.sep.join((proot, 'fieldtrip-plugins', plugin, 'src', 'www'))
-            elif plugin[:3] == 'lib':
-                # TODO bower plugin
-                pass
-            else:
-                # git repository
-                src = os.sep.join((proot, plugin))
-                if not os.path.isdir(src):
-                    with lcd(proot):
-                        local('git clone {0} {1}'.format(details, plugin))
-
-            if os.path.isdir(src):
-                dest = os.sep.join((asset_dir, 'plugins', plugin))
-                local('ln -s {0} {1}'.format(src, dest))
-            else:
-                print 'No such plugin: {0}'.format(src)
-                exit(-1)
+        with lcd(root):
+            if not os.path.exists('plugins'):
+                local('pwd')
+                local('mkdir plugins')
+                with lcd('plugins'):
+                    for name in pobj['fieldtrip']:
+                        local('git clone {0}'.format(name))
+                # TODO
+                # fetch git plugins not in fieldtrip-plugins
+    
+            if cordova:
+                with lcd(runtime):
+                    # do cordova plugins
+                    for name in pobj['cordova']:
+                        local('cordova plugin add https://git-wip-us.apache.org/repos/asf/{0}'.format(name))
+    
+            # do fieldtrip plugins
+            proot = os.sep.join((root, 'plugins'))
+            for plugin, details in pobj['fieldtrip'].iteritems():
+                if len(details) == 0:
+                    # plugin is from field trip
+                    src = os.sep.join((proot, 'fieldtrip-plugins', plugin, 'src', 'www'))
+                elif plugin[:3] == 'lib':
+                    # TODO bower plugin
+                    pass
+                else:
+                    # git repository
+                    src = os.sep.join((proot, plugin))
+                    if not os.path.isdir(src):
+                        with lcd(proot):
+                            local('git clone {0} {1}'.format(details, plugin))
+    
+                if os.path.isdir(src):
+                    dest = os.sep.join((asset_dir, 'plugins', plugin))
+                    local('ln -s {0} {1}'.format(src, dest))
+                else:
+                    print 'No such plugin: {0}'.format(src)
+                    exit(-1)
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
