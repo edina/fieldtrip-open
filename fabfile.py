@@ -278,7 +278,6 @@ def install_plugins(target='local', cordova=True):
 
     # process project json file
     json_file = os.sep.join((theme, 'plugins.json'))
-    print json_file
     if os.path.exists(json_file):
         pobj = json.loads(open(json_file).read())
 
@@ -300,14 +299,13 @@ def install_plugins(target='local', cordova=True):
                 if not os.path.isdir(src):
                     with lcd(proot):
                         local('git clone {0} {1}'.format(details, plugin))
-                        src = os.sep.join((proot, plugin, 'src', 'www'))
 
-                        if os.path.isdir(src):
-                            dest = os.sep.join((asset_dir, 'plugins', plugin))
-                            local('ln -s {0} {1}'.format(src, dest))
-                        else:
-                            print 'No such plugin: {0}'.format(src)
-                            exit(-1)
+                if os.path.isdir(src):
+                    dest = os.sep.join((asset_dir, 'plugins', plugin))
+                    local('ln -s {0} {1}'.format(os.sep.join((src, 'src', 'www')), dest))
+                else:
+                    print 'No such plugin: {0}'.format(src)
+                    exit(-1)
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
