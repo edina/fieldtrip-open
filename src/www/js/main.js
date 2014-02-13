@@ -65,6 +65,19 @@ function onDeviceReady(){
     require(['ui', 'map'], function(ui, map) {
         map.init();
 
+        // called when all plugins are finished loading
+        var pluginsComplete = function(){
+            // when all plugins are finished loading finialise map
+            map.postInit();
+
+            // initialise home page first time
+            ui.pageChange();
+            ui.homePage();
+
+            // add project stylesheet last
+            $('head').prepend('<link rel="stylesheet" href="theme/css/style.css" type="text/css" />');
+        };
+
         // set up fieldtrip plugins
         $.getJSON('theme/plugins.json', function(f){
             var noOfPlugins = Object.keys(f.fieldtrip).length;
@@ -77,14 +90,13 @@ function onDeviceReady(){
                         ++loaded;
 
                         if(loaded === noOfPlugins){
-                            // when all plugins are finished loading finialise map
-                            map.postInit();
+                            pluginsComplete();
                         }
                     });
                 });
             }
             else{
-                map.postInit();
+                pluginsComplete();
             }
         });
 
@@ -121,9 +133,5 @@ function onDeviceReady(){
                            '#' + id,
                            $.proxy(func, ui));
         });
-
-        // initialise home page first time
-        ui.pageChange();
-        ui.homePage();
     });
 };

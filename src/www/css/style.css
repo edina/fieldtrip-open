@@ -141,6 +141,11 @@ body .ui-loader{
     height: 100%;
 }
 
+body .ui-loader .ui-icon{
+    border: 0;
+    margin: 10px auto 0 auto;
+}
+
 
 /********* map Body *************/
 

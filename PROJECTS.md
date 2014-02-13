@@ -42,7 +42,7 @@ The json file theme/plugins.json will define a list of plugins the project wishe
 * ft-sync: will install the plugin as a [bower](http://bower.io/) dependency.
 * my-plugin: will use the master branch of the plugin found at the defined git repository.
 
-For details on fieldtrip plugin development see [plugin development documentation](https://github.com/edina/fieldtrip-plugins/PLUGINS.md).
+For details on fieldtrip plugin development see [plugin development documentation](https://github.com/edina/fieldtrip-plugins/blob/master/README.md).
 
 ### Templates
 
@@ -77,7 +77,24 @@ A project can add a new button to the _Capture_ page by adding an capture.json i
 
 #### Add Header Button
 
-TODO
+A project can add a new button to the main header of the app by adding the following to the page json file where it should appear:
+
+```
+{
+    "header": {
+        "buttons" : {
+            "exit": {
+                "id": "home-exit",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "value": "Exit"
+            }
+        }
+    }
+    ...
+}
+```
 
 #### Add New Footer Tab
 
@@ -93,6 +110,10 @@ A project can add a new footer new tab, and landing page for the tab, by providi
     }
 }
 ```
+
+#### Add Records Header Button
+
+TODO
 
 #### Generate HTML
 
