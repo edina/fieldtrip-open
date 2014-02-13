@@ -273,7 +273,6 @@ def install_plugins(target='local', cordova=True):
 
     # process project json file
     json_file = os.sep.join((theme, 'plugins.json'))
-    print json_file
     if os.path.exists(json_file):
         pobj = json.loads(open(json_file).read())
 
@@ -308,8 +307,6 @@ def install_plugins(target='local', cordova=True):
                 else:
                     print 'Plugin has no www dir: {0}'.format(www)
                     exit(-1)
-
-
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
