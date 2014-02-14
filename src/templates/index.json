@@ -17,14 +17,6 @@
                 "data-inline": "true",
                 "data-transition": "none",
                 "value": "Exit"
-            },
-            "settings": {
-                "platforms": ["desktop"],
-                "id": "home-settings",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
-                "value": "Settings"
             }
         }
     },
