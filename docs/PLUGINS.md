@@ -4,8 +4,8 @@
 
 #### Core Plugins
 
-* [Offline Maps](offline-maps/README.md)
-* [Sync](sync/README.md)
+* [Offline Maps](https://github.com/edina/fieldtrip-offline-maps)
+* [Sync](https://github.com/edina/fieldtrip-sync)
 
 #### Adding bespoke plugins
 
