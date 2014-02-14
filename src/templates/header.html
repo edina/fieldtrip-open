@@ -7,11 +7,11 @@
       {% if platform in items["platforms"] %}
       <a {% for el, item in items.iteritems() %}{% if el != "value" and el != "platforms" %} {{el}}="{{item}}" {% endif %}{% endfor %}>{{items["value"]}}</a>
       {% endif %}
-    {% endfor %}
     {% else %}
       {% for key, items in data["buttons"].iteritems() %}
       <a {% for el, item in items.iteritems() %}{% if el != "value" and el != "platforms" %} {{el}}="{{item}}" {% endif %}{% endfor %}>{{items["value"]}}</a>
-      {% endfor %}
+    {% endfor %}
+    {% endfor %}
     {% endif %}
     {% endif %}
     </a>
