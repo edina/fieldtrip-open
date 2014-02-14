@@ -1,6 +1,15 @@
 {
     "header": {
         "buttons" : {
+            "settings": {
+                "platforms": ["desktop"],
+                "id": "home-settings",
+                "href": "settings.html",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "value": "Settings"
+            },
             "exit": {
                 "platforms": ["android"],
                 "id": "home-exit",

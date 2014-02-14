@@ -390,6 +390,9 @@ var _ui = {
      * TODO
      */
     homePage: function(event){
+        this.menuClicked = false;
+        this.volumeDownClicked = false;
+
         if(event){
             event.stopImmediatePropagation();
         }
@@ -424,6 +427,36 @@ var _ui = {
         // exit button
         $('#home-exit').unbind();
         $('#home-exit').on('click', exitApp);
+
+        $(document).keydown(function(event){
+            console.log("jings");
+        });
+
+        document.addEventListener("menubutton", function(){
+            this.menuClicked = true;
+            if(this.volumeDownClicked){
+                console.log("jings");
+                $.changePage('settings.html');
+            }
+
+            setTimeout(function(){
+                this.menuClicked = false;
+            }, 2000);
+        }, false);
+
+        document.addEventListener("volumedownbutton", function(){
+            this.volumeDownClicked = true;
+
+            if(this.menuClicked){
+                console.log("jings");
+                $.changePage('settings.html');
+            }
+
+            setTimeout(function(){
+                this.volumeDownClicked = false;
+            }, 2000);
+        }, false);
+
 
         // $('#home-content-help').unbind();
         // $('#home-content-help').on('taphold', function(){

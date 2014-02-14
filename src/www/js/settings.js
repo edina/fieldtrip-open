@@ -57,6 +57,12 @@ define(['config'], function(config){
         vals.mapserverUrl = SERVER_URL_DEFAULT;
     }
 
+    var settingsPage = function(){
+        console.log(config);
+    };
+
+    $(document).on('pageshow', '#settings-page', settingsPage);
+
 return{
 
     /**
