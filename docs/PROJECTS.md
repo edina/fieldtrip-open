@@ -25,9 +25,8 @@ The json file theme/plugins.json will define a list of plugins the project wishe
         "cordova-plugin-console.git"
     ],
     "fieldtrip": {
-        "offline-maps": "",
-        "ft-sync", "1.0.1",
-        "my-plugin": "git@github.com:gmh04/fieldtrip-plugins-test.git",
+        "offline-maps": "0.0.1",
+        "sync", "git@github.com:edina/fieldtrip-sync.git"
     }
 }
 ```
@@ -38,9 +37,8 @@ The json file theme/plugins.json will define a list of plugins the project wishe
 
 #### Fieldtrip
 
-* offline-maps: will use the master branch of the plugin found at: [https://github.com/edina/fieldtrip-plugins](https://github.com/edina/fieldtrip-plugins).
-* ft-sync: will install the plugin as a [bower](http://bower.io/) dependency.
-* my-plugin: will use the master branch of the plugin found at the defined git repository.
+* offline-maps: will use the release tagged 0.0.1.
+* sync: will use the master branch of the plugin found at the defined git repository.
 
 For details on fieldtrip plugin development see [plugin development documentation](PLUGINS.md).
 

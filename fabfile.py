@@ -48,7 +48,7 @@ import re, itertools
 import collections
 
 
-CORDOVA_VERSION   = '3.3.1-0.1.2'
+CORDOVA_VERSION   = '3.3.1-0.4.2'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
 
@@ -280,7 +280,7 @@ def install_plugins(target='local', cordova="True"):
             with lcd(runtime):
                 # do cordova plugins
                 for name in pobj['cordova']:
-                    local('cordova plugin add https://git-wip-us.apache.org/repos/asf/{0}'.format(name))
+                    local('cordova plugin add {0}'.format(name))
 
         # do fieldtrip plugins
         proot = os.sep.join((root, 'plugins'))
@@ -592,12 +592,6 @@ def update_app():
         print "\nProject has no platforms directory: {0}".format(platforms)
         exit(-1)
 
-    # TODO remove
-    # deps = os.sep.join((proj_home, 'deps'))
-    # if os.path.exists(deps):
-    #     # miscellaneous dependencies not required for development
-    #     local('cp -rf {0}/* {1}'.format(deps,
-    #                                     os.sep.join((runtime, 'www'))))
 def _check_command(cmd):
     """checks a command is in the path"""
     with settings(warn_only=True):

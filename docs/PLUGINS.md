@@ -1,50 +1,39 @@
-### Offline Maps
+### Fieldtrip Open Plugins
 
-Offline Maps is a [Fieldtrip Open](https://github.com/edina/fieldtrip-open) plugin for caching maps on the device.
+[Fieldtrip open](https://github.com/edina/fieldtrip-open) plugins allows projects to add functionality to the fieldtrip platform.
 
-#### Dependencies
+#### Core Plugins
 
-[cordova-plugin-file-transfer](https://github.com/apache/cordova-plugin-file-transfer) should be added to the [project plugins file](https://github.com/edina/fieldtrip-open/blob/master/PROJECTS.md#plugins).
+* [Offline Maps](offline-maps/README.md)
+* [Sync](sync/README.md)
 
-#### Pages
+#### Adding bespoke plugins
 
-##### Save Map
+TODO
 
-Page for selecting area on map to download. Example:
+##### javascript
 
-```
-{
-    "body": {
-        "section1": {
-            "items": {
-                "item2": {
-                    "div": {"class": "ui-block-b"},
-                    "a": {"href": "saved-maps.html"},
-                    "img": {"src": "css/images/saved.png", "alt": "Save Map"},
-                    "title": "Saved"
-                }
-            }
-        },
-        ...
-```
-
-##### Saved Maps
-
-Page for managing previous saved maps. Example:
+Plugins can add features or change default behaviour by creating a [requirejs](http://requirejs.org/) module in src/www/js/<plugin_name>.js. For example:
 
 ```
-{
-    "body":{
-        "section1": {
-            "title": "Download to Device",
-            "items": {
-                "item1": {
-                    "div": {"class": "ui-block-a"},
-                    "a": {"class": "annotate-image-form", "href": "save-map.html"},
-                    "img": {"src": "theme/css/images/downloadmaps.png", "alt": "Save Maps"},
-                    "title": "Maps"
-                }
-            }
-        },
-        ...
+define(['map', './mymodule.js'], function(map, mymodule){
+    $(document).on('pageshow', '#myplugin-page', function(){
+        // do something
+    });
+});
+
+```
+
+The above snippet will load a core module map and a module named mymodule.js that will be provided by the plugin.
+
+##### templates
+
+All new pages added by a plugin should be created as templates in src/templates
+
+##### stylesheet
+
+Plugins can add a stylesheet by via javascript, e.g:
+
+```
+$('head').prepend('<link rel="stylesheet" href="plugins/<myplugin>/css/style.css" type="text/css" />');
 ```
