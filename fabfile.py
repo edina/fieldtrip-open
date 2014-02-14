@@ -247,8 +247,11 @@ def generate_html(platform="android", cordova=False):
             d1 = os.path.join(root, 'plugins', d)
             for dire in os.listdir(d1):
                 if os.path.isdir(os.path.join(d1, dire)) and not dire.startswith("."):
-                    _create_html(os.path.join(d1, dire, 'src', 'templates'), path, header_data, footer_data, header_template, footer_template)
-
+                    print os.path.join(d1, dire, 'src', 'templates')
+                    _create_html(os.path.join(d1, dire, 'templates'), path, header_data, footer_data, header_template, footer_template)
+        for k, v in plgins["fieldtrip"].iteritems():
+            if v.replace('.', '').isdigit():
+                _create_html(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'), path, header_data, footer_data, header_template, footer_template)
 @task
 def install_plugins(target='local', cordova="True"):
     """
@@ -446,7 +449,7 @@ def install_project(platform='android',
     update_app()
 
     # process tempates
-    generate_html()
+    generate_html(platform='desktop')
 
     # check if /home/<user>/<dist_dir> exists
     dist_path = os.sep.join((os.environ['HOME'], dist_dir))
