@@ -37,12 +37,11 @@ DAMAGE.
 define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html'], function(
     map, records, utils, settings, _, recrowtemplate){
 
-
     var portraitScreenHeight;
     var landscapeScreenHeight;
 
     var menuIds = {
-        'home': ['home-page'],
+        'home': ['home-page', 'settings-page'],
         'map': ['map-page'],
         'capture': ['capture-page', 'annotate-page']
     }
@@ -402,23 +401,12 @@ var _ui = {
         utils.absoluteHeightScroller('#splash-popup-dialog-content');
         utils.touchScroll('#splash-popup-dialog-content');
 
+        // TODO
         // $(document).on('click', '#splash-popup-dialog a', function() {
         //     $('#splash-popup-dialog').popup('close');
         // });
 
-        // the home page stays in memory so ui-btn-active must be added dynamically
-        //$('.menu a:first').addClass('ui-btn-active');
-
-        // check stored user id
-        // this.annotations.cloudCheckUser($.proxy(function(state){
-        //     if(state === 1){
-        //         homepageDisplay.showLogoutAndSync();
-        //     }
-        //     else{
-        //         this.logoutCloud();
-        //     }
-        // }, this));
-
+        // TODO
         // enable / disable GPS track button
         //this.gpsButtonInit();
 
@@ -428,40 +416,28 @@ var _ui = {
         $('#home-exit').unbind();
         $('#home-exit').on('click', exitApp);
 
-        $(document).keydown(function(event){
-            console.log("jings");
-        });
-
-        document.addEventListener("menubutton", function(){
+        document.addEventListener("menubutton", $.proxy(function(){
             this.menuClicked = true;
-            if(this.volumeDownClicked){
-                console.log("jings");
-                $.changePage('settings.html');
+            if(this.searchClicked){
+                $.mobile.changePage('settings.html');
             }
 
             setTimeout(function(){
                 this.menuClicked = false;
             }, 2000);
-        }, false);
+        }, this), false);
 
-        document.addEventListener("volumedownbutton", function(){
-            this.volumeDownClicked = true;
+        document.addEventListener("searchbutton", $.proxy(function(){
+            this.searchClicked = true;
 
             if(this.menuClicked){
-                console.log("jings");
-                $.changePage('settings.html');
+                $.mobile.changePage('settings.html');
             }
 
             setTimeout(function(){
-                this.volumeDownClicked = false;
+                this.searchClicked = false;
             }, 2000);
-        }, false);
-
-
-        // $('#home-content-help').unbind();
-        // $('#home-content-help').on('taphold', function(){
-        //     $('#home-page-dev').show();
-        // });
+        }, this), false);
     },
 
     /**

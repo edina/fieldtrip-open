@@ -339,7 +339,9 @@ var _this = {
         if(typeof(options.style.colour) === 'undefined'){
             options.style.colour = 'black';
         }
-
+        if(typeof(options.style.strokeWidth) === 'undefined'){
+            options.style.strokeWidth = 2;
+        }
         if(typeof(options.visible) === 'undefined'){
             options.visible = false;
         }
@@ -347,7 +349,7 @@ var _this = {
         // layer displaying extent of saved maps
         var olStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
         olStyle.fillOpacity = 0;
-        olStyle.strokeWidth = 2;
+        olStyle.strokeWidth = options.style.strokeWidth;
         olStyle.strokeColor = options.style.colour;
         var layer = new OpenLayers.Layer.Vector(
             options.id,

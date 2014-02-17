@@ -58,7 +58,24 @@ define(['config'], function(config){
     }
 
     var settingsPage = function(){
-        console.log(config);
+        require(['utils'], function(utils){
+            $('#settings-clear-local-storage').click(function(){
+                localStorage.clear();
+                utils.inform('done')
+            });
+
+            $('#settings-ftgb').text(utils.version);
+            $('#settings-jquery').text($().jquery);
+            $('#settings-jqm').text(jQuery.mobile.version);
+            $('#settings-ol').text(OpenLayers.VERSION_NUMBER);
+
+            if(utils.isMobileDevice()){
+                $('#settings-cordova').text(device.cordova);
+            }
+            else{
+                $('#settings-cordova').text('n/a');
+            }
+        });
     };
 
     $(document).on('pageshow', '#settings-page', settingsPage);
