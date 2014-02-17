@@ -35,43 +35,38 @@ define(['utils'], function(utils){
     var GPS_AUTO_SAVE_THRESHOLD = 5;
     var PCAPI_VERSION = '1.3';
 
+    var assetsDir;
+    var editorsDir;
+
+    if(utils.isMobileDevice()){
+        // create directory structure for annotations
+        utils.getPersistentRoot(function(root){
+            root.getDirectory(
+                "assets",
+                {create: true, exclusive: false},
+                function(dir){
+                    assetsDir = dir;
+                },
+                function(error){
+                    utils.inform('Failed finding assets directory. Saving will be disabled: ' + error);
+                });
+            root.getDirectory(
+                "editors",
+                {create: true, exclusive: false},
+                function(dir){
+                    editorsDir = dir;
+                },
+                function(error){
+                    utils.inform('Failed finding editors directory. Custom forms will be disabled: ' + error);
+                });
+        });
+    }
+
 return{
     IMAGE_UPLOAD_SIZE: "imageUploadSize",
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
     IMAGE_SIZE_FULL: "imageSizeFull",
     TITLE_ID: 'form-text-1',
-
-    /**
-     * Delete annotation / record
-     * @param annotation id of record to be deleted.
-     */
-    deleteAnnotation: function(id){
-        var annotations = this.getSavedRecords();
-        var annotation = annotations[id];
-
-        if(annotation !== undefined){
-            // TODO: what about assets?
-            if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
-                if(typeof(annotation.file) !== 'undefined'){
-                    utils.deleteFile(
-                        annotation.file.substr(annotation.file.lastIndexOf('/') + 1),
-                        this.assetsDir,
-                        function(){
-                            console.debug("GPX file deleted: " + annotation.file);
-                        });
-                }
-            }
-
-            // remove annotation from hash
-            delete annotations[id];
-
-            // save to local storage
-            this.setSavedRecords(annotations);
-        }
-        else{
-            console.warn("Attempted to delete record that didn't exist: " + id);
-        }
-    },
 
     /**
      * Initialise annotate page.
@@ -134,6 +129,58 @@ return{
                 callback();
             }
         });
+    },
+
+    /**
+     * Delete annotation / record
+     * @param annotation id of record to be deleted.
+     */
+    deleteAnnotation: function(id){
+        var annotations = this.getSavedRecords();
+        var annotation = annotations[id];
+
+        if(annotation !== undefined){
+            // TODO: what about assets?
+            if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
+                if(typeof(annotation.file) !== 'undefined'){
+                    utils.deleteFile(
+                        annotation.file.substr(annotation.file.lastIndexOf('/') + 1),
+                        assetsDir,
+                        function(){
+                            console.debug("GPX file deleted: " + annotation.file);
+                        });
+                }
+            }
+
+            // remove annotation from hash
+            delete annotations[id];
+
+            // save to local storage
+            this.setSavedRecords(annotations);
+        }
+        else{
+            console.warn("Attempted to delete record that didn't exist: " + id);
+        }
+    },
+
+    /**
+     * Delete a file from file system.
+     * @param fileName The name of the file to delete.
+     * @param dir The directory the file belongs to.
+     * @param callback Function will be called when editor is successfully deleted.
+     */
+    deleteFile: function(fileName, dir, callback){
+        if(dir === undefined){
+            dir = assetsDir;
+        }
+        utils.deleteFile(fileName, dir, callback);
+    },
+
+    /**
+     * TODO
+     */
+    getAssetsDir: function(){
+        return assetsDir;
     },
 
     /**
@@ -387,6 +434,25 @@ return{
 
         savedRecords[id] = annotation;
         this.setSavedRecords(savedRecords);
+
+        return id;
+    },
+
+    /**
+     * Save annotations/record locally
+     * @param annotation Record object.
+     */
+    saveAnnotation: function(id, annotation){
+        var savedAnnotations = this.getSavedRecords();
+
+        if(id === undefined){
+            var date = new Date();
+            annotation.record['timestamp'] = date;
+            id = date.getTime().toString();
+        }
+
+        savedAnnotations[id] = annotation;
+        this.setSavedRecords(savedAnnotations);
 
         return id;
     },

@@ -41,7 +41,6 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
     var TMS_URL = "/mapcache/tms";
     var DEFAULT_USER_LON = -2.421976;
     var DEFAULT_USER_LAT = 53.825564;
-    var GPS_ACCURACY_FLAG = false;
     //var GPS_LOCATE_TIMEOUT = 10000;
     var GPS_LOCATE_TIMEOUT = 3000;
 
@@ -155,9 +154,15 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
 var _this = {
 
     /**
+     * TODO
+     */
+    GPS_ACCURACY_FLAG: false,
+
+    /**
      * Set up openlayer map.
      */
     init: function(){
+        this.recordClickListeners = [];
         var options = {
             controls: [],
             projection: INTERNAL_PROJECTION,
@@ -365,6 +370,63 @@ var _this = {
     },
 
     /**
+     * TODO
+     */
+    addGPXLayer: function(options){
+        var layer = new OpenLayers.Layer.Vector(
+            options.id,
+            {
+                strategies: [new OpenLayers.Strategy.Fixed()],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    url: options.url,
+                    format: new OpenLayers.Format.GPX()
+                }),
+                style: {
+                    strokeColor: options.colour,
+                    strokeWidth: 5,
+                    strokeOpacity: 1
+                },
+                projection: EXTERNAL_PROJECTION
+            }
+        );
+
+        this.map.addLayer(layer);
+        return layer;
+    },
+
+    /**
+     * Listen for
+     */
+    addRecordClickListener: function(callback){
+        this.recordClickListeners.push(callback);
+    },
+
+    /**
+     * Add a new style record icons.
+     * @param options
+     *   type - the record type
+     *   image - path to record image
+     */
+    addRecordStyle: function(options){
+        var r = new OpenLayers.Rule({
+            filter: new OpenLayers.Filter.Comparison({
+                type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                property: 'type',
+                // value: 'track',
+                value: options.type,
+            }),
+            symbolizer: {
+                externalGraphic: options.image,//'css/images/routemarker.png',
+                graphicWidth: 35,
+                graphicHeight: 50,
+                graphicYOffset: -50
+            }
+        });
+
+        this.getRecordsLayer().styleMap.styles.default.rules.push(r);
+    },
+
+    /**
      * Render the map on a defined div.
      * @param div The div id.
      */
@@ -497,6 +559,14 @@ var _this = {
     },
 
     /**
+     * @return The coordinates of the user, based on the last geolocate.
+     * ({<OpenLayers.LonLat>})
+     */
+    getUserCoords: function(){
+        return this.userLonLat;
+    },
+
+    /**
      * Locate user on map.
      * @param interval Time gap between updates. If 0 update only once.
      * @param secretly If true do not show page loading msg.
@@ -565,7 +635,7 @@ var _this = {
                 onSuccess,
                 onError,
                 {
-                    enableHighAccuracy: GPS_ACCURACY_FLAG,
+                    enableHighAccuracy: this.GPS_ACCURACY_FLAG,
                     maximumAge: options.interval,
                     timeout: this.geolocateTimeout
                 }
@@ -576,7 +646,7 @@ var _this = {
                 onSuccess,
                 onError,
                 {
-                    enableHighAccuracy: GPS_ACCURACY_FLAG,
+                    enableHighAccuracy: this.GPS_ACCURACY_FLAG,
                     timeout: this.geolocateTimeout
                 }
             );
@@ -700,6 +770,16 @@ var _this = {
         layer.removeAllFeatures();
     },
 
+    /**
+     * TODO
+     */
+    removeLayer: function(layer){
+        this.map.removeLayer(layer);
+    },
+
+    /**
+     * TODO
+     */
     setBaseLayer: function(layer){
         baseLayer = layer;
     },
@@ -771,7 +851,7 @@ var _this = {
         if(feature){
             var annotation = records.getSavedRecord(feature.attributes.id);
             $(document).off('pageinit', '#record-details-page');
-            $(document).on('pageinit', '#record-details-page', function(event) {
+            $(document).on('pageinit', '#record-details-page', $.proxy(function(event) {
                 $('#record-details-detail').text('');
                 $('#record-details-header h1').text(annotation.record.name);
                 var width = $('#record-details-page').width() / 1.17;
@@ -800,6 +880,14 @@ var _this = {
                         showRecord(html);
                     }
                 });
+            }, this));
+
+            var showDetails = true;
+            $.each(this.recordClickListeners, function(i, func){
+                if(func(feature)){
+                    showDetails = false;
+                    return;
+                }
             });
 
             // TODO
@@ -807,7 +895,9 @@ var _this = {
             //     this.showGPSTrack(feature.attributes.id, annotation);
             // }
             //else{
-            $.mobile.changePage('record-details.html', {role: "dialog"});
+            if(showDetails){
+                $.mobile.changePage('record-details.html', {role: "dialog"});
+            }
             //}
         }
     },
@@ -970,6 +1060,13 @@ var _this = {
      */
     zoomOut: function(){
         this.map.zoomOut();
+    },
+
+    /**
+     * TODO.
+     */
+    zoomToExtent: function(extent){
+        this.map.zoomToExtent(extent);
     },
 
 };
