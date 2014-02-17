@@ -121,6 +121,19 @@ def deploy_android():
                 local(cmd)
 
 @task
+def generate_config():
+    """ generate config.js """
+    root, proj_home, src_dir = _get_source()
+    _check_config()
+    values = dict(config.items('app'))
+    templates = os.sep.join((src_dir, 'templates'))
+    out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
+    environ = Environment(loader=FileSystemLoader(templates))
+    template = environ.get_template("config.js")
+    output = template.render(config=values)
+    _write_data(out_file, output)
+
+@task
 def deploy_ios():
     """
     Deploy to ios device connected to machine
@@ -434,13 +447,7 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
     # generate config js
-    values = dict(config.items('app'))
-    templates = os.sep.join((src_dir, 'templates'))
-    out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
-    environ = Environment(loader=FileSystemLoader(templates))
-    template = environ.get_template("config.js")
-    output = template.render(config=values)
-    _write_data(out_file, output)
+    generate_config()
 
     # set up cordova/fieldtrip plugins
     install_plugins(target)
