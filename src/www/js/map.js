@@ -58,16 +58,16 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
     else{
         // TODO - this should be put into config
 
-        var proj = "EPSG:27700";
-        proj4js.defs[proj] = "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs";
+        var proj = config.map_epsg;
+        proj4js.defs[proj] = config.map_proj;
         INTERNAL_PROJECTION = new OpenLayers.Projection(proj)
         baseLayer = new OpenLayers.Layer.TMS(
             "osOpen",
-            "http://fieldtripgb.edina.ac.uk/mapcache/tms",
+            config.map_layerurl+TMS_URL,
             {
-                layername: "fieldtripgb@BNG",
-                type: "jpg",
-                serviceVersion: serviceVersion,
+                layername: config.map_layername,
+                type: config.map_imgtype,
+                serviceVersion: config.map_serviceVersion,
                 isBaseLayer: true,
             }
         );
@@ -704,6 +704,13 @@ var _this = {
                 layer.setVisibility(false);
             }
         });
+    },
+
+    /**
+     * check if the base layer is TMS or not
+     */
+    isBaseLayerTMS: function(){
+        return this.getBaseLayer() instanceof OpenLayers.Layer.TMS;
     },
 
     /**

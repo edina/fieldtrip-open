@@ -64,3 +64,12 @@ email_official=<email>
 [app]
 
 map_baselayer=osm
+
+;here's what you need for something alternative from osm and you need to provide epsg as well
+;map_baselayer=fgb
+;map_epsg=EPSG:27700
+;map_proj=+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs
+;map_layerurl=http://fieldtripgb.edina.ac.uk/
+;map_layername=fieldtripgb@BNG
+;map_serviceVersion=1.0.0
+;map_imgtype=jpg
