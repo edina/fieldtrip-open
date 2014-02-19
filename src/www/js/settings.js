@@ -36,7 +36,7 @@ DAMAGE.
  */
 define(['config'], function(config){
     // TODO use config instead
-    var SERVER_URL_DEFAULT = 'http://fieldtripgb.edina.ac.uk';
+    var SERVER_URL_DEFAULT = config.map_layerurl;
     var stored = localStorage.getItem('settings');
     var vals;
 
@@ -87,6 +87,13 @@ return{
      */
     debugGPS: function(){
         return vals.debugGPS;
+    },
+
+    /**
+     * @return osm or fgb
+     */
+    getBaseLayerName: function(){
+        return config.map_baselayer;
     },
 
     /**

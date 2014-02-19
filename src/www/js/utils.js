@@ -242,7 +242,7 @@ var _base = {
                 url += ':' + location.port
             }
 
-            return url += '/ftgb';
+            return url += '/'+settings.getBaseLayerName();
         }
     },
 
