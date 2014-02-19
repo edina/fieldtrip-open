@@ -488,7 +488,6 @@ return{
      * @param callback Function executed after successful recording.
      */
     takeAudio: function(callback){
-        console.log("*");
         if (navigator.device !== undefined){
             navigator.device.capture.captureAudio(
                 function(mediaFiles){
@@ -504,7 +503,6 @@ return{
      * take photo action
      */
     takePhoto: function(callback){
-        console.log("takePhoto");
         if (navigator.camera !== undefined){
             navigator.camera.getPicture(
                 function(fileURI){
@@ -524,6 +522,6 @@ return{
         var s = id.indexOf('-') + 1;
         return id.substr(s, id.lastIndexOf('-') - s);
     }
-
 }
+
 });

@@ -64,7 +64,7 @@ define(['settings'], function(settings){
     }
 
     var documentBase = window.location.pathname;
-    documentBase =documentBase.replace("index.html", "");
+    documentBase = documentBase.replace("index.html", "");
 
     /**
      * Get application root directory.
@@ -88,7 +88,8 @@ define(['settings'], function(settings){
             },
             function(error){
                 alert('Failed to get file system:' + error);
-            });
+            }
+        );
     };
 
     /**
@@ -142,7 +143,6 @@ var _base = {
         if(prefix){
             $inputId.attr('value', prefix + this.getSimpleDate());
         }
-
     },
 
     /**
@@ -158,6 +158,7 @@ var _base = {
     },
 
     /**
+     * TODO this can probably be deleted?
      * Confirm yes/no dialogue helper.
      * @param title Confirm dialogue title.
      * @param test The text content.
@@ -165,21 +166,22 @@ var _base = {
      * @param func The function to execute when ok is applied.
      * @param args The arguments to the above function.
      */
-    confirm: function(title, text, object, func, args){
-        $(document).off('pageinit', '#confirm-page');
-        $(document).on('pageinit', '#confirm-page', function(event){
-            $('#confirm-page-header h1').text(title);
-            $('#confirm-page-content h1').text(title);
-            $('#confirm-page-content p').text(text);
+    // confirm: function(title, text, object, func, args){
+    //     $(document).off('pageinit', '#confirm-page');
+    //     $(document).on('pageinit', '#confirm-page', function(event){
+    //         $('#confirm-page-header h1').text(title);
+    //         $('#confirm-page-content h1').text(title);
+    //         $('#confirm-page-content p').text(text);
 
-            $('#confirm-ok').unbind('click');
-            $('#confirm-ok').click(function(){
-                func.apply(object, args);
-            });
-        });
+    //         $('#confirm-ok').unbind('click');
+    //         $('#confirm-ok').click(function(){
+    //             func.apply(object, args);
+    //         });
+    //     });
 
-        $.mobile.changePage('confirm.html', {role: "dialog"});
-    },
+    //     // TODO dialog is deprecated
+    //     $.mobile.changePage('confirm.html', {role: "dialog"});
+    // },
 
     /**
      * Delete a file from file system.
@@ -291,7 +293,7 @@ var _base = {
      *
      */
     getRootDir: function(){
-        return "edina"
+        return "edina";
     },
 
     /**
@@ -347,9 +349,8 @@ var _base = {
      * http://en.wikipedia.org/wiki/ISO_8601
      */
     isoDate: function(date){
-
         if(!date){
-            date= new Date();
+            date = new Date();
         }
 
         return date.getUTCFullYear() + '-' +
@@ -364,7 +365,6 @@ var _base = {
      * @return true If user's uuid is in the list of privileged users.
      */
     isPrivilegedUser: function(){
-
         if(isMobileApp && $.inArray(device.uuid, PRIVILIGED_USERS) === -1){
             return false;
         }

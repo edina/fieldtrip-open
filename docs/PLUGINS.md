@@ -13,7 +13,7 @@ TODO
 
 ##### javascript
 
-Plugins can add features or change default behaviour by creating a [requirejs](http://requirejs.org/) module in src/www/js/<plugin_name>.js. For example:
+Plugins can add features or change default behaviour by creating a [requirejs](http://requirejs.org/) module in src/www/js/&#60;plugin_name&#62;.js. For example:
 
 ```
 define(['map', './mymodule.js'], function(map, mymodule){

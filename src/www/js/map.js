@@ -382,7 +382,7 @@ var _this = {
                     format: new OpenLayers.Format.GPX()
                 }),
                 style: {
-                    strokeColor: options.colour,
+                    strokeColor: options.style.colour,
                     strokeWidth: 5,
                     strokeOpacity: 1
                 },
@@ -408,22 +408,21 @@ var _this = {
      *   image - path to record image
      */
     addRecordStyle: function(options){
-        var r = new OpenLayers.Rule({
+        var rule = new OpenLayers.Rule({
             filter: new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.EQUAL_TO,
                 property: 'type',
-                // value: 'track',
                 value: options.type,
             }),
             symbolizer: {
-                externalGraphic: options.image,//'css/images/routemarker.png',
+                externalGraphic: options.image,
                 graphicWidth: 35,
                 graphicHeight: 50,
                 graphicYOffset: -50
             }
         });
 
-        this.getRecordsLayer().styleMap.styles.default.rules.push(r);
+        this.getRecordsLayer().styleMap.styles["default"].rules.push(rule);
     },
 
     /**
@@ -896,6 +895,7 @@ var _this = {
             // }
             //else{
             if(showDetails){
+                // TODO dialog is deprecated
                 $.mobile.changePage('record-details.html', {role: "dialog"});
             }
             //}
