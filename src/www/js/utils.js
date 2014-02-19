@@ -52,9 +52,8 @@ String.prototype.hashCode = function(){
 
 define(['settings'], function(settings){
 
-    /******** private ***********************/
-
     // list of UUID of devices used internally
+    // TODO
     var PRIVILIGED_USERS = [
     ];
 
@@ -121,8 +120,6 @@ define(['settings'], function(settings){
 
 var _base = {
 
-    /*********** public ***********************/
-
     /**
      * TODO
      */
@@ -182,6 +179,41 @@ var _base = {
         });
 
         $.mobile.changePage('confirm.html', {role: "dialog"});
+    },
+
+    /**
+     * Delete a file from file system.
+     * @param fileName The name of the file to delete.
+     * @param dir The directory the file belongs to.
+     * @param callback Function will be called when file is successfully deleted.
+     */
+    deleteFile: function(fileName, dir, callback){
+        if(dir === undefined){
+            console.warn("Target directory not defined: " + dir)
+        }
+        else{
+            dir.getFile(
+                fileName,
+                {create: true, exclusive: false},
+                function(fileEntry){
+                    fileEntry.remove(
+                        function(entry){
+                            console.debug("File deleted: " + fileName);
+                            if(callback){
+                                callback();
+                            }
+                        },
+                        function(error){
+                            console.error("Failed to delete file:" + fileName +
+                                          ". errcode = " + error.code);
+                        });
+                },
+                function(error){
+                    console.error("Failed to create file: " + fileName +
+                                  ". errcode = " + error.code);
+                }
+            );
+        }
     },
 
     /**

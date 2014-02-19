@@ -421,9 +421,9 @@ body .ui-loader .ui-icon{
     overflow: auto;
 }
 
-#annotate-gps-form{
-    padding: 2em;
-}
+/* #annotate-gps-form{ */
+/*     padding: 2em; */
+/* } */
 
 
 
@@ -462,34 +462,34 @@ body .ui-loader .ui-icon{
     width: 4.6em;
 }
 
-#annotate-gps-form .ui-grid-a{
-    padding-top: 1em;
-}
+/* #annotate-gps-form .ui-grid-a{ */
+/*     padding-top: 1em; */
+/* } */
 
-#annotate-gps-form .ui-block-a{
-    text-align: center;
-    width: 25%;
-}
+/* #annotate-gps-form .ui-block-a{ */
+/*     text-align: center; */
+/*     width: 25%; */
+/* } */
 
-#annotate-gps-form .ui-block-b{
-    text-align: center;
-    width: 50%;
-}
-#annotate-gps-form .ui-block-c{
-    text-align: center;
-    width: 25%;
-}
+/* #annotate-gps-form .ui-block-b{ */
+/*     text-align: center; */
+/*     width: 50%; */
+/* } */
+/* #annotate-gps-form .ui-block-c{ */
+/*     text-align: center; */
+/*     width: 25%; */
+/* } */
 
-/* gps track colour chooser */
-.sp-preview{
-    height: 3.5em;
-    width: 3.2em;
-}
+/* /\* gps track colour chooser *\/ */
+/* .sp-preview{ */
+/*     height: 3.5em; */
+/*     width: 3.2em; */
+/* } */
 
-.sp-palette .sp-thumb-el {
-    height: 3em;
-    width: 3em;
-}
+/* .sp-palette .sp-thumb-el { */
+/*     height: 3em; */
+/*     width: 3em; */
+/* } */
 
 #saved-records-list{
     position: relative;

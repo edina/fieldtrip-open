@@ -86,7 +86,8 @@ return{
      * @return Should GPS capture be run in debug mode?
      */
     debugGPS: function(){
-        return vals.debugGPS;
+        //return vals.debugGPS; TODO
+        return true;
     },
 
     /**

@@ -124,7 +124,10 @@ def deploy_android():
 def generate_config():
     """ generate config.js """
     root, proj_home, src_dir = _get_source()
-    _check_config()
+
+    # using config initialises it
+    _config('name')
+
     values = dict(config.items('app'))
     templates = os.sep.join((src_dir, 'templates'))
     out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
