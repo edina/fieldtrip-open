@@ -56,8 +56,6 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
         baseLayer = new OpenLayers.Layer.OSM();
     }
     else{
-        // TODO - this should be put into config
-
         var proj = config.map_epsg;
         proj4js.defs[proj] = config.map_proj;
         INTERNAL_PROJECTION = new OpenLayers.Projection(proj)
@@ -302,8 +300,6 @@ var _this = {
             }
         }));
 
-        //this.map.zoomTo(2);
-
         this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic: true}));
 
         // create default user position
@@ -350,12 +346,11 @@ var _this = {
         if(typeof(options.visible) === 'undefined'){
             options.visible = false;
         }
-
-        // layer displaying extent of saved maps
         var olStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
         olStyle.fillOpacity = 0;
         olStyle.strokeWidth = options.style.strokeWidth;
         olStyle.strokeColor = options.style.colour;
+
         var layer = new OpenLayers.Layer.Vector(
             options.id,
             {
@@ -688,6 +683,10 @@ var _this = {
         this.hideLayer(this.getAnnotateLayer());
     },
 
+    /**
+     * Hide map layer.
+     * @param layer - the layer to hide.
+     */
     hideLayer: function(layer){
         layer.setVisibility(false);
     },
@@ -821,7 +820,11 @@ var _this = {
     },
 
     /**
-     * TODO
+     * Add bounding box to layer and centre map.
+     * @param options:
+     *   layer - the layer to add box to
+     *   bound - the bbox bounds
+     *   poi - the point of interest to centre on
      */
     showBBox: function(options){
         var layer = options.layer;
@@ -835,7 +838,6 @@ var _this = {
                                          bounds.top).toGeometry();
 
         layer.addFeatures([new OpenLayers.Feature.Vector(geom)]);
-        //layer.redraw();
 
         this.setCentre(poi.centre.lon, poi.centre.lat, poi.zoom);
         this.map.zoomTo(this.map.getZoom() - 2);
@@ -896,16 +898,10 @@ var _this = {
                 }
             });
 
-            // TODO
-            // if(feature.attributes.type === 'track'){
-            //     this.showGPSTrack(feature.attributes.id, annotation);
-            // }
-            //else{
             if(showDetails){
                 // TODO dialog is deprecated
                 $.mobile.changePage('record-details.html', {role: "dialog"});
             }
-            //}
         }
     },
 
@@ -944,7 +940,7 @@ var _this = {
 
         console.debug("switch base layer to " + layer.url);
 
-        layer.setVisibility(false);
+        //layer.setVisibility(false);
         this.map.addLayer(layer);
         this.map.setBaseLayer(layer);
 

@@ -68,6 +68,10 @@ def clean():
                 if len(out.splitlines()) > 2:
                     print "\nWon't delete {0} until there are no uncommitted changes".format(repo)
                     exit(-1)
+                out = local('git stash list', capture=True)
+                if len(out.splitlines()) > 0:
+                    print "\nWon't delete {0} there are stashed changes".format(repo)
+                    exit(-1)
                 else:
                     local('rm -rf {0}'.format(repo))
 
