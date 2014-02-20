@@ -182,11 +182,15 @@ body .ui-loader .ui-icon{
 }
 
 #map-records-buttons{
-    z-index: 10000;
+    z-index: 1000;
     position: absolute;
     bottom: 15%;
     width: 98%;
     padding-left: 1%;
+}
+
+#map-record-popup{
+    z-index: 2000;
 }
 
 #map-records-buttons .ui-btn-text{

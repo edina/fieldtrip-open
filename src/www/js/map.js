@@ -590,7 +590,7 @@ var _this = {
                 // timeout
                 console.debug("GPS timed out: " + error.code);
                 if(!options.secretly){
-                    utils.inform('GPS timed out', 5000);
+                    utils.inform('GPS timed out');
                 }
             }
             else{
@@ -858,38 +858,40 @@ var _this = {
         var feature = this.getRecordsLayer().getFeatureFromEvent(evt);
         if(feature){
             var annotation = records.getSavedRecord(feature.attributes.id);
-            $(document).off('pageinit', '#record-details-page');
-            $(document).on('pageinit', '#record-details-page', $.proxy(function(event) {
-                $('#record-details-detail').text('');
-                $('#record-details-header h1').text(annotation.record.name);
-                var width = $('#record-details-page').width() / 1.17;
+            $('#map-record-popup').off('popupbeforeposition');
+            $('#map-record-popup').on({
+                popupbeforeposition: function() {
+                    var showRecord = function(html){
+                        $('#map-record-popup-text').append(html).trigger('create');
+                    };
 
-                var showRecord = function(html){
-                    $('#record-details-detail').append(html).trigger('create');
-                };
+                    $('#map-record-popup h3').text(annotation.record.name);
+                    $('#map-record-popup-text').text('');
 
-                $.each(annotation.record.fields, function(i, entry){
-                    var html;
-                    var type = records.typeFromId(entry.id);
+                    $.each(annotation.record.fields, function(i, entry){
+                        var html;
+                        var type = records.typeFromId(entry.id);
 
-                    if(type === 'image'){
-                        html = '<img src="' + entry.val + '" width="' + width + '"/>';
-                        showRecord(html);
-                    }
-                    else if(type === 'audio'){
-                        require(['audio'], function(audio){
-                            html = audio.getNode(entry.val, entry.label + ':');
+                        if(type === 'image'){
+                            html = '<img src="' + entry.val + '" width=100%"/>';
                             showRecord(html);
-                        });
-                    }
-                    else if(entry.id !== 'text0'){ // ignore title element
-                        html = '<p><span>' + entry.label + '</span>: ' +
-                            entry.val + '</p>';
-                        showRecord(html);
-                    }
-                });
-            }, this));
+                        }
+                        else if(type === 'audio'){
+                            require(['audio'], function(audio){
+                                html = audio.getNode(entry.val, entry.label + ':');
+                                showRecord(html);
+                            });
+                        }
+                        else if(entry.id !== 'text0'){ // ignore title element
+                            html = '<p><span>' + entry.label + '</span>: ' +
+                                entry.val + '</p>';
+                            showRecord(html);
+                        }
+                    });
+                }
+            });
 
+            // give plugins a change to process the click first
             var showDetails = true;
             $.each(this.recordClickListeners, function(i, func){
                 if(func(feature)){
@@ -899,8 +901,7 @@ var _this = {
             });
 
             if(showDetails){
-                // TODO dialog is deprecated
-                $.mobile.changePage('record-details.html', {role: "dialog"});
+                $('#map-record-popup').popup('open');
             }
         }
     },
