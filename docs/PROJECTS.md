@@ -6,7 +6,7 @@ A project is instance of fieldtrip open. It contains a theme and a list of plugi
 
 A fieldtrip theme contains two stylesheets:
 
-* A jQuery Mobile theme, preferably create by [ThemeRoller](http://themeroller.jquerymobile.com/). The stylesheet will be found at: theme/css/jqm-style.css
+* A jQuery Mobile theme, preferably create by [ThemeRoller](http://themeroller.jquerymobile.com/?ver=1.3.2). The stylesheet will be found at: theme/css/jqm-style.css. It is important to use the correct version and copy the images in the download zip file to theme/css/images/.
 * A stylesheet for overriding the [core stylesheet](https://github.com/edina/fieldtrip-open/blob/master/src/www/css/style.css). It will be found at: theme/css/style.css
 
 ### Plugins

@@ -73,9 +73,6 @@ function onDeviceReady(){
             // initialise home page first time
             ui.pageChange();
             ui.homePage();
-
-            // add project stylesheet last
-            $('head').prepend('<link rel="stylesheet" href="theme/css/style.css" type="text/css" />');
         };
 
         // set up fieldtrip plugins
@@ -114,7 +111,7 @@ function onDeviceReady(){
             // no use for this yet
         });
 
-        $(document).on('pageinit', '#map-page', function(event){
+        $(document).on('pageinit', '#map-page', function(){
             // map page is special case, need to setup up openlayers before onshow
             ui.mapPageInit();
         });

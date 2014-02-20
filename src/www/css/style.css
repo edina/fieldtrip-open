@@ -151,6 +151,11 @@ body .ui-loader .ui-icon{
     margin: 10px auto 0 auto;
 }
 
+.ui-btn-icon-notext .ui-btn-inner .ui-icon {
+    margin: 2px 0 0 3px;
+    box-shadow: none;
+}
+
 
 /********* map Body *************/
 

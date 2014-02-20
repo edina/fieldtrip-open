@@ -528,7 +528,12 @@ var _ui = {
 
         var addAnnotation = function(id, annotation){
             var template = _.template(recrowtemplate);
-            $('#saved-records-list-list').append(template({"id": id, "annotation": annotation})).trigger('create');
+            $('#saved-records-list-list').append(
+                template({
+                    "id": id,
+                    "annotation": annotation
+                })
+            ).trigger('create');
         }
 
         $.each(annotations, $.proxy(function(id, annotation){
