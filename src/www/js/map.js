@@ -813,6 +813,17 @@ var _this = {
     },
 
     /**
+     * Set centre of the map with a comma separated lon lat string
+     * @params lonLatStr The point to centre on as a comma seperated string
+     * @zoom The new zoom level
+     * @wgs84 Is the point in wgs84 projection?
+     */
+    setCentreStr: function(lonLatStr, zoom, wgs84){
+        var lonLat = lonLatStr.split(',');
+        this.setCentre(lonLat[0], lonLat[1], zoom, wgs84);
+    },
+
+    /**
      * Show annotation marker.
      */
     showAnnotateLayer: function(){

@@ -22,12 +22,36 @@
   </div>
 
   <div id="map-record-popup" data-role="popup">
-    <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right"></a>
+    <a href="#"
+       data-rel="back"
+       data-role="button"
+       data-theme="a"
+       data-icon="delete"
+       data-iconpos="notext"
+       class="ui-btn-right">
+    </a>
     <h3></h3>
     <div id="map-record-popup-text"></div>
   </div>
 
-  {{popups}}
+  <!-- TODO template this -->
+  <div id="map-search-popup" data-role="popup" data-theme="a">
+    <a href="#"
+       data-rel="back"
+       data-role="button"
+       data-theme="a"
+       data-icon="delete"
+       data-iconpos="notext"
+       class="ui-btn-right">
+    </a>
+    <h3>Search Map</h3>
+    <input id="map-search-term" type="text" name="searchterm" value=""></input>
+    <div id="map-search-spinner">
+      <img src="theme/css/images/ajax-loader.gif" alt="Wait Spinner" />
+    </div>
+
+    <ul id="map-search-results" data-role="listview"></ul>
+  </div>
 
   {{footer}}
 </div>
