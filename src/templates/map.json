@@ -1,9 +1,15 @@
 {
     "header": {
         "buttons" : {
-            "user-locate": {
-                "platforms": ["android", "ios"],
+            "user-locate":{
                 "class": "user-locate",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext"
+            },
+            "map-search":{
+                "class": "map-search",
                 "data-role": "button",
                 "data-inline": "true",
                 "data-transition": "none",

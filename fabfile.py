@@ -272,6 +272,7 @@ def generate_html(platform="android", cordova=False):
         for k, v in plgins["fieldtrip"].iteritems():
             if v.replace('.', '').isdigit():
                 _create_html(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'), path, header_data, footer_data, header_template, footer_template)
+
 @task
 def install_plugins(target='local', cordova="True"):
     """

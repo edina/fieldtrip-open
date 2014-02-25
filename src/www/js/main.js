@@ -62,6 +62,19 @@ function onDeviceReady(){
         }
     });
 
+    // window.resolveLocalFileSystemURL(
+    //     LocalFileSystem.PERSISTENT,
+    //     0,
+    //     function(fs){
+    //         console.log("*");
+    //         console.log(fs.root.fullPath);
+    //         console.log(fs.root.toURL());
+    //     },
+    //     function(error){
+    //         alert('Failed to get file system:' + error);
+    //     }
+    // );
+
     require(['ui', 'map'], function(ui, map) {
         map.init();
 
