@@ -1,9 +1,10 @@
 .pyc
 .DS_Store
+*.ini
 *.keystore
 bower_components
-config.ini
 fieldtrip-*
+spatial-memories
 node_modules
 plugins
 project
