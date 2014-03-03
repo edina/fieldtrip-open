@@ -20,7 +20,7 @@ sudo easy_install pip
 sudo pip install fabric jinja2 beautifulsoup4 html5lib
 ```
 
-### nodejs
+### nodejs (must be installed locally)
 
 [nodejs install](https://github.com/joyent/node/wiki/installation)
 
