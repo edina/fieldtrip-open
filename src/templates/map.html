@@ -37,7 +37,9 @@
   <!-- TODO template this -->
   <div id="map-search-popup"
        data-role="popup"
-       data-theme="a">
+       data-theme="a"
+       data-dismissible="false"
+       data-history="false">
     <a id="map-search-popup-close"
        data-rel="back"
        data-role="button"
@@ -47,7 +49,7 @@
        class="ui-btn-right">
     </a>
     <h3>Search Map</h3>
-    <input id="map-search-term" type="text" name="searchterm" value=""></input>
+    <input id="map-search-term" type="text" name="searchterm" value="" />
     <div id="map-search-spinner">
       <img src="theme/css/images/ajax-loader.gif" alt="Wait Spinner" />
     </div>
