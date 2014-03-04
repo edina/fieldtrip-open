@@ -187,8 +187,17 @@ def generate_html(platform="android", cordova=False):
         environ = Environment(loader=FileSystemLoader(path))
         environ.globals["_get_letter"] = _get_letter
 
+        print templates_path
         header_data = _get_data(path, 'header.json', templates_path)
         footer_data = _get_data(path, 'footer.json', templates_path)
+
+        for d in _get_plugins_templates():
+            if "header.json" in os.listdir(d):
+                with open(os.path.join(d, "header.json"), 'r') as f:
+                    header_data = _merge(header_data, json.load(f, object_pairs_hook=collections.OrderedDict))
+            if "footer.json" in os.listdir(d):
+                with open(os.path.join(d, "footer.json"), 'r') as f:
+                    footer_data = _merge(footer_data, json.load(f, object_pairs_hook=collections.OrderedDict))
 
         header_template = environ.get_template("header.html")
         footer_template = environ.get_template("footer.html")
@@ -199,6 +208,24 @@ def generate_html(platform="android", cordova=False):
             print "generating template {0}".format(templates[templ])
             script_template = environ.get_template(templates[templ])
             _write_data(os.path.join(export_path, 'templates', templates[templ]), script_template.render())
+
+    def _get_plugins_templates():
+        """ get a list of directories with templates """
+        plugins_list = []
+        for d in os.listdir(os.path.join(root, 'plugins')):
+            d1 = os.path.join(root, 'plugins', d)
+            for dire in os.listdir(d1):
+                p = os.path.join(d1, dire)
+                if os.path.isdir(p) and not dire.startswith("."):
+                    tmpl_path = os.path.join(p, "templates")
+                    if os.path.exists(tmpl_path):
+                        plugins_list.append(tmpl_path)
+        with open(os.path.join(src_dir, 'www', 'theme', 'plugins.json'),'r') as f:
+            plgins = json.load(f)
+            for k, v in plgins["fieldtrip"].iteritems():
+                if v.replace('.', '').isdigit():
+                    plugins_list.append(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'))
+        return plugins_list
 
     def _create_html(path1, path2, header_data, footer_data, header_template, footer_template):
         environ = Environment(loader=FileSystemLoader(path1))
@@ -221,12 +248,12 @@ def generate_html(platform="android", cordova=False):
                         print "generating file {0}".format(htmlfile)
 
                         if "header" in data:
-                            _merge(data["header"], header_data, path2)
+                            _merge(data["header"], header_data)
                         else:
                             data["header"] = header_data
 
                         if "footer" in data:
-                            _merge(data["footer"], footer_data, path2)
+                            _merge(data["footer"], footer_data)
                         else:
                             data["footer"] = footer_data
 
@@ -257,21 +284,15 @@ def generate_html(platform="android", cordova=False):
                                     platform=platform))
                         _write_data(os.sep.join((export_path, htmlfile)), _prettify(output, 2))
 
+    #generate header footer data firstly
     header_data, footer_data, header_template, footer_template = _get_header_footer_data(path, templates_path)
     _create_html(path, templates_path, header_data, footer_data, header_template, footer_template)
     _create_html(templates_path, path, header_data, footer_data, header_template, footer_template)
 
-    with open(os.path.join(src_dir, 'www', 'theme', 'plugins.json'),'r') as f:
-        plgins = json.load(f)
-        for d in os.listdir(os.path.join(root, 'plugins')):
-            d1 = os.path.join(root, 'plugins', d)
-            for dire in os.listdir(d1):
-                if os.path.isdir(os.path.join(d1, dire)) and not dire.startswith("."):
-                    print os.path.join(d1, dire, 'src', 'templates')
-                    _create_html(os.path.join(d1, dire, 'templates'), path, header_data, footer_data, header_template, footer_template)
-        for k, v in plgins["fieldtrip"].iteritems():
-            if v.replace('.', '').isdigit():
-                _create_html(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'), path, header_data, footer_data, header_template, footer_template)
+    #generate plugins templates
+    plgs_tmpls = _get_plugins_templates()
+    for d in plgs_tmpls:
+        _create_html(d, path, header_data, footer_data, header_template, footer_template)
 
 @task
 def install_plugins(target='local', cordova="True"):
