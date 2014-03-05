@@ -366,6 +366,10 @@ def install_plugins(target='local', cordova="True"):
         exit(-1)
 
 @task
+def install_project_ios():
+    install_project(platform='ios')
+
+@task
 def install_project(platform='android',
                     dist_dir='apps',
                     target='local'):
@@ -376,7 +380,7 @@ def install_project(platform='android',
     dist_dir - directory for unpacking openlayers
     target - runtime root
     """
-
+    print 'test got here'
     if platform == 'android':
         _check_command('android')
         _check_command('ant')
