@@ -26,7 +26,7 @@ sudo pip install fabric jinja2 beautifulsoup4 html5lib
 
 ```
 
-sudo npm install -g cordova@3.3.1-0.4.2
+npm install -g cordova
 npm install -g bower
 ```
 
