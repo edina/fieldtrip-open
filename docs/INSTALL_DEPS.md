@@ -25,9 +25,7 @@ sudo pip install fabric jinja2 beautifulsoup4 html5lib
 [nodejs install](https://github.com/joyent/node/wiki/installation)
 
 ```
-
-npm install -g cordova
-npm install -g bower
+npm install -g cordova bower
 ```
 
 ### Android
