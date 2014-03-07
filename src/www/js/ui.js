@@ -56,56 +56,6 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         landscapeScreenHeight = $(window).height();
     }
 
-    console.log("******************************************************");
-    //var cdv = "cdvfile://localhost/persistent/Android/data/uk.ac.edina.mobile/assets/2014-02-24T11_54_35Z.gpx";
-    var cdv = "cdvfile://localhost/persistent/Android/data/uk.ac.edina.mobile/assets/1334767004290.jpg";
-    //var cdv = "cdvfile://localhost/persistent/Android/data";
-    //var cdv = "file:///sdcard/Android/data/uk.ac.edina.mobile/assets/2014-02-24T11_54_35Z.gpx";
-    //var cdv = "file:///sdcard/Android/data/uk.ac.edina.mobile/assets/1334767004290.jpg";
-    // $.get(cdv, function(f){
-    //     console.log("==>");
-    //     console.log(f);
-    // });
-
-    // var jqxhr = $.get(cdv, function() {
-    //     //alert( "success" );
-    //     console.log("Got it");
-    // })
-    //     .done(function() {
-    //         console.log("done");
-    //     })
-    //     .fail(function(e) {
-    //         console.log("jings" + " : " + e.status  + " : " + e.statusText);
-    //         $.each(e, function(i, o){
-    //             console.log(i);
-    //         //     console.log(o);
-    //         });
-    //     });
-
-    // window.requestFileSystem(
-    //     LocalFileSystem.PERSISTENT,
-    //     0,
-    //     function(fs){
-    //         console.log("***************************");
-    //         console.log(fs.root.fullPath);
-    //         console.log(fs.root.toURL());
-
-    //         fs.root.getFile(
-    //             "Android/data/uk.ac.edina.mobile/assets/2014-02-24T11_54_35Z.gpx",
-    //             {create: true, exclusive: false},
-    //             function(f){
-    //                 console.log("****************");
-    //                 console.log(f.fullPath);
-    //             },
-    //             function(error){
-    //                 alert('Failed to get file system:' + error);
-    //             });
-    //     },
-    //     function(error){
-    //         console.error('Failed to get file system:' + error);
-    //     }
-    // );
-
     /**
      * bind annotation form listeners.
      */
@@ -301,7 +251,8 @@ var _ui = {
 
             // cancel button
             $('input[value="Cancel"]').click($.proxy(function(){
-                plugins.SoftKeyBoard.hide();
+                utils.hideKeyboard();
+
                 // clear input fields
                 this.currentAnnotation = undefined;
                 window.history.back();
@@ -327,9 +278,7 @@ var _ui = {
                 // cancels the form submission
                 event.preventDefault();
 
-                if(typeof(plugins) !== 'undefined'){
-                    plugins.SoftKeyBoard.hide();
-                }
+                utils.hideKeyboard();
 
                 // process the form
                 this.currentAnnotation = records.processAnnotation(type);

@@ -290,7 +290,7 @@ var _base = {
     },
 
     /**
-     *
+     * TODO
      */
     getRootDir: function(){
         return "edina";
@@ -335,6 +335,16 @@ var _base = {
      */
     getTemporaryRoot: function(callback){
         return getFileSystemRoot(callback, LocalFileSystem.TEMPORARY);
+    },
+
+    /**
+     * Force hide keyboard.
+     */
+    hideKeyboard: function(){
+        if(typeof(plugins) !== 'undefined' &&
+           typeof(plugins.SoftKeyBoard) !== 'undefined'){
+            plugins.SoftKeyBoard.hide();
+        }
     },
 
     /**
