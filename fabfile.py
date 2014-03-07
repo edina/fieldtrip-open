@@ -145,8 +145,17 @@ def deploy_ios():
     """
     Deploy to ios device connected to machine
     """
-    # TODO
-    print 'Waiting for someone to do this.'
+    _check_command('ant')
+    _check_command('adb')
+    _check_command('cordova')
+
+    # generate html for android
+    generate_html(platform="ios",cordova=True)
+
+    with lcd(_get_runtime()[1]):
+        device = None
+        local('cordova build ios')
+
 
 @task
 def generate_docs():
@@ -357,6 +366,10 @@ def install_plugins(target='local', cordova="True"):
         exit(-1)
 
 @task
+def install_project_ios():
+    install_project(platform='ios')
+
+@task
 def install_project(platform='android',
                     dist_dir='apps',
                     target='local'):
@@ -367,7 +380,7 @@ def install_project(platform='android',
     dist_dir - directory for unpacking openlayers
     target - runtime root
     """
-
+    print 'test got here'
     if platform == 'android':
         _check_command('android')
         _check_command('ant')
@@ -641,9 +654,15 @@ def _check_command(cmd):
 
     if cmd == 'cordova':
         version = local('cordova -v', capture=True).strip();
+        print 'cordova version %s ' % version
         if version != CORDOVA_VERSION:
             _check_command('npm')
-            local('npm install -g cordova@{0}'.format(CORDOVA_VERSION))
+            with settings(warn_only=True):
+                out = local('npm install -g cordova@{0}'.format(CORDOVA_VERSION), capture=True)
+                print 'out.return code %d ' % out.return_code
+                if out.return_code != 0:
+                    print 'Using sudo'
+                    local('sudo npm install -g cordova@{0}'.format(CORDOVA_VERSION))
 
 def _check_config():
     """
