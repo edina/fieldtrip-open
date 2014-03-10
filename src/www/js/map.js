@@ -31,7 +31,7 @@ DAMAGE.
 
 "use strict";
 
-define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol, records, utils, config, proj4js){
+define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, utils, proj4js){
     var RESOLUTIONS = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
     var POST_LOCATE_ZOOM_TO = RESOLUTIONS.length - 1;
@@ -50,22 +50,24 @@ define(['ext/openlayers', 'records', 'utils', 'config', 'proj4js'], function(ol,
     var ANNOTATE_POSITION_ATTR = 'annotate_pos';
     var USER_POSITION_ATTR = 'user_pos';
 
+    var mapSettings = utils.getMapSettings();
     var baseLayer;
-    if(config.map_baselayer === 'osm'){
+    if(mapSettings.baseLayer === 'osm'){
         INTERNAL_PROJECTION = new OpenLayers.Projection('EPSG:900913')
         baseLayer = new OpenLayers.Layer.OSM();
     }
     else{
-        var proj = config.map_epsg;
-        proj4js.defs[proj] = config.map_proj;
+        console.log(mapSettings);
+        var proj = mapSettings.epsg;
+        proj4js.defs[proj] = mapSettings.proj;
         INTERNAL_PROJECTION = new OpenLayers.Projection(proj)
         baseLayer = new OpenLayers.Layer.TMS(
             "osOpen",
-            config.map_layerurl+TMS_URL,
+            mapSettings.url + TMS_URL,
             {
-                layername: config.map_layername,
-                type: config.map_imgtype,
-                serviceVersion: config.map_serviceVersion,
+                layername: mapSettings.layerName,
+                type: mapSettings.type,
+                serviceVersion: mapSettings.version,
                 isBaseLayer: true,
             }
         );

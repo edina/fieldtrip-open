@@ -50,7 +50,7 @@ String.prototype.hashCode = function(){
 };
 
 
-define(['settings'], function(settings){
+define(['settings', 'config'], function(settings, config){
 
     // list of UUID of devices used internally
     // TODO
@@ -265,7 +265,7 @@ var _base = {
     /**
      * @return The field trip GB map server URL.
      */
-    getMapServerUrl: function() {
+    getMapServerUrl: function(){
         if(isMobileApp){
             return settings.getMapServerUrl();
         }
@@ -277,6 +277,28 @@ var _base = {
             }
 
             return url += '/'+settings.getBaseLayerName();
+        }
+    },
+
+    /**
+     * @return map settings:
+     *  baseLayer: fieldtrip base layer name
+     *  epsg: map projection lookup
+     *  layerName: map server layer name
+     *  proj: map projection string
+     *  type: image type
+     *  url: map server URL
+     *  version: map service version
+     */
+    getMapSettings: function(){
+        return {
+            'baseLayer': config.map_baselayer,
+            'epsg': config.map_epsg,
+            'layerName': config.map_layername,
+            'proj': config.map_proj,
+            'type': config.map_type,
+            'url': config.map_url,
+            'version': config.map_serviceversion
         }
     },
 
