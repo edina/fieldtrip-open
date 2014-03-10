@@ -30,7 +30,7 @@
              capture="microphone"
              value=""
              required="true"
-             class="photo_capture"/>
+             class="audio_capture"/>
     </div>
   </div>
 
