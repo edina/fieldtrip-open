@@ -229,8 +229,8 @@ def generate_html(platform="android", cordova=False):
                     tmpl_path = os.path.join(p, "templates")
                     if os.path.exists(tmpl_path):
                         plugins_list.append(tmpl_path)
-        with open(os.path.join(src_dir, 'www', 'theme', 'plugins.json'),'r') as f:
-            plgins = json.load(f)
+        with open(os.path.join(src_dir, 'www', 'theme', 'project.json'),'r') as f:
+            plgins = json.load(f)["plugins"]
             for k, v in plgins["fieldtrip"].iteritems():
                 if v.replace('.', '').isdigit():
                     plugins_list.append(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'))
@@ -326,9 +326,9 @@ def install_plugins(target='local', cordova="True"):
             local('mkdir plugins')
 
     # process project json file
-    json_file = os.sep.join((theme, 'plugins.json'))
+    json_file = os.sep.join((theme, 'project.json'))
     if os.path.exists(json_file):
-        pobj = json.loads(open(json_file).read())
+        pobj = json.loads(open(json_file).read())['plugins']
 
         if _str2bool(cordova):
             with lcd(runtime):
@@ -380,7 +380,6 @@ def install_project(platform='android',
     dist_dir - directory for unpacking openlayers
     target - runtime root
     """
-    print 'test got here'
     if platform == 'android':
         _check_command('android')
         _check_command('ant')
@@ -394,18 +393,6 @@ def install_project(platform='android',
     target_dir, runtime = _get_runtime(target)
     js_ext_dir = os.sep.join(('www', 'js', 'ext'))
     css_dir = os.sep.join(('www', 'css', 'ext'))
-
-    # create config.xml
-    environ = Environment(loader=FileSystemLoader('etc'))
-    config_template = environ.get_template("config.xml")
-    filedata = config_template.render(name=_config('name'),
-                           package=_config('package'),
-                           version=_config('version'),
-                           version_code=_config('version').replace(".", ""),
-                           author_email=_config('author_email'),
-                           url=_config('url'),
-                           access_urls = _config('access_urls').split(","))
-    _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
     if os.path.exists(runtime):
         # check if they want to delete existing installation
@@ -428,13 +415,42 @@ def install_project(platform='android',
 
     # do some checks on the project
     theme_src = os.sep.join((proj_home, 'theme'))
-    if not os.path.exists(os.sep.join((theme_src, 'plugins.json'))):
-        print "\n*** WARNING: No plugins.json found in project"
+    if not os.path.exists(os.sep.join((theme_src, 'project.json'))):
+        print "\n*** WARNING: No project.json found in project"
     theme_css = os.sep.join((theme_src, 'css'))
     if not os.path.exists(os.sep.join((theme_css, 'jqm-style.css'))):
         print "\n*** WARNING: No jqm-style.css found in project: {0}".format(theme_css)
     if not os.path.exists(os.sep.join((theme_css, 'style.css'))):
         print "\n*** WARNING: No style.css found in project"
+
+    # check using correct git version
+    versions = None
+    proj_json = os.sep.join((theme_src, 'project.json'))
+    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
+        versions = json.load(f)["versions"]
+        rbr = _get_branch_name(root)
+        if rbr != versions['core']:
+            print 'Using wrong FT Open branch/tag {0}. Should be using {1}.'.format(
+                rbr, data['core'])
+            exit(-1)
+        pbr = _get_branch_name(proj_home)
+        if pbr != versions['project']:
+            print 'Using wrong project branch/tag {0}. Should be using {1}.'.format(
+                pbr, data['project'])
+            exit(-1)
+
+    # create cordova config.xml
+    environ = Environment(loader=FileSystemLoader('etc'))
+    config_template = environ.get_template("config.xml")
+    filedata = config_template.render(
+        name=_config('name'),
+        package=_config('package'),
+        version=versions['app'],
+        version_code=versions['app'].replace(".", ""),
+        author_email=_config('author_email'),
+        url=_config('url'),
+        access_urls = _config('access_urls').split(","))
+    _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
     # install external js libraries
     local('bower install')
@@ -549,6 +565,10 @@ def release_android(beta='True', overwrite='False', email=False):
     runtime = _get_runtime()[1];
 
     update_app()
+
+    ######################### TODO !!! #########################################
+    # check plugin and project versions
+    ############################################################################
 
     # get app version
     tree = ET.parse(os.sep.join((runtime, 'platforms', 'android', 'AndroidManifest.xml')))
@@ -762,6 +782,13 @@ def _email(file_name,
     s = smtplib.SMTP(_config('smtp', section='release'))
     s.sendmail(sender, [to], msg.as_string())
     s.quit()
+
+def _get_branch_name(dir):
+    # get the name of the git repo branch at dir
+    with lcd(dir):
+        out = local('git branch', capture=True)
+        current = re.findall(r"^\* .+", out, re.MULTILINE)
+        return current[0][2:]
 
 def _get_letter(obj):
     """ TODO """

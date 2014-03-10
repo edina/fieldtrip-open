@@ -62,19 +62,6 @@ function onDeviceReady(){
         }
     });
 
-    // window.resolveLocalFileSystemURL(
-    //     LocalFileSystem.PERSISTENT,
-    //     0,
-    //     function(fs){
-    //         console.log("*");
-    //         console.log(fs.root.fullPath);
-    //         console.log(fs.root.toURL());
-    //     },
-    //     function(error){
-    //         alert('Failed to get file system:' + error);
-    //     }
-    // );
-
     require(['ui', 'map'], function(ui, map) {
         map.init();
 
@@ -89,12 +76,13 @@ function onDeviceReady(){
         };
 
         // set up fieldtrip plugins
-        $.getJSON('theme/plugins.json', function(f){
-            var noOfPlugins = Object.keys(f.fieldtrip).length;
+        $.getJSON('theme/project.json', function(f){
+            var fieldtrip = f.plugins.fieldtrip;
+            var noOfPlugins = Object.keys(fieldtrip).length;
 
             if(noOfPlugins > 0){
                 var loaded = 0;
-                $.each(f.fieldtrip, function(name){
+                $.each(fieldtrip, function(name){
                     require(["plugins/" + name + "/js/" + name], function(){
                         console.debug(name + " loaded");
                         ++loaded;
