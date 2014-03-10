@@ -16,7 +16,7 @@ The json file theme/project.json will define a list of plugins the project wishe
 ```
 {
     ...
-    "plugins":{
+    "plugins": {
         "cordova": [
             "org.apache.cordova.camera@0.2.7",
             "org.apache.cordova.console@0.2.7",
@@ -32,6 +32,7 @@ The json file theme/project.json will define a list of plugins the project wishe
             "offline-maps": "0.0.1",
             "sync", "git@github.com:edina/fieldtrip-sync.git"
         }
+    }
 }
 ```
 
