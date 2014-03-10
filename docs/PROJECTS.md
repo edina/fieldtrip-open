@@ -11,25 +11,27 @@ A fieldtrip theme contains two stylesheets:
 
 ### Plugins
 
-The json file theme/plugins.json will define a list of plugins the project wishes to enable. The following is an example:
+The json file theme/project.json will define a list of plugins the project wishes to enable. The following is an example:
 
 ```
 {
-    "cordova": [
-        "org.apache.cordova.camera@0.2.7",
-        "org.apache.cordova.console@0.2.7",
-        "org.apache.cordova.device@0.2.8",
-        "org.apache.cordova.file@1.0.0",
-        "org.apache.cordova.file-transfer@0.4.1",
-        "org.apache.cordova.geolocation@0.3.6",
-        "org.apache.cordova.inappbrowser@0.3.1",
-        "org.apache.cordova.media@0.2.8",
-        "org.apache.cordova.media-capture@0.2.7"
-    ],
-    "fieldtrip": {
-        "offline-maps": "0.0.1",
-        "sync", "git@github.com:edina/fieldtrip-sync.git"
-    }
+    ...
+    "plugins":{
+        "cordova": [
+            "org.apache.cordova.camera@0.2.7",
+            "org.apache.cordova.console@0.2.7",
+            "org.apache.cordova.device@0.2.8",
+            "org.apache.cordova.file@1.0.0",
+            "org.apache.cordova.file-transfer@0.4.1",
+            "org.apache.cordova.geolocation@0.3.6",
+            "org.apache.cordova.inappbrowser@0.3.1",
+            "org.apache.cordova.media@0.2.8",
+            "org.apache.cordova.media-capture@0.2.7"
+        ],
+        "fieldtrip": {
+            "offline-maps": "0.0.1",
+            "sync", "git@github.com:edina/fieldtrip-sync.git"
+        }
 }
 ```
 
