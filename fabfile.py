@@ -406,11 +406,10 @@ def install_project(platform='android',
         local('rm -rf {0}'.format(runtime))
     else:
         os.mkdir(runtime)
-
     versions = None
     theme_src = os.sep.join((proj_home, 'theme'))
     proj_json = os.sep.join((theme_src, 'project.json'))
-    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
+    with open(proj_json, 'r') as f:
         versions = json.load(f)["versions"]
 
     if not os.path.exists('project'):
