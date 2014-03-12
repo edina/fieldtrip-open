@@ -406,20 +406,19 @@ def install_project(platform='android',
         local('rm -rf {0}'.format(runtime))
     else:
         os.mkdir(runtime)
-    versions = None
-    theme_src = os.sep.join((proj_home, 'theme'))
-    proj_json = os.sep.join((theme_src, 'project.json'))
-    with open(proj_json, 'r') as f:
-        versions = json.load(f)["versions"]
 
+    # create project repo
     if not os.path.exists('project'):
         proj = _config('project')
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
-        if versions['project'] != 'master':
-            with lcd('project'):
-                local('git checkout {0}'.format(versions['project']))
+
+    versions = None
+    theme_src = os.sep.join((proj_home, 'theme'))
+    proj_json = os.sep.join((theme_src, 'project.json'))
+    with open(proj_json, 'r') as f:
+        versions = json.load(f)["versions"]
 
     # do some checks on the project
     if not os.path.exists(os.sep.join((theme_src, 'project.json'))):
