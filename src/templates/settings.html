@@ -11,19 +11,20 @@
       <div id="su-display">
         <div class="non-map-content">
 
+          <!-- TODO move to offline maps -->
           <div data-role="fieldcontain">
             <label for="settings-mapserver-url" class="select">Map Server:</label>
-            <select id="settings-mapserver-url">
-              <!-- <option value="http://fieldtripgb.edina.ac.uk">LIVE</option> -->
-	      <!-- <option value="http://dlib-rainbow.edina.ac.uk">rainbow</option> -->
-	      <!-- <option value="http://devel.edina.ac.uk:3333">devel</option> -->
-	      <!-- <option value="http://dlib-oxgangs.ucs.ed.ac.uk">dlib-oxgangs</option> -->
-	      <!-- <option value="http://dlib-tahay.ucs.ed.ac.uk">dlib-tahay</option> -->
-	      <!-- <option value="http://dlib-terzis.ucs.ed.ac.uk">dlib-terzis</option> -->
+            <select id="settings-mapserver-url" name="settings-entry">
+              <option value="http://fieldtripgb.edina.ac.uk">LIVE</option>
+	      <option value="http://dlib-rainbow.edina.ac.uk">rainbow</option>
+	      <option value="http://devel.edina.ac.uk:3333">devel</option>
+	      <option value="http://dlib-oxgangs.ucs.ed.ac.uk">dlib-oxgangs</option>
+	      <option value="http://dlib-tahay.ucs.ed.ac.uk">dlib-tahay</option>
+	      <option value="http://dlib-terzis.ucs.ed.ac.uk">dlib-terzis</option>
             </select>
           </div>
 
-          <!-- SYNC plugin -->
+          <!-- TODO move to sync plugin -->
           <!-- <div data-role="fieldcontain"> -->
           <!--   <label for="settings-pcapi-url" class="select">PCAPI:</label> -->
           <!--   <select id="settings-pcapi-url"> -->
@@ -36,19 +37,15 @@
           <!--   </select> -->
           <!-- </div> -->
 
-          <!-- GPS tracking plugin -->
-          <!-- <div data-role="fieldcontain"> -->
-          <!--   <label for="settings-debug-gps">Debug GPS:</label> -->
-          <!--   <select id="settings-debug-gps" data-role="slider"> -->
-          <!--     <option value="off">Off</option> -->
-          <!--     <option value="on">On</option> -->
-          <!--   </select> -->
-          <!-- </div> -->
-
+          <!-- TODO move to GPS tracking plugin -->
           <div data-role="fieldcontain">
-            <a id="settings-clear-local-storage"
-               href="#"
-               data-role="button">Delete Local Storage</a>
+            <label for="settings-debug-gps">Debug GPS:</label>
+            <select id="settings-debug-gps"
+                    data-role="slider"
+                    name="settings-entry">
+              <option value="off">Off</option>
+              <option value="on">On</option>
+            </select>
           </div>
 
           <div id="settings-versions">
@@ -63,6 +60,10 @@
               <li>JQuery Mobile<span id="settings-jqm" class="ui-li-count"></span></li>
               <li>OpenLayers<span id="settings-ol" class="ui-li-count"></span></li>
             </ul>
+          </div>
+
+          <div id="settings-clear-local-storage" data-role="fieldcontain">
+            <a href="#" data-role="button">Delete Local Storage</a>
           </div>
 
         </div>

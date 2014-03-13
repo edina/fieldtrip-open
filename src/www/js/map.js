@@ -57,7 +57,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         baseLayer = new OpenLayers.Layer.OSM();
     }
     else{
-        console.log(mapSettings);
         var proj = mapSettings.epsg;
         proj4js.defs[proj] = mapSettings.proj;
         INTERNAL_PROJECTION = new OpenLayers.Projection(proj)
@@ -548,10 +547,13 @@ var _this = {
     },
 
     /**
-     * TODO
+     * @return The full URL to the TMS server.
      */
-    getTMSURL: function(){
-        return utils.getMapServerUrl() + TMS_URL
+    getTMSURL: function(root){
+        if(!root){
+            root = utils.getMapServerUrl();
+        }
+        return root += TMS_URL;
     },
 
     /**

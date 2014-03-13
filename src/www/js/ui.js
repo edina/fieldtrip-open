@@ -122,7 +122,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         }
 
         map.geoLocate({
-            interval: settings.getLocateInterval(),
+            interval: 0,
             secretly: options.secretly,
             updateAnnotateLayer: options.updateAnnotateLayer,
             useDefault: options.useDefault

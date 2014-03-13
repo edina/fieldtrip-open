@@ -32,34 +32,67 @@ DAMAGE.
 "use strict";
 
 /**
- * TODO
+ * Fieldtrip settings module.
  */
 define(['config'], function(config){
-    // TODO use config instead
-    var SERVER_URL_DEFAULT = config.map_layerurl;
-    var stored = localStorage.getItem('settings');
     var vals;
 
-    if(stored){
-        vals = JSON.parse(stored);
-    }
-    else{
-        vals = {
-            locateInterval: 0,
-            debugGPS: false,
+    /**
+     * For a given setting entry, save control value.
+     * @param i The index id of the control.
+     * param div The HTML div
+     */
+    var getControlValue = function(i, div){
+        var id = $(div).attr('id').split('settings-')[1];
+        var control = $(div);
+
+        if(typeof(control) !== 'undefined'){
+            var tag = control.prop('tagName').toLowerCase();
+            if(control.attr('data-role') === 'slider'){
+                // a slider is a select tag but
+                // can be identified by its data-role
+                tag = 'slider';
+            }
+
+            vals[id] = {
+                'type': tag,
+                'val': $(control).val()
+            }
         }
-    }
+        else{
+            vals[id] = undefined;
+        }
+    };
 
-    if(typeof(vals.pcapiUrl) === 'undefined'){
-        vals.pcapiUrl = SERVER_URL_DEFAULT;
-    }
-    if(typeof(vals.mapserverUrl) === 'undefined'){
-        vals.mapserverUrl = SERVER_URL_DEFAULT;
-    }
+    /**
+     * Save current settings to localstorage.
+     */
+    var save = function(){
+        $.each($('[name=settings-entry]'), getControlValue);
+        localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
+    };
 
+    /**
+     * Open settings page.
+     */
     var settingsPage = function(){
         require(['utils'], function(utils){
-            $('#settings-clear-local-storage').click(function(){
+            $.each(vals, function(name, entry){
+                var id = '#settings-' + name;
+                if(typeof(entry) !== 'undefined'){
+                    if(entry.type === 'select'){
+                        utils.selectVal(id, vals[name].val);
+                    }
+                    else if(entry.type === 'slider'){
+                        utils.sliderVal(id, vals[name].val);
+                    }
+                    else{
+                        $(id).val(vals[name].val);
+                    }
+                }
+            });
+
+            $('#settings-clear-local-storage a').click(function(){
                 localStorage.clear();
                 utils.inform('done')
             });
@@ -78,64 +111,40 @@ define(['config'], function(config){
         });
     };
 
-    $(document).on('pageshow', '#settings-page', settingsPage);
+    var stored = localStorage.getItem('settings');
+    if(stored){
+        vals = JSON.parse(stored);
+    }
+    else{
+        vals = {};
+
+        // initialise based on default values
+        $.get('../settings.html', function(data){
+            $.each($(data).find('[name=settings-entry]'), getControlValue);
+        });
+    }
+
+    // ensure map has URL defined
+    if(typeof(vals['mapserver-url']) === 'undefined'){
+        vals['mapserver-url'] = config.map_url;
+    }
+
+    $(document).on('pageinit', '#settings-page', settingsPage);
+    $(document).on('pageremove', '#settings-page', save);
 
 return{
 
     /**
-     * @return Should GPS capture be run in debug mode?
+     * Get setting for named value.
+     * @param name The name of the setting.
      */
-    debugGPS: function(){
-        //return vals.debugGPS; TODO
-        return true;
-    },
-
-    /**
-     * @return osm or fgb
-     */
-    getBaseLayerName: function(){
-        return config.map_baselayer;
-    },
-
-    /**
-     * @return Locate interval.
-     */
-    getLocateInterval: function(){
-        return vals.locateInterval;
-    },
-
-    /**
-     * @return URL of the map server.
-     */
-    getMapServerUrl: function(){
-        return vals.mapserverUrl;
-    },
-
-    /**
-     * TODO
-     */
-    getPcapiUrl: function(){
-        return vals.pcapiUrl;
-    },
-
-    /**
-     * Restore saved settings.
-     */
-    restore: function(){
-        utils.selectVal("#settings-pcapi-url", vals.pcapiUrl);
-        utils.selectVal("#settings-mapserver-url", vals.mapserverUrl);
-        utils.sliderVal('#settings-debug-gps', vals.debugGPS);
-    },
-
-    /**
-     * Save current settings.
-     */
-    save: function(){
-        vals.debugGPS = $('#settings-debug-gps').val() === 'on';
-        vals.mapserverUrl = $('#settings-mapserver-url option:selected').val();
-        vals.pcapiUrl = $('#settings-pcapi-url option:selected').val();
-
-        localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
-    },
+    get: function(name){
+        var val;
+        if(vals[name]){
+            val = vals[name].val;
+        }
+        return val;
+    }
 }
+
 });

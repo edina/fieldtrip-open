@@ -246,9 +246,9 @@ var _base = {
     },
 
     /**
-     * TODO
+     * @return The document base of the app.
      */
-    getDocumentBase : function (){
+    getDocumentBase: function (){
         return documentBase;
     },
 
@@ -267,7 +267,7 @@ var _base = {
      */
     getMapServerUrl: function(){
         if(isMobileApp){
-            return settings.getMapServerUrl();
+            return settings.get('mapserver-url');
         }
         else{
             var url = 'http://' + location.hostname;
@@ -276,7 +276,7 @@ var _base = {
                 url += ':' + location.port
             }
 
-            return url += '/'+settings.getBaseLayerName();
+            return url += '/' + config.map_baselayer;
         }
     },
 
@@ -319,17 +319,15 @@ var _base = {
     },
 
     /**
-     * @return The field trip GB server web server URL. This is currently the
-     * pcapi URL in settings.
+     * @return The field trip server web server URL.
      */
     getServerUrl: function() {
         if(isMobileApp){
-            return settings.getPcapiUrl();
+            return config.web_url;
         }
         else{
             return 'http://' + location.hostname + '/ftgb';
         }
-
     },
 
     /**
@@ -490,10 +488,10 @@ var _base = {
     /**
      * Helper function that sets the value of a JQM slider on/off element.
      * @param selector Jquery selector.
-     * @param value true or false.
+     * @param value 'on' or 'off'.
      */
     sliderVal: function(selector, value){
-        $(selector).val(value ? 'on' : 'off');
+        $(selector).val(value);
         $(selector).slider('refresh');
     },
 
