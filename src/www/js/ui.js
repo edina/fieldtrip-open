@@ -527,12 +527,29 @@ var _ui = {
 
         var addAnnotation = function(id, annotation){
             var template = _.template(recrowtemplate);
+            var fields = annotation.record.fields[0];
+            var val, annotationType;
+
+            // we want to display this extra info in grid layout only at this point
+            val = fields.val;
+            annotationType = records.typeFromId(fields.id);
+
             $('#saved-records-list-list').append(
                 template({
                     "id": id,
-                    "annotation": annotation
+                    "annotation": annotation,
+                    "val": val,
+                    "annotationType": annotationType,
                 })
             ).trigger('create');
+
+            // Check if list or grid layout is active
+            var active = $('#layout a').filter('.ui-btn-active').text().trim().toLowerCase();
+
+            // Ensure that extra info is hidden in list view for now
+            if (active === 'list' || active.length==0) {
+                $('.record-extra').hide(); 
+           };
         }
 
         $.each(annotations, $.proxy(function(id, annotation){
@@ -569,6 +586,32 @@ var _ui = {
             $('#saved-records-delete-popup').popup('close');
             this.toBeDeleted.slideUp('slow');
         }, this));
+
+        // Toggle List/Grid Layout
+        $('#layout a').on('click', function (e) {
+            var current = $(event.currentTarget);
+            current.toggleClass('ui-btn-active', true);
+
+            var id = current.attr('id');
+            if(id === 'records-list'){
+                // Default list view css - remove active class so grid view css is ignored
+                $('#saved-records-page .ui-listview li').toggleClass('active', false);
+                // List view doesn't need image preview etc at this stage
+                $('.record-extra').hide(); 
+            }
+            if(id === 'records-grid'){
+                // Apply grid view css by adding active class
+                $('#saved-records-page .ui-listview li').toggleClass('active', true);
+                // Show text/image etc preview block
+                $('.record-extra').show(); 
+            }
+
+            // Remove active class from any other buttons
+            var siblings = current.siblings('a');
+            $.each(siblings, function (key, value) {
+                $(value).toggleClass('ui-btn-active', false);
+            });
+        });
 
         // click on a record
         $(document).off('tap', '.saved-records-view');

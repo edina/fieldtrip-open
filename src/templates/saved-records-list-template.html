@@ -1,10 +1,30 @@
 <li id="<%= id %>">
-  <div class="ui-grid-b">
+<div class="ui-grid-b">
     <div class="ui-block-b saved-records-view">
-      <a href="#"><%= annotation.record.name %></a>
+        <a href="#"><%= annotation.record.name %></a>
     </div>
     <div class="ui-block-c">
-      <a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="a"></a>
+        <a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="a"></a>
     </div>
-  </div>
+
+    <div class='record-extra'>
+        
+        <% if (annotationType === "textarea") { %>
+            <p><span><%=val%></span></p>
+        <%}%>
+
+        <% if (annotationType === "image") { %>
+            An image annotation
+            <img src="<%=val%>" width=100%"/>
+        <%}%>
+
+        <% if (annotationType === "audio") { %>
+            An audio annotation
+            <%=val%>    
+        <%}%>
+
+    </div>
+
+
+</div>
 </li>

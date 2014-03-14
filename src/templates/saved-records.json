@@ -1,6 +1,26 @@
 {
     "body": {
-        "view-records": "View Records"
+        "view-records": "View Records",
+        "grid": "Grid",
+        "list": "List",
+        "display-buttons" : "false",
+        "buttons" : {
+            "records-list":{
+                "class": "ui-btn-active",
+                "id" : "records-list",
+                "data-role": "button",
+                "data-icon": "bars",
+                "data-theme": "c",
+                "value": "List"
+            },
+            "records-grid":{
+                "id" : "records-grid",
+                "data-role": "button",
+                "data-icon": "grid",
+                "data-theme": "c",
+                "value": "Grid"
+            }
+        }
     },
     "popups": {
         "popup1":{

@@ -423,6 +423,23 @@ body .ui-loader .ui-icon{
 /*     width: 100%; */
 /* } */
 
+#records-list, #records-grid {
+    width : inherit;
+}
+
+
+/* Size grid elements */
+#saved-records-page .ui-listview li.active {
+    float: left;
+    width: 30.9333% !important; /* 33.3333% incl. 2 x 1.2% margin */
+    width: 45% !important;
+    /* height: 14.5em; */
+    /* height: 230px; */
+    /* margin: .5625em 1.2% !important; */
+    border: #2c3f62 solid 1px !important;
+    margin-top: 1% !important;
+}
+
 #annotate-form{
     position: relative;
     padding: 0.5em 2em 0 2em;
