@@ -14,17 +14,17 @@
         <%type = records.typeFromId(field.id)%>
 
         <% if (field.label === "Description") { %>
-            <p><span><%=field.val%></span></p>
+            <p class='ellipsis'><%=field.val%></p>
             <!-- <div> -->
-                
-                <!-- <img src="http://news.bbcimg.co.uk/media/images/73583000/jpg/_73583985_kerrylavrovpa.jpg" width=100%"/> -->
+
+            <!--     <img class="saved-records-view" src="http://news.bbcimg.co.uk/media/images/73583000/jpg/_73583985_kerrylavrovpa.jpg" width=100%"/> -->
 
             <!-- </div> -->
         <%}%>
 
         <% if (type === "image") { %>
         <!-- <div> -->
-            <img src="<%=field.val%>" width=100%"/>
+            <img class="saved-records-view" src="<%=field.val%>" width=100%"/>
         <!-- </div> -->
         <%}%>
 
