@@ -584,7 +584,7 @@ var _ui = {
 
         // Toggle List/Grid Layout
         $('#layout a').on('click', function (e) {
-            var current = $(event.currentTarget);
+            var current = $(e.currentTarget);
             current.toggleClass('ui-btn-active', true);
 
             var id = current.attr('id');
