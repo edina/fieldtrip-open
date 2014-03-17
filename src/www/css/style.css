@@ -226,6 +226,7 @@ body .ui-loader .ui-icon{
     border-radius: 10px;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+    overflow : scroll;
 }
 
 .non-map-body-start{
@@ -427,6 +428,9 @@ body .ui-loader .ui-icon{
     width : inherit;
 }
 
+.record-extra {
+ width : 100% !important;   
+}
 
 /* Size grid elements */
 #saved-records-page .ui-listview li.active {
@@ -519,7 +523,7 @@ body .ui-loader .ui-icon{
 
 #saved-records-list{
     position: relative;
-    overflow: auto;
+    /* overflow: auto; */
     margin: 0
 }
 

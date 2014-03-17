@@ -8,20 +8,33 @@
     </div>
 
     <div class='record-extra'>
-        
-        <% if (annotationType === "textarea") { %>
-            <p><span><%=val%></span></p>
+
+        <% _.each(fields, function(field) { %>
+
+        <%type = records.typeFromId(field.id)%>
+
+        <% if (field.label === "Description") { %>
+            <p><span><%=field.val%></span></p>
+            <!-- <div> -->
+                
+                <!-- <img src="http://news.bbcimg.co.uk/media/images/73583000/jpg/_73583985_kerrylavrovpa.jpg" width=100%"/> -->
+
+            <!-- </div> -->
         <%}%>
 
-        <% if (annotationType === "image") { %>
-            An image annotation
-            <img src="<%=val%>" width=100%"/>
+        <% if (type === "image") { %>
+        <!-- <div> -->
+            <img src="<%=field.val%>" width=100%"/>
+        <!-- </div> -->
         <%}%>
 
-        <% if (annotationType === "audio") { %>
-            An audio annotation
-            <%=val%>    
+        <% if (type === "audio") { %>
+        Put an icon for an audio recording here
+        <%=field.val%>    
         <%}%>
+
+        <% }); %>
+
 
     </div>
 

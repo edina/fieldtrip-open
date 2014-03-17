@@ -528,18 +528,13 @@ var _ui = {
         var addAnnotation = function(id, annotation){
             var template = _.template(recrowtemplate);
             var fields = annotation.record.fields[0];
-            var val, annotationType;
-
-            // we want to display this extra info in grid layout only at this point
-            val = fields.val;
-            annotationType = records.typeFromId(fields.id);
 
             $('#saved-records-list-list').append(
                 template({
                     "id": id,
                     "annotation": annotation,
-                    "val": val,
-                    "annotationType": annotationType,
+                    "fields": annotation.record.fields,
+                    "records": records
                 })
             ).trigger('create');
 
