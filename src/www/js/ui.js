@@ -204,6 +204,17 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
 var _ui = {
 
     /**
+     * Initialise module.
+     */
+    init: function(){
+        geoLocate({
+            secretly: true,
+            updateAnnotateLayer: false,
+            useDefault: true
+        });
+    },
+
+    /**
      * Go to annotate screen.
      */
     annotatePage: function(){
@@ -445,18 +456,6 @@ var _ui = {
 
     /**
      * TODO
-     * text below
-     */
-    init: function(){
-        geoLocate({
-            secretly: true,
-            updateAnnotateLayer: false,
-            useDefault: true
-        });
-    },
-
-    /**
-     * TODO
      */
     mapPage: function(divId){
         if(typeof(divId) !== 'string'){
@@ -511,7 +510,7 @@ var _ui = {
     },
 
     /**
-     * TODO
+     * Function is called each time a page changes.
      */
     pageChange: function(){
         $("[data-role=header]").fixedtoolbar({tapToggle: false});
@@ -524,10 +523,9 @@ var _ui = {
     /**
      * Show Saved Records.
      */
-    savedRecordsPage: function(){
-        //this.commonPageInit();
+    savedRecordsPage: function(event){
         var annotations = records.getSavedRecords();
-        utils.printObj(annotations);
+        //utils.printObj(annotations);
 
         var addAnnotation = function(id, annotation){
             var template = _.template(recrowtemplate);
@@ -613,9 +611,9 @@ var _ui = {
         });
 
         // click on a record
-        $(document).off('tap', '.saved-records-view');
+        $(document).off('click', '.saved-records-view');
         $(document).on(
-            'tap',
+            'click',
             '.saved-records-view',
             $.proxy(function(event){
                 if(this.isMobileApp){
