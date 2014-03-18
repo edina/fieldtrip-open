@@ -547,7 +547,7 @@ var _ui = {
 
             // Ensure that extra info is hidden in list view for now
             if (active === 'list' || active.length==0) {
-                $('.record-extra').hide(); 
+                $('.record-extra').hide();
            };
         }
 
@@ -596,13 +596,13 @@ var _ui = {
                 // Default list view css - remove active class so grid view css is ignored
                 $('#saved-records-page .ui-listview li').toggleClass('active', false);
                 // List view doesn't need image preview etc at this stage
-                $('.record-extra').hide(); 
+                $('.record-extra').hide();
             }
             if(id === 'records-grid'){
                 // Apply grid view css by adding active class
                 $('#saved-records-page .ui-listview li').toggleClass('active', true);
                 // Show text/image etc preview block
-                $('.record-extra').show(); 
+                $('.record-extra').show();
             }
 
             // Remove active class from any other buttons
@@ -627,80 +627,10 @@ var _ui = {
                 var annotation = records.getSavedRecord(id);
                 var type = records.getEditorId(annotation);
 
-                // TODO
-                // if(type === 'track'){
-                //     map.showGPSTrack(id, annotation);
-                // }
-
                 map.showRecordsLayer(annotation);
-                $.mobile.changePage('map.html');
+                utils.gotoMapPage();
             }, this)
         );
-
-        // TODO - move to plugin
-        // sync / login button
-        // $(document).off('vmousedown', '#saved-annotations-page-header-login-sync');
-        // $(document).on(
-        //     'vmousedown',
-        //     '#saved-annotations-page-header-login-sync',
-        //     $.proxy(function(event){
-        //         event.stopImmediatePropagation();
-        //         if($('#saved-annotations-page-header-login-sync.cloud-sync').length > 0){
-        //             this.sync({
-        //                 div: 'saved-annotation-sync-popup',
-        //                 callback: function(add, id, annotation){
-        //                     if(add){
-        //                         addAnnotation(id, annotation);
-        //                     }
-        //                     else{
-        //                         // if not add then delete
-        //                         $('#' + id).slideUp('slow');
-        //                     }
-        //                 },
-        //                 complete: function(){
-        //                     $('#saved-annotations-list-list').listview('refresh');
-        //                 }
-        //             });
-        //         }
-        //         else{
-        //             $.mobile.showPageLoadingMsg();
-
-        //             // TODO - move to plugin
-        //             this.records.cloudLogin($.proxy(function(){
-        //                 $.mobile.hidePageLoadingMsg();
-        //                 var userId = this.db.getCloudLogin().id;
-        //                 if(userId){
-        //                     $('#saved-annotations-page-header-login-sync').removeClass(
-        //                         'cloud-login');
-        //                     $('#saved-annotations-page-header-login-sync').addClass(
-        //                         'cloud-sync');
-        //                     $('#saved-annotations-page-header-upload').show();
-        //                 }
-        //             }, this));
-        //         }
-        //     }, this)
-        // );
-
-        // TODO - move to plugin
-        // upload only
-        // $(document).off('vmousedown', '#saved-annotations-page-header-upload');
-        // $(document).on(
-        //     'vmousedown',
-        //     '#saved-annotations-page-header-upload',
-        //     $.proxy(this.uploadRecords, this)
-        // );
-
-        // var userId = this.db.getCloudLogin().id;
-        // if(userId){
-        //     $('#saved-annotations-page-header-login-sync').addClass('cloud-sync');
-        //     $('#saved-annotations-page-header-upload').show();
-        // }
-        // else{
-        //     $('#saved-annotations-page-header-login-sync').addClass('cloud-login');
-        // }
-
-        // make records scrollable on touch screens
-        //Utils.touchScroll('#saved-annotations-list');
 
         $('#saved-annotations-list-list').listview('refresh');
     },

@@ -358,6 +358,18 @@ var _base = {
     },
 
     /**
+     * Go to main map page
+     */
+    gotoMapPage: function(){
+        if(config.records_click_map_page){
+            $.mobile.changePage(config.records_click_map_page);
+        }
+        else{
+            $.mobile.changePage('map.html');
+        }
+    },
+
+    /**
      * Force hide keyboard.
      */
     hideKeyboard: function(){
