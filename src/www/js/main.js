@@ -106,10 +106,10 @@ function onDeviceReady(){
             // no use for this yet
         });
         $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
-            ui.pageChange();
+            // no use for this yet
         });
         $(document).on('pageshow', 'div[data-role="page"]', function(event){
-            // no use for this yet
+            ui.pageChange();
         });
 
         $(document).on('pageinit', '#map-page', function(){

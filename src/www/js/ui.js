@@ -129,11 +129,17 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         });
     };
 
-    // work out page height
+    /**
+     * Work out page height.
+     */
     var resizePage = function(){
         var offset = 0;
-
-        var h = $(window).height() - ($('.ui-page-active .ui-header').first().height() + $('.ui-page-active .ui-footer').first().height() + offset);
+        var header = $('.ui-page-active .ui-header').first().height();
+        var footer = 0;
+        if($('.ui-page-active .ui-footer').css('display') !== 'none'){
+            footer = $('.ui-page-active .ui-footer').first().height();
+        }
+        var h = $(window).height() - (header + footer + offset);
         $('[data-role=content]').css('height', h + 'px');
     };
 
@@ -194,8 +200,6 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
 
     // switch off page transitions
     $.mobile.defaultPageTransition = 'none';
-
-    //map.init();
 
 var _ui = {
 
@@ -471,7 +475,7 @@ var _ui = {
      * text below
      */
     mapPageInit: function(){
-        // set up buttons when records a visible on map
+        // set up buttons when records are visible on map
         var recordsVisible = function(){
             $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
             $('#map-records-buttons-list a').show();
