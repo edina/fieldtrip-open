@@ -226,6 +226,7 @@ body .ui-loader .ui-icon{
     border-radius: 10px;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+    overflow : scroll;
 }
 
 .non-map-body-start{
@@ -423,6 +424,57 @@ body .ui-loader .ui-icon{
 /*     width: 100%; */
 /* } */
 
+#records-list, #records-grid {
+    width : inherit;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 98%;
+    padding-left: 1%;
+    padding-right: 1%;
+    clear: both;
+}
+
+.record-extra {
+ width : 100% !important;   
+}
+
+div.record-extra > div > img {
+    width: 98%;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+ 
+#saved-records-page .ui-listview li.active {
+    border: #2c3f62 solid 1px !important;
+    margin-top: 1% !important;
+}
+
+@media (min-width: 320px) {
+    #saved-records-page .ui-listview li.active {
+        float: left;
+        width: 45% !important; 
+    }
+}
+
+@media (min-width: 480px) {
+    #saved-records-page .ui-listview li.active {
+        float: left;
+        width: 30% !important; 
+    }
+}
+
+@media (min-width: 768px ) {
+    #saved-records-page .ui-listview li.active {
+        float: left;
+        width: 23% !important; 
+    }
+}
+
+
 #annotate-form{
     position: relative;
     padding: 0.5em 2em 0 2em;
@@ -502,7 +554,7 @@ body .ui-loader .ui-icon{
 
 #saved-records-list{
     position: relative;
-    overflow: auto;
+    /* overflow: auto; */
     margin: 0
 }
 

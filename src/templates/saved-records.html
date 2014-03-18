@@ -1,24 +1,34 @@
 <div id="saved-records-page" data-role="page" data-theme="b">
 
-  {{header}}
+    {{header}}
 
-  <div data-iscroll="" data-role="content">
-    <div class="non-map-body-white ui-overlay-shadow">
-      <div id="saved-records-page-header" class="ui-grid-a ui-header">
-        <div class="ui-block-a">
-          <h2>{{body["view-records"]}}</h2>
+    <div data-iscroll="" data-role="content">
+        <div class="non-map-body-white ui-overlay-shadow">
+            <div id="saved-records-page-header" class="ui-grid-a ui-header">
+                <div class="ui-block-a">
+                    <h2>{{body["view-records"]}}</h2>
+                    <div data-role="controlgroup" id="layout"  data-type="horizontal" class="ui-btn-right" >
+                        {% if body["display-buttons"] == 'true' %}
+                            {% if "buttons" in body%}
+                                {% for key, items in body["buttons"].iteritems() %}
+                                    <a {% for el, item in items.iteritems() %} {{el}}="{{item}}" {% endfor %}>{{items["value"]}}</a>
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="saved-records-list" class="non-map-content">
+                <ul id="saved-records-list-list" data-role="listview" data-filter="true">
+                </ul>
+            </div>
         </div>
-      </div>
-
-      <div id="saved-records-list" class="non-map-content">
-        <ul id="saved-records-list-list" data-role="listview" data-filter="true">
-        </ul>
-      </div>
     </div>
-  </div>
 
-  {{popups}}
+    {{popups}}
 
-  {{footer}}
+    {{footer}}
 
 </div>
