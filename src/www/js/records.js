@@ -62,7 +62,7 @@ define(['utils'], function(utils){
         });
     }
 
-return{
+var _base = {
     IMAGE_UPLOAD_SIZE: "imageUploadSize",
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
     IMAGE_SIZE_FULL: "imageSizeFull",
@@ -523,5 +523,36 @@ return{
         return id.substr(s, id.lastIndexOf('-') - s);
     }
 }
+
+
+var _this = {};
+var _ios = {
+
+    getImageOptions: function(sourceType, encodingType){
+        var options = {
+            quality: 100,
+            destinationType: Camera.DestinationType.FILE_URI,
+            sourceType : sourceType,
+            encodingType: encodingType,
+            saveToPhotoAlbum: true
+        }
+        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
+            options.targetWidth = 640;
+            options.targetHeight = 480;
+        }
+        return options;
+    }
+};
+
+if(utils.isIOSApp()){
+
+    $.extend(_this, _base, _ios);
+}
+else{
+    _this = _base;
+}
+
+return _this;
+
 
 });
