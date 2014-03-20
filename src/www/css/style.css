@@ -557,13 +557,13 @@ div.record-extra > div > img {
 #saved-records-page-header .ui-block-a{
     margin: 0;
     padding: 0;
-    width: 40%;
+    width: 60%;
 }
 
 #saved-records-page-header .ui-block-b{
     margin: 0;
-    padding: 0;
-    width: 32%;
+    padding: 0.2em;
+    width: 40%;
 }
 
 #settings-page h2,
