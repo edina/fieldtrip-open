@@ -7,17 +7,16 @@
             <div id="saved-records-page-header" class="ui-grid-a ui-header">
                 <div class="ui-block-a">
                     <h2>{{body["view-records"]}}</h2>
-                    <div data-role="controlgroup" id="layout"  data-type="horizontal" class="ui-btn-right" >
-                        {% if body["display-buttons"] == 'true' %}
-                            {% if "buttons" in body%}
-                                {% for key, items in body["buttons"].iteritems() %}
-                                    <a {% for el, item in items.iteritems() %} {{el}}="{{item}}" {% endfor %}>{{items["value"]}}</a>
-                                {% endfor %}
-                            {% endif %}
-                        {% endif %}
-                    </div>
                 </div>
-
+                <div class="ui-block-b" data-role="controlgroup" id="layout"  data-type="horizontal" >
+                    {% if body["display-buttons"] == 'true' %}
+                        {% if "buttons" in body%}
+                            {% for key, items in body["buttons"].iteritems() %}
+                                <a {% for el, item in items.iteritems() %} {{el}}="{{item}}" {% endfor %}>{{items["value"]}}</a>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
 
             <div id="saved-records-list" class="non-map-content">
