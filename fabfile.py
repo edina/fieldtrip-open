@@ -166,6 +166,10 @@ def generate_docs():
     local('jsdox --output docs/ src/www/js/')
 
 @task
+def generate_html_ios():
+    generate_html(platform="ios")
+
+@task
 def generate_html(platform="android", cordova=False):
     """
     Generate html from templates
