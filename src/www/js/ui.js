@@ -382,7 +382,7 @@ var _ui = {
                 map.getAnnotationCoords(false));
             map.refreshRecords(this.currentAnnotation);
             this.currentAnnotation = undefined;
-            $.mobile.changePage('map.html');
+            utils.gotoMapPage();
         }, this));
 
         utils.touchScroll('#annotate-preview-detail');
