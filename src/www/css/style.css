@@ -418,7 +418,7 @@ body .ui-loader .ui-icon{
 }
 
 .record-extra {
- width : 100% !important;
+    width : 100%;
 }
 
 div.record-extra > div > img {
@@ -428,8 +428,16 @@ div.record-extra > div > img {
 }
 
 #saved-records-page .ui-listview li.active {
-    border: #2c3f62 solid 1px !important;
-    margin-top: 1% !important;
+    margin-top: 1%;
+    border-bottom : none;
+}
+
+#saved-records-list-list li.active div.ui-block-c {
+    margin-right: 1%;
+}
+
+#saved-records-list-list li.active div.ui-block-b {
+    width :77%;
 }
 
 @media (min-width: 320px) {
@@ -438,6 +446,8 @@ div.record-extra > div > img {
         width: 45% !important;
     }
 }
+
+
 
 @media (min-width: 480px) {
     #saved-records-page .ui-listview li.active {
