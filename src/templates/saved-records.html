@@ -8,7 +8,7 @@
                 <div class="ui-block-a">
                     <h2>{{body["view-records"]}}</h2>
                 </div>
-                <div class="ui-block-b ui-btn-right" data-role="controlgroup" id="layout"  data-type="horizontal" >
+                <div class="ui-block-b ui-btn-right" data-role="controlgroup" id="layout-toggle"  data-type="horizontal" >
                     {% if body["display-buttons"] == 'true' %}
                         {% if "buttons" in body%}
                             {% for key, items in body["buttons"].iteritems() %}

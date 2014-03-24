@@ -407,6 +407,10 @@ body .ui-loader .ui-icon{
     width : inherit;
 }
 
+#layout-toggle > div.ui-controlgroup-controls {
+    float : right;
+}
+
 .ellipsis {
     white-space: nowrap;
     overflow: hidden;
@@ -418,7 +422,7 @@ body .ui-loader .ui-icon{
 }
 
 .record-extra {
-    width : 100%;
+    width : 100% !important;
 }
 
 div.record-extra > div > img {
@@ -437,28 +441,29 @@ div.record-extra > div > img {
 }
 
 #saved-records-list-list li.active div.ui-block-b {
-    width :77%;
+    width : 75%;
+}
+
+/* For grid view float left */
+#saved-records-page .ui-listview li.active {
+    float : left;
+    /* height: 150px; */
 }
 
 @media (min-width: 320px) {
     #saved-records-page .ui-listview li.active {
-        float: left;
         width: 45% !important;
     }
 }
 
-
-
 @media (min-width: 480px) {
     #saved-records-page .ui-listview li.active {
-        float: left;
         width: 30% !important;
     }
 }
 
 @media (min-width: 768px ) {
     #saved-records-page .ui-listview li.active {
-        float: left;
         width: 23% !important;
     }
 }
@@ -567,13 +572,13 @@ div.record-extra > div > img {
 #saved-records-page-header .ui-block-a{
     margin: 0;
     padding: 0;
-    width: 60%;
+    /* width: 60%; */
 }
 
 #saved-records-page-header .ui-block-b{
     margin: 0;
     padding: 0.2em;
-    width: 40%;
+    /* width: 40%; */
 }
 
 #settings-page h2,
