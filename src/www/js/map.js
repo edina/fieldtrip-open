@@ -759,7 +759,7 @@ var _this = {
      * @param point A point object with internal projection.
      */
     pointToExternal: function(point){
-        var lonLat = this.toInternal(new OpenLayers.LonLat(point.lon, point.lat));
+        var lonLat = this.toExternal(new OpenLayers.LonLat(point.lon, point.lat));
         point.lon = lonLat.lon;
         point.lat = lonLat.lat;
     },

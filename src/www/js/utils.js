@@ -368,6 +368,14 @@ var _base = {
             $.mobile.changePage('map.html');
         }
     },
+        /**
+     * Go to main map page
+     */
+    gotoHomePage: function(){
+        if(config.save_gps_track_click){
+            $.mobile.changePage(config.save_gps_track_click);
+        }
+    },
 
     /**
      * Force hide keyboard.

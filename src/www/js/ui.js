@@ -382,7 +382,7 @@ var _ui = {
                 map.getAnnotationCoords(false));
             map.refreshRecords(this.currentAnnotation);
             this.currentAnnotation = undefined;
-            $.mobile.changePage('map.html');
+            utils.gotoMapPage();
         }, this));
 
         utils.touchScroll('#annotate-preview-detail');
@@ -540,7 +540,7 @@ var _ui = {
             ).trigger('create');
 
             // Check if list or grid layout is active
-            var active = $('#layout a').filter('.ui-btn-active').text().trim().toLowerCase();
+            var active = $('#layout-toggle a').filter('.ui-btn-active').text().trim().toLowerCase();
 
             // Ensure that extra info is hidden in list view for now
             if (active === 'list' || active.length==0) {
@@ -584,7 +584,7 @@ var _ui = {
         }, this));
 
         // Toggle List/Grid Layout
-        $('#layout a').on('click', function (e) {
+        $('#layout-toggle a').on('click', function (e) {
             var current = $(e.currentTarget);
             current.toggleClass('ui-btn-active', true);
 
