@@ -422,6 +422,7 @@ body .ui-loader .ui-icon{
 }
 
 .record-extra {
+    display : none;
     width : 100% !important;
 }
 
