@@ -184,6 +184,7 @@ def generate_html(platform="android", cordova=False):
     export_path = os.sep.join((src_dir, 'www'))
     templates_path = os.path.join(proj_home, 'src', 'templates')
 
+    #function for merging data
     def _do_merge(filename, data, path):
         if os.path.exists(path) and filename in os.listdir(path):
             with open(os.path.join(path, filename), 'r') as f:
@@ -192,10 +193,12 @@ def generate_html(platform="android", cordova=False):
         else:
             return data
 
+    #get data and merge it
     def _get_data(path1, filename, path2):
         with open(os.path.join(path1, filename),'r') as f:
             return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict), path2)
 
+    #get header and footer data
     def _get_header_footer_data(path, templates_path):
         environ = Environment(loader=FileSystemLoader(path))
         environ.globals["_get_letter"] = _get_letter
@@ -204,6 +207,7 @@ def generate_html(platform="android", cordova=False):
         header_data = _get_data(path, 'header.json', templates_path)
         footer_data = _get_data(path, 'footer.json', templates_path)
 
+        #merge header and footer.json from plugins with the initial one
         for d in _get_plugins_templates():
             if "header.json" in os.listdir(d):
                 with open(os.path.join(d, "header.json"), 'r') as f:
@@ -266,7 +270,8 @@ def generate_html(platform="android", cordova=False):
                             data["header"] = header_data
 
                         if "footer" in data:
-                            _merge(data["footer"], footer_data)
+                            if not _is_empty(data["footer"]):
+                                _merge(data["footer"], footer_data)
                         else:
                             data["footer"] = footer_data
 
@@ -832,6 +837,12 @@ def _get_source(app='android'):
     proj_home = os.sep.join((root, 'project'))
     src_dir = os.sep.join((root, 'src'))
     return root, proj_home, src_dir
+
+def _is_empty(any_structure):
+    if any_structure:
+        return False
+    else:
+        return True
 
 def _make_dirs(dirs):
     """ make dirs if not exist"""

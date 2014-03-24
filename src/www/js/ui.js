@@ -525,7 +525,37 @@ var _ui = {
      */
     savedRecordsPage: function(event){
         var annotations = records.getSavedRecords();
-        //utils.printObj(annotations);
+
+        /**
+         * toggleDisplay
+         * takes an id (either records-list or records-grid),
+         * adds to local storage and toggles layout button and 
+         * grid or list layout style
+         */
+        function toggleDisplay(id) {
+
+            // default is list view
+            if (id === null || id === "null") {
+                id = 'records-list';
+            }
+
+            // store preference so it persists
+            localStorage.setItem('layout', id);
+
+            // Get the button and ensure it's active
+            var button  = $('#' + id);
+            button.toggleClass('ui-btn-active', true);
+
+            // Remove active class from any other buttons
+            $.each(button.siblings('a'), function (key, value) {
+                $(value).toggleClass('ui-btn-active', false);
+            });
+
+            var isGrid = id === 'records-grid';
+            $('#saved-records-page .ui-listview li').toggleClass('active', isGrid);
+            $('.record-extra').toggle(isGrid);
+        };        
+
 
         var addAnnotation = function(id, annotation){
             var template = _.template(recrowtemplate);
@@ -538,14 +568,6 @@ var _ui = {
                     "records": records
                 })
             ).trigger('create');
-
-            // Check if list or grid layout is active
-            var active = $('#layout-toggle a').filter('.ui-btn-active').text().trim().toLowerCase();
-
-            // Ensure that extra info is hidden in list view for now
-            if (active === 'list' || active.length==0) {
-                $('.record-extra').hide();
-           };
         }
 
         $.each(annotations, $.proxy(function(id, annotation){
@@ -557,7 +579,13 @@ var _ui = {
                 delete annotations[id];
                 this.records.setSavedAnnotations(annotations);
             }
+
         }, this));
+
+
+        // Annotations loaded at this point so we can setup layout
+        // Check if preference previously set
+        toggleDisplay(localStorage.getItem('layout'));
 
         // delete a saved record
         $(document).off('click', '.saved-records-delete');
@@ -585,28 +613,7 @@ var _ui = {
 
         // Toggle List/Grid Layout
         $('#layout-toggle a').on('click', function (e) {
-            var current = $(e.currentTarget);
-            current.toggleClass('ui-btn-active', true);
-
-            var id = current.attr('id');
-            if(id === 'records-list'){
-                // Default list view css - remove active class so grid view css is ignored
-                $('#saved-records-page .ui-listview li').toggleClass('active', false);
-                // List view doesn't need image preview etc at this stage
-                $('.record-extra').hide();
-            }
-            if(id === 'records-grid'){
-                // Apply grid view css by adding active class
-                $('#saved-records-page .ui-listview li').toggleClass('active', true);
-                // Show text/image etc preview block
-                $('.record-extra').show();
-            }
-
-            // Remove active class from any other buttons
-            var siblings = current.siblings('a');
-            $.each(siblings, function (key, value) {
-                $(value).toggleClass('ui-btn-active', false);
-            });
+            toggleDisplay($(e.currentTarget).attr('id'));
         });
 
         // click on a record

@@ -4,7 +4,6 @@
         "display-buttons" : "false",
         "buttons" : {
             "records-list":{
-                "class": "ui-btn-active",
                 "id" : "records-list",
                 "data-role": "button",
                 "data-icon": "bars",
