@@ -529,7 +529,6 @@ var _ui = {
 
         var addAnnotation = function(id, annotation){
             var template = _.template(recrowtemplate);
-            var fields = annotation.record.fields[0];
 
             $('#saved-records-list-list').append(
                 template({
