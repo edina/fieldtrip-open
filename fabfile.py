@@ -65,7 +65,7 @@ def clean():
         if os.path.exists(repo):
             with lcd(repo):
                 out = local('git status', capture=True)
-                if len(out.splitlines()) > 2:
+                if len(out.splitlines()) > 4:
                     print "\nWon't delete {0} until there are no uncommitted changes".format(repo)
                     exit(-1)
                 out = local('git stash list', capture=True)
