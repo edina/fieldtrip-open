@@ -153,9 +153,9 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 var _this = {
 
     /**
-     * TODO
+     * Enable high accuracy flag.
      */
-    GPS_ACCURACY_FLAG: false,
+    GPS_ACCURACY_FLAG: true,
 
     /**
      * Set up openlayer map.
