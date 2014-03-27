@@ -189,6 +189,7 @@ def generate_html(platform="android", cordova=False):
         if os.path.exists(path) and filename in os.listdir(path):
             with open(os.path.join(path, filename), 'r') as f:
                 new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
+            print "merging {0}".format(os.path.join(path, filename))
             return _merge(data, new_data)
         else:
             return data
@@ -860,7 +861,10 @@ def _merge(a, b, path=None):
     for key in b:
         if key in a:
             if isinstance(a[key], dict) and isinstance(b[key], dict):
-                _merge(a[key], b[key], path + [str(key)])
+                if _is_empty(b[key]):
+                    a[key] = b[key]
+                else:
+                    _merge(a[key], b[key], path + [str(key)])
             elif a[key] == b[key]:
                 pass # same leaf value
             else:
