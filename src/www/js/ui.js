@@ -348,6 +348,8 @@ var _ui = {
      * Annotate option, show drag icon.
      */
     annotatePreviewPage: function(){
+        map.display('annotate-preview-map');
+        
         if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
             map.updateAnnotateLayer();
             localStorage.set('ignore-centre-on-annotation', false);
@@ -387,7 +389,7 @@ var _ui = {
 
         utils.touchScroll('#annotate-preview-detail');
 
-        map.display('annotate-preview-map');
+       
         map.hideRecordsLayer();
         map.updateSize();
     },
