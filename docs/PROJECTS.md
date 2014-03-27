@@ -51,6 +51,18 @@ For details on fieldtrip plugin development see [plugin development documentatio
 
 All HTML in fieldtrip open is [templated](https://github.com/edina/fieldtrip-open/tree/master/src/templates) with the core providing bare bone templates and data json files as a starting point for a project. In addition, plugins can also provide templates and default data files for new pages that they wish to introduce to the app. It is the role of the project to provide the content of the main landing pages that diverge from the default layout.
 
+For overriding/getting rif of elements of the core software, e.g. the footer on index page or some of the buttons of the main body. Then you need to add empty objects on the index.json, such as 
+```
+"footer" : {}, 
+"body": {
+	"sections": 
+    	{"items" : {"item1" : ""}
+     }
+ }
+``` 
+ Check here better:
+https://github.com/edina/spatial-memories/blob/master/src/templates/index.json
+
 #### Add New Button
 
 A project can add a new button to the _Home_ page by adding an index.json to src/templates. The following json object adds a _Saved_ button that will open saved-maps.html when clicked:

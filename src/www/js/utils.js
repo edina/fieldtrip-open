@@ -368,6 +368,15 @@ var _base = {
             $.mobile.changePage('map.html');
         }
     },
+    /**
+    *
+    */
+    showRecordsOnGpsTrackingPage: function(){
+    
+        return config.show_records_on_gps_tracking_page;
+    
+    
+    },
         /**
      * Go to main map page
      */
