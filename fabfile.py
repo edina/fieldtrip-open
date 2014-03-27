@@ -419,7 +419,7 @@ def install_project(platform='android',
 
     # create project repo
     if not os.path.exists('project'):
-        proj = _config('project', section='release')
+        proj = _config('project')
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
