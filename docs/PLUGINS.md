@@ -4,12 +4,13 @@
 
 #### Core Plugins
 
+* [Geo Fences](https://github.com/edina/fieldtrip-geo-fences)
+* [GPS Tracking](https://github.com/edina/fieldtrip-gps-tracking)
+* [Map Search](https://github.com/edina/fieldtrip-map-search)
 * [Offline Maps](https://github.com/edina/fieldtrip-offline-maps)
 * [Sync](https://github.com/edina/fieldtrip-sync)
 
 #### Adding bespoke plugins
-
-TODO
 
 ##### javascript
 
