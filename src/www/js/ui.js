@@ -538,7 +538,7 @@ var _ui = {
 
             // default is list view
             if (id === null || id === "null") {
-                id = 'records-list';
+                id = 'records-grid';
             }
 
             // store preference so it persists

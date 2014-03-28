@@ -407,6 +407,12 @@ body .ui-loader .ui-icon{
     width : inherit;
 }
 
+
+/* Reduce sync icon size in grid view */
+li.active .saved-records-list-synced-false {
+    background-size: 28px 27px;
+}
+
 #layout-toggle > div.ui-controlgroup-controls {
     float : right;
 }
@@ -437,12 +443,19 @@ div.record-extra > div > img {
     border-bottom : none;
 }
 
+/* Alter sync button width for grid view */
+#saved-records-list .active .ui-block-a{
+    /* width: 17%; */
+    width: 0%;
+}
+
+
 #saved-records-list-list li.active div.ui-block-c {
     margin-right: 1%;
 }
 
 #saved-records-list-list li.active div.ui-block-b {
-    width : 75%;
+    width : 63%;
 }
 
 /* For grid view float left */
