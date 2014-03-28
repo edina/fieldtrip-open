@@ -130,7 +130,7 @@ For overriding/getting rid of elements on the core system (e.g. the footer on in
  }
 ```
 
-For a fuiller example see: https://github.com/edina/spatial-memories/blob/master/src/templates/index.json.
+For a fuller example see: https://github.com/edina/spatial-memories/blob/master/src/templates/index.json.
 
 #### Generate HTML
 
