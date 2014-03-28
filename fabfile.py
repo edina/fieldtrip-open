@@ -311,7 +311,7 @@ def generate_html(platform="android", cordova=False):
     #generate plugins templates
     plgs_tmpls = _get_plugins_templates()
     for d in plgs_tmpls:
-        _create_html(d, path, header_data, footer_data, header_template, footer_template)
+        _create_html(d, templates_path, header_data, footer_data, header_template, footer_template)
 
 @task
 def install_plugins(target='local', cordova="True"):
