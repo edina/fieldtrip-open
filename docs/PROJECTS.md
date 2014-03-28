@@ -118,6 +118,20 @@ A project can add a new footer new tab, and landing page for the tab, by providi
 
 TODO
 
+#### Removing Elements
+
+For overriding/getting rid of elements on the core system (e.g. the footer on index page or some of the buttons of the main body) you need to add empty objects on the index.json, for example:
+```
+"footer" : {},
+"body": {
+	"sections":
+    	{"items" : {"item1" : ""}
+     }
+ }
+```
+
+For a fuiller example see: https://github.com/edina/spatial-memories/blob/master/src/templates/index.json.
+
 #### Generate HTML
 
 The generate_html fabric task will need to be run after a change to templates or data files:
@@ -129,5 +143,6 @@ fab generate_html
 ### Examples
 
 * [Basic Example](https://github.com/edina/fieldtrip-example)
-* [Fieldtrip GB](https://github.com/edina/fieldtrip-gb)
 * [COBWEB](https://github.com/edina/fieldtrip-cobweb)
+* [Fieldtrip GB](https://github.com/edina/fieldtrip-gb)
+* [Spatial Memories](https://github.com/edina/spatial-memories)

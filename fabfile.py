@@ -64,8 +64,8 @@ def clean():
     def delete_repo(repo):
         if os.path.exists(repo):
             with lcd(repo):
-                out = local('git status', capture=True)
-                if len(out.splitlines()) > 4:
+                out = local('git status -s', capture=True)
+                if len(out.splitlines()) > 0:
                     print "\nWon't delete {0} until there are no uncommitted changes".format(repo)
                     exit(-1)
                 out = local('git stash list', capture=True)
@@ -119,7 +119,7 @@ def deploy_android():
 
             if out and out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
                 # app is installed with wrong certificate try and uninstall app
-                local('adb uninstall {0}'.format(_config('package')))
+                local('adb uninstall {0}'.format(_config('package', section='app')))
 
                 # retry install
                 local(cmd)
@@ -460,7 +460,7 @@ def install_project(platform='android',
     config_template = environ.get_template("config.xml")
     filedata = config_template.render(
         name=_config('name'),
-        package=_config('package'),
+        package=_config('package', section='app'),
         version=versions['app'],
         version_code=versions['app'].replace(".", ""),
         author_email=_config('author_email'),
@@ -477,7 +477,7 @@ def install_project(platform='android',
     with lcd(target_dir):
         local('cordova create {0} {1} {1}'.format(
             runtime,
-            _config('package'),
+            _config('package', section='app'),
             _config('name')))
 
     with lcd(runtime):
@@ -606,7 +606,7 @@ def release_android(beta='True', overwrite='False', email=False):
 
     with lcd(runtime):
         bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
-        apk_name = _config('package').replace('.', '')
+        apk_name = _config('package', section='app').replace('.', '')
 
         # do the build
         if _str2bool(beta):
@@ -621,7 +621,6 @@ def release_android(beta='True', overwrite='False', email=False):
 
             # sign the application
             unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(apk_name)))
-            #unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unaligned.apk'.format(name)))
             signed_apkfile = os.sep.join((bin_dir, '{0}-release-signed.apk'.format(apk_name)))
             local('cp {0} {1}'.format(unsigned_apkfile, signed_apkfile))
             keystore = _config('keystore', section='release')

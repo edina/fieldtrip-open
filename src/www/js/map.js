@@ -79,9 +79,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         var map = _this.map;
         var baseLayerName = map.baseLayer.layername;
 
-        tileMapCapabilities = {'tileSet': []};
-
         var applyDefaults = $.proxy(function(){
+            tileMapCapabilities = {'tileSet': []};
             tileMapCapabilities.tileFormat = {
                 'height': 256,
                 'width': 256
@@ -89,36 +88,41 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
             tileMapCapabilities.tileSet = RESOLUTIONS;
         }, this);
 
-        _this.baseMapFullURL = _this.getTMSURL() + serviceVersion + '/' + baseLayerName + '/';
+        if(baseLayerName){
+            _this.baseMapFullURL = _this.getTMSURL() + serviceVersion + '/' + baseLayerName + '/';
 
-        // fetch capabilities
-        $.ajax({
-            type: "GET",
-            url: utils.getMapServerUrl() + serviceVersion + '/' + baseLayerName + '/',
-            dataType: "xml",
-            timeout: 10000,
-            success: $.proxy(function(xml) {
-                var tileFormat = $(xml).find('TileFormat')[0];
-                this.tileMapCapabilities.tileFormat = {
-                    'height': $(tileFormat).attr('height'),
-                    'width': $(tileFormat).attr('width')
-                }
+            // fetch capabilities
+            $.ajax({
+                type: "GET",
+                url: utils.getMapServerUrl() + serviceVersion + '/' + baseLayerName + '/',
+                dataType: "xml",
+                timeout: 10000,
+                success: $.proxy(function(xml) {
+                    var tileFormat = $(xml).find('TileFormat')[0];
+                    this.tileMapCapabilities.tileFormat = {
+                        'height': $(tileFormat).attr('height'),
+                        'width': $(tileFormat).attr('width')
+                    }
 
-                $(xml).find('TileSet').each($.proxy(function(i, element){
-                    // store units per pixel of each zoom level
-                    this.tileMapCapabilities.tileSet[i] = $(element).attr('units-per-pixel');
-                }, this));
+                    $(xml).find('TileSet').each($.proxy(function(i, element){
+                        // store units per pixel of each zoom level
+                        this.tileMapCapabilities.tileSet[i] = $(element).attr('units-per-pixel');
+                    }, this));
 
-                if(this.tileMapCapabilities.tileSet.length === 0){
-                    console.debug("Capabilities does not contain tileset details. Use defaults.");
+                    if(this.tileMapCapabilities.tileSet.length === 0){
+                        console.debug("Capabilities does not contain tileset details. Use defaults.");
+                        applyDefaults();
+                    }
+                }, this),
+                error: function(){
+                    console.debug("Capabilities not found. Use defaults.");
                     applyDefaults();
                 }
-            }, this),
-            error: function(){
-                console.debug("Capabilities not found. Use defaults.");
-                applyDefaults();
-            }
-        });
+            });
+        }
+        else{
+            applyDefaults();
+        }
     };
 
     /**
@@ -153,9 +157,9 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 var _this = {
 
     /**
-     * TODO
+     * Enable high accuracy flag.
      */
-    GPS_ACCURACY_FLAG: false,
+    GPS_ACCURACY_FLAG: true,
 
     /**
      * Set up openlayer map.
@@ -173,7 +177,6 @@ var _this = {
 
         this.map = new OpenLayers.Map("map", options);
         this.map.addLayer(baseLayer);
-        //fetchCapabilities();
 
         // styles for records
         var recordsStyle = new OpenLayers.Style({
@@ -322,8 +325,6 @@ var _this = {
                        DEFAULT_USER_LAT,
                        MIN_LOCATE_ZOOM_TO,
                        true);
-
-        //fetchCapabilities();
     },
 
     /**

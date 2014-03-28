@@ -158,32 +158,6 @@ var _base = {
     },
 
     /**
-     * TODO this can probably be deleted?
-     * Confirm yes/no dialogue helper.
-     * @param title Confirm dialogue title.
-     * @param test The text content.
-     * @param object The object to envoke when ok is applied.
-     * @param func The function to execute when ok is applied.
-     * @param args The arguments to the above function.
-     */
-    // confirm: function(title, text, object, func, args){
-    //     $(document).off('pageinit', '#confirm-page');
-    //     $(document).on('pageinit', '#confirm-page', function(event){
-    //         $('#confirm-page-header h1').text(title);
-    //         $('#confirm-page-content h1').text(title);
-    //         $('#confirm-page-content p').text(text);
-
-    //         $('#confirm-ok').unbind('click');
-    //         $('#confirm-ok').click(function(){
-    //             func.apply(object, args);
-    //         });
-    //     });
-
-    //     // TODO dialog is deprecated
-    //     $.mobile.changePage('confirm.html', {role: "dialog"});
-    // },
-
-    /**
      * Delete a file from file system.
      * @param fileName The name of the file to delete.
      * @param dir The directory the file belongs to.
@@ -368,12 +342,23 @@ var _base = {
             $.mobile.changePage('map.html');
         }
     },
-        /**
+
+    /**
+     *
+     */
+    showRecordsOnGpsTrackingPage: function(){
+        return config.show_records_on_gps_tracking_page;
+    },
+
+    /**
      * Go to main map page
      */
     gotoHomePage: function(){
         if(config.save_gps_track_click){
             $.mobile.changePage(config.save_gps_track_click);
+        }
+        else{
+            $.mobile.changePage('index.html');
         }
     },
 
@@ -581,10 +566,11 @@ var _base = {
 var _this = {};
 var _android = {
     /**
-     * TODO
+     * @return Get app root name. For android make sure the directory is deleted
+     * when the app is uninstalled.
      */
     getRootDir: function(){
-        return "Android/data/uk.ac.edina.mobile";
+        return "Android/data/" + config.package;
     }
 };
 

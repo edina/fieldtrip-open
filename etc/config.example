@@ -11,9 +11,6 @@ location=etc/config.example
 ; git repository of project
 project=ssh://git@github.com/edina/fieldtrip-example.git
 
-; the java package of the android application
-package=uk.ac.edina.example
-
 ; the install directory
 runtime_dir=ftex
 
@@ -73,3 +70,6 @@ map_baselayer=osm
 ;map_layername=fieldtripgb@BNG
 ;map_serviceVersion=1.0.0
 ;map_imgtype=jpg
+
+; the java package of the android application
+package=uk.ac.edina.example
