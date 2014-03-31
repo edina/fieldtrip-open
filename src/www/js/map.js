@@ -561,7 +561,16 @@ var _this = {
      * @return The coordinates of the user, based on the last geolocate.
      * ({<OpenLayers.LonLat>})
      */
-    getUserCoords: function(){
+    getUserCoords: function(external){
+        return this.toInternal(this.userLonLat);
+    },
+
+    /**
+     * @return The coordinates of the user, based on the last geolocate, in
+     * external projection.
+     * ({<OpenLayers.LonLat>})
+     */
+    getUserCoordsExternal: function(external){
         return this.userLonLat;
     },
 
@@ -674,14 +683,14 @@ var _this = {
                 callback(position);
             },
             function(){
-                callback(
-                    {
+                callback({
+                    coords: {
                         longitude: DEFAULT_USER_LON,
                         latitude: DEFAULT_USER_LAT,
                         heading: 130,
                         altitude: 150
                     }
-                );
+                });
             },
             {
                 enableHighAccuracy: this.GPS_ACCURACY_FLAG,
@@ -1036,7 +1045,7 @@ var _this = {
             EXTERNAL_PROJECTION,
             INTERNAL_PROJECTION);
 
-        if(typeof(clone.gpsPosition) !== 'undefined'){
+        if(typeof(lonlat.gpsPosition) !== 'undefined'){
             clone.gpsPosition = lonlat.gpsPosition;
         }
 

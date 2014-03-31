@@ -158,6 +158,14 @@ var _base = {
     },
 
     /**
+     * @param string
+     * @return The first letter of a string uppercased.
+     */
+    capitaliseFirstLetter: function(string){
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+
+    /**
      * Delete a file from file system.
      * @param fileName The name of the file to delete.
      * @param dir The directory the file belongs to.
@@ -509,7 +517,11 @@ var _base = {
      * @return String as a boolean value.
      */
     str2bool: function(val){
-        return val.toLowerCase() === 'true';
+        var bool = false;
+        if(val){
+            bool = val.toLowerCase() === 'true';
+        }
+        return bool;
     },
 
     /**
