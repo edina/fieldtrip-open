@@ -131,23 +131,38 @@ var _base = {
         });
     },
 
-    // annotate: function(type){
-    //     localStorage.setItem('annotate-form-type', type);
-    //     $.mobile.changePage('annotate.html', {transition: "fade"});
-    // },
-
-    // annotateImage: function(type){
-    //     this.annotate('image');
-    // },
-    // annotateAudio: function(type){
-    //     this.annotate('audio');
-    // },
-    // annotateText: function(type){
-    //     this.annotate('text');
-    // },
+    /**
+     * Annotate a record.
+     * @param type The type of record to annotate.
+     */
+    annotate: function(type){
+        localStorage.setItem('annotate-form-type', type);
+        $.mobile.changePage('annotate.html', {transition: "fade"});
+    },
 
     /**
-     * Delete annotation / record
+     * Annotate an image record.
+     */
+    annotateImage: function(){
+        this.annotate('image');
+    },
+
+    /**
+     * Annotate an audio record.
+     */
+    annotateAudio: function(){
+        this.annotate('audio');
+    },
+
+    /**
+     * Annotate a text record.
+     */
+    annotateText: function(){
+        this.annotate('text');
+    },
+
+    /**
+     * delete annotation / record
      * @param annotation id of record to be deleted.
      */
     deleteAnnotation: function(id){

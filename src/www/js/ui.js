@@ -66,31 +66,26 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
 
         // unbind is required as this is used in the home page
         $('.annotate-image-form').unbind();
-        $('.annotate-image-form').on('vmousedown', $.proxy(function(){
-            localStorage.setItem('annotate-form-type', 'image');
-            $.mobile.changePage('annotate.html', {transition: "fade"});
-        }, this));
+        $('.annotate-image-form').on('vmousedown', function(){
+            records.annotateImage();
+        });
 
         $('.annotate-audio-form').unbind();
-        $('.annotate-audio-form').on('vmousedown', $.proxy(function(){
-            localStorage.setItem('annotate-form-type', 'audio');
-            $.mobile.changePage('annotate.html',  {transition: "fade"});
-        }, this));
+        $('.annotate-audio-form').on('vmousedown', function(){
+            records.annotateAudio();
+        });
 
         $('.annotate-text-form').unbind();
-        $('.annotate-text-form').on('vmousedown', $.proxy(function(){
-            localStorage.setItem('annotate-form-type', 'text');
-            $.mobile.changePage('annotate.html',  {transition: "fade"});
-        }, this));
+        $('.annotate-text-form').on('vmousedown', function(){
+            records.annotateText();
+        });
 
         $('.annotate-custom-form').unbind();
-        $('.annotate-custom-form').on('vmousedown', $.proxy(function(event){
+        $('.annotate-custom-form').on('vmousedown', function(event){
             // get the custom form type from the element id
             var id = $(event.target).parent().attr('id');
-            localStorage.setItem('annotate-form-type',
-                                 id.substr(id.lastIndexOf('-') + 1));
-            $.mobile.changePage('annotate.html', {transition: "fade"});
-        }, this));
+            records.annotate(id.substr(id.lastIndexOf('-') + 1));
+        });
     };
 
     // exit app, only appies to android
