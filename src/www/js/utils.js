@@ -344,25 +344,6 @@ var _base = {
     },
 
     /**
-     *
-     */
-    showRecordsOnGpsTrackingPage: function(){
-        return config.show_records_on_gps_tracking_page;
-    },
-
-    /**
-     * Go to main map page
-     */
-    gotoHomePage: function(){
-        if(config.save_gps_track_click){
-            $.mobile.changePage(config.save_gps_track_click);
-        }
-        else{
-            $.mobile.changePage('index.html');
-        }
-    },
-
-    /**
      * Force hide keyboard.
      */
     hideKeyboard: function(){
@@ -473,6 +454,14 @@ var _base = {
     },
 
     /**
+     * Used for making the file system fiendly fileName.
+     */
+    santiseForFilename: function(text){
+        var filename = text.replace(/[^-a-z0-9_\.]/gi, '_');
+        return filename;
+    },
+
+    /**
      * Helper function that sets the unique value of a JQM select element.
      * @param selector Jquery selector.
      * @param value The new value.
@@ -517,11 +506,10 @@ var _base = {
     },
 
     /**
-     * Used for making the file system fiendly fileName.
+     * @return String as a boolean value.
      */
-    santiseForFilename: function(text){
-        var filename = text.replace(/[^-a-z0-9_\.]/gi, '_');
-        return filename;
+    str2bool: function(val){
+        return val.toLowerCase() === 'true';
     },
 
     /**
