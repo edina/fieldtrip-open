@@ -131,6 +131,21 @@ var _base = {
         });
     },
 
+    // annotate: function(type){
+    //     localStorage.setItem('annotate-form-type', type);
+    //     $.mobile.changePage('annotate.html', {transition: "fade"});
+    // },
+
+    // annotateImage: function(type){
+    //     this.annotate('image');
+    // },
+    // annotateAudio: function(type){
+    //     this.annotate('audio');
+    // },
+    // annotateText: function(type){
+    //     this.annotate('text');
+    // },
+
     /**
      * Delete annotation / record
      * @param annotation id of record to be deleted.
@@ -177,7 +192,7 @@ var _base = {
     },
 
     /**
-     * TODO
+     * @return Assets directory object.
      */
     getAssetsDir: function(){
         return assetsDir;
@@ -471,7 +486,6 @@ var _base = {
         }
 
         this.saveRecord(undefined, annotation);
-        //map.refreshAnnotations(annotation);
     },
 
     /**

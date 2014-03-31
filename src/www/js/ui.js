@@ -349,7 +349,7 @@ var _ui = {
      */
     annotatePreviewPage: function(){
         map.display('annotate-preview-map');
-        
+
         if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
             map.updateAnnotateLayer();
             localStorage.set('ignore-centre-on-annotation', false);
@@ -389,7 +389,6 @@ var _ui = {
 
         utils.touchScroll('#annotate-preview-detail');
 
-       
         map.hideRecordsLayer();
         map.updateSize();
     },
@@ -531,7 +530,7 @@ var _ui = {
         /**
          * toggleDisplay
          * takes an id (either records-list or records-grid),
-         * adds to local storage and toggles layout button and 
+         * adds to local storage and toggles layout button and
          * grid or list layout style
          */
         function toggleDisplay(id) {
@@ -556,7 +555,7 @@ var _ui = {
             var isGrid = id === 'records-grid';
             $('#saved-records-page .ui-listview li').toggleClass('active', isGrid);
             $('.record-extra').toggle(isGrid);
-        };        
+        };
 
 
         var addAnnotation = function(id, annotation){

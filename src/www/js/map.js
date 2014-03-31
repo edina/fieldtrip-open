@@ -665,6 +665,32 @@ var _this = {
     },
 
     /**
+     * Get the current location of the device.
+     * @callback Function executed when position is found.
+     */
+    getLocation: function(callback){
+        navigator.geolocation.getCurrentPosition(
+            function(position){
+                callback(position);
+            },
+            function(){
+                callback(
+                    {
+                        longitude: DEFAULT_USER_LON,
+                        latitude: DEFAULT_USER_LAT,
+                        heading: 130,
+                        altitude: 150
+                    }
+                );
+            },
+            {
+                enableHighAccuracy: this.GPS_ACCURACY_FLAG,
+                timeout: this.geolocateTimeout
+            }
+        );
+    },
+
+    /**
      * @return The map tileset capabilities object.
      */
     getTileMapCapabilities: function(){
@@ -761,6 +787,27 @@ var _this = {
      */
     pointToExternal: function(point){
         var lonLat = this.toExternal(new OpenLayers.LonLat(point.lon, point.lat));
+        point.lon = lonLat.lon;
+        point.lat = lonLat.lat;
+    },
+
+    /**
+     * Covert a point object to internal projection.
+     * @param point A point object with external projection.
+     */
+    pointToInternal: function(point){
+        var lonLat;
+        if(typeof(point.longitude) === 'undefined'){
+            lonLat = this.toInternal(
+                new OpenLayers.LonLat(point.lon, point.lat));
+        }
+        else{
+            lonLat = this.toInternal(
+                new OpenLayers.LonLat(point.longitude, point.latitude));
+            point.longitude = lonLat.lon;
+            point.latitude = lonLat.lat;
+        }
+
         point.lon = lonLat.lon;
         point.lat = lonLat.lat;
     },
