@@ -948,11 +948,21 @@ var _this = {
         var feature = this.getRecordsLayer().getFeatureFromEvent(evt);
         if(feature){
             var annotation = records.getSavedRecord(feature.attributes.id);
+
+            // Get point and convert
+            var point = annotation.record.point;
+            var lonlat = new OpenLayers.LonLat(point.lon, point.lat);
+            var external = this.toExternal(lonlat);
+            var lon = external.lon;
+            var lat = external.lat;
+
             $('#map-record-popup').off('popupbeforeposition');
             $('#map-record-popup').on({
                 popupbeforeposition: function() {
                     var showRecord = function(html){
-                        $('#map-record-popup-text').append(html).trigger('create');
+
+                        var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
+                        $('#map-record-popup-text').append(html).append(coords).trigger('create');
                     };
 
                     $('#map-record-popup h3').text(annotation.record.name);
