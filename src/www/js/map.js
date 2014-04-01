@@ -162,6 +162,14 @@ var _this = {
     GPS_ACCURACY_FLAG: true,
 
     /**
+     * Override default lon lat values
+     */
+    overrideDefaultLonLat: function(lon, lat){
+        DEFAULT_USER_LON = lon;
+        DEFAULT_USER_LAT = lat;
+    },
+
+    /**
      * Set up openlayer map.
      */
     init: function(){
