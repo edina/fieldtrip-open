@@ -617,7 +617,7 @@ var _ui = {
         $(document).on(
             'click',
             '.saved-records-view',
-            $.proxy(function(event){
+            function(event){
                 if(this.isMobileApp){
                     // this will prevent the event propagating to next screen
                     event.stopImmediatePropagation();
@@ -625,11 +625,10 @@ var _ui = {
 
                 var id = $(event.target).parents('li').attr('id');
                 var annotation = records.getSavedRecord(id);
-                var type = records.getEditorId(annotation);
 
                 map.showRecordsLayer(annotation);
                 utils.gotoMapPage();
-            }, this)
+            }
         );
 
         $('#saved-annotations-list-list').listview('refresh');
