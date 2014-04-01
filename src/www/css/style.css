@@ -193,6 +193,11 @@ body .ui-loader .ui-icon{
     z-index: 2000;
 }
 
+/* Reduce font size of coordinates in map-record-popup text */
+#coords {
+    font-size: 12px;
+}
+
 #map-records-buttons .ui-btn-text{
     font-size: 14px;
 }
