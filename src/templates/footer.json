@@ -1,20 +1,17 @@
 {
     "home": {
-        "platforms": ["android", "ios"],
         "name": "Home",
         "href": "index.html",
         "class": "home-button",
         "data-icon": "custom"
     },
     "map": {
-        "platforms": ["android", "ios"],
         "name": "Map",
         "href": "map.html",
         "class": "map-button",
         "data-icon": "custom"
     },
     "capture": {
-        "platforms": ["android", "ios"],
         "name": "Capture",
         "href": "capture.html",
         "class": "capture-button",
