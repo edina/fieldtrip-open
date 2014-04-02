@@ -133,7 +133,8 @@ def generate_config():
     # using config initialises it
     _config('name')
 
-    values = dict(config.items('app'))
+    values = _merge(dict(config.items('app')), {"mapurls": dict(config.items('mapurls'))})
+    _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
     templates = os.sep.join((src_dir, 'templates'))
     out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
     environ = Environment(loader=FileSystemLoader(templates))
