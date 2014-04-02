@@ -62,6 +62,35 @@ define(['utils'], function(utils){
         });
     }
 
+    /**
+     * Capture error alert.
+     * @param error Cordova error.
+     */
+    var captureError = function(error){
+        var msg = "Problem with capture: " + error.code + " : ";
+        switch(error.code){
+        case CaptureError.CAPTURE_INTERNAL_ERR:
+            msg += " Interval Error."
+            break;
+        case CaptureError.CAPTURE_APPLICATION_BUSY:
+            msg += " Application busy."
+            break;
+        case CaptureError.CAPTURE_INVALID_ARGUMENT:
+            msg += " Invalid Argument."
+            break;
+        case CaptureError.CAPTURE_NO_MEDIA_FILES:
+            msg += " No media files."
+            break;
+        case CaptureError.CAPTURE_NOT_SUPPORTED:
+            msg += " Not supported."
+            break;
+        default:
+            msg += " Unknown Error."
+        }
+        console.debug(msg);
+        alert(msg);
+    };
+
 var _base = {
     IMAGE_UPLOAD_SIZE: "imageUploadSize",
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
@@ -272,8 +301,10 @@ var _base = {
                 function(fileURI){
                     callback(fileURI);
                 },
-                this.onFail,
-                this.getImageOptions(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM, navigator.camera.MediaType.PICTURE)
+                captureError,
+                this.getImageOptions(
+                    navigator.camera.PictureSourceType.SAVEDPHOTOALBUM,
+                    navigator.camera.MediaType.PICTURE)
             );
         }
     },
@@ -522,7 +553,7 @@ var _base = {
                 function(mediaFiles){
                     callback(mediaFiles[0].fullPath);
                 },
-                this.onFail,
+                captureError,
                 {limit: 1}
             );
         }
@@ -537,8 +568,10 @@ var _base = {
                 function(fileURI){
                     callback(fileURI);
                 },
-                this.onFail,
-                this.getImageOptions(Camera.PictureSourceType.CAMERA, Camera.EncodingType.JPEG)
+                captureError,
+                this.getImageOptions(
+                    Camera.PictureSourceType.CAMERA,
+                    Camera.EncodingType.JPEG)
             );
         }
     },
