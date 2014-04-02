@@ -36,7 +36,7 @@ from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from bs4 import BeautifulSoup
-from copy import copy
+from copy import copy, deepcopy
 
 import xml.etree.ElementTree as ET
 
@@ -149,7 +149,8 @@ def generate_config_js():
     # using config initialises it
     _config('name')
 
-    values = dict(config.items('app'))
+    values = _merge(dict(config.items('app')), {"mapurls": dict(config.items('mapurls'))})
+    _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
     templates = os.sep.join((src_dir, 'templates'))
     out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
     environ = Environment(loader=FileSystemLoader(templates))
@@ -289,7 +290,7 @@ def generate_html(platform="android", cordova=False):
 
                         if "footer" in data:
                             if not _is_empty(data["footer"]):
-                                footer_data2 = copy(footer_data)
+                                footer_data2 = deepcopy(footer_data)
                                 data["footer"] = _merge(footer_data2, data["footer"])
                         else:
                             data["footer"] = footer_data
