@@ -18,5 +18,7 @@
   {%endfor%}
 
   <preference name="webviewbounce" value="true" />
+  <preference name="keepRunning" value="true"/>
+
   <content src="index.html" />
 </widget>

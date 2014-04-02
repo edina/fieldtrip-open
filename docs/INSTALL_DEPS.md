@@ -37,3 +37,17 @@ Ensure the sdk/tools directory is in your path.
 ### IOS
 
 TODO
+
+### Desktop
+
+To run fieldtrip on a desktop browser the runtime www directory should be served from the root of the web server. On apache this can be achieved by setting up a virtualhost, e.g:
+
+```
+<VirtualHost *:1234>
+    ServerAdmin me@ed.ac.uk
+    DocumentRoot /home/me/local/<runtime_dir>/www
+    ErrorLog /var/log/apache2/error.log
+    LogLevel info
+    CustomLog /var/log/apache2/access.log combined
+</VirtualHost>
+```

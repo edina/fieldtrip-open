@@ -126,7 +126,23 @@ def deploy_android():
                 local(cmd)
 
 @task
-def generate_config():
+def deploy_ios():
+    """
+    Deploy to ios device connected to machine
+    """
+    _check_command('ant')
+    _check_command('adb')
+    _check_command('cordova')
+
+    # generate html for android
+    generate_html(platform="ios",cordova=True)
+
+    with lcd(_get_runtime()[1]):
+        device = None
+        local('cordova build ios')
+
+@task
+def generate_config_js():
     """ generate config.js """
     root, proj_home, src_dir = _get_source()
 
@@ -143,21 +159,25 @@ def generate_config():
     _write_data(out_file, output)
 
 @task
-def deploy_ios():
-    """
-    Deploy to ios device connected to machine
-    """
-    _check_command('ant')
-    _check_command('adb')
-    _check_command('cordova')
+def _generate_config_xml():
+    """ generate config.xml """
 
-    # generate html for android
-    generate_html(platform="ios",cordova=True)
+    root, proj_home, src_dir = _get_source()
+    theme_src = os.sep.join((proj_home, 'theme'))
+    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
+        versions = json.load(f)["versions"]
 
-    with lcd(_get_runtime()[1]):
-        device = None
-        local('cordova build ios')
-
+    environ = Environment(loader=FileSystemLoader('etc'))
+    config_template = environ.get_template("config.xml")
+    filedata = config_template.render(
+        name=_config('name'),
+        package=_config('package', section='app'),
+        version=versions['app'],
+        version_code=versions['app'].replace(".", ""),
+        author_email=_config('author_email'),
+        url=_config('url'),
+        access_urls = _config('access_urls').split(","))
+    _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
 @task
 def generate_docs():
@@ -166,10 +186,6 @@ def generate_docs():
     """
 
     local('jsdox --output docs/ src/www/js/')
-
-@task
-def generate_html_ios():
-    generate_html(platform="ios")
 
 @task
 def generate_html(platform="android", cordova=False):
@@ -317,6 +333,10 @@ def generate_html(platform="android", cordova=False):
         _create_html(d, templates_path, header_data, footer_data, header_template, footer_template)
 
 @task
+def generate_html_ios():
+    generate_html(platform="ios")
+
+@task
 def install_plugins(target='local', cordova="True"):
     """
     Set up project plugins
@@ -379,10 +399,6 @@ def install_plugins(target='local', cordova="True"):
         exit(-1)
 
 @task
-def install_project_ios():
-    install_project(platform='ios')
-
-@task
 def install_project(platform='android',
                     dist_dir='apps',
                     target='local'):
@@ -427,13 +443,8 @@ def install_project(platform='android',
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
 
-    versions = None
-    theme_src = os.sep.join((proj_home, 'theme'))
-    proj_json = os.sep.join((theme_src, 'project.json'))
-    with open(proj_json, 'r') as f:
-        versions = json.load(f)["versions"]
-
     # do some checks on the project
+    theme_src = os.sep.join((proj_home, 'theme'))
     if not os.path.exists(os.sep.join((theme_src, 'project.json'))):
         print "\n*** WARNING: No project.json found in project"
     theme_css = os.sep.join((theme_src, 'css'))
@@ -459,17 +470,7 @@ def install_project(platform='android',
             exit(-1)
 
     # create cordova config.xml
-    environ = Environment(loader=FileSystemLoader('etc'))
-    config_template = environ.get_template("config.xml")
-    filedata = config_template.render(
-        name=_config('name'),
-        package=_config('package', section='app'),
-        version=versions['app'],
-        version_code=versions['app'].replace(".", ""),
-        author_email=_config('author_email'),
-        url=_config('url'),
-        access_urls = _config('access_urls').split(","))
-    _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
+    _generate_config_xml()
 
     # install external js libraries
     local('bower install')
@@ -524,7 +525,7 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
     # generate config js
-    generate_config()
+    generate_config_js()
 
     # set up cordova/fieldtrip plugins
     install_plugins(target)
@@ -568,6 +569,10 @@ def install_project(platform='android',
         cfg_file = os.sep.join((src_dir, 'etc', 'openlayers-mobile.cfg'))
         js_mobile = os.sep.join((runtime, js_ext_dir, 'openlayers.js'))
         local('./build.py %s %s' % (cfg_file, js_mobile))
+
+@task
+def install_project_ios():
+    install_project(platform='ios')
 
 @task
 def release_android(beta='True', overwrite='False', email=False):
