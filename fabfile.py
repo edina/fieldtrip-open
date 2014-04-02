@@ -36,6 +36,7 @@ from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from bs4 import BeautifulSoup
+from copy import copy
 
 import xml.etree.ElementTree as ET
 
@@ -288,7 +289,8 @@ def generate_html(platform="android", cordova=False):
 
                         if "footer" in data:
                             if not _is_empty(data["footer"]):
-                                _merge(data["footer"], footer_data)
+                                footer_data2 = copy(footer_data)
+                                data["footer"] = _merge(footer_data2, data["footer"])
                         else:
                             data["footer"] = footer_data
 
