@@ -64,31 +64,36 @@ define(['utils'], function(utils){
 
     /**
      * Capture error alert.
-     * @param error Cordova error.
+     * @param error Cordova error. If user cancels this will be undefined.
      */
     var captureError = function(error){
-        var msg = "Problem with capture: " + error.code + " : ";
-        switch(error.code){
-        case CaptureError.CAPTURE_INTERNAL_ERR:
-            msg += " Interval Error."
-            break;
-        case CaptureError.CAPTURE_APPLICATION_BUSY:
-            msg += " Application busy."
-            break;
-        case CaptureError.CAPTURE_INVALID_ARGUMENT:
-            msg += " Invalid Argument."
-            break;
-        case CaptureError.CAPTURE_NO_MEDIA_FILES:
-            msg += " No media files."
-            break;
-        case CaptureError.CAPTURE_NOT_SUPPORTED:
-            msg += " Not supported."
-            break;
-        default:
-            msg += " Unknown Error."
+        if(error !== undefined && error.code !== undefined){
+            var msg = "Problem with capture: " + error.code + " : ";
+            switch(error.code){
+            case CaptureError.CAPTURE_INTERNAL_ERR:
+                msg += " Interval Error."
+                break;
+            case CaptureError.CAPTURE_APPLICATION_BUSY:
+                msg += " Application busy."
+                break;
+            case CaptureError.CAPTURE_INVALID_ARGUMENT:
+                msg += " Invalid Argument."
+                break;
+            case CaptureError.CAPTURE_NO_MEDIA_FILES:
+                msg += " No media files."
+                break;
+            case CaptureError.CAPTURE_NOT_SUPPORTED:
+                msg += " Not supported."
+                break;
+            default:
+                msg += " Unknown Error."
+            }
+            console.debug(msg);
+            alert(msg);
         }
-        console.debug(msg);
-        alert(msg);
+        else{
+            console.debug("Capture error is undefined. Assume user cancelled.");
+        }
     };
 
 var _base = {
