@@ -940,6 +940,45 @@ var _this = {
         this.getLocateLayer().setVisibility(true);
     },
 
+
+
+    createPopup: function(annotation, lon, lat) {
+        $('#map-record-popup').off('popupbeforeposition');
+        $('#map-record-popup').on({
+            popupbeforeposition: function() {
+                var showRecord = function(html){
+
+                    var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
+                    $('#map-record-popup-text').append(html).append(coords).trigger('create');
+                };
+
+                $('#map-record-popup h3').text(annotation.record.name);
+                $('#map-record-popup-text').text('');
+
+                $.each(annotation.record.fields, function(i, entry){
+                    var html;
+                    var type = records.typeFromId(entry.id);
+
+                    if(type === 'image'){
+                        html = '<img src="' + entry.val + '" width=100%"/>';
+                        showRecord(html);
+                    }
+                    else if(type === 'audio'){
+                        require(['audio'], function(audio){
+                            html = audio.getNode(entry.val, entry.label + ':');
+                            showRecord(html);
+                        });
+                    }
+                    else if(entry.id !== 'text0'){ // ignore title element
+                        html = '<p><span>' + entry.label + '</span>: ' +
+                    entry.val + '</p>';
+                showRecord(html);
+                    }
+                });
+            }
+        });  
+    },
+
     /**
      * Show details of a single annotation.
      * @param evt Map Click event.
@@ -956,41 +995,8 @@ var _this = {
             var lon = external.lon;
             var lat = external.lat;
 
-            $('#map-record-popup').off('popupbeforeposition');
-            $('#map-record-popup').on({
-                popupbeforeposition: function() {
-                    var showRecord = function(html){
-
-                        var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
-                        $('#map-record-popup-text').append(html).append(coords).trigger('create');
-                    };
-
-                    $('#map-record-popup h3').text(annotation.record.name);
-                    $('#map-record-popup-text').text('');
-
-                    $.each(annotation.record.fields, function(i, entry){
-                        var html;
-                        var type = records.typeFromId(entry.id);
-
-                        if(type === 'image'){
-                            html = '<img src="' + entry.val + '" width=100%"/>';
-                            showRecord(html);
-                        }
-                        else if(type === 'audio'){
-                            require(['audio'], function(audio){
-                                html = audio.getNode(entry.val, entry.label + ':');
-                                showRecord(html);
-                            });
-                        }
-                        else if(entry.id !== 'text0'){ // ignore title element
-                            html = '<p><span>' + entry.label + '</span>: ' +
-                                entry.val + '</p>';
-                            showRecord(html);
-                        }
-                    });
-                }
-            });
-
+            this.createPopup(annotation, lon, lat);
+        
             // give plugins a change to process the click first
             var showDetails = true;
             $.each(this.recordClickListeners, function(i, func){
@@ -1017,9 +1023,17 @@ var _this = {
 
         if(annotation){
             this.setCentre(annotation.record.point.lon,
-                           annotation.record.point.lat,
-                           undefined,
-                           false);
+                    annotation.record.point.lat,
+                    undefined,
+                    false);
+
+            var track = _.find(annotation.record.fields, function (field) { return field.id.indexOf('track') > 0});
+            // if a track, ignore as we don't want a popup
+            if (track === undefined) {
+                // Put in session storage so we can then pop up appropriate info on map page
+                sessionStorage.setItem('annotationPopup', JSON.stringify(annotation));
+            }
+
         }
 
         layer.setVisibility(true);
