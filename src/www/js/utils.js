@@ -557,9 +557,9 @@ var _base = {
     },
 
     /**
-     * App version, updated by fab, do not edit.
+     * App version.
      */
-    'version': '1.4.0.0'
+    version: config.version
 
 }
 
