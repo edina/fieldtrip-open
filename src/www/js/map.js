@@ -941,8 +941,18 @@ var _this = {
     },
 
 
+    /**
+     * createPopup
+     * Populates an annotation popup with details of the passed annotation
+     * Note that you still have to pop it up manually after this step
+     */
+    createPopup: function(annotation) {
 
-    createPopup: function(annotation, lon, lat) {
+        // Get point and convert
+        var point =  this.toExternal(this.map.center);
+        var lon = point.lon;
+        var lat = point.lat;
+
         $('#map-record-popup').off('popupbeforeposition');
         $('#map-record-popup').on({
             popupbeforeposition: function() {
@@ -988,14 +998,7 @@ var _this = {
         if(feature){
             var annotation = records.getSavedRecord(feature.attributes.id);
 
-            // Get point and convert
-            var point = annotation.record.point;
-            var lonlat = new OpenLayers.LonLat(point.lon, point.lat);
-            var external = this.toExternal(lonlat);
-            var lon = external.lon;
-            var lat = external.lat;
-
-            this.createPopup(annotation, lon, lat);
+            this.createPopup(annotation);
         
             // give plugins a change to process the click first
             var showDetails = true;
