@@ -991,9 +991,9 @@ var _this = {
         });  
 
         // Close popup on click
-        // popup.on('click',  function() {
-        //     popup.popup('close');
-        // });
+        popup.on('click',  function() {
+            popup.popup('close');
+        });
 
  
     },
