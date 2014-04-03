@@ -953,8 +953,10 @@ var _this = {
         var lon = point.lon;
         var lat = point.lat;
 
-        $('#map-record-popup').off('popupbeforeposition');
-        $('#map-record-popup').on({
+        var popup =  $('#map-record-popup');
+
+        popup.off('popupbeforeposition');
+        popup.on({
             popupbeforeposition: function() {
                 var showRecord = function(html){
 
@@ -987,6 +989,13 @@ var _this = {
                 });
             }
         });  
+
+        // Close popup on click
+        // popup.on('click',  function() {
+        //     popup.popup('close');
+        // });
+
+ 
     },
 
     /**
