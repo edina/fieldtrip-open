@@ -15,22 +15,15 @@
 
         <% if (field.label === "Description") { %>
             <p class='ellipsis'><%=field.val%></p>
-            <!-- <div> -->
-
-            <!--     <img class="saved-records-view" src="http://news.bbcimg.co.uk/media/images/73583000/jpg/_73583985_kerrylavrovpa.jpg" width=100%"/> -->
-
-            <!-- </div> -->
         <%}%>
 
         <% if (type === "image") { %>
-        <!-- <div> -->
             <img class="saved-records-view" src="<%=field.val%>" width=100%"/>
-        <!-- </div> -->
         <%}%>
 
         <% if (type === "audio") { %>
-        Put an icon for an audio recording here
-        <%=field.val%>    
+        <p>Audio Recording</p>
+        <img id="audio-icon" src="css/images/audio.png" width=100%"/>
         <%}%>
 
         <% }); %>
