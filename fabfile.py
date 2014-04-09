@@ -149,8 +149,12 @@ def generate_config_js():
     # using config initialises it
     _config('name')
 
-    values = _merge(dict(config.items('app')), {"mapurls": dict(config.items('mapurls'))})
-    _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
+    values = dict(config.items('app'))
+    if config.has_section('mapurls'):
+        _merge(values, {"mapurls": dict(config.items('mapurls'))})
+    if config.has_section('pcapiurls'):
+        _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
+
     templates = os.sep.join((src_dir, 'templates'))
     out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
     environ = Environment(loader=FileSystemLoader(templates))
@@ -815,8 +819,11 @@ def _get_branch_name(dir):
 
 def _get_letter(obj):
     """ TODO """
-    i = len(obj)-1
-    return chr(i+ord('a'))
+    letter = 'd'
+    if len(obj) > 0:
+        i = len(obj) - 1
+        letter = chr(i + ord('a'))
+    return letter
 
 def _get_runtime(target='local'):
     """

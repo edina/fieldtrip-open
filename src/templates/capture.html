@@ -8,7 +8,7 @@
     {% for key, sections in body.iteritems() %}
     <h2>{{sections.title}}</h2>
     {% if sections|length > 0 %}
-    <div class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
+    <div id="capture-{{key}}" class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
       {% for item in sections["items"] %}
       {% if sections["items"][item].keys()|length > 0 %}
       <div {% for key, value in sections["items"][item]["div"].iteritems() %} {{key}}="{{value}}" {% endfor %}>

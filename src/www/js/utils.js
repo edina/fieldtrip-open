@@ -108,9 +108,13 @@ define(['settings', 'config'], function(settings, config){
     /**
      * Prepend number with zeros.
      * @param number Number to fill.
-     * @width The number of zeors to fill.
+     * @width The number of zeros to fill (default 2).
      */
     var zeroFill= function(number, width){
+        if(width === undefined){
+            width = 2;
+        }
+
         width -= number.toString().length;
         if(width > 0){
             return new Array(width + (/\./.test( number ) ? 2 : 1) ).join('0') + number;
@@ -134,14 +138,15 @@ var _base = {
     },
 
     /**
-     * TODO
+     * Append date/time to input field.
+     * @param inputId Input control id.
      */
     appendDateTimeToInput: function(inputId){
         var $inputId = $(inputId);
         var prefix = $inputId.attr('value');
 
         if(prefix){
-            $inputId.attr('value', prefix + this.getSimpleDate());
+            $inputId.attr('value', prefix + " (" + this.getSimpleDate() + ")");
         }
     },
 
@@ -193,7 +198,7 @@ var _base = {
                         });
                 },
                 function(error){
-                    console.error("Failed to create file: " + fileName +
+                    console.error("Failed to delete file: " + fileName +
                                   ". errcode = " + error.code);
                 }
             );
@@ -232,6 +237,82 @@ var _base = {
      */
     getDocumentBase: function (){
         return documentBase;
+    },
+
+    /**
+     * @param error The error obj.
+     * @return File error message as a string.
+     */
+    getFileErrorMsg: function(error){
+        var msg;
+        switch(error.code){
+        case FileError.NOT_FOUND_ERR:
+            msg = "Not Found"
+            break;
+        case FileError.SECURITY_ERR:
+            msg = "Security Error"
+            break;
+        case FileError.ABORT_ERR:
+            msg = "Abort Error"
+            break;
+        case FileError.NOT_READABLE_ERR:
+            msg = "Not Readable"
+            break;
+        case FileError.ENCODING_ERR:
+            msg = "Encoding Error"
+            break;
+        case FileError.NO_MODIFICATION_ALLOWED_ERR:
+            msg = "No Modification Allowed"
+            break;
+        case FileError.INVALID_STATE_ERR:
+            msg = "Invalid State"
+            break;
+        case FileError.SYNTAX_ERR:
+            msg = "Syntax Error"
+            break;
+        case FileError.INVALID_MODIFICATION_ERR:
+            msg = "Invalid Modification"
+            break;
+        case FileError.QUOTA_EXCEEDED_ERR:
+            msg = "Quaota Exceeded"
+            break;
+        case FileError.TYPE_MISMATCH_ERR:
+            msg = "Type Mismatch"
+            break;
+        case FileError.PATH_EXISTS_ERR:
+            msg = "Path Exists"
+            break;
+        default:
+            msg = "Unknown Error: " + error.code;
+        }
+
+        return msg;
+    },
+
+    /**
+     * @param error The error obj.
+     * @return File error message as a string.
+     */
+    getFileTransferErrorMsg: function(error){
+        var msg;
+        switch(error.code){
+        case FileTransferError.FILE_NOT_FOUND_ERR:
+            msg = "File Not Found"
+            break;
+        case FileTransferError.INVALID_URL_ERR:
+            msg = "Invalid URL"
+            break;
+        case FileTransferError.CONNECTION_ERR:
+            msg = "Connection Error"
+            break;
+        case FileTransferError.ABORT_ERR:
+            msg = "Abort Error"
+            break;
+        default:
+            msg = "Unknown Error: " + error.code;
+        }
+
+        return msg;
     },
 
     /**
@@ -294,7 +375,7 @@ var _base = {
     },
 
     /**
-     * TODO
+     * @return The name of the root directory.
      */
     getRootDir: function(){
         return "edina";
@@ -313,20 +394,16 @@ var _base = {
     },
 
     /**
-     * TODO
+     * @return Current Date/Time in the format DD-MM-YYYY HHhMMmSSs.
      */
     getSimpleDate: function(){
-
         var today = new Date();
-        var h = today.getHours();
-        var m = today.getMinutes();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1;
-        var s = today.getSeconds() //January is 0!
-
-        var yyyy = today.getFullYear();
-        if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} if(h<10){h='0'+h} if(m<10){m='0'+m} if(s<10){s='0'+s} today = ' ('+ dd+'-'+mm+'-'+yyyy+' '+h+'h'+m+'m'+s+'s)';
-        return today;
+        return zeroFill(today.getDate()) + "-" +
+            zeroFill(today.getMonth() + 1) + "-" +
+            zeroFill(today.getFullYear()) + " " +
+            zeroFill(today.getHours()) + "h" +
+            zeroFill(today.getMinutes()) + "m" +
+            zeroFill(today.getSeconds()) + "s";
     },
 
     /**
@@ -559,9 +636,45 @@ var _base = {
     /**
      * App version.
      */
-    version: config.version
+    version: config.version,
 
-}
+    /**
+     * Write string to file
+     * @param fileName The new file name.
+     * @param data The new file content.
+     * @param dir Optional directory object.
+     * @param callback The function that is executed when file has finished writing.
+     */
+    writeToFile: function(fileName, data, dir, callback){
+        dir.getFile(
+            fileName,
+            {create: true, exclusive: false},
+            function(fileEntry){
+                fileEntry.createWriter(
+                    function(writer){
+                        writer.onwrite = function(evt) {
+                            console.debug('File ' + fileName +
+                                          ' written to ' + dir.fullPath);
+                            if(callback){
+                                callback();
+                            }
+                        };
+                        writer.write(data);
+                    },
+                    function(error){
+                        console.error("Failed to write to file:" + fileName +
+                                      ". errcode = " + error.code);
+                    }
+                );
+            },
+            function(error){
+                console.error(error + " : " + error.code);
+                console.error("Failed to create file: " + fileName +
+                              ". " + _this.getFileErrorMsg(error));
+            }
+        );
+    }
+};
 
 var _this = {};
 var _android = {
@@ -584,43 +697,3 @@ else{
 return _this;
 
 });
-
-// function initHomepageDisplay(){
-//     //private
-//     var FIELDTRIPGB_NEWS_FEED_URL = Utils.getServerUrl() + "/splash.html";
-
-
-//     //public
-//     return {
-//         hideSyncAndShowLogin: function(){
-//             $('#home-content-sync').hide();
-//             $('#home-content-upload').hide();
-
-
-//             //Bug 5997 have to use full url due to jqm issue
-//             $('#home-content-login img').attr('src',  Utils.getDocumentBase() + 'css/images/login-large.png');
-//             $('#home-content-login p').text('Login');
-//         },
-
-//         showLogoutAndSync: function(){
-
-//             //Bug 5997 have to use full url due to jqm issue
-//             $('#home-content-login img').attr('src',  Utils.getDocumentBase() + 'css/images/logout.png');
-//             $('#home-content-login p').text('Logout');
-
-//             //show sync button
-//             $('#home-content-sync').show();
-//             $('#home-content-upload').show();
-//         },
-//         getNewsFeed: function(selector){
-
-//             $.ajax({url:FIELDTRIPGB_NEWS_FEED_URL, success:function(result) {
-//                 if (result) {
-//                    $(selector).html(result);
-//                 };
-//             }, cache: false});
-
-//         }
-
-//     };
-// };

@@ -32,9 +32,6 @@ DAMAGE.
 "use strict";
 
 define(['utils'], function(utils){
-    var GPS_AUTO_SAVE_THRESHOLD = 5;
-    var PCAPI_VERSION = '1.3';
-
     var assetsDir;
     var editorsDir;
 
@@ -115,7 +112,7 @@ var _base = {
             url = 'editors/' + form + '.edtr';
         }
         else{
-            url = this.editorsDir.fullPath + '/' + form + '.edtr';
+            url = editorsDir.toNativeURL() + '/' + form + '.edtr';
         }
 
         $.ajax({
@@ -161,7 +158,13 @@ var _base = {
                 $('input[capture]').parent().hide();
 
                 callback();
-            }
+            },
+            error: function(jqXHR, status, error){
+                var msg = "Problem with " + url + " : status=" +
+                    status + " : " + error
+                console.error(msg);
+                alert(msg);
+            },
         });
     },
 
@@ -193,6 +196,36 @@ var _base = {
      */
     annotateText: function(){
         this.annotate('text');
+    },
+
+    /**
+     * Delete all editor forms.
+     * @param callback Function executed when delete is complete.
+     */
+    deleteAllEditors: function(callback){
+        // easiest way to do this is to delete the directory and recreate it
+        editorsDir.removeRecursively(
+            function(){
+                utils.getPersistentRoot(function(root){
+                    root.getDirectory(
+                        "editors",
+                        {create: true, exclusive: false},
+                        function(dir){
+                            editorsDir = dir;
+                            callback();
+                        },
+                        function(error){
+                            utils.inform('Failed finding editors directory. Custom forms will be disabled: ' + error);
+                            callback();
+                        }
+                    );
+                });
+            },
+            function(error){
+                console.error("Problem deleting directory");
+                callback();
+            }
+        );
     },
 
     /**
@@ -228,6 +261,31 @@ var _base = {
     },
 
     /**
+     * Delete annotation / record by name
+     * @param annotation Name of record to be deleted.
+     */
+    deleteAnnotationByName: function(name){
+        var id = this.getAnnotationId(name);
+        if(id){
+            this.deleteAnnotation(id);
+        }
+        else{
+            console.warn("No annotation found with name: " + name);
+        }
+
+        return id;
+    },
+
+    /**
+     * Delete a single editor from file system.
+     * @param fileName The name of the file to delete.
+     * @param callback Function will be called when editor is successfully deleted.
+     */
+    deleteEditor: function(fileName, callback){
+        this.deleteFile(fileName, editorsDir, callback);
+    },
+
+    /**
      * Delete a file from file system.
      * @param fileName The name of the file to delete.
      * @param dir The directory the file belongs to.
@@ -241,10 +299,65 @@ var _base = {
     },
 
     /**
+     * Get internal annotation id for a given record name. This only applies to
+     * sycned records.
+     * @param name Record name.
+     */
+    getAnnotationId: function(name) {
+        var id = undefined;
+        $.each(this.getSavedRecords(), function(i, annotation){
+            // note: dropbox is case insensitive so we should be also
+            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
+               annotation.isSynced){
+                id = i;
+                return false; // breaks loop!
+            }
+        });
+
+        return id;
+    },
+
+    /**
      * @return Assets directory object.
      */
     getAssetsDir: function(){
         return assetsDir;
+    },
+
+    /**
+     * Get list of local custom editors.
+     * @param callback Funtion will be invoked when editors have been retrieved
+     * contaioning a list of cordova file objects.
+     */
+    getEditors: function(callback){
+        var editors = [];
+
+        function success(entries) {
+            $.each(entries, function(i, entry){
+                //utils.printObj(entry);
+                editors.push(entry);
+            });
+
+            callback(editors);
+        }
+
+        function fail(error) {
+            console.error("Failed to list editor directory contents: " + error.code);
+            callback(editors);
+        }
+
+        // Get a directory reader
+        if(editorsDir !== undefined){
+            var directoryReader = editorsDir.createReader();
+            directoryReader.readEntries(success, fail);
+        }
+    },
+
+    /**
+     * @return Editor forms directory object.
+     */
+    getEditorsDir: function(){
+        return editorsDir;
     },
 
     /**
@@ -486,26 +599,7 @@ var _base = {
     },
 
     /**
-     * Save annotations/record locally
-     * @param annotation Record object.
-     */
-    saveRecord: function(id, annotation){
-        var savedRecords = this.getSavedRecords();
-
-        if(id === undefined){
-            var date = new Date();
-            annotation.record['timestamp'] = date;
-            id = date.getTime().toString();
-        }
-
-        savedRecords[id] = annotation;
-        this.setSavedRecords(savedRecords);
-
-        return id;
-    },
-
-    /**
-     * Save annotations/record locally
+     * save annotations/record locally
      * @param annotation Record object.
      */
     saveAnnotation: function(id, annotation){
@@ -536,7 +630,7 @@ var _base = {
             annotation.record.point.alt = coords.gpsPosition.altitude;
         }
 
-        this.saveRecord(undefined, annotation);
+        this.saveAnnotation(undefined, annotation);
     },
 
     /**
@@ -588,6 +682,21 @@ var _base = {
     typeFromId: function(id){
         var s = id.indexOf('-') + 1;
         return id.substr(s, id.lastIndexOf('-') - s);
+    },
+
+    /**
+     * Write string to file
+     * @param fileName The new file name.
+     * @param data The new file content.
+     * @param dir Optional directory object. If undefined use assestDir.
+     * @param callback The function that is executed when file has finished writing.
+     */
+    writeToFile: function(fileName, data, dir, callback){
+        if(dir === undefined){
+            dir = assetsDir;
+        }
+
+        utils.writeToFile(fileName, data, dir, callback);
     }
 }
 
@@ -595,18 +704,12 @@ var _base = {
 var _this = {};
 var _ios = {
 
+    /**
+     * TODO
+     */
     getImageOptions: function(sourceType, encodingType){
-        var options = {
-            quality: 100,
-            destinationType: Camera.DestinationType.FILE_URI,
-            sourceType : sourceType,
-            encodingType: encodingType,
-            saveToPhotoAlbum: true
-        }
-        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
-            options.targetWidth = 640;
-            options.targetHeight = 480;
-        }
+        var options = _base.getImageOptions();
+        options.saveToPhotoAlbum = true;
         return options;
     }
 };

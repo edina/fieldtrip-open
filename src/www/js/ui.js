@@ -36,9 +36,9 @@ DAMAGE.
  */
 define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html'], function(
     map, records, utils, settings, _, recrowtemplate){
-
     var portraitScreenHeight;
     var landscapeScreenHeight;
+    var menuClicked, searchClick;
 
     var menuIds = {
         'home': ['home-page', 'settings-page'],
@@ -88,20 +88,22 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         });
     };
 
-    // exit app, only appies to android
+    /**
+     * Exit app, only appies to android
+     */
     var exitApp = function(){
         $('#home-exit-popup').popup('open');
 
         $('#home-exit-confirm').off('vmousedown');
         $('#home-exit-confirm').on(
             'vmousedown',
-            $.proxy(function(){
+            function(){
                 // TODO - the gps track plugin needs to do this
                 // ensure any running track is completed
                 //this.annotations.gpsCaptureComplete();
 
                 navigator.app.exitApp();
-            }, this)
+            }
         );
     };
 
@@ -122,6 +124,20 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
             updateAnnotateLayer: options.updateAnnotateLayer,
             useDefault: options.useDefault
         });
+    };
+
+    /**
+     * Menu button clicked.
+     */
+    var menuClick = function(){
+        menuClicked = true;
+        if(searchClicked){
+            $.mobile.changePage('settings.html');
+        }
+
+        setTimeout(function(){
+            menuClicked = false;
+        }, 2000);
     };
 
     /**
@@ -170,6 +186,21 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         }
     };
 
+    /**
+     * Menu button clicked.
+     */
+    var searchClick = function(){
+        searchClicked = true;
+
+        if(menuClicked){
+            $.mobile.changePage('settings.html');
+        }
+
+        setTimeout(function(){
+            this.searchClicked = false;
+        }, 2000);
+    };
+
     // map zooming
     $(document).on('click',
                    '.map-zoom-button-in',
@@ -193,6 +224,9 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
     // listen for windows resizes
     $(window).bind('resize', $.proxy(resizeWindow, _ui));
 
+    document.addEventListener("menubutton", menuClick, false);
+    document.addEventListener("searchbutton", searchClick, false);
+
     // switch off page transitions
     $.mobile.defaultPageTransition = 'none';
 
@@ -215,7 +249,6 @@ var _ui = {
     annotatePage: function(){
         var type = localStorage.getItem('annotate-form-type');
         var id;
-
         records.initPage(type, $.proxy(function(){
             // replace photo form element with image
             var showImage = function(id, url){
@@ -347,7 +380,7 @@ var _ui = {
 
         if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
             map.updateAnnotateLayer();
-            localStorage.set('ignore-centre-on-annotation', false);
+            localStorage.setItem('ignore-centre-on-annotation', false);
         }
         else {
             geoLocate({
@@ -389,14 +422,23 @@ var _ui = {
     },
 
     /**
-     * TODO
+     * Set up capture page.
      */
     capturePage: function(){
-        capturePageListeners();
+        var blocks = ['a', 'b', 'c', 'd', 'e'];
+        records.getEditors(function(editors){
+            $.each(editors, function(i, editor){
+                var name = editor.name.substr(0, editor.name.indexOf('.'))
+                var html = '<div class="ui-block-' + blocks[i % 5] + '"><a id="annotate-custom-form-' + name + '" class="annotate-custom-form" href="#"><img src="css/images/custom.png"></a><p>' + name + '</p></div>';
+                $('#capture-section2').append(html);
+            });
+
+            capturePageListeners();
+        });
     },
 
     /**
-     * TODO
+     * Set up home page.
      */
     homePage: function(event){
         this.menuClicked = false;
@@ -425,33 +467,10 @@ var _ui = {
         // exit button
         $('#home-exit').unbind();
         $('#home-exit').on('click', exitApp);
-
-        document.addEventListener("menubutton", $.proxy(function(){
-            this.menuClicked = true;
-            if(this.searchClicked){
-                $.mobile.changePage('settings.html');
-            }
-
-            setTimeout(function(){
-                this.menuClicked = false;
-            }, 2000);
-        }, this), false);
-
-        document.addEventListener("searchbutton", $.proxy(function(){
-            this.searchClicked = true;
-
-            if(this.menuClicked){
-                $.mobile.changePage('settings.html');
-            }
-
-            setTimeout(function(){
-                this.searchClicked = false;
-            }, 2000);
-        }, this), false);
     },
 
     /**
-     * TODO
+     * Set up maps page.
      */
     mapPage: function(divId){
         if(typeof(divId) !== 'string'){
@@ -466,8 +485,7 @@ var _ui = {
     },
 
     /**
-     * TODO
-     * text below
+     * Map page init.
      */
     mapPageInit: function(){
         // set up buttons when records are visible on map
@@ -657,33 +675,7 @@ var _ui = {
     },
 };
 
-// var _ios = {
-//     init: function(){
-//     }
-// };
-
-// var _android = {
-//     init: function(){
-//     },
-// };
-
-// if(utils.isMobileDevice()){
-//     var _this = {};
-//     if(utils.isIOSApp()){
-//         $.extend(_this, _ui, _ios);
-//     }
-//     else{
-//         $.extend(_this, _ui, _android);
-//     }
-
-//     _this.init();
-//     return _this;
-// }
-// else{
-//     _ui.init();
-//     return _ui;
-// }
-    _ui.init();
-    return _ui;
+_ui.init();
+return _ui;
 
 });
