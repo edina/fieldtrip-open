@@ -144,14 +144,20 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
      * Work out page height.
      */
     var resizePage = function(){
-        var offset = 0;
-        var header = $('.ui-page-active .ui-header').first().height();
-        var footer = 0;
-        if($('.ui-page-active .ui-footer').css('display') !== 'none'){
-            footer = $('.ui-page-active .ui-footer').first().height();
+        if($('.ui-dialog').length === 0){
+            var offset = 0;
+            var header = 0;
+            var footer = 0;
+            if($('.ui-page-active .ui-footer').css('display') !== 'none'){
+                footer = $('.ui-page-active .ui-footer').first().height();
+            }
+            if($('.ui-page-active .ui-header').css('display') !== 'none'){
+                header = $('.ui-page-active .ui-header').first().height();
+            }
+
+            var h = $(window).height() - (header + footer + offset);
+            $('[data-role=content]').css('height', h + 'px');
         }
-        var h = $(window).height() - (header + footer + offset);
-        $('[data-role=content]').css('height', h + 'px');
     };
 
     /**
@@ -241,6 +247,48 @@ var _ui = {
             updateAnnotateLayer: false,
             useDefault: true
         });
+
+        if(utils.showStartPopup()){
+            $('#home-show-eula').click(function(){
+                window.open(utils.getServerUrl() + "/end-user-license-agreement",
+                            '_blank',
+                            'location=yes');
+            });
+
+            $('#home-accept-eula').on('vclick', function(){
+                localStorage.setItem('eula-accepted', 'YES');
+                $('.ui-footer').show();
+                resizePage();
+            });
+
+            $('#home-splash-popup').on('vclick', function(){
+                $('#home-splash-popup').popup('close');
+            });
+
+            $.ajax({
+                url: utils.getServerUrl() + "/splash.html",
+                success:function(result) {
+                    if(result) {
+                        $('#home-splash-popup-message').html(result);
+                    };
+
+                },
+                cache: false
+            });
+
+            // show terms and conditions
+            if(localStorage.getItem('eula-accepted') === null){
+                //$.mobile.changePage('splash.html');
+                $('#home-eula-popup').popup({dismissible: false});
+                $('#home-eula-popup').popup('open');
+                $('.ui-footer').hide();
+            }
+            else {
+                // show normal popup
+                $('#home-splash-popup').popup({history: false});
+                $('#home-splash-popup').popup('open');
+            }
+        }
     },
 
     /**

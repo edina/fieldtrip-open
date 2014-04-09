@@ -53,9 +53,7 @@ String.prototype.hashCode = function(){
 define(['settings', 'config'], function(settings, config){
 
     // list of UUID of devices used internally
-    // TODO
-    var PRIVILIGED_USERS = [
-    ];
+    var priviliged_user = config.priviliged_users.split(',');
 
     var userId = 'none';
     var isMobileApp = typeof(device) !== 'undefined';
@@ -466,7 +464,8 @@ var _base = {
      * @return true If user's uuid is in the list of privileged users.
      */
     isPrivilegedUser: function(){
-        if(isMobileApp && $.inArray(device.uuid, PRIVILIGED_USERS) === -1){
+        if(isMobileApp &&
+           $.inArray(device.uuid, config.priviliged_users) === -1){
             return false;
         }
         else{
@@ -562,6 +561,18 @@ var _base = {
      */
     showPageLoadingMsg: function(message){
         $.mobile.loading('show', {text: message});
+    },
+
+    /**
+     * @return Should end user license / splash be shown?
+     */
+    showStartPopup: function(){
+        if(config.end_user_licence && !utils.isPrivilegedUser()){
+            return true
+        }
+        else{
+            return false;
+        }
     },
 
     /**

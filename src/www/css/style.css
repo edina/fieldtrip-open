@@ -333,6 +333,24 @@ body .ui-loader .ui-icon{
     padding: 0.2em;
 }
 
+
+/********* EULA/splash *************/
+
+#home-eula-popup{
+    width: 90%;
+    margin: auto;
+}
+
+#home-splash-popup-popup{
+    z-index: 110100 !important;
+}
+#home-splash-popup{
+    top: -9em;
+    width: 95%;
+    margin: auto;
+}
+
+
 /********* Menu *************/
 
 .menu{
