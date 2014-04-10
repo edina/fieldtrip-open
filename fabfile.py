@@ -197,53 +197,11 @@ def generate_html(platform="android", cordova=False):
     """
     if isinstance(cordova, basestring):
         cordova = str2bool(cordova)
+    
+    #setup paths
     root, proj_home, src_dir = _get_source()
-    path = os.sep.join((src_dir, 'templates'))
+    #the final destination of html generated files
     export_path = os.sep.join((src_dir, 'www'))
-    templates_path = os.path.join(proj_home, 'src', 'templates')
-
-    #function for merging data
-    def _do_merge(filename, data, path):
-        if os.path.exists(path) and filename in os.listdir(path):
-            with open(os.path.join(path, filename), 'r') as f:
-                new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
-            print "merging {0}".format(os.path.join(path, filename))
-            return _merge(data, new_data)
-        else:
-            return data
-
-    #get data and merge it
-    def _get_data(path1, filename, path2):
-        with open(os.path.join(path1, filename),'r') as f:
-            return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict), path2)
-
-    #get header and footer data
-    def _get_header_footer_data(path, templates_path):
-        environ = Environment(loader=FileSystemLoader(path))
-        environ.globals["_get_letter"] = _get_letter
-
-        print templates_path
-        header_data = _get_data(path, 'header.json', templates_path)
-        footer_data = _get_data(path, 'footer.json', templates_path)
-
-        #merge header and footer.json from plugins with the initial one
-        for d in _get_plugins_templates():
-            if "header.json" in os.listdir(d):
-                with open(os.path.join(d, "header.json"), 'r') as f:
-                    header_data = _merge(header_data, json.load(f, object_pairs_hook=collections.OrderedDict))
-            if "footer.json" in os.listdir(d):
-                with open(os.path.join(d, "footer.json"), 'r') as f:
-                    footer_data = _merge(footer_data, json.load(f, object_pairs_hook=collections.OrderedDict))
-
-        header_template = environ.get_template("header.html")
-        footer_template = environ.get_template("footer.html")
-        return header_data, footer_data, header_template, footer_template
-
-    def _generate_templates(environ, templates):
-        for templ in templates:
-            print "generating template {0}".format(templates[templ])
-            script_template = environ.get_template(templates[templ])
-            _write_data(os.path.join(export_path, 'templates', templates[templ]), script_template.render())
 
     def _get_plugins_templates():
         """ get a list of directories with templates """
@@ -263,19 +221,99 @@ def generate_html(platform="android", cordova=False):
                     plugins_list.append(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'))
         return plugins_list
 
-    def _create_html(path1, path2, header_data, footer_data, header_template, footer_template):
-        environ = Environment(loader=FileSystemLoader(path1))
-        environ.globals["_get_letter"] = _get_letter
-        #environ.globals["_sorted"] = _sorted
+    #the jinja templates of core, the jinja project templates, the jinja templates of plugins
+    templates_path = {"core": os.sep.join((src_dir, 'templates')), "project":
+        os.path.join(proj_home, 'src', 'templates'),
+        "plugins": _get_plugins_templates()}
 
-        for path, dirs, files in os.walk(path1):
+    #function for merging data
+    def _do_merge(filename, data, path):
+        if os.path.exists(path) and filename in os.listdir(path):
+            with open(os.path.join(path, filename), 'r') as f:
+                new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
+            print "merging {0}".format(os.path.join(path, filename))
+            return _merge(data, new_data)
+        else:
+            return data
+
+    #get data from different two paths and merge them
+    def _get_data(path1, filename, path2):
+        with open(os.path.join(path1, filename),'r') as f:
+            return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict), path2)
+
+    def _check_for_data(paths, filename):
+        _in_plugins = []
+        for d in paths["plugins"]:
+            if os.path.exists(os.path.join(d, filename)):
+                _in_plugins.append(d)
+        return _in_plugins
+
+    #get data and merge it
+    def _get_check_data(paths, filename):
+        data = None
+        with open(os.path.join(paths["core"], filename),'r') as f:
+            data = _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict), paths["project"])
+        for d in paths["plugins"]:
+            data = _do_merge(filename, data, d)
+        return data
+
+    #get header and footer data
+    def _get_header_footer_data(templates_path):
+        header_data = _get_data(templates_path["core"], 'header.json', templates_path["project"])
+        footer_data = _get_data(templates_path["core"], 'footer.json', templates_path["project"])
+        return header_data, footer_data
+
+    def _generate_templates(environ, templates):
+        for templ in templates:
+            print "generating template {0}".format(templates[templ])
+            script_template = environ.get_template(templates[templ])
+            _write_data(os.path.join(export_path, 'templates', templates[templ]), script_template.render())
+
+    def _check_for_template(name):
+        res = []
+        for t in _get_plugins_templates():
+            if name in os.listdir(t):
+                res.append(t)
+        return res
+
+    def _get_letter(obj):
+        """ TODO """
+        i = len(obj)-1
+        return chr(i+ord('a'))
+
+    def _create_html(current_path, paths, header_data, footer_data):
+        environ = Environment(loader=FileSystemLoader(current_path))
+        environ_core = Environment(loader=FileSystemLoader(paths["core"]))
+        environ_project = Environment(loader=FileSystemLoader(paths["project"]))
+        environ.globals["_get_letter"] = _get_letter
+        environ_project.globals["_get_letter"] = _get_letter
+        #environ.globals["_sorted"] = _sorted
+        
+        header_template = environ_core.get_template("header.html")
+        footer_template = environ_core.get_template("footer.html")
+        print current_path
+
+        for path, dirs, files in os.walk(current_path):
             for f in files:
                 if f.endswith("json") and not f.startswith("header") and not f.startswith("footer"):
                     htmlfile = '{0}.html'.format(f.split(".")[0])
                     htmlfilepath = os.path.join(path, htmlfile)
                     jsonfilepath = os.path.join(path, f)
+                    
+                    data = None
+                    if current_path == paths["core"]:
+                        #check if the same json exists in any of the plugins and merge it
+                        data_in_plugins = _check_for_data(paths, f)
+                        if len(data_in_plugins)>0:
+                            for p in data_in_plugins:
+                                data = _get_data(current_path, f, p)
 
-                    data = _get_data(path, f, path2)
+                    #merge with the data in json
+                    if data:
+                        _do_merge(f, data, paths["project"])
+                    else:
+                        data = _get_data(current_path, f, paths["project"])
+
                     #generate templates:
                     if "templates" in data:
                         _generate_templates(environ, data["templates"])
@@ -306,8 +344,15 @@ def generate_html(platform="android", cordova=False):
                         popups=[]
                         if "popups" in data:
                             for popup in data["popups"]:
-                                popup_template = environ.get_template(data["popups"][popup]["template"])
-                                popups.append(popup_template.render(data=data["popups"][popup]["data"]))
+                                #print data["popups"][popup]["template"]
+                                res = _check_for_template(data["popups"][popup]["template"])
+                                if len(res) == 1:
+                                    environ_popup = Environment(loader=FileSystemLoader(res[0]))
+                                    popup_template = environ_popup.get_template(data["popups"][popup]["template"])
+                                    popups.append(popup_template.render(data=data["popups"][popup]["data"]))
+                                elif len(res) > 1:
+                                    print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"])
+                                    exit
 
                         output = template.render(
                             header_data=indexheader_data,
@@ -323,14 +368,12 @@ def generate_html(platform="android", cordova=False):
                         _write_data(os.sep.join((export_path, htmlfile)), _prettify(output, 2))
 
     #generate header footer data firstly
-    header_data, footer_data, header_template, footer_template = _get_header_footer_data(path, templates_path)
-    _create_html(path, templates_path, header_data, footer_data, header_template, footer_template)
-    _create_html(templates_path, path, header_data, footer_data, header_template, footer_template)
+    header_data, footer_data = _get_header_footer_data(templates_path)
+    #generate the rest
+    _create_html(templates_path["core"], templates_path, header_data, footer_data)
 
-    #generate plugins templates
-    plgs_tmpls = _get_plugins_templates()
-    for d in plgs_tmpls:
-        _create_html(d, templates_path, header_data, footer_data, header_template, footer_template)
+    for d in _get_plugins_templates():
+        _create_html(d, templates_path, header_data, footer_data)
 
 @task
 def generate_html_ios():
@@ -812,11 +855,6 @@ def _get_branch_name(dir):
         out = local('git branch', capture=True)
         current = re.findall(r"^\* .+", out, re.MULTILINE)
         return current[0][2:]
-
-def _get_letter(obj):
-    """ TODO """
-    i = len(obj)-1
-    return chr(i+ord('a'))
 
 def _get_runtime(target='local'):
     """

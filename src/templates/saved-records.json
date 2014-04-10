@@ -1,7 +1,6 @@
 {
     "body": {
         "view-records": "View Records",
-        "display-buttons" : "false",
         "buttons" : {
             "records-list":{
                 "id" : "records-list",
