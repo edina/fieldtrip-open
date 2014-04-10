@@ -231,7 +231,7 @@ body .ui-loader .ui-icon{
     border-radius: 10px;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    overflow : scroll;
+    overflow: scroll;
 }
 
 .non-map-body-start{
@@ -700,7 +700,7 @@ div.record-extra > div > img {
 }
 
 #settings-page{
-    overflow:hidden;
+    overflow: hidden;
 }
 
 
@@ -739,6 +739,7 @@ div.record-extra > div > img {
     background-color: #fafafa;
     font-size: 14px;
 }
+
 
 /************ footer ********************/
 

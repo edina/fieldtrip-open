@@ -496,21 +496,20 @@ var _ui = {
             event.stopImmediatePropagation();
         }
 
-        // TODO
         utils.touchScroll('#home-content');
-        utils.absoluteHeightScroller('#splash-popup-dialog-content');
-        utils.touchScroll('#splash-popup-dialog-content');
-
-        // TODO
-        // $(document).on('click', '#splash-popup-dialog a', function() {
-        //     $('#splash-popup-dialog').popup('close');
-        // });
+        utils.absoluteHeightScroller('#home-splash-popup-content');
+        utils.touchScroll('#home-splash-popup-content');
 
         // TODO
         // enable / disable GPS track button
         //this.gpsButtonInit();
 
         capturePageListeners();
+
+        $('.help-block a').unbind();
+        $('.help-block a').on('taphold', function(){
+            $.mobile.changePage('settings.html');
+        });
 
         // exit button
         $('#home-exit').unbind();

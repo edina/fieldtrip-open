@@ -118,14 +118,17 @@ def deploy_android():
             cmd = 'cordova run android 2>&1'
             out = local(cmd, capture=True)
 
-            if out.return_code != 0:
-                raise SystemExit()
-            if out and out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
-                # app is installed with wrong certificate try and uninstall app
-                local('adb uninstall {0}'.format(_config('package', section='app')))
+            if out and out.return_code != 0:
+                if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
 
-                # retry install
-                local(cmd)
+                    # app is installed with wrong certificate try and uninstall app
+                    local('adb uninstall {0}'.format(_config('package', section='app')))
+
+                    # retry install
+                    local(cmd)
+                else:
+                    print out
+                    raise SystemExit(out.return_code)
 
 @task
 def deploy_ios():
