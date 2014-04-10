@@ -496,14 +496,6 @@ var _ui = {
             event.stopImmediatePropagation();
         }
 
-        utils.touchScroll('#home-content');
-        utils.absoluteHeightScroller('#home-splash-popup-content');
-        utils.touchScroll('#home-splash-popup-content');
-
-        // TODO
-        // enable / disable GPS track button
-        //this.gpsButtonInit();
-
         capturePageListeners();
 
         $('.help-block a').unbind();
