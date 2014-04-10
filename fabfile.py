@@ -332,15 +332,16 @@ def generate_html(platform="android", cordova=False):
                         popups=[]
                         if "popups" in data:
                             for popup in data["popups"]:
-                                #print data["popups"][popup]["template"]
                                 res = _check_for_template(data["popups"][popup]["template"])
                                 if len(res) == 1:
                                     environ_popup = Environment(loader=FileSystemLoader(res[0]))
                                     popup_template = environ_popup.get_template(data["popups"][popup]["template"])
-                                    popups.append(popup_template.render(data=data["popups"][popup]["data"]))
                                 elif len(res) > 1:
                                     print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"])
                                     exit
+                                else:
+                                    popup_template = environ.get_template(data["popups"][popup]["template"])
+                                popups.append(popup_template.render(data=data["popups"][popup]["data"]))
 
                         output = template.render(
                             header_data=indexheader_data,
