@@ -53,9 +53,9 @@ String.prototype.hashCode = function(){
 define(['settings', 'config'], function(settings, config){
 
     // list of UUID of devices used internally
-    var priviliged_user = [];
+    var priviliged_users = [];
     if(config.priviliged_users){
-        priviliged_user = config.priviliged_user.split(',');
+        priviliged_users = config.priviliged_users.split(',');
     }
 
     var userId = 'none';
