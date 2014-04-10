@@ -168,27 +168,6 @@ def generate_config_js():
     _write_data(out_file, output)
 
 @task
-def _generate_config_xml():
-    """ generate config.xml """
-
-    root, proj_home, src_dir = _get_source()
-    theme_src = os.sep.join((proj_home, 'theme'))
-    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
-        versions = json.load(f)["versions"]
-
-    environ = Environment(loader=FileSystemLoader('etc'))
-    config_template = environ.get_template("config.xml")
-    filedata = config_template.render(
-        name=_config('name'),
-        package=_config('package', section='app'),
-        version=versions['app'],
-        version_code=versions['app'].replace(".", ""),
-        author_email=_config('author_email'),
-        url=_config('url'),
-        access_urls = _config('access_urls').split(","))
-    _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
-
-@task
 def generate_docs():
     """
     Auto generate javascript markdown documentation
@@ -206,7 +185,7 @@ def generate_html(platform="android", cordova=False):
     """
     if isinstance(cordova, basestring):
         cordova = str2bool(cordova)
-    
+
     #setup paths
     root, proj_home, src_dir = _get_source()
     #the final destination of html generated files
@@ -297,7 +276,7 @@ def generate_html(platform="android", cordova=False):
         environ.globals["_get_letter"] = _get_letter
         environ_project.globals["_get_letter"] = _get_letter
         #environ.globals["_sorted"] = _sorted
-        
+
         header_template = environ_core.get_template("header.html")
         footer_template = environ_core.get_template("footer.html")
         print current_path
@@ -308,7 +287,7 @@ def generate_html(platform="android", cordova=False):
                     htmlfile = '{0}.html'.format(f.split(".")[0])
                     htmlfilepath = os.path.join(path, htmlfile)
                     jsonfilepath = os.path.join(path, f)
-                    
+
                     data = None
                     if current_path == paths["core"]:
                         #check if the same json exists in any of the plugins and merge it
@@ -642,27 +621,12 @@ def release_android(beta='True', overwrite='False', email=False):
 
     update_app()
 
-    ######################### TODO !!! #########################################
-    # check plugin and project versions
-    ############################################################################
-
     # get app version
-    tree = ET.parse(os.sep.join((runtime, 'platforms', 'android', 'AndroidManifest.xml')))
-    namespace = "{http://schemas.android.com/apk/res/android}"
-    root = tree.getroot()
-    version = root.attrib['{0}versionName'.format(namespace)]
-
-    # update utils.js with app version
-    utils = os.sep.join((_get_source()[1], 'assets', 'www', 'js', 'utils.js'))
-    f = open(utils, 'r')
-    file_str = f.read()
-    f.close()
-    file_str = re.sub(r'version\': \'[0-9]\.[0-9]\..+',
-                      "version': '{0}'".format(version),
-                      file_str)
-    f = open(utils, 'w')
-    f.write(file_str)
-    f.close()
+    theme_src = os.sep.join((proj_home, 'theme'))
+    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
+        pjson = json.load(f)
+        versions = pjson["versions"]
+        plugins = pjson["plugins"]
 
     with lcd(runtime):
         bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
@@ -674,6 +638,21 @@ def release_android(beta='True', overwrite='False', email=False):
             new_file_name = '{0}-debug.apk'.format(_config('name'))
             local('cordova build')
         else:
+            # check plugin and project versions
+            if versions['core'] == 'master' or versions['project'] == 'master':
+                print "Can't release with untagged repositories: core = {0}, project = {1}".format(
+                    versions['core'], versions['project'])
+                exit(1)
+            for cplug in plugins['cordova']:
+                if len(cplug.split('@')) != 2:
+                    print "Must release with a versioned cordova plugin: {0}".format(cplug)
+                    exit(1)
+            for name, version in plugins['fieldtrip'].items():
+                print name, version
+                if version[:3] == 'git':
+                    print "Must release with versioned fieldtrip plugin: {0}".format(name)
+                    exit(1)
+
             file_name = '{0}.apk'.format(apk_name)
             new_file_name = '{0}.apk'.format(_config('name'))
             with lcd(os.sep.join((runtime, 'platforms', 'android'))):
@@ -702,8 +681,8 @@ def release_android(beta='True', overwrite='False', email=False):
             local('zipalign -v 4 {0} {1}'.format(signed_apkfile, apkfile))
 
     # copy apk to servers, if defined
-    hosts = _config('hosts', section='release')
     env.hosts = _config('hosts', section='release').split(',')
+    version = versions['app']
     if len(env.hosts) > 0:
         execute('_copy_apk_to_servers',
                 version,
@@ -803,6 +782,7 @@ def _config(key, section='install'):
 
     return config.get(section, key)
 
+@task
 def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     """
     Copy APK file to servers
@@ -857,6 +837,27 @@ def _email(file_name,
     s = smtplib.SMTP(_config('smtp', section='release'))
     s.sendmail(sender, [to], msg.as_string())
     s.quit()
+
+@task
+def _generate_config_xml():
+    """ generate config.xml """
+
+    root, proj_home, src_dir = _get_source()
+    theme_src = os.sep.join((proj_home, 'theme'))
+    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
+        versions = json.load(f)["versions"]
+
+    environ = Environment(loader=FileSystemLoader('etc'))
+    config_template = environ.get_template("config.xml")
+    filedata = config_template.render(
+        name=_config('name'),
+        package=_config('package', section='app'),
+        version=versions['app'],
+        version_code=versions['app'].replace(".", ""),
+        author_email=_config('author_email'),
+        url=_config('url'),
+        access_urls = _config('access_urls').split(","))
+    _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
 def _get_branch_name(dir):
     # get the name of the git repo branch at dir
