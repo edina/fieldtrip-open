@@ -360,6 +360,7 @@ def generate_html(platform="android", cordova=False):
     header_data, footer_data = _get_header_footer_data(templates_path)
     #generate the rest
     _create_html(templates_path["core"], templates_path, header_data, footer_data)
+    _create_html(templates_path["project"], templates_path, header_data, footer_data)
 
     for d in _get_plugins_templates():
         _create_html(d, templates_path, header_data, footer_data)
