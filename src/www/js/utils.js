@@ -53,7 +53,10 @@ String.prototype.hashCode = function(){
 define(['settings', 'config'], function(settings, config){
 
     // list of UUID of devices used internally
-    var priviliged_user = config.priviliged_users.split(',');
+    var priviliged_user = [];
+    if(config.priviliged_users){
+        priviliged_user = config.priviliged_user.split(',');
+    }
 
     var userId = 'none';
     var isMobileApp = typeof(device) !== 'undefined';
