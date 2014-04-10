@@ -69,12 +69,20 @@
     },
     "popups": {
         "popup1":{
-            "template": "exit-popup.html",
+            "template": "index-exit-popup.html",
             "data": {
                 "question": "Are you sure you want to exit Fieldtrip Open?",
                 "cancel": "Cancel",
                 "exit": "Exit"
             }
+        },
+        "popup2":{
+            "template": "index-eula-popup.html",
+            "data": {}
+        },
+        "popup3":{
+            "template": "index-splash-popup.html",
+            "data": {}
         }
     }
 }

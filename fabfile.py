@@ -118,12 +118,17 @@ def deploy_android():
             cmd = 'cordova run android 2>&1'
             out = local(cmd, capture=True)
 
-            if out and out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
-                # app is installed with wrong certificate try and uninstall app
-                local('adb uninstall {0}'.format(_config('package', section='app')))
+            if out and out.return_code != 0:
+                if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
 
-                # retry install
-                local(cmd)
+                    # app is installed with wrong certificate try and uninstall app
+                    local('adb uninstall {0}'.format(_config('package', section='app')))
+
+                    # retry install
+                    local(cmd)
+                else:
+                    print out
+                    raise SystemExit(out.return_code)
 
 @task
 def deploy_ios():
@@ -149,8 +154,12 @@ def generate_config_js():
     # using config initialises it
     _config('name')
 
-    values = _merge(dict(config.items('app')), {"mapurls": dict(config.items('mapurls'))})
-    _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
+    values = dict(config.items('app'))
+    if config.has_section('mapurls'):
+        _merge(values, {"mapurls": dict(config.items('mapurls'))})
+    if config.has_section('pcapiurls'):
+        _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
+
     templates = os.sep.join((src_dir, 'templates'))
     out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
     environ = Environment(loader=FileSystemLoader(templates))

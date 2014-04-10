@@ -231,7 +231,7 @@ body .ui-loader .ui-icon{
     border-radius: 10px;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    overflow : scroll;
+    overflow: scroll;
 }
 
 .non-map-body-start{
@@ -332,6 +332,24 @@ body .ui-loader .ui-icon{
     font-size: 16px;
     padding: 0.2em;
 }
+
+
+/********* EULA/splash *************/
+
+#home-eula-popup{
+    width: 90%;
+    margin: auto;
+}
+
+#home-splash-popup-popup{
+    z-index: 110100 !important;
+}
+#home-splash-popup{
+    top: -9em;
+    width: 95%;
+    margin: auto;
+}
+
 
 /********* Menu *************/
 
@@ -682,7 +700,7 @@ div.record-extra > div > img {
 }
 
 #settings-page{
-    overflow:hidden;
+    overflow: hidden;
 }
 
 
@@ -721,6 +739,7 @@ div.record-extra > div > img {
     background-color: #fafafa;
     font-size: 14px;
 }
+
 
 /************ footer ********************/
 
