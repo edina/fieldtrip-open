@@ -567,7 +567,7 @@ var _base = {
      * @return Should end user license / splash be shown?
      */
     showStartPopup: function(){
-        if(config.end_user_licence && !utils.isPrivilegedUser()){
+        if(config.end_user_licence && !this.isPrivilegedUser()){
             return true
         }
         else{
