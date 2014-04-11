@@ -441,13 +441,15 @@ def install_plugins(target='local', cordova="True"):
 @task
 def install_project(platform='android',
                     dist_dir='apps',
-                    target='local'):
+                    target='local',
+                    project_branch='master'):
     """
     Install Cordova runtime
 
     platform - android or ios
     dist_dir - directory for unpacking openlayers
     target - runtime root
+    project_branch - project branch name
     """
     if platform == 'android':
         _check_command('android')
@@ -482,18 +484,13 @@ def install_project(platform='android',
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
-
-    versions = None
-    theme_src = os.sep.join((proj_home, 'theme'))
-    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
-        versions = json.load(f)["versions"]
-        version = versions['project']
-        if version != 'master':
-            with lcd('project'):
-                print '\nTry to checkout version {0} of project'.format(version)
-                local('git checkout {0}'.format(version))
+    if project_branch != 'master':
+        with lcd('project'):
+            print 'Try checking out project branch {0}'.format(project_branch)
+            local('git checkout {0}'.format(project_branch))
 
     # do some checks on the project
+    theme_src = os.sep.join((proj_home, 'theme'))
     if not os.path.exists(os.sep.join((theme_src, 'project.json'))):
         print "\n*** WARNING: No project.json found in project"
     theme_css = os.sep.join((theme_src, 'css'))
@@ -501,6 +498,10 @@ def install_project(platform='android',
         print "\n*** WARNING: No jqm-style.css found in project: {0}".format(theme_css)
     if not os.path.exists(os.sep.join((theme_css, 'style.css'))):
         print "\n*** WARNING: No style.css found in project"
+
+    versions = None
+    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
+        versions = json.load(f)["versions"]
 
     # check using correct core git version
     if not _is_in_branch(root, versions['core']):
