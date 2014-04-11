@@ -46,7 +46,7 @@ import json
 import os
 import smtplib
 import re, itertools
-import collections
+import collections, sys
 
 
 CORDOVA_VERSION   = '3.3.1-0.4.2'
@@ -227,7 +227,12 @@ def generate_html(platform="android", cordova=False):
     #get data from different two paths and merge them
     def _get_data(path1, filename, path2):
         with open(os.path.join(path1, filename),'r') as f:
-            return _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict), path2)
+            try:
+                json_object = json.load(f, object_pairs_hook=collections.OrderedDict)
+                return _do_merge(filename, json_object, path2)
+            except ValueError, e:
+                print "There was problem with the json file {0}".format(os.path.join(path1, filename))
+                sys.exit()
 
     def _check_for_data(paths, filename):
         _in_plugins = []
@@ -332,13 +337,15 @@ def generate_html(platform="android", cordova=False):
                         popups=[]
                         if "popups" in data:
                             for popup in data["popups"]:
+                                #print data["popups"][popup]["template"]
                                 res = _check_for_template(data["popups"][popup]["template"])
+                                #print len(res)
                                 if len(res) == 1:
                                     environ_popup = Environment(loader=FileSystemLoader(res[0]))
                                     popup_template = environ_popup.get_template(data["popups"][popup]["template"])
                                 elif len(res) > 1:
                                     print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"])
-                                    exit
+                                    sys.exit()
                                 else:
                                     popup_template = environ.get_template(data["popups"][popup]["template"])
                                 popups.append(popup_template.render(data=data["popups"][popup]["data"]))
