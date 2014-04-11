@@ -503,10 +503,9 @@ def install_project(platform='android',
         print "\n*** WARNING: No style.css found in project"
 
     # check using correct core git version
-    rbr = _get_branch_name(root)
-    if rbr != versions['core']:
-        print '\nUsing wrong FT Open branch/tag {0}. Should be using {1}.'.format(
-        rbr, versions['core'])
+    if not _is_in_branch(root, versions['core']):
+        print '\nUsing wrong FT Open branch/tag. Should be using {0}.'.format(
+            versions['core'])
         exit(-1)
 
     # create cordova config.xml
@@ -909,10 +908,22 @@ def _get_source(app='android'):
     return root, proj_home, src_dir
 
 def _is_empty(any_structure):
+    # TODO
     if any_structure:
         return False
     else:
         return True
+
+def _is_in_branch(repo, branch):
+    is_in_branch = False
+    with lcd(repo):
+        name = _get_branch_name(repo)
+        if name == branch:
+            is_in_branch = True
+        else:
+            print 'branch {0} does not match {1}'.format(name, branch)
+
+    return is_in_branch
 
 def _make_dirs(dirs):
     """ make dirs if not exist"""
