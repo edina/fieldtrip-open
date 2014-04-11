@@ -1,6 +1,9 @@
 {
     "body": {
         "view-records": "View Records",
+        "buttons-header": {
+            "class": "ui-header-buttons ui-block-b ui-btn-right"
+        },
         "buttons" : {
             "records-list":{
                 "id" : "records-list",
