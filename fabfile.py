@@ -915,13 +915,19 @@ def _is_empty(any_structure):
         return True
 
 def _is_in_branch(repo, branch):
+    # checks if a git repository is in a specific branch
     is_in_branch = False
     with lcd(repo):
         name = _get_branch_name(repo)
         if name == branch:
             is_in_branch = True
         else:
-            print 'branch {0} does not match {1}'.format(name, branch)
+            dfb = '(detached from {0})'.format(branch)
+            if dfb == name:
+                is_in_branch = True
+
+    if not is_in_branch:
+        print 'branch {0} does not match {1}'.format(name, branch)
 
     return is_in_branch
 
