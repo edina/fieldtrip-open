@@ -651,9 +651,8 @@ def release_android(beta='True', overwrite='False', email=False):
                 print "\nCan't release with untagged core repository: {0}".format(
                     versions['core'])
                 exit(1)
-            tag_name = _get_branch_name(proj_home)
-            if versions['project'] != tag_name:
-                print "To release the project must be tagged with release version. project: {0}, tagged: {1}".format(versions['project'], tag_name)
+            if not _is_in_branch(proj_home, versions['project']):
+                print "To release the project must be tagged with release version. project: {0}".format(versions['project'])
 
             for cplug in plugins['cordova']:
                 if len(cplug.split('@')) != 2:
