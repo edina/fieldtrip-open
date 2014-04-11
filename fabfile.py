@@ -487,7 +487,7 @@ def install_project(platform='android',
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
         if versions['project'] != 'master':
-            local('git checkout {0}'.format(versions['project'])
+            local('git checkout {0}'.format(versions['project']))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
 
     # do some checks on the project
