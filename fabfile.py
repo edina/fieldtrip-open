@@ -497,10 +497,6 @@ def install_project(platform='android',
                 rbr, data['core'])
             exit(-1)
         pbr = _get_branch_name(proj_home)
-        if pbr != versions['project']:
-            print 'Using wrong project branch/tag {0}. Should be using {1}.'.format(
-                pbr, data['project'])
-            exit(-1)
 
     # create cordova config.xml
     _generate_config_xml()
@@ -641,10 +637,14 @@ def release_android(beta='True', overwrite='False', email=False):
             local('cordova build')
         else:
             # check plugin and project versions
-            if versions['core'] == 'master' or versions['project'] == 'master':
-                print "Can't release with untagged repositories: core = {0}, project = {1}".format(
-                    versions['core'], versions['project'])
+            if versions['core'] == 'master':
+                print "\nCan't release with untagged core repository: {0}".format(
+                    versions['core'])
                 exit(1)
+            tag_name = _get_branch_name(proj_home)
+            if versions['project'] != tag_name:
+                print "To release the project must be tagged with release version. project: {0}, tagged: {1}".format(versions['project'], tag_name)
+
             for cplug in plugins['cordova']:
                 if len(cplug.split('@')) != 2:
                     print "Must release with a versioned cordova plugin: {0}".format(cplug)
@@ -684,7 +684,7 @@ def release_android(beta='True', overwrite='False', email=False):
 
     # copy apk to servers, if defined
     env.hosts = _config('hosts', section='release').split(',')
-    version = versions['app']
+    version = versions['project']
     if len(env.hosts) > 0:
         execute('_copy_apk_to_servers',
                 version,
@@ -851,11 +851,12 @@ def _generate_config_xml():
 
     environ = Environment(loader=FileSystemLoader('etc'))
     config_template = environ.get_template("config.xml")
+    version = versions['project']
     filedata = config_template.render(
         name=_config('name'),
         package=_config('package', section='app'),
-        version=versions['app'],
-        version_code=versions['app'].replace(".", ""),
+        version=version,
+        version_code=version.replace(".", ""),
         author_email=_config('author_email'),
         url=_config('url'),
         access_urls = _config('access_urls').split(","))
