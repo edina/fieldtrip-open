@@ -476,22 +476,24 @@ def install_project(platform='android',
     else:
         os.mkdir(runtime)
 
-    versions = None
-    proj_json = os.sep.join((theme_src, 'project.json'))
-    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
-        versions = json.load(f)["versions"]
-
     # create project repo
     if not os.path.exists('project'):
         proj = _config('project')
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
-        if versions['project'] != 'master':
-            local('git checkout {0}'.format(versions['project']))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
 
-    # do some checks on the project
+    versions = None
     theme_src = os.sep.join((proj_home, 'theme'))
+    with open(os.path.join(theme_src, 'project.json'), 'r') as f:
+        versions = json.load(f)["versions"]
+        version = versions['project']
+        if version != 'master':
+            with lcd('project'):
+                print '\nTry to checkout version {0} of project'.format(version)
+                local('git checkout {0}'.format(version))
+
+    # do some checks on the project
     if not os.path.exists(os.sep.join((theme_src, 'project.json'))):
         print "\n*** WARNING: No project.json found in project"
     theme_css = os.sep.join((theme_src, 'css'))
@@ -503,8 +505,8 @@ def install_project(platform='android',
     # check using correct core git version
     rbr = _get_branch_name(root)
     if rbr != versions['core']:
-        print 'Using wrong FT Open branch/tag {0}. Should be using {1}.'.format(
-        rbr, data['core'])
+        print '\nUsing wrong FT Open branch/tag {0}. Should be using {1}.'.format(
+        rbr, versions['core'])
         exit(-1)
 
     # create cordova config.xml
