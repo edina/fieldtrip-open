@@ -441,13 +441,15 @@ def install_plugins(target='local', cordova="True"):
 @task
 def install_project(platform='android',
                     dist_dir='apps',
-                    target='local'):
+                    target='local',
+                    project_branch='master'):
     """
     Install Cordova runtime
 
     platform - android or ios
     dist_dir - directory for unpacking openlayers
     target - runtime root
+    project_branch - project branch name
     """
     if platform == 'android':
         _check_command('android')
@@ -482,6 +484,10 @@ def install_project(platform='android',
         pro_name = proj[proj.rfind('/') + 1:].replace('.git', '')
         local('git clone {0}'.format(proj))
         local('ln -s {0} {1}'.format(pro_name, 'project'))
+    if project_branch != 'master':
+        with lcd('project'):
+            print 'Try checking out project branch {0}'.format(project_branch)
+            local('git checkout {0}'.format(project_branch))
 
     # do some checks on the project
     theme_src = os.sep.join((proj_home, 'theme'))
@@ -493,21 +499,15 @@ def install_project(platform='android',
     if not os.path.exists(os.sep.join((theme_css, 'style.css'))):
         print "\n*** WARNING: No style.css found in project"
 
-    # check using correct git version
     versions = None
-    proj_json = os.sep.join((theme_src, 'project.json'))
     with open(os.path.join(theme_src, 'project.json'), 'r') as f:
         versions = json.load(f)["versions"]
-        rbr = _get_branch_name(root)
-        if rbr != versions['core']:
-            print 'Using wrong FT Open branch/tag {0}. Should be using {1}.'.format(
-                rbr, data['core'])
-            exit(-1)
-        pbr = _get_branch_name(proj_home)
-        if pbr != versions['project']:
-            print 'Using wrong project branch/tag {0}. Should be using {1}.'.format(
-                pbr, data['project'])
-            exit(-1)
+
+    # check using correct core git version
+    if not _is_in_branch(root, versions['core']):
+        print '\nUsing wrong FT Open branch/tag. Should be using {0}.'.format(
+            versions['core'])
+        exit(-1)
 
     # create cordova config.xml
     _generate_config_xml()
@@ -648,10 +648,13 @@ def release_android(beta='True', overwrite='False', email=False):
             local('cordova build')
         else:
             # check plugin and project versions
-            if versions['core'] == 'master' or versions['project'] == 'master':
-                print "Can't release with untagged repositories: core = {0}, project = {1}".format(
-                    versions['core'], versions['project'])
+            if versions['core'] == 'master':
+                print "\nCan't release with untagged core repository: {0}".format(
+                    versions['core'])
                 exit(1)
+            if not _is_in_branch(proj_home, versions['project']):
+                print "To release the project must be tagged with release version. project: {0}".format(versions['project'])
+
             for cplug in plugins['cordova']:
                 if len(cplug.split('@')) != 2:
                     print "Must release with a versioned cordova plugin: {0}".format(cplug)
@@ -691,7 +694,7 @@ def release_android(beta='True', overwrite='False', email=False):
 
     # copy apk to servers, if defined
     env.hosts = _config('hosts', section='release').split(',')
-    version = versions['app']
+    version = versions['project']
     if len(env.hosts) > 0:
         execute('_copy_apk_to_servers',
                 version,
@@ -858,11 +861,12 @@ def _generate_config_xml():
 
     environ = Environment(loader=FileSystemLoader('etc'))
     config_template = environ.get_template("config.xml")
+    version = versions['project']
     filedata = config_template.render(
         name=_config('name'),
         package=_config('package', section='app'),
-        version=versions['app'],
-        version_code=versions['app'].replace(".", ""),
+        version=version,
+        version_code=version.replace(".", ""),
         author_email=_config('author_email'),
         url=_config('url'),
         access_urls = _config('access_urls').split(","))
@@ -904,10 +908,28 @@ def _get_source(app='android'):
     return root, proj_home, src_dir
 
 def _is_empty(any_structure):
+    # TODO
     if any_structure:
         return False
     else:
         return True
+
+def _is_in_branch(repo, branch):
+    # checks if a git repository is in a specific branch
+    is_in_branch = False
+    with lcd(repo):
+        name = _get_branch_name(repo)
+        if name == branch:
+            is_in_branch = True
+        else:
+            dfb = '(detached from {0})'.format(branch)
+            if dfb == name:
+                is_in_branch = True
+
+    if not is_in_branch:
+        print 'branch {0} does not match {1}'.format(name, branch)
+
+    return is_in_branch
 
 def _make_dirs(dirs):
     """ make dirs if not exist"""
