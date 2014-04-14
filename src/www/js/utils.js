@@ -67,6 +67,16 @@ define(['settings', 'config'], function(settings, config){
     var documentBase = window.location.pathname;
     documentBase = documentBase.replace("index.html", "");
 
+    // setup default saved records view
+    if(localStorage.getItem('records-layout') === undefined){
+        if(config.saved_records_records_id){
+            localStorage.setItem('records-layout', 'records-list');
+        }
+        else{
+            localStorage.setItem('records-layout', config.saved_records_records_id);
+        }
+    }
+
     /**
      * Get application root directory.
      * @param callback Function executed after root has been retrieved.

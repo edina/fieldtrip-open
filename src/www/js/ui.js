@@ -489,13 +489,6 @@ var _ui = {
      * Set up home page.
      */
     homePage: function(event){
-        this.menuClicked = false;
-        this.volumeDownClicked = false;
-
-        if(event){
-            event.stopImmediatePropagation();
-        }
-
         capturePageListeners();
 
         $('.help-block a').unbind();
@@ -586,14 +579,8 @@ var _ui = {
          * grid or list layout style
          */
         function toggleDisplay(id) {
-
-            // default is list view
-            if (id === null || id === "null") {
-                id = 'records-grid';
-            }
-
             // store preference so it persists
-            localStorage.setItem('layout', id);
+            localStorage.setItem('records-layout', id);
 
             // Get the button and ensure it's active
             var button  = $('#' + id);
@@ -638,7 +625,7 @@ var _ui = {
 
         // Annotations loaded at this point so we can setup layout
         // Check if preference previously set
-        toggleDisplay(localStorage.getItem('layout'));
+        toggleDisplay(localStorage.getItem('records-layout'));
 
         // delete a saved record
         $(document).off('click', '.saved-records-delete');
