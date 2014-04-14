@@ -219,7 +219,7 @@ def generate_html(platform="android", cordova=False):
         if os.path.exists(path) and filename in os.listdir(path):
             with open(os.path.join(path, filename), 'r') as f:
                 new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
-            print "merging {0}".format(os.path.join(path, filename))
+            print "DATA: merging {0}".format(os.path.join(path, filename))
             return _merge(data, new_data)
         else:
             return data
@@ -258,7 +258,7 @@ def generate_html(platform="android", cordova=False):
 
     def _generate_templates(environ, templates):
         for templ in templates:
-            print "generating template {0}".format(templates[templ])
+            print "TEMPLATE: generating template {0}".format(templates[templ])
             script_template = environ.get_template(templates[templ])
             _write_data(os.path.join(export_path, 'templates', templates[templ]), script_template.render())
 
@@ -284,7 +284,7 @@ def generate_html(platform="android", cordova=False):
 
         header_template = environ_core.get_template("header.html")
         footer_template = environ_core.get_template("footer.html")
-        print current_path
+        #print current_path
 
         for path, dirs, files in os.walk(current_path):
             for f in files:
@@ -343,11 +343,13 @@ def generate_html(platform="android", cordova=False):
                                 if len(res) == 1:
                                     environ_popup = Environment(loader=FileSystemLoader(res[0]))
                                     popup_template = environ_popup.get_template(data["popups"][popup]["template"])
+                                    print "POPUP: adding {0} popup from plugins in {1}".format(data["popups"][popup]["template"], htmlfile)
                                 elif len(res) > 1:
-                                    print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"])
+                                    print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"], )
                                     sys.exit()
                                 else:
                                     popup_template = environ.get_template(data["popups"][popup]["template"])
+                                    print "POPUP: adding {0} popup from core in {1}".format(data["popups"][popup]["template"], htmlfile)
                                 popups.append(popup_template.render(data=data["popups"][popup]["data"]))
 
                         output = template.render(
