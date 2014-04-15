@@ -167,10 +167,6 @@ def generate_config_js():
     _config('name')
 
     values = dict(config.items('app'))
-    #if config.has_section('mapurls'):
-    #    _merge(values, {"mapurls": dict(config.items('mapurls'))})
-    #if config.has_section('pcapiurls'):
-    #    _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
 
     templates = os.sep.join((src_dir, 'templates'))
     out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
