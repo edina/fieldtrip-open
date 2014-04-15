@@ -299,8 +299,29 @@ var _base = {
     },
 
     /**
+     * Get internal annotation id and record for a given record name. This only
+     * applies to synced records.
+     * @param name Record name.
+     */
+    getAnnotationDetails: function(name) {
+        var details = undefined;
+        $.each(this.getSavedRecords(), function(i, annotation){
+            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
+               annotation.isSynced){
+                details = {
+                    'id': i,
+                    'annotation': annotation
+                };
+                return false; // breaks loop!
+            }
+        });
+
+        return details;
+    },
+
+    /**
      * Get internal annotation id for a given record name. This only applies to
-     * sycned records.
+     * synced records.
      * @param name Record name.
      */
     getAnnotationId: function(name) {
