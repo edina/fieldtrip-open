@@ -159,23 +159,6 @@ def deploy_ios():
         local('cordova build ios')
 
 @task
-def generate_config_js():
-    """ generate config.js """
-    root, proj_home, src_dir = _get_source()
-
-    # using config initialises it
-    _config('name')
-
-    values = dict(config.items('app'))
-
-    templates = os.sep.join((src_dir, 'templates'))
-    out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
-    environ = Environment(loader=FileSystemLoader(templates))
-    template = environ.get_template("config.js")
-    output = template.render(config=values)
-    _write_data(out_file, output)
-
-@task
 def generate_docs():
     """
     Auto generate javascript markdown documentation
@@ -612,7 +595,7 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
     # generate config js
-    generate_config_js()
+    _generate_config_js(versions['project'])
 
     # set up cordova/fieldtrip plugins
     install_plugins(target)
@@ -903,7 +886,23 @@ def _email(file_name,
     s.sendmail(sender, [to], msg.as_string())
     s.quit()
 
-@task
+def _generate_config_js(version):
+    """ generate config.js """
+    root, proj_home, src_dir = _get_source()
+
+    # using config initialises it
+    _config('name')
+
+    values = dict(config.items('app'))
+    values['version'] = str(version)
+
+    templates = os.sep.join((src_dir, 'templates'))
+    out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
+    environ = Environment(loader=FileSystemLoader(templates))
+    template = environ.get_template("config.js")
+    output = template.render(config=values)
+    _write_data(out_file, output)
+
 def _generate_config_xml():
     """ generate config.xml """
 
