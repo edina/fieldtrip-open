@@ -65,6 +65,10 @@ def clean():
     def delete_repo(repo):
         if os.path.exists(repo):
             with lcd(repo):
+                out = local('git status', capture=True)
+                if out.find('Your branch is ahead') != -1:
+                    print "\nWon't delete {0} until all commits are pushed".format(repo)
+                    exit(-1)
                 out = local('git status -s', capture=True)
                 if len(out.splitlines()) > 0:
                     print "\nWon't delete {0} until there are no uncommitted changes".format(repo)
@@ -75,6 +79,13 @@ def clean():
                     exit(-1)
                 else:
                     local('rm -rf {0}'.format(repo))
+
+    msg = '\n*** WARNING ***\nfab clean will delete the project and all plugin repositories. While this task attempts to check there are no uncommited or stashed changes (and will not continue if there are) it is still probably best to check manually to avoid any loss of work.\nDo you wish to continue(Y/n)? > '
+    answer = raw_input(msg).strip()
+
+    if len(answer) > 0 and answer != 'y':
+        print 'Choosing not continue.'
+        return
 
     with settings(warn_only=True):
         www = os.sep.join((src, 'www'))
