@@ -38,3 +38,13 @@ Plugins can add a stylesheet by via javascript, e.g:
 ```
 $('head').prepend('<link rel="stylesheet" href="plugins/<myplugin>/css/style.css" type="text/css" />');
 ```
+
+
+##### settings
+
+If you need to add details on the settings page that have sensitive data that you don't want to be exposed then you need to add them on the config.ini and then create a settings.html template file inside the src/templates folder of the plugin. 
+e.g.
+https://github.com/edina/fieldtrip-sync/blob/master/src/templates/settings.html
+
+The way you need to add the information in the config.ini should be like
+key=value where key is the name of the plugin and value the information you want to add.
