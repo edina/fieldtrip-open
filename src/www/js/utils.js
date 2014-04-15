@@ -529,7 +529,7 @@ var _base = {
         });
 
         setTimeout(function(){
-            $.mobile.hidePageLoadingMsg();
+            $.mobile.loading('hide');
         }, duration);
     },
 
