@@ -40,6 +40,7 @@ from copy import copy, deepcopy
 
 import xml.etree.ElementTree as ET
 
+import ast
 import codecs
 import ConfigParser
 import json
@@ -166,10 +167,6 @@ def generate_config_js():
     _config('name')
 
     values = dict(config.items('app'))
-    if config.has_section('mapurls'):
-        _merge(values, {"mapurls": dict(config.items('mapurls'))})
-    if config.has_section('pcapiurls'):
-        _merge(values, {"pcapi-urls": dict(config.items('pcapiurls'))})
 
     templates = os.sep.join((src_dir, 'templates'))
     out_file = os.sep.join((src_dir, 'www', 'js', 'config.js'))
@@ -280,10 +277,45 @@ def generate_html(platform="android", cordova=False):
                 res.append(t)
         return res
 
+    def _find_template(name):
+        pths = {}
+        for t in _check_for_template(name):
+            paths = t.split("/")
+            pths[paths[len(paths)-3]]=t
+        return pths
+
     def _get_letter(obj):
         """ TODO """
         i = len(obj)-1
         return chr(i+ord('a'))
+
+    def _is_valid_file(f):
+        return f.endswith("json") and not f in ["header.json", "footer.json", "settings.json"]
+
+    def _generate_settings(current_path, paths, header_data, footer_data):
+        """ generate setttings page """
+        environ = Environment(loader=FileSystemLoader(current_path))
+        settings=[]
+        settings_in_plugins = _find_template('settings.html')
+        settings_config = _config(None, "settings")
+        for key, value in settings_config.iteritems():
+            if key in settings_in_plugins:
+                settings_path = settings_in_plugins[key]
+                settings_tmpl = os.path.join(settings_path, 'settings.html')
+                if os.path.exists(settings_tmpl):
+                    environ_settings = Environment(loader=FileSystemLoader(settings_path))
+                    tmpl = environ_settings.get_template('settings.html')
+                    if value.startswith('{'):
+                        data = json.loads(value)
+                    else:
+                        data = value
+                    settings.append(tmpl.render(settings=data))
+                else:
+                    print "The template {0} doesn't exist".format(settings_tmpl)
+                    sys.exit()
+        template  = environ.get_template('settings.html')
+        output = template.render(settings="\n".join(settings))
+        _write_data(os.sep.join((export_path, 'settings.html')), _prettify(output, 2))
 
     def _create_html(current_path, paths, header_data, footer_data):
         environ = Environment(loader=FileSystemLoader(current_path))
@@ -299,7 +331,7 @@ def generate_html(platform="android", cordova=False):
 
         for path, dirs, files in os.walk(current_path):
             for f in files:
-                if f.endswith("json") and not f.startswith("header") and not f.startswith("footer"):
+                if _is_valid_file(f):
                     htmlfile = '{0}.html'.format(f.split(".")[0])
                     htmlfilepath = os.path.join(path, htmlfile)
                     jsonfilepath = os.path.join(path, f)
@@ -381,6 +413,7 @@ def generate_html(platform="android", cordova=False):
     #generate the rest
     _create_html(templates_path["core"], templates_path, header_data, footer_data)
     _create_html(templates_path["project"], templates_path, header_data, footer_data)
+    _generate_settings(templates_path["core"], templates_path, header_data, footer_data)
 
     for d in _get_plugins_templates():
         _create_html(d, templates_path, header_data, footer_data)
@@ -388,6 +421,11 @@ def generate_html(platform="android", cordova=False):
 @task
 def generate_html_ios():
     generate_html(platform="ios")
+
+@task
+def generate_settings():
+    """ generate settings page """
+    
 
 @task
 def install_plugins(target='local', cordova="True"):
@@ -805,7 +843,10 @@ def _config(key, section='install'):
         conf_file = os.sep.join((_get_source()[0], 'etc', 'config.ini'))
         config.read(conf_file)
 
-    return config.get(section, key)
+    if key == None:
+        return config._sections[section]
+    else:
+        return config.get(section, key)
 
 @task
 def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
