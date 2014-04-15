@@ -298,21 +298,22 @@ def generate_html(platform="android", cordova=False):
         settings=[]
         settings_in_plugins = _find_template('settings.html')
         settings_config = _config(None, "settings")
-        for key, value in settings_config.iteritems():
-            if key in settings_in_plugins:
-                settings_path = settings_in_plugins[key]
-                settings_tmpl = os.path.join(settings_path, 'settings.html')
-                if os.path.exists(settings_tmpl):
-                    environ_settings = Environment(loader=FileSystemLoader(settings_path))
-                    tmpl = environ_settings.get_template('settings.html')
-                    if value.startswith('{'):
-                        data = json.loads(value)
+        if settings_config != None:
+            for key, value in settings_config.iteritems():
+                if key in settings_in_plugins:
+                    settings_path = settings_in_plugins[key]
+                    settings_tmpl = os.path.join(settings_path, 'settings.html')
+                    if os.path.exists(settings_tmpl):
+                        environ_settings = Environment(loader=FileSystemLoader(settings_path))
+                        tmpl = environ_settings.get_template('settings.html')
+                        if value.startswith('{'):
+                            data = json.loads(value)
+                        else:
+                            data = value
+                        settings.append(tmpl.render(settings=data))
                     else:
-                        data = value
-                    settings.append(tmpl.render(settings=data))
-                else:
-                    print "The template {0} doesn't exist".format(settings_tmpl)
-                    sys.exit()
+                        print "The template {0} doesn't exist".format(settings_tmpl)
+                        sys.exit()
         template  = environ.get_template('settings.html')
         output = template.render(settings="\n".join(settings))
         _write_data(os.sep.join((export_path, 'settings.html')), _prettify(output, 2))
@@ -421,11 +422,6 @@ def generate_html(platform="android", cordova=False):
 @task
 def generate_html_ios():
     generate_html(platform="ios")
-
-@task
-def generate_settings():
-    """ generate settings page """
-    
 
 @task
 def install_plugins(target='local', cordova="True"):
@@ -843,10 +839,13 @@ def _config(key, section='install'):
         conf_file = os.sep.join((_get_source()[0], 'etc', 'config.ini'))
         config.read(conf_file)
 
-    if key == None:
-        return config._sections[section]
+    if config.has_section(section):
+        if key == None:
+            return config._sections[section]
+        else:
+            return config.get(section, key)
     else:
-        return config.get(section, key)
+        return None
 
 @task
 def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
