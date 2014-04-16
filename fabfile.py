@@ -279,24 +279,25 @@ def generate_html(platform="android", cordova=False):
         """ generate setttings page """
         environ = Environment(loader=FileSystemLoader(current_path))
         settings=[]
+        #get all the settings templates from plugins
         settings_in_plugins = _find_template('settings.html')
+        #get the settings values from config
         settings_config = _config(None, "settings")
-        if settings_config != None:
-            for key, value in settings_config.iteritems():
-                if key in settings_in_plugins:
-                    settings_path = settings_in_plugins[key]
-                    settings_tmpl = os.path.join(settings_path, 'settings.html')
-                    if os.path.exists(settings_tmpl):
-                        environ_settings = Environment(loader=FileSystemLoader(settings_path))
-                        tmpl = environ_settings.get_template('settings.html')
-                        if value.startswith('{'):
-                            data = json.loads(value, object_pairs_hook=collections.OrderedDict)
-                        else:
-                            data = value
-                        settings.append(tmpl.render(settings=data))
+
+        for plg in settings_in_plugins:
+            settings_path = settings_in_plugins[plg]
+            environ_settings = Environment(loader=FileSystemLoader(settings_path))
+            tmpl = environ_settings.get_template('settings.html')
+            data = []
+            if settings_config != None:
+                if plg in settings_config:
+                    value = settings_config[plg]
+                    if value.startswith('{'):
+                        data = json.loads(value, object_pairs_hook=collections.OrderedDict)
                     else:
-                        print "The template {0} doesn't exist".format(settings_tmpl)
-                        sys.exit()
+                        data = value
+            settings.append(tmpl.render(settings=data))
+        
         header_template = environ.get_template("header.html")
         footer_template = environ.get_template("footer.html")
         template  = environ.get_template('settings.html')
