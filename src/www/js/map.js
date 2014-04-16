@@ -988,14 +988,14 @@ var _this = {
                     }
                 });
             }
-        });  
+        });
 
         // Close popup on click
         popup.on('click',  function() {
             popup.popup('close');
         });
 
- 
+
     },
 
     /**
@@ -1008,7 +1008,7 @@ var _this = {
             var annotation = records.getSavedRecord(feature.attributes.id);
 
             this.createPopup(annotation);
-        
+
             // give plugins a change to process the click first
             var showDetails = true;
             $.each(this.recordClickListeners, function(i, func){
@@ -1067,7 +1067,6 @@ var _this = {
 
         console.debug("switch base layer to " + layer.url);
 
-        //layer.setVisibility(false);
         this.map.addLayer(layer);
         this.map.setBaseLayer(layer);
 

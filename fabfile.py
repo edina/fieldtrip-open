@@ -297,7 +297,7 @@ def generate_html(platform="android", cordova=False):
                     else:
                         data = value
             settings.append(tmpl.render(settings=data))
-        
+
         header_template = environ.get_template("header.html")
         footer_template = environ.get_template("footer.html")
         template  = environ.get_template('settings.html')
@@ -452,6 +452,13 @@ def install_plugins(target='local', cordova="True"):
         proot = os.sep.join((root, 'plugins'))
         for plugin, details in pobj['fieldtrip'].iteritems():
             dest = os.sep.join((asset_dir, 'plugins', plugin))
+
+            if details[0:14] == 'https://github':
+                # if repository given in https:// format convert to git@
+                print 'Converting {0} to '.format(details)
+                details = 'git@{0}.git'.format(details[8:]).replace('/', ':', 1)
+                print details
+
             if not details[0:3] == 'git':
                 # bower plugin
                 name = 'fieldtrip-{0}'.format(plugin)
