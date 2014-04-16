@@ -290,15 +290,23 @@ def generate_html(platform="android", cordova=False):
                         environ_settings = Environment(loader=FileSystemLoader(settings_path))
                         tmpl = environ_settings.get_template('settings.html')
                         if value.startswith('{'):
-                            data = json.loads(value)
+                            data = json.loads(value, object_pairs_hook=collections.OrderedDict)
                         else:
                             data = value
                         settings.append(tmpl.render(settings=data))
                     else:
                         print "The template {0} doesn't exist".format(settings_tmpl)
                         sys.exit()
+        header_template = environ.get_template("header.html")
+        footer_template = environ.get_template("footer.html")
         template  = environ.get_template('settings.html')
-        output = template.render(settings="\n".join(settings))
+        output = template.render(settings="\n".join(settings),
+                            header=header_template.render(
+                                data=header_data,
+                                platform=platform),
+                            footer=footer_template.render(
+                                    data=footer_data,
+                                    platform=platform))
         _write_data(os.sep.join((export_path, 'settings.html')), _prettify(output, 2))
 
     def _create_html(current_path, paths, header_data, footer_data):
@@ -387,7 +395,7 @@ def generate_html(platform="android", cordova=False):
                             header=header_template.render(
                                 data=data["header"],
                                 platform=platform),
-                                footer=footer_template.render(
+                            footer=footer_template.render(
                                     data=data["footer"],
                                     platform=platform))
                         _write_data(os.sep.join((export_path, htmlfile)), _prettify(output, 2))
