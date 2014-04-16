@@ -43,7 +43,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
     var menuIds = {
         'home': ['home-page', 'settings-page'],
         'map': ['map-page'],
-        'capture': ['capture-page', 'annotate-page']
+        'capture': ['capture-page', 'annotate-page', 'annotate-preview-page']
     }
 
     // record initial screen height
