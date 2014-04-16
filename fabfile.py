@@ -281,6 +281,9 @@ def generate_html(platform="android", cordova=False):
         settings=[]
         #get all the settings templates from plugins
         settings_in_plugins = _find_template('settings.html')
+        if os.path.exists(os.path.join(paths["project"], 'settings.html')):
+            settings_in_plugins["project"] = paths["project"]
+
         #get the settings values from config
         settings_config = _config(None, "settings")
 
