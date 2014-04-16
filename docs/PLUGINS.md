@@ -47,7 +47,7 @@ Settings widgets can be added by plugins by add creating a settings.html templat
 </div>
 ```
 
-The current value can be retieved by calling the get method on the settings module, e.g:
+The current value can be retrieved by calling the get method on the settings module, e.g:
 
 ```
 define(['settings'], settings){
