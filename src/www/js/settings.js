@@ -125,7 +125,7 @@ define(['config'], function(config){
     }
 
     // ensure map has URL defined
-    if(typeof(vals['mapserver-url']) === 'undefined'){
+    if(vals['mapserver-url'] === undefined){
         vals['mapserver-url'] = config.map_url;
     }
 
@@ -141,7 +141,7 @@ return{
     get: function(name){
         var val;
         if(vals[name]){
-            val = vals[name].val;
+            val = vals[name];
         }
         return val;
     }
