@@ -80,7 +80,7 @@ A project can add a new button to the _Capture_ page by adding an capture.json i
 
 #### Add Header Button
 
-A project can add a new button to the main header of the app by adding the following to the page json file where it should appear:
+A project or plugin can add a new button to the main header of the app by adding the following to the page json file where it should appear:
 
 ```
 {
@@ -113,10 +113,6 @@ A project can add a new footer new tab, and landing page for the tab, by providi
     }
 }
 ```
-
-#### Add Records Header Button
-
-TODO
 
 #### Removing Elements
 
