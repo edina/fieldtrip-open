@@ -145,17 +145,21 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
      */
     var resizePage = function(){
         if($('.ui-dialog').length === 0){
-            var offset = 0;
             var header = 0;
+            var secondHeader = 0;
             var footer = 0;
-            if($('.ui-page-active .ui-footer').css('display') !== 'none'){
-                footer = $('.ui-page-active .ui-footer').first().height();
-            }
+
             if($('.ui-page-active .ui-header').css('display') !== 'none'){
                 header = $('.ui-page-active .ui-header').first().height();
             }
+            if($('.ui-page-active .second-header').css('display') !== 'none'){
+                secondHeader = $('.ui-page-active .second-header').first().height();
+            }
+            if($('.ui-page-active .ui-footer').css('display') !== 'none'){
+                footer = $('.ui-page-active .ui-footer').first().height();
+            }
 
-            var h = $(window).height() - (header + footer + offset);
+            var h = $(window).height() - (header + footer + secondHeader);
             $('[data-role=content]').css('height', h + 'px');
         }
     };
