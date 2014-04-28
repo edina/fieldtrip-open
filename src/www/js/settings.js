@@ -141,7 +141,7 @@ return{
     get: function(name){
         var val;
         if(vals[name]){
-            val = vals[name];
+            val = vals[name].val;
         }
         return val;
     }
