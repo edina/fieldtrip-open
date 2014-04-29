@@ -635,6 +635,18 @@ var _base = {
         savedAnnotations[id] = annotation;
         this.setSavedRecords(savedAnnotations);
 
+        // Fire newTextCreated event if a 
+        // text annotation with no pre-existing trackId 
+        if (annotation.record.editor === 'text.edtr') {
+
+            if (annotation.trackId === undefined) {
+                $.event.trigger({
+                    type:    "newTextCreated",
+                    id: id,
+                    time:    new Date()
+                });
+            }
+       }
         return id;
     },
 
