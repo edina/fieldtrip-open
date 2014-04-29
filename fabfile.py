@@ -291,12 +291,13 @@ def generate_html(platform="android", cordova=False):
             settings_path = settings_in_plugins[plg]
             environ_settings = Environment(loader=FileSystemLoader(settings_path))
             tmpl = environ_settings.get_template('settings.html')
-            data = []
+            data = {}
             if settings_config != None:
                 if plg in settings_config:
                     value = settings_config[plg]
                     if value.startswith('{'):
                         data = json.loads(value, object_pairs_hook=collections.OrderedDict)
+                        print data
                     else:
                         data = value
             settings.append(tmpl.render(settings=data))
@@ -516,7 +517,7 @@ def install_project(platform='android',
 
     if os.path.exists(runtime):
         # check if they want to delete existing installation
-        msg = 'Directory {0} exists.\nDo you wish to delete it(Y/n)? > '.format(runtime)
+        msg = 'Directory {0} exists.\nDo you wish to delete it(y/n)? > '.format(runtime)
         answer = raw_input(msg).strip()
 
         if len(answer) > 0 and answer != 'y':
