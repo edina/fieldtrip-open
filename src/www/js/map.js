@@ -708,6 +708,13 @@ var _this = {
     },
 
     /**
+     * @return projections
+     */
+    getProjections: function(){
+        return [INTERNAL_PROJECTION, EXTERNAL_PROJECTION];
+    },
+
+    /**
      * @return The map tileset capabilities object.
      */
     getTileMapCapabilities: function(){
