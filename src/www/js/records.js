@@ -481,6 +481,45 @@ var _base = {
     },
 
     /**
+     * @return id of an annotation in savedRecords list
+     */
+    getAnnotationIdFromSavedRecords: function(desiredAnnotation) {
+        var id = undefined;
+        $.each(this.getSavedRecords(), function(i, annotation){
+            // Compare on timestamp
+            if(annotation.record.timestamp === desiredAnnotation.record.timestamp){
+                id = i;
+                return false; 
+            }
+        });
+        return id;
+    },
+
+    /**
+     * @return List of saved records corresponding to track annotation object or just the track id.
+     */
+    getSavedRecordsForTrack: function(annotation){
+        var id = annotation;
+        // annotation could be an acutal annotation object - get the id from it if this is the case
+        if (typeof(annotation) === 'object') {
+            id = this.getAnnotationIdFromSavedRecords(id);
+        }
+        var filteredRecords = {};
+        $.each(this.getSavedRecords(), function(objId, annotation){
+            var trackId = annotation['trackId'];
+            if(trackId !== undefined){ 
+                // convert id to String in case it was passed in as a number
+                if (trackId === id.toString()) {
+                    filteredRecords[objId] = annotation;
+                }
+            } 
+        });
+        return filteredRecords;
+    },
+
+
+
+    /**
      * Process annotation/record from an HTML5 form.
      * @param type Form type - image, text, audio or custom
      */
