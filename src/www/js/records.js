@@ -480,6 +480,22 @@ var _base = {
         return savedAnnotations;
     },
 
+
+    /**
+     * @return list of tracks
+     */
+    getSavedTracks: function() {
+        var filteredRecords = {};
+        $.each(this.getSavedRecords(), function(objId, annotation){
+            if (annotation.record.editor === 'track.edtr') {
+                filteredRecords[objId] = annotation;            
+            }    
+        });
+        return filteredRecords;    
+    },
+
+
+
     /**
      * @return id of an annotation in savedRecords list
      */
