@@ -81,10 +81,10 @@ def clean():
                 else:
                     local('rm -rf {0}'.format(repo))
 
-    msg = '\n*** WARNING ***\nfab clean will delete the project and all plugin repositories. While this task attempts to check there are no uncommited or stashed changes (and will not continue if there are) it is still probably best to check manually to avoid any loss of work.\nDo you wish to continue(Y/n)? > '
+    msg = '\n*** WARNING ***\nfab clean will delete the project and all plugin repositories. While this task attempts to check there are no uncommited or stashed changes (and will not continue if there are) it is still probably best to check manually to avoid any loss of work.\nDo you wish to continue(y/N)? > '
     answer = raw_input(msg).strip()
 
-    if len(answer) > 0 and answer != 'y':
+    if len(answer) == 0 or answer.lower() != 'y':
         print 'Choosing not continue.'
         return
 
@@ -517,10 +517,10 @@ def install_project(platform='android',
 
     if os.path.exists(runtime):
         # check if they want to delete existing installation
-        msg = 'Directory {0} exists.\nDo you wish to delete it(y/n)? > '.format(runtime)
+        msg = 'Directory {0} exists.\nDo you wish to delete it(Y/n)? > '.format(runtime)
         answer = raw_input(msg).strip()
 
-        if len(answer) > 0 and answer != 'y':
+        if len(answer) > 0 and answer.lower() != 'y':
             print 'Choosing not continue. Nothing installed.'
             return
 
