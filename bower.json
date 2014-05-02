@@ -24,7 +24,7 @@
         "requirejs-text": "2.0.10",
         "underscore": "1.5.2",
         "spectrum": "1.1.0",
-        "qunit": "1.11.0"
+        "qunit": "1.14.0"
     },
     "dependency_locations": {
         "jquery": [

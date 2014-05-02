@@ -50,7 +50,8 @@ function onDeviceReady(){
             "theme": "../theme",
             "proj4js": "ext/proj4js",
             "underscore": "ext/underscore",
-            "text": "ext/requirejs-text"
+            "text": "ext/requirejs-text",
+            'QUnit': 'ext/qunit'
         },
         shim: {
             "proj4js":{
@@ -58,6 +59,13 @@ function onDeviceReady(){
             },
             "underscore": {
                 exports: "_"
+            },
+            'QUnit': {
+                exports: 'QUnit',
+                init: function() {
+                    QUnit.config.autoload = false;
+                    QUnit.config.autostart = false;
+                }
             }
         }
     });
@@ -124,6 +132,7 @@ function onDeviceReady(){
             'annotate-page': ui.annotatePage,
             'annotate-preview-page': ui.annotatePreviewPage,
             'saved-records-page': ui.savedRecordsPage,
+            'test-page': ui.testPage,
         };
 
         $.each(onShows, function(id, func){

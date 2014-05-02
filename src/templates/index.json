@@ -65,6 +65,33 @@
                     "title": "Records"
                 }
             }
+        },
+        "section4": {
+            "title": "Development",
+            "items": {
+                "item1": {
+                    "div": {
+                        "class": "ui-block-a"
+                    },
+                    "a": {"href": "settings.html"},
+                    "img": {
+                        "src": "css/images/settings.png",
+                        "alt": "Settings"
+                    },
+                    "title": "Settings"
+                },
+                "item2": {
+                    "div": {
+                        "class": "ui-block-b"
+                    },
+                    "a": {"href": "#test-page"},
+                    "img": {
+                        "src": "css/images/settings.png",
+                        "alt": "Tests"
+                    },
+                    "title": "Tests"
+                }
+            }
         }
     },
     "popups": {

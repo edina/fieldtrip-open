@@ -28,28 +28,36 @@
 
       <div id="home-content" class="non-map-body" data-role="content">
       {% for key, sections in body.iteritems() %}
-        <h2>{{sections.title}}</h2>
-        {% if sections|length > 0 %}
-        <div class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
-          {% for item in sections["items"] %}
-            {% if sections["items"][item].keys()|length > 0 %}
-            <div {% for key, value in sections["items"][item]["div"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
-              <a {% for key, value in sections["items"][item]["a"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
-                <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
-              </a>
-              <p>{{sections["items"][item]["title"]}}</p>
-            </div>
-            {% endif %}
-          {% endfor %}
+        <div id="home-page-{{sections.title.replace(' ', '-').lower()}}">
+          <h2>{{sections.title}}</h2>
+          {% if sections|length > 0 %}
+          <div class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
+            {% for item in sections["items"] %}
+              {% if sections["items"][item].keys()|length > 0 %}
+              <div {% for key, value in sections["items"][item]["div"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+                <a {% for key, value in sections["items"][item]["a"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+                  <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+                </a>
+                <p>{{sections["items"][item]["title"]}}</p>
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
-      {% endfor %}
+        {% endfor %}
       </div>
 
       {{popups}}
 
       {{footer}}
 
+    </div>
+
+    <div id="test-page" data-role="page" data-fullscreen="false">
+      <div id="qunit"></div>
+      <div id="qunit-fixture"></div>
+      <script data-main="js/tests/main" src="js/ext/requirejs.js"></script>
     </div>
 
   </body>

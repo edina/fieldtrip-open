@@ -268,9 +268,17 @@ def generate_html(platform="android", cordova=False):
         return pths
 
     def _get_letter(obj):
-        """ TODO """
-        i = len(obj)-1
-        return chr(i+ord('a'))
+        """
+        Get the letter that corresponds to column in a jqm grid view based on the
+        number of elements in obj: see http://api.jquerymobile.com/1.3/grid-layout/
+        """
+
+        letter = 'a'
+        if len(obj) > 1:
+            i = len(obj) - 2
+            letter = chr(i + ord('a'))
+
+        return letter
 
     def _is_valid_file(f):
         return f.endswith("json") and not f in ["header.json", "footer.json", "settings.json"]

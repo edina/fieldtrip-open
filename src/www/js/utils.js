@@ -474,7 +474,8 @@ var _base = {
     },
 
     /**
-     * @return true If user's uuid is in the list of privileged users.
+     * @return true If user's uuid is in the list of privileged users. Desktop
+     user is always a privileged user.
      */
     isPrivilegedUser: function(){
         if(isMobileApp &&
