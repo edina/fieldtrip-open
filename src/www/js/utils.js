@@ -450,6 +450,18 @@ var _base = {
     },
 
     /**
+     * @return Is the browser chrome?
+     */
+    isChrome: function(){
+        if(navigator.userAgent.toLowerCase().match(/chromium/)){
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+
+    /**
      * @return Is the app running on a mobile device?
      */
     isMobileDevice: function(){
@@ -480,6 +492,7 @@ var _base = {
     isPrivilegedUser: function(){
         if(isMobileApp &&
            $.inArray(device.uuid, config.priviliged_users) === -1){
+            console.debug(device.uuid + " is a non privileged user")
             return false;
         }
         else{

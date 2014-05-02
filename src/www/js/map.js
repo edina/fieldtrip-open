@@ -1199,7 +1199,8 @@ var _this = {
     },
 
     /**
-     * TODO.
+     * Zoom map to the given extents.
+     * @param extent An openlayers bounding box.
      */
     zoomToExtent: function(extent){
         this.map.zoomToExtent(extent);

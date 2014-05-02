@@ -94,6 +94,7 @@ define(['utils'], function(utils){
     };
 
 var _base = {
+    SAVED_RECORDS_KEY: 'saved-annotations',
     IMAGE_UPLOAD_SIZE: "imageUploadSize",
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
     IMAGE_SIZE_FULL: "imageSizeFull",
@@ -196,6 +197,13 @@ var _base = {
      */
     annotateText: function(){
         this.annotate('text');
+    },
+
+    /**
+     * Delete all locally stored records.
+     */
+    clearSavedRecords: function(){
+        localStorage.setItem(this.SAVED_RECORDS_KEY, '');
     },
 
     /**
@@ -449,31 +457,48 @@ var _base = {
     },
 
     /**
-     * TODO
+     * @param if The annotation id.
+     * @return A saved annotation from local storage.
      */
     getSavedRecord: function(id){
         return this.getSavedRecords()[id];
     },
 
     /**
-     * @return List of saved records in local storage.
+     * Get Saved annotations/records in local storage.
+     * @param filter A function for testing the conditions of the filter. If this
+     * function returns true, the annotation will pass the filter and be included
+     * in the saved list. The function will take an annotation object as a
+     * parameter.
+     * @return Object of saved annotations in local storage keyed by id.
      */
-    getSavedRecords: function(){
-        var KEY = 'saved-annotations';
+    getSavedRecords: function(filter){
         var savedAnnotations = {};
-        var savedAnnotationsObj = localStorage.getItem(KEY);
+        var savedAnnotationsObj = localStorage.getItem(this.SAVED_RECORDS_KEY);
 
         if(savedAnnotationsObj &&
            savedAnnotationsObj.length > 0 &&
            savedAnnotationsObj != '[null]'){
 
             try{
-                savedAnnotations = JSON.parse(savedAnnotationsObj);
+                if(filter){
+                    if(typeof(filter) === 'function'){
+                        var annotations = JSON.parse(savedAnnotationsObj);
+                        $.each(annotations, function(id, annotation){
+                            if(filter(annotation)){
+                                savedAnnotations[id] = annotation;
+                            }
+                        });
+                    }
+                }
+                else{
+                    savedAnnotations = JSON.parse(savedAnnotationsObj);
+                }
             }
             catch(error){
                 // somethings went wrong with save, delete contents
                 console.error(error);
-                localStorage.removeItem(KEY);
+                localStorage.removeItem(this.SAVED_RECORDS_KEY);
             }
         }
 
@@ -624,6 +649,10 @@ var _base = {
      * @param annotation Record object.
      */
     saveAnnotation: function(id, annotation){
+        if(annotation === undefined){
+            throw "Annotation must be defined";
+        }
+
         var savedAnnotations = this.getSavedRecords();
 
         if(id === undefined){
@@ -660,7 +689,7 @@ var _base = {
      */
     setSavedRecords: function(annotations){
         //console.debug(JSON.stringify(annotations, undefined, 2));
-        localStorage.setItem('saved-annotations', JSON.stringify(annotations));
+        localStorage.setItem(this.SAVED_RECORDS_KEY, JSON.stringify(annotations));
     },
 
     /**
