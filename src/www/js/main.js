@@ -125,7 +125,6 @@ function onDeviceReady(){
             ui.mapPageInit();
         });
 
-
         var onShows = {
             'home-page': ui.homePage,
             'map-page': ui.mapPage,
