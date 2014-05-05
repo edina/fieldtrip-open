@@ -495,6 +495,13 @@ var _base = {
     },
     
     /**
+     * @return Check if supplied annotation is a track or not
+     */
+    isTrack: function(annotation) {
+        return annotation.trackId === undefined;
+    },
+    
+    /**
      * @return list of tracks
      */
     getSavedTracks: function() {
