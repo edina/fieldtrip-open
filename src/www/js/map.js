@@ -36,8 +36,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
     var POST_LOCATE_ZOOM_TO = RESOLUTIONS.length - 1;
 
-    var INTERNAL_PROJECTION;
-    var EXTERNAL_PROJECTION = new OpenLayers.Projection("EPSG:4326")
+    var internal_projection;
+    var external_projection = new OpenLayers.Projection("EPSG:4326")
     var TMS_URL = "/mapcache/tms";
     var DEFAULT_USER_LON = -2.421976;
     var DEFAULT_USER_LAT = 53.825564;
@@ -53,13 +53,13 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
     if(mapSettings.baseLayer === 'osm'){
-        INTERNAL_PROJECTION = new OpenLayers.Projection('EPSG:900913')
+        internal_projection = new OpenLayers.Projection('EPSG:900913')
         baseLayer = new OpenLayers.Layer.OSM();
     }
     else{
         var proj = mapSettings.epsg;
         proj4js.defs[proj] = mapSettings.proj;
-        INTERNAL_PROJECTION = new OpenLayers.Projection(proj)
+        internal_projection = new OpenLayers.Projection(proj)
         baseLayer = new OpenLayers.Layer.TMS(
             "osOpen",
             mapSettings.url + TMS_URL,
@@ -176,7 +176,7 @@ var _this = {
         this.recordClickListeners = [];
         var options = {
             controls: [],
-            projection: INTERNAL_PROJECTION,
+            projection: internal_projection,
             units: 'm',
             resolutions: RESOLUTIONS,
             maxExtent: new OpenLayers.Bounds (0,0,700000,1300000),
@@ -391,7 +391,7 @@ var _this = {
                     strokeWidth: 5,
                     strokeOpacity: 1
                 },
-                projection: EXTERNAL_PROJECTION
+                projection: external_projection
             }
         );
 
@@ -711,7 +711,7 @@ var _this = {
      * @return projections
      */
     getProjections: function(){
-        return [INTERNAL_PROJECTION, EXTERNAL_PROJECTION];
+        return [internal_projection, external_projection];
     },
 
     /**
@@ -795,10 +795,7 @@ var _this = {
 
         // if necessary update annotate pin
         if(updateAnnotateLayer){
-            // TODO
             this.updateAnnotateLayer(this.toInternal(this.userLonLat));
-            //this.updateAnnotateLayer(this.userLonLat);
-
         }
         if(dontHideLoadingDialog !== true){
             $.mobile.hidePageLoadingMsg();
@@ -808,32 +805,42 @@ var _this = {
     /**
      * Covert a point object to external projection.
      * @param point A point object with internal projection.
+     * @return A point object reprojected to external projection.
      */
     pointToExternal: function(point){
         var lonLat = this.toExternal(new OpenLayers.LonLat(point.lon, point.lat));
-        point.lon = lonLat.lon;
-        point.lat = lonLat.lat;
+        return {
+            'lon': lonLat.lon,
+            'lat': lonLat.lat
+        }
     },
 
     /**
      * Covert a point object to internal projection.
      * @param point A point object with external projection.
+     * @return A point object reprojected to internal projection.
      */
     pointToInternal: function(point){
+        var retValue;
         var lonLat;
         if(typeof(point.longitude) === 'undefined'){
             lonLat = this.toInternal(
                 new OpenLayers.LonLat(point.lon, point.lat));
+            retValue = {
+                'lon': lonLat.lon,
+                'lat': lonLat.lat
+            }
         }
         else{
             lonLat = this.toInternal(
                 new OpenLayers.LonLat(point.longitude, point.latitude));
-            point.longitude = lonLat.lon;
-            point.latitude = lonLat.lat;
+            retValue = {
+                'longitude': lonLat.lon,
+                'latitude': lonLat.lat
+            }
         }
 
-        point.lon = lonLat.lon;
-        point.lat = lonLat.lat;
+        return retValue;
     },
 
     /**
@@ -855,7 +862,8 @@ var _this = {
     },
 
     /**
-     * TODO
+     * Remove all features from a layer.
+     * @param layer An openlayers layer.
      */
     removeAllFeatures: function(layer){
         layer.removeAllFeatures();
@@ -947,14 +955,38 @@ var _this = {
         this.getLocateLayer().setVisibility(true);
     },
 
+    /**
+     * Show details of a single annotation.
+     * @param evt Map Click event.
+     */
+    showRecordDetail: function(evt){
+        var feature = this.getRecordsLayer().getFeatureFromEvent(evt);
+        if(feature){
+            var annotation = records.getSavedRecord(feature.attributes.id);
+
+            this.showRecordDetailPopup(annotation);
+
+            // give plugins a change to process the click first
+            var showDetails = true;
+            $.each(this.recordClickListeners, function(i, func){
+                if(func(feature)){
+                    showDetails = false;
+                    return;
+                }
+            });
+
+            if(showDetails){
+                $('#map-record-popup').popup('open');
+            }
+        }
+    },
 
     /**
-     * createPopup
      * Populates an annotation popup with details of the passed annotation
      * Note that you still have to pop it up manually after this step
+     * @param annotation
      */
-    createPopup: function(annotation) {
-
+    showRecordDetailPopup: function(annotation) {
         // Get point and convert
         var point =  this.toExternal(this.map.center);
         var lon = point.lon;
@@ -966,7 +998,6 @@ var _this = {
         popup.on({
             popupbeforeposition: function() {
                 var showRecord = function(html){
-
                     var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
                     $('#map-record-popup-text').append(html).append(coords).trigger('create');
                 };
@@ -990,8 +1021,8 @@ var _this = {
                     }
                     else if(entry.id !== 'text0'){ // ignore title element
                         html = '<p><span>' + entry.label + '</span>: ' +
-                    entry.val + '</p>';
-                showRecord(html);
+                            entry.val + '</p>';
+                        showRecord(html);
                     }
                 });
             }
@@ -1001,34 +1032,6 @@ var _this = {
         popup.on('click',  function() {
             popup.popup('close');
         });
-
-
-    },
-
-    /**
-     * Show details of a single annotation.
-     * @param evt Map Click event.
-     */
-    showRecordDetail: function(evt){
-        var feature = this.getRecordsLayer().getFeatureFromEvent(evt);
-        if(feature){
-            var annotation = records.getSavedRecord(feature.attributes.id);
-
-            this.createPopup(annotation);
-
-            // give plugins a change to process the click first
-            var showDetails = true;
-            $.each(this.recordClickListeners, function(i, func){
-                if(func(feature)){
-                    showDetails = false;
-                    return;
-                }
-            });
-
-            if(showDetails){
-                $('#map-record-popup').popup('open');
-            }
-        }
     },
 
     /**
@@ -1041,18 +1044,11 @@ var _this = {
         }
 
         if(annotation){
-            this.setCentre(annotation.record.point.lon,
-                    annotation.record.point.lat,
-                    undefined,
-                    false);
-
-            var track = _.find(annotation.record.fields, function (field) { return field.id.indexOf('track') > 0});
-            // if a track, ignore as we don't want a popup
-            if (track === undefined) {
-                // Put in session storage so we can then pop up appropriate info on map page
-                sessionStorage.setItem('annotationPopup', JSON.stringify(annotation));
-            }
-
+            this.setCentre(
+                annotation.record.point.lon,
+                annotation.record.point.lat,
+                undefined,
+                false);
         }
 
         layer.setVisibility(true);
@@ -1092,8 +1088,8 @@ var _this = {
     toInternal: function(lonlat){
         var clone = lonlat.clone();
         clone.transform(
-            EXTERNAL_PROJECTION,
-            INTERNAL_PROJECTION);
+            external_projection,
+            internal_projection);
 
         if(typeof(lonlat.gpsPosition) !== 'undefined'){
             clone.gpsPosition = lonlat.gpsPosition;
@@ -1109,8 +1105,8 @@ var _this = {
      */
     toExternal: function(lonlat){
         return lonlat.clone().transform(
-            INTERNAL_PROJECTION,
-            EXTERNAL_PROJECTION);
+            internal_projection,
+            external_projection);
     },
 
 
