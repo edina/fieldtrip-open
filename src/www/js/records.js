@@ -482,6 +482,19 @@ var _base = {
 
 
     /**
+     * @return list of all records excluding tracks
+     */
+    getSavedRecordsExcludingTracks: function() {
+        var filteredRecords = {};
+        $.each(this.getSavedRecords(), function(objId, annotation){
+            if (annotation.record.editor !== 'track.edtr') {
+                filteredRecords[objId] = annotation;            
+            }    
+        });
+        return filteredRecords;    
+    },
+    
+    /**
      * @return list of tracks
      */
     getSavedTracks: function() {
