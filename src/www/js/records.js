@@ -93,6 +93,8 @@ define(['utils'], function(utils){
         }
     };
 
+    /************************** public interface  ******************************/
+
 var _base = {
     SAVED_RECORDS_KEY: 'saved-annotations',
     IMAGE_UPLOAD_SIZE: "imageUploadSize",

@@ -154,6 +154,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         layer.addFeatures(features);
     };
 
+    /************************** public interface  ******************************/
+
 var _this = {
 
     /**
