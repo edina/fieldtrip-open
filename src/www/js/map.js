@@ -132,10 +132,11 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var showAnnotations = function(layer){
         var features = [];
 
-        //Utils.printObj(records.getSavedrecords());
+        // utils.printObj(records.getSavedRecords());
 
         $.each(records.getSavedRecords(), function(id, annotation){
             var record = annotation.record;
+            console.log("type:" + annotation.type ) ;
             if(record.point !== undefined){
                 features.push(new OpenLayers.Feature.Vector(
                     new OpenLayers.Geometry.Point(record.point.lon,
@@ -154,6 +155,65 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         layer.addFeatures(features);
     };
 
+    /**
+     * Display all annotations on speficied layer.
+     * @param layer The layer to use.
+     */
+    var showTrackAnnotations = function(layer){
+        var features = [];
+
+        // utils.printObj(records.getSavedRecords());
+
+        $.each(records.getSavedRecords(), function(id, annotation){
+            var record = annotation.record;
+            console.log("type:" + annotation.type ) ;
+            if(record.point !== undefined && records.isTrack(annotation)){
+                features.push(new OpenLayers.Feature.Vector(
+                    new OpenLayers.Geometry.Point(record.point.lon,
+                                                  record.point.lat),
+                    {
+                        'id': id,
+                        'type': records.getEditorId(annotation)
+                    }
+                ));
+            }
+            else{
+                console.debug("record " + id + " has no location or has no track");
+            }
+        });
+
+        layer.addFeatures(features);
+    };
+
+    /**
+     * Display all annotations on speficied layer.
+     * @param layer The layer to use.
+     */
+    var showAnnotationsForTrack = function(layer, trackId){
+        var features = [];
+
+        // utils.printObj(records.getSavedRecords());
+
+        $.each(records.getSavedRecordsForTrack(trackId), function(id, annotation){
+            var record = annotation.record;
+            console.log("type:" + annotation.type ) ;
+            if(record.point !== undefined ){
+                features.push(new OpenLayers.Feature.Vector(
+                    new OpenLayers.Geometry.Point(record.point.lon,
+                                                  record.point.lat),
+                    {
+                        'id': id,
+                        'type': records.getEditorId(annotation)
+                    }
+                ));
+            }
+            else{
+                console.debug("record " + id + " has no location or has no track");
+            }
+        });
+
+        layer.addFeatures(features);
+    };
 var _this = {
 
     /**
@@ -1024,6 +1084,22 @@ var _this = {
         }
     },
 
+    showRecordsForTrack: function(trackId)
+    {
+
+        var layer = this.getRecordsLayer();
+        showAnnotationsForTrack(layer, trackId ) ;    
+    },
+
+
+    showTrackRecords: function()
+    {
+        var layer = this.getRecordsLayer();
+       showTrackAnnotations(layer) ;
+        layer.setVisibility(true);
+        layer.refresh();
+    },
+
     /**
      * Display records on map.
      */
@@ -1203,3 +1279,4 @@ var _this = {
 return _this;
 
 });
+
