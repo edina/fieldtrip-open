@@ -132,7 +132,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var showAnnotations = function(layer){
         var features = [];
 
-        // utils.printObj(records.getSavedRecords());
 
         $.each(records.getSavedRecords(), function(id, annotation){
             var record = annotation.record;
@@ -162,7 +161,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var showTrackAnnotations = function(layer){
         var features = [];
 
-        // utils.printObj(records.getSavedRecords());
 
         $.each(records.getSavedRecords(), function(id, annotation){
             var record = annotation.record;
