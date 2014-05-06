@@ -561,6 +561,7 @@ var _this = {
      * @return The full URL to the TMS server.
      */
     getTMSURL: function(root){
+        console.log(root)
         if(!root){
             root = utils.getMapServerUrl();
         }
