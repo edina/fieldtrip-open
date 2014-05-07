@@ -31,6 +31,9 @@ DAMAGE.
 
 "use strict";
 
+/* jshint multistr: true */
+/* global Camera */
+
 define(['utils'], function(utils){
     var assetsDir;
     var editorsDir;
@@ -64,34 +67,38 @@ define(['utils'], function(utils){
      * @param error Cordova error. If user cancels this will be undefined.
      */
     var captureError = function(error){
+        /* global CaptureError */
+
         if(error !== undefined && error.code !== undefined){
             var msg = "Problem with capture: " + error.code + " : ";
             switch(error.code){
             case CaptureError.CAPTURE_INTERNAL_ERR:
-                msg += " Interval Error."
+                msg += " Interval Error.";
                 break;
             case CaptureError.CAPTURE_APPLICATION_BUSY:
-                msg += " Application busy."
+                msg += " Application busy.";
                 break;
             case CaptureError.CAPTURE_INVALID_ARGUMENT:
-                msg += " Invalid Argument."
+                msg += " Invalid Argument.";
                 break;
             case CaptureError.CAPTURE_NO_MEDIA_FILES:
-                msg += " No media files."
+                msg += " No media files.";
                 break;
             case CaptureError.CAPTURE_NOT_SUPPORTED:
-                msg += " Not supported."
+                msg += " Not supported.";
                 break;
             default:
-                msg += " Unknown Error."
+                msg += " Unknown Error.";
             }
             console.debug(msg);
-            alert(msg);
+            notification.alert(msg);
         }
         else{
             console.debug("Capture error is undefined. Assume user cancelled.");
         }
     };
+
+    /************************** public interface  ******************************/
 
 var _base = {
     SAVED_RECORDS_KEY: 'saved-annotations',
@@ -130,7 +137,7 @@ var _base = {
 <div class="ui-block-b">\
 <a class="annotate-image-get" href="#">\
 <img src="css/images/gallery.png"></a><p>Gallery</p>\
-</div></div>'
+</div></div>';
 
                     $(input).parent().append(btn + that.getImageSizeControl());
                 });
@@ -162,9 +169,9 @@ var _base = {
             },
             error: function(jqXHR, status, error){
                 var msg = "Problem with " + url + " : status=" +
-                    status + " : " + error
+                    status + " : " + error;
                 console.error(msg);
-                alert(msg);
+                notification.alert(msg);
             },
         });
     },
@@ -312,7 +319,7 @@ var _base = {
      * @param name Record name.
      */
     getAnnotationDetails: function(name) {
-        var details = undefined;
+        var details;
         $.each(this.getSavedRecords(), function(i, annotation){
             if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
                annotation.isSynced){
@@ -333,7 +340,7 @@ var _base = {
      * @param name Record name.
      */
     getAnnotationId: function(name) {
-        var id = undefined;
+        var id;
         $.each(this.getSavedRecords(), function(i, annotation){
             // note: dropbox is case insensitive so we should be also
             if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
@@ -399,9 +406,9 @@ var _base = {
     },
 
     /**
-     * TODO
+     * @return Camera resize HTML.
      */
-    getImageSizeControl:function (){
+    getImageSizeControl: function(){
         var fullSelected = '', normalSelected = '', CHECKED = 'checked';
 
         if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
@@ -410,20 +417,23 @@ var _base = {
         else{
             normalSelected = CHECKED;
         }
-        return '<div class="ui-grid-solo">\
-<div class="ui-block-a"> \
-<fieldset data-role="controlgroup" data-type="horizontal"> \
-<input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected +' /> \
-<label for="radio-view-a">Normal</label> \
-<input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
-<label for="radio-view-b">Full</label>\
-</fieldset><p>Image Size</p>\
-</div>\
-</div>';
+
+
+        var html = '<div class="ui-grid-solo"> \
+                  <div class="ui-block-a"> \
+                    <fieldset data-role="controlgroup" data-type="horizontal"> \
+                      <input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected + ' /> \
+                      <label for="radio-view-a">Normal</label> \
+                      <input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
+                      <label for="radio-view-b">Full</label>\
+                    </fieldset><p>Image Size</p>\
+                  </div>\
+                </div>';
+        return html;
     },
 
     /**
-     * construct the object for the options of the image
+     * Construct the object for the options of the image.
      */
     getImageOptions: function(sourceType, encodingType){
         var options = {
@@ -431,7 +441,7 @@ var _base = {
             destinationType: Camera.DestinationType.FILE_URI,
             sourceType : sourceType,
             encodingType: encodingType
-        }
+        };
         if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
             options.targetWidth = 640;
             options.targetHeight = 480;
@@ -533,9 +543,9 @@ var _base = {
             var setInputValue = function(control){
                 var val = control.val();
                 if(val){
-                    record['val'] = val.trim();
+                    record.val = val.trim();
                 }
-            }
+            };
 
             var doInput = function(controlType){
                 control = $(entry).find(controlType);
@@ -543,11 +553,11 @@ var _base = {
             };
 
             var doLabel = function(id){
-                record['label'] = $(entry).find('label[for="' + id + '"]').text();
+                record.label = $(entry).find('label[for="' + id + '"]').text();
             };
 
             var doLegend = function(){
-                record['label'] = $(entry).find('legend').text();
+                record.label = $(entry).find('legend').text();
             };
 
             var doTextField = function(controlType){
@@ -559,9 +569,9 @@ var _base = {
                 doTextField('input');
                 if(control.attr('id') === this.TITLE_ID){
                     if(control.val()){
-                        annotation.record['name'] = control.val();
+                        annotation.record.name = control.val();
                     }
-                    record['val'] = '';
+                    record.val = '';
                 }
             }
             else if(type === 'textarea'){
@@ -570,18 +580,18 @@ var _base = {
             else if(type === 'checkbox'){
                 doLegend();
                 $.each($(entry).find('input:checked'), function(j, checkbox){
-                    if(typeof(record['val']) === 'undefined'){
-                        record['val'] = $(checkbox).val();
+                    if(typeof(record.val) === 'undefined'){
+                        record.val = $(checkbox).val();
                     }
                     else{
-                        record['val'] += ',' + $(checkbox).val();
+                        record.val += ',' + $(checkbox).val();
                     }
                 });
             }
             else if(type === 'radio'){
-                var control = $(entry).find('input:checked');
-                record['label'] = $(entry).find('div[role=heading]').text();
-                setInputValue(control);
+                var radioControl = $(entry).find('input:checked');
+                record.label = $(entry).find('div[role=heading]').text();
+                setInputValue(radioControl);
             }
             else if(type === 'select'){
                 doLegend();
@@ -593,14 +603,14 @@ var _base = {
             }
             else if(type === 'image'){
                 control = $(entry).find('input');
-                record['val'] = $(entry).find('.annotate-image img').attr('src');
+                record.val = $(entry).find('.annotate-image img').attr('src');
                 doLabel($(entry).find('input').attr('id'));
 
 
             }
             else if(type === 'audio'){
                 control = $(entry).find('input[capture=microphone]');
-                record['val'] = $(entry).find('.annotate-audio-taken input').attr('value');
+                record.val = $(entry).find('.annotate-audio-taken input').attr('value');
                 doLabel($(control).attr('id'));
             }
             else{
@@ -626,7 +636,7 @@ var _base = {
             }
 
             if(typeof(record.val) !== 'undefined' && record.val.length > 0){
-                annotation.record['fields'].push(record);
+                annotation.record.fields.push(record);
             }
         }, this));
 
@@ -657,7 +667,7 @@ var _base = {
 
         if(id === undefined){
             var date = new Date();
-            annotation.record['timestamp'] = date;
+            annotation.record.timestamp = date;
             id = date.getTime().toString();
         }
 
@@ -674,7 +684,7 @@ var _base = {
         annotation.record.point = {
             'lon': coords.lon,
             'lat': coords.lat
-        }
+        };
 
         if(typeof(coords.gpsPosition) !== 'undefined'){
             annotation.record.point.alt = coords.gpsPosition.altitude;
@@ -748,14 +758,13 @@ var _base = {
 
         utils.writeToFile(fileName, data, dir, callback);
     }
-}
-
+};
 
 var _this = {};
 var _ios = {
 
     /**
-     * TODO
+     * Construct the object for the options of the image for IOS.
      */
     getImageOptions: function(sourceType, encodingType){
         var options = _base.getImageOptions();

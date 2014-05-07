@@ -31,6 +31,8 @@ DAMAGE.
 
 "use strict";
 
+/* global OpenLayers */
+
 /**
  * Fieldtrip settings module.
  */
@@ -57,7 +59,7 @@ define(['config'], function(config){
             vals[id] = {
                 'type': tag,
                 'val': $(control).val()
-            }
+            };
         }
         else{
             vals[id] = undefined;
@@ -94,7 +96,7 @@ define(['config'], function(config){
 
             $('#settings-clear-local-storage a').click(function(){
                 localStorage.clear();
-                utils.inform('done')
+                utils.inform('done');
             });
 
             $('#settings-ftgb').text(utils.version);
@@ -132,6 +134,8 @@ define(['config'], function(config){
     $(document).on('pageinit', '#settings-page', settingsPage);
     $(document).on('pageremove', '#settings-page', save);
 
+    /************************** public interface  ******************************/
+
 return{
 
     /**
@@ -145,6 +149,6 @@ return{
         }
         return val;
     }
-}
+};
 
 });

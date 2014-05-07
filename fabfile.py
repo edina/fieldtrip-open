@@ -573,6 +573,8 @@ def install_project(platform='android',
         with lcd('project'):
             print 'Try checking out project branch {0}'.format(project_branch)
             local('git checkout {0}'.format(project_branch))
+    if not os.path.exists('.git/hooks/pre-commit'):
+        local('ln -s ../../scripts/pre-commit.sh .git/hooks/pre-commit')
 
     # do some checks on the project
     theme_src = os.sep.join((proj_home, 'theme'))

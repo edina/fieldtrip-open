@@ -31,6 +31,9 @@ DAMAGE.
 
 "use strict";
 
+/* jshint multistr: true */
+/* global Media */
+
 define(function(){
 return{
 
@@ -44,13 +47,14 @@ return{
             label = '';
         }
 
-        return '<div class="annotate-audio-taken">' + label + '\
+        var html = '<div class="annotate-audio-taken">' + label + '\
 <input type="hidden" value="' + url + '"/>\
 <p id="annotate-audio-position">0.0 sec</p>\
 <a id="annotate-audio-button" class="annotate-audio-stopped" onclick="playAudio();" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
 </div>';
+        return html;
     },
-}
+};
 
 });
 
@@ -85,7 +89,7 @@ function playAudio(){
     else{
         currentAudio.play();
     }
-};
+}
 
 /**
  * Audio media class.
@@ -101,7 +105,7 @@ function Audio(src){
                            }, this));
 
     this.status = Media.MEDIA_NONE;
-};
+}
 
 /**
  * Play audio track.
@@ -113,7 +117,7 @@ Audio.prototype.play = function() {
     $('#annotate-audio-button').addClass('annotate-audio-started');
 
     // update media position every second
-    if(this.mediaTimer == null) {
+    if(this.mediaTimer === null) {
         this.mediaTimer = setInterval($.proxy(function(){
             this.media.getCurrentPosition(
                 $.proxy(function(position) {
@@ -170,7 +174,7 @@ Audio.prototype.clear = function(){
 
     $('#annotate-audio-button').addClass('annotate-audio-stopped');
     $('#annotate-audio-button').removeClass('annotate-audio-started');
-}
+};
 
 /**
  * Audio track has successfully played.
@@ -183,6 +187,6 @@ Audio.prototype.onSuccess = function(position){
  * Error playing audio track.
  */
 Audio.prototype.onError = function(error){
-    alert('code: '    + error.code    + '\n' +
+    notification.alert('code: '    + error.code    + '\n' +
           'message: ' + error.message + '\n');
 };

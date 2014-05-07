@@ -31,6 +31,8 @@ DAMAGE.
 
 "use strict";
 
+/* global FileError, FileTransferError */
+
 // Array Remove - By John Resig (MIT Licensed)
 Array.prototype.remove = function(from, to) {
   var rest = this.slice((to || from) + 1 || this.length);
@@ -40,7 +42,7 @@ Array.prototype.remove = function(from, to) {
 
 String.prototype.hashCode = function(){
     var hash = 0, i, char;
-    if (this.length == 0) return hash;
+    if (this.length === 0) return hash;
     for (i = 0; i < this.length; i++) {
         char = this.charCodeAt(i);
         hash = ((hash<<5)-hash)+char;
@@ -94,11 +96,11 @@ define(['settings', 'config'], function(settings, config){
                         callback(dir);
                     },
                     function(error){
-                        alert('Failed to get file system:' + error);
+                        notification.alert('Failed to get file system:' + error);
                     });
             },
             function(error){
-                alert('Failed to get file system:' + error);
+                notification.alert('Failed to get file system:' + error);
             }
         );
     };
@@ -144,7 +146,7 @@ var _base = {
         var padding = 100;
         var boxHeight = box.height() + padding;
         var maxHeight = $(window).height() * 0.60;//60%
-        var boxHeight = boxHeight < maxHeight ? boxHeight : maxHeight  ;
+        boxHeight = boxHeight < maxHeight ? boxHeight : maxHeight;
         box.css('height', boxHeight+'px');
     },
 
@@ -189,7 +191,7 @@ var _base = {
      */
     deleteFile: function(fileName, dir, callback){
         if(dir === undefined){
-            console.warn("Target directory not defined: " + dir)
+            console.warn("Target directory not defined: " + dir);
         }
         else{
             dir.getFile(
@@ -221,6 +223,8 @@ var _base = {
      * {object} val - cordova connection state value, str - a textual value.
      */
     getConnectionStatus: function() {
+        /* global Connection */
+
         var current = {
             val: -1,
             str: 'Unknown connection: Not a mobile app?'
@@ -236,8 +240,8 @@ var _base = {
             states[Connection.CELL_4G]  = 'Cell 4G connection';
             states[Connection.NONE]     = 'No network connection';
 
-            current['val'] = navigator.connection.type;
-            current['str'] = states[navigator.connection.type];
+            current.val = navigator.connection.type;
+            current.str = states[navigator.connection.type];
         }
 
         return current;
@@ -258,40 +262,40 @@ var _base = {
         var msg;
         switch(error.code){
         case FileError.NOT_FOUND_ERR:
-            msg = "Not Found"
+            msg = "Not Found";
             break;
         case FileError.SECURITY_ERR:
-            msg = "Security Error"
+            msg = "Security Error";
             break;
         case FileError.ABORT_ERR:
-            msg = "Abort Error"
+            msg = "Abort Error";
             break;
         case FileError.NOT_READABLE_ERR:
-            msg = "Not Readable"
+            msg = "Not Readable";
             break;
         case FileError.ENCODING_ERR:
-            msg = "Encoding Error"
+            msg = "Encoding Error";
             break;
         case FileError.NO_MODIFICATION_ALLOWED_ERR:
-            msg = "No Modification Allowed"
+            msg = "No Modification Allowed";
             break;
         case FileError.INVALID_STATE_ERR:
-            msg = "Invalid State"
+            msg = "Invalid State";
             break;
         case FileError.SYNTAX_ERR:
-            msg = "Syntax Error"
+            msg = "Syntax Error";
             break;
         case FileError.INVALID_MODIFICATION_ERR:
-            msg = "Invalid Modification"
+            msg = "Invalid Modification";
             break;
         case FileError.QUOTA_EXCEEDED_ERR:
-            msg = "Quaota Exceeded"
+            msg = "Quaota Exceeded";
             break;
         case FileError.TYPE_MISMATCH_ERR:
-            msg = "Type Mismatch"
+            msg = "Type Mismatch";
             break;
         case FileError.PATH_EXISTS_ERR:
-            msg = "Path Exists"
+            msg = "Path Exists";
             break;
         default:
             msg = "Unknown Error: " + error.code;
@@ -308,16 +312,16 @@ var _base = {
         var msg;
         switch(error.code){
         case FileTransferError.FILE_NOT_FOUND_ERR:
-            msg = "File Not Found"
+            msg = "File Not Found";
             break;
         case FileTransferError.INVALID_URL_ERR:
-            msg = "Invalid URL"
+            msg = "Invalid URL";
             break;
         case FileTransferError.CONNECTION_ERR:
-            msg = "Connection Error"
+            msg = "Connection Error";
             break;
         case FileTransferError.ABORT_ERR:
-            msg = "Abort Error"
+            msg = "Abort Error";
             break;
         default:
             msg = "Unknown Error: " + error.code;
@@ -347,7 +351,7 @@ var _base = {
             var url = 'http://' + location.hostname;
 
             if(location.port){
-                url += ':' + location.port
+                url += ':' + location.port;
             }
 
             return url += '/' + config.map_baselayer;
@@ -373,7 +377,7 @@ var _base = {
             'type': config.map_type,
             'url': config.map_url,
             'version': config.map_serviceversion
-        }
+        };
     },
 
     /**
@@ -492,7 +496,7 @@ var _base = {
     isPrivilegedUser: function(){
         if(isMobileApp &&
            $.inArray(device.uuid, config.priviliged_users) === -1){
-            console.debug(device.uuid + " is a non privileged user")
+            console.debug(device.uuid + " is a non privileged user");
             return false;
         }
         else{
@@ -595,7 +599,7 @@ var _base = {
      */
     showStartPopup: function(){
         if(config.end_user_licence && !this.isPrivilegedUser()){
-            return true
+            return true;
         }
         else{
             return false;
@@ -655,12 +659,12 @@ var _base = {
             $('body').delegate(selector, 'touchmove', function(e) {
                 if ((this.scrollTop < this.scrollHeight - this.offsetHeight &&
                      this.scrollTop + e.originalEvent.touches[0].pageY < scrollStartPosY-5) ||
-                    (this.scrollTop != 0 && this.scrollTop+e.originalEvent.touches[0].pageY > scrollStartPosY+5)){
+                    (this.scrollTop !== 0 && this.scrollTop+e.originalEvent.touches[0].pageY > scrollStartPosY+5)){
                     e.preventDefault();
                 }
                 if ((this.scrollLeft < this.scrollWidth - this.offsetWidth &&
                      this.scrollLeft+e.originalEvent.touches[0].pageX < scrollStartPosX-5) ||
-                    (this.scrollLeft != 0 && this.scrollLeft+e.originalEvent.touches[0].pageX > scrollStartPosX+5)){
+                    (this.scrollLeft !== 0 && this.scrollLeft+e.originalEvent.touches[0].pageX > scrollStartPosX+5)){
                     e.preventDefault();
                 }
 

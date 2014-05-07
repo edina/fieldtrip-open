@@ -1,0 +1,22 @@
+{
+    "globalstrict": true,
+    "globals": {
+        "$": false,
+        "console": false,
+        "clearInterval": false,
+        "define": false,
+        "device": false,
+        "document": false,
+        "jQuery": false,
+        "LocalFileSystem": false,
+        "localStorage": false,
+        "location": false,
+        "navigator": false,
+        "notification": false,
+        "plugins": false,
+        "require": false,
+        "setTimeout": false,
+        "setInterval": false,
+        "window": false
+    }
+}

@@ -32,19 +32,19 @@ DAMAGE.
 "use strict";
 
 /**
- * TODO
+ * Main fieldtrip open UI interface.
  */
 define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html'], function(
     map, records, utils, settings, _, recrowtemplate){
     var portraitScreenHeight;
     var landscapeScreenHeight;
-    var menuClicked, searchClick;
+    var menuClicked, searchClicked;
 
     var menuIds = {
         'home': ['home-page', 'settings-page'],
         'map': ['map-page'],
         'capture': ['capture-page', 'annotate-page', 'annotate-preview-page']
-    }
+    };
 
     // record initial screen height
     if(window.orientation === 0 || window.orientation === 180){
@@ -207,7 +207,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         }
 
         setTimeout(function(){
-            this.searchClicked = false;
+            searchClicked = false;
         }, 2000);
     };
 
@@ -281,7 +281,7 @@ var _ui = {
                 success:function(result) {
                     if(result) {
                         $('#home-splash-popup-message').html(result);
-                    };
+                    }
 
                 },
                 cache: false
@@ -452,7 +452,7 @@ var _ui = {
         var addMeta = function(label, text){
             $('#annotate-preview-detail-meta').append(
                 '<p><span>' + label + '</span>: ' + text + '</p>');
-        }
+        };
         $('.non-map-body-white h2').text(this.currentAnnotation.record.name + ' Details');
 
         $.each(this.currentAnnotation.record.fields, $.proxy(function(i, entry){
@@ -487,7 +487,7 @@ var _ui = {
         var blocks = ['a', 'b', 'c', 'd', 'e'];
         records.getEditors(function(editors){
             $.each(editors, function(i, editor){
-                var name = editor.name.substr(0, editor.name.indexOf('.'))
+                var name = editor.name.substr(0, editor.name.indexOf('.'));
                 var html = '<div class="ui-block-' + blocks[i % 5] + '"><a id="annotate-custom-form-' + name + '" class="annotate-custom-form" href="#"><img src="css/images/custom.png"></a><p>' + name + '</p></div>';
                 $('#capture-section2').append(html);
             });
@@ -535,13 +535,13 @@ var _ui = {
         var recordsVisible = function(){
             $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
             $('#map-records-buttons-list a').show();
-        }
+        };
 
         // set up buttons when records are hidden
         var recordsHidden = function(){
             $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
             $('#map-records-buttons-list a').hide();
-        }
+        };
 
         $('#map-records-buttons-ok').click($.proxy(function(event){
             var label = $('#map-records-buttons-ok .ui-btn-text').text();
@@ -605,8 +605,7 @@ var _ui = {
             var isGrid = id === 'records-grid';
             $('#saved-records-page .ui-listview li').toggleClass('active', isGrid);
             $('.record-extra').toggle(isGrid);
-        };
-
+        }
 
         var addAnnotation = function(id, annotation){
             var template = _.template(recrowtemplate);
@@ -619,7 +618,7 @@ var _ui = {
                     "records": records
                 })
             ).trigger('create');
-        }
+        };
 
         $.each(annotations, $.proxy(function(id, annotation){
             if(annotation){
@@ -693,6 +692,8 @@ var _ui = {
      * Load Unit testing page.
      */
     testPage: function(){
+        /* global QUnit */
+
         $("<link/>", {
             rel: "stylesheet",
             type: "text/css",

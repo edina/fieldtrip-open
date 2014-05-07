@@ -31,6 +31,7 @@ DAMAGE.
 
 "use strict";
 
+/* global QUnit */
 
 $(function() {
     if(window.location.href.substr(0, 4) === 'http'){
@@ -141,4 +142,4 @@ function onDeviceReady(){
                            $.proxy(func, ui));
         });
     });
-};
+}
