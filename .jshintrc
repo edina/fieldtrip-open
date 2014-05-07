@@ -1,0 +1,11 @@
+{
+    "globalstrict": true,
+    "globals": {
+        "$": false,
+        "console": false,
+        "document": false,
+        "jQuery": false,
+        "require": false,
+        "window": false
+    }
+}
