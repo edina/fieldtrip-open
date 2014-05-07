@@ -31,13 +31,15 @@ DAMAGE.
 
 "use strict";
 
+/* global OpenLayers */
+
 define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, utils, proj4js){
     var RESOLUTIONS = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
     var POST_LOCATE_ZOOM_TO = RESOLUTIONS.length - 1;
 
     var internal_projection;
-    var external_projection = new OpenLayers.Projection("EPSG:4326")
+    var external_projection = new OpenLayers.Projection("EPSG:4326");
     var TMS_URL = "/mapcache/tms";
     var DEFAULT_USER_LON = -2.421976;
     var DEFAULT_USER_LAT = 53.825564;
@@ -53,13 +55,13 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
     if(mapSettings.baseLayer === 'osm'){
-        internal_projection = new OpenLayers.Projection('EPSG:900913')
+        internal_projection = new OpenLayers.Projection('EPSG:900913');
         baseLayer = new OpenLayers.Layer.OSM();
     }
     else{
         var proj = mapSettings.epsg;
         proj4js.defs[proj] = mapSettings.proj;
-        internal_projection = new OpenLayers.Projection(proj)
+        internal_projection = new OpenLayers.Projection(proj);
         baseLayer = new OpenLayers.Layer.TMS(
             "osOpen",
             mapSettings.url + TMS_URL,
@@ -78,14 +80,13 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var fetchCapabilities = function(){
         var map = _this.map;
         var baseLayerName = map.baseLayer.layername;
-        //console.log(map.baseLayer)
 
         var applyDefaults = $.proxy(function(){
             tileMapCapabilities = {'tileSet': []};
             tileMapCapabilities.tileFormat = {
                 'height': 256,
                 'width': 256
-            }
+            };
             tileMapCapabilities.tileSet = RESOLUTIONS;
         }, this);
 
@@ -105,7 +106,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                         tileMapCapabilities.tileFormat = {
                             'height': $(tileFormat).attr('height'),
                             'width': $(tileFormat).attr('width')
-                        }
+                        };
 
                         $(xml).find('TileSet').each($.proxy(function(i, element){
                             // store units per pixel of each zoom level
@@ -186,7 +187,7 @@ var _this = {
             resolutions: RESOLUTIONS,
             maxExtent: new OpenLayers.Bounds (0,0,700000,1300000),
             theme: null,
-        }
+        };
 
         this.map = new OpenLayers.Map("map", options);
         this.map.addLayer(baseLayer);
@@ -456,7 +457,7 @@ var _this = {
      * @return Current annotation coordinates.
      */
     getAnnotationCoords: function(wgs84){
-        var coords = undefined;
+        var coords;
         var features = this.getAnnotateLayer().getFeaturesByAttribute(
             'id',
             ANNOTATE_POSITION_ATTR);
@@ -501,13 +502,13 @@ var _this = {
         var centre = this.map.getCenter();
 
         if(wgs84){
-            centre = toWGS84(centre);
+            centre = this.toExternal(centre);
         }
 
         return {
             centre: centre,
             zoom: this.map.getZoom(),
-        }
+        };
     },
 
     /**
@@ -550,7 +551,7 @@ var _this = {
      * @return Base stack type.
      */
     getStackType: function(){
-        return this.getTileMapCapabilities()['stack'];
+        return this.getTileMapCapabilities().stack;
     },
 
     /**
@@ -564,7 +565,6 @@ var _this = {
      * @return The full URL to the TMS server.
      */
     getTMSURL: function(root){
-        console.log(root)
         if(!root){
             root = utils.getMapServerUrl();
         }
@@ -637,7 +637,7 @@ var _this = {
                         heading: 130,
                         altitude: 150
                     }
-                }
+                };
 
                 var dontHideLoadingDialog = true;
                 this.onPositionSuccess(pos,
@@ -734,7 +734,7 @@ var _this = {
         return {
             current: this.map.getZoom(),
             max: this.map.getNumZoomLevels() - 1
-        }
+        };
     },
 
     /**
@@ -818,7 +818,7 @@ var _this = {
         return {
             'lon': lonLat.lon,
             'lat': lonLat.lat
-        }
+        };
     },
 
     /**
@@ -835,7 +835,7 @@ var _this = {
             retValue = {
                 'lon': lonLat.lon,
                 'lat': lonLat.lat
-            }
+            };
         }
         else{
             lonLat = this.toInternal(
@@ -843,7 +843,7 @@ var _this = {
             retValue = {
                 'longitude': lonLat.lon,
                 'latitude': lonLat.lat
-            }
+            };
         }
 
         return retValue;
