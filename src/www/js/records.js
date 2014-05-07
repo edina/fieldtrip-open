@@ -252,6 +252,11 @@ var _base = {
             // remove annotation from hash
             delete annotations[id];
 
+            //remove geofence if one exists
+            if(typeof(geofencing) !== 'undefined'){
+                geofencing.removeRegion(id);
+            }
+
             // save to local storage
             this.setSavedRecords(annotations);
         }
@@ -705,6 +710,7 @@ var _base = {
             var date = new Date();
             annotation.record['timestamp'] = date;
             id = date.getTime().toString();
+            annotation.record.geofenceId = id;
         }
 
         savedAnnotations[id] = annotation;
@@ -738,7 +744,7 @@ var _base = {
             annotation.record.point.alt = coords.gpsPosition.altitude;
         }
 
-        this.saveAnnotation(undefined, annotation);
+        return this.saveAnnotation(undefined, annotation);
     },
 
     /**
