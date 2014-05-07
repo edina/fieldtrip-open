@@ -78,6 +78,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var fetchCapabilities = function(){
         var map = _this.map;
         var baseLayerName = map.baseLayer.layername;
+        //console.log(map.baseLayer)
 
         var applyDefaults = $.proxy(function(){
             tileMapCapabilities = {'tileSet': []};
@@ -94,22 +95,23 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
             // fetch capabilities
             $.ajax({
                 type: "GET",
-                url: utils.getMapServerUrl() + serviceVersion + '/' + baseLayerName + '/',
+                //url: utils.getMapServerUrl() + serviceVersion + '/' + baseLayerName + '/',
+                url: _this.baseMapFullURL,
                 dataType: "xml",
                 timeout: 10000,
                 success: $.proxy(function(xml) {
                     var tileFormat = $(xml).find('TileFormat')[0];
-                    this.tileMapCapabilities.tileFormat = {
-                        'height': $(tileFormat).attr('height'),
-                        'width': $(tileFormat).attr('width')
-                    }
+                    if(tileFormat){
+                        tileMapCapabilities.tileFormat = {
+                            'height': $(tileFormat).attr('height'),
+                            'width': $(tileFormat).attr('width')
+                        }
 
-                    $(xml).find('TileSet').each($.proxy(function(i, element){
-                        // store units per pixel of each zoom level
-                        this.tileMapCapabilities.tileSet[i] = $(element).attr('units-per-pixel');
-                    }, this));
-
-                    if(this.tileMapCapabilities.tileSet.length === 0){
+                        $(xml).find('TileSet').each($.proxy(function(i, element){
+                            // store units per pixel of each zoom level
+                            tileMapCapabilities.tileSet[i] = $(element).attr('units-per-pixel');
+                        }, this));
+                    }else{
                         console.debug("Capabilities does not contain tileset details. Use defaults.");
                         applyDefaults();
                     }
@@ -121,6 +123,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
             });
         }
         else{
+            _this.baseMapFullURL = _this.getTMSURL();
             applyDefaults();
         }
     };
@@ -561,6 +564,7 @@ var _this = {
      * @return The full URL to the TMS server.
      */
     getTMSURL: function(root){
+        console.log(root)
         if(!root){
             root = utils.getMapServerUrl();
         }
@@ -883,6 +887,14 @@ var _this = {
      */
     setBaseLayer: function(layer){
         baseLayer = layer;
+    },
+
+    /**
+     * Set the full base map url
+     * @param url
+     */
+    setBaseMapFullURL: function(url){
+        this.baseMapFullURL = url;
     },
 
     /**
