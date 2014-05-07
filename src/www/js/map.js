@@ -78,6 +78,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var fetchCapabilities = function(){
         var map = _this.map;
         var baseLayerName = map.baseLayer.layername;
+        //console.log(map.baseLayer)
 
         var applyDefaults = $.proxy(function(){
             tileMapCapabilities = {'tileSet': []};
@@ -90,7 +91,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
         if(baseLayerName){
             _this.baseMapFullURL = _this.getTMSURL() + serviceVersion + '/' + baseLayerName + '/';
-            console.log(_this.baseMapFullURL)
 
             // fetch capabilities
             $.ajax({
@@ -123,6 +123,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
             });
         }
         else{
+            _this.baseMapFullURL = _this.getTMSURL();
             applyDefaults();
         }
     };
@@ -884,6 +885,14 @@ var _this = {
      */
     setBaseLayer: function(layer){
         baseLayer = layer;
+    },
+
+    /**
+     * Set the full base map url
+     * @param url
+     */
+    setBaseMapFullURL: function(url){
+        this.baseMapFullURL = url;
     },
 
     /**
