@@ -38,8 +38,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
     var POST_LOCATE_ZOOM_TO = RESOLUTIONS.length - 1;
 
-    var internal_projection;
-    var external_projection = new OpenLayers.Projection("EPSG:4326");
+    var internalProjection;
+    var externalProjection = new OpenLayers.Projection("EPSG:4326");
     var TMS_URL = "/mapcache/tms";
     var DEFAULT_USER_LON = -2.421976;
     var DEFAULT_USER_LAT = 53.825564;
@@ -55,13 +55,13 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
     if(mapSettings.baseLayer === 'osm'){
-        internal_projection = new OpenLayers.Projection('EPSG:900913');
+        internalProjection = new OpenLayers.Projection('EPSG:900913');
         baseLayer = new OpenLayers.Layer.OSM();
     }
     else{
         var proj = mapSettings.epsg;
         proj4js.defs[proj] = mapSettings.proj;
-        internal_projection = new OpenLayers.Projection(proj);
+        internalProjection = new OpenLayers.Projection(proj);
         baseLayer = new OpenLayers.Layer.TMS(
             "osOpen",
             mapSettings.url + TMS_URL,
@@ -80,7 +80,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var fetchCapabilities = function(){
         var map = _this.map;
         var baseLayerName = map.baseLayer.layername;
-        console.log(map.baseLayer)
 
         var applyDefaults = $.proxy(function(){
             tileMapCapabilities = {'tileSet': []};
@@ -183,7 +182,7 @@ var _this = {
         this.recordClickListeners = [];
         var options = {
             controls: [],
-            projection: internal_projection,
+            projection: internalProjection,
             units: 'm',
             resolutions: RESOLUTIONS,
             maxExtent: new OpenLayers.Bounds (0,0,700000,1300000),
@@ -292,6 +291,7 @@ var _this = {
             'locate',
             {
                 style: locateLayerStyle,
+                renderers: ["Canvas"]
             }
         );
 
@@ -343,7 +343,7 @@ var _this = {
     },
 
     /**
-     * TODO
+     * Finialise map.
      */
     postInit: function(){
         fetchCapabilities();
@@ -398,7 +398,7 @@ var _this = {
                     strokeWidth: 5,
                     strokeOpacity: 1
                 },
-                projection: external_projection
+                projection: externalProjection
             }
         );
 
@@ -718,7 +718,7 @@ var _this = {
      * @return projections
      */
     getProjections: function(){
-        return [internal_projection, external_projection];
+        return [internalProjection, externalProjection];
     },
 
     /**
@@ -1095,8 +1095,8 @@ var _this = {
     toInternal: function(lonlat){
         var clone = lonlat.clone();
         clone.transform(
-            external_projection,
-            internal_projection);
+            externalProjection,
+            internalProjection);
 
         if(typeof(lonlat.gpsPosition) !== 'undefined'){
             clone.gpsPosition = lonlat.gpsPosition;
@@ -1112,8 +1112,8 @@ var _this = {
      */
     toExternal: function(lonlat){
         return lonlat.clone().transform(
-            internal_projection,
-            external_projection);
+            internalProjection,
+            externalProjection);
     },
 
 
