@@ -80,9 +80,14 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var fetchCapabilities = function(){
         var map = _this.map;
         var baseLayerName = map.baseLayer.layername;
-        console.log(map.baseLayer)
 
         var applyDefaults = $.proxy(function(){
+            if(_this.isBaseLayerTMS()){
+                _this.baseMapFullURL = _this.getTMSURL() + serviceVersion + '/' + baseLayerName + '/';
+            }
+            else{
+                _this.baseMapFullURL = utils.getMapServerUrl();
+            }
             tileMapCapabilities = {'tileSet': []};
             tileMapCapabilities.tileFormat = {
                 'height': 256,
@@ -92,7 +97,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         }, this);
 
         if(baseLayerName){
-            _this.baseMapFullURL = _this.getTMSURL() + serviceVersion + '/' + baseLayerName + '/';
 
             // fetch capabilities
             $.ajax({
@@ -125,7 +129,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
             });
         }
         else{
-            _this.baseMapFullURL = _this.getTMSURL();
             applyDefaults();
         }
     };
@@ -158,8 +161,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
         layer.addFeatures(features);
     };
-
-    /************************** public interface  ******************************/
 
 var _this = {
 
@@ -508,7 +509,7 @@ var _this = {
 
         return {
             centre: centre,
-            zoom: this.map.getZoom(),
+            zoom: this.map.getZoom()
         };
     },
 

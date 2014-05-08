@@ -344,18 +344,7 @@ var _base = {
      * @return The field trip GB map server URL.
      */
     getMapServerUrl: function(){
-        if(isMobileApp){
-            return settings.get('mapserver-url');
-        }
-        else{
-            var url = 'http://' + location.hostname;
-
-            if(location.port){
-                url += ':' + location.port;
-            }
-
-            return url += '/' + config.map_baselayer;
-        }
+        return settings.get('mapserver-url');
     },
 
     /**

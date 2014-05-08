@@ -126,11 +126,6 @@ define(['config'], function(config){
         });
     }
 
-    // ensure map has URL defined
-    if(vals['mapserver-url'] === undefined){
-        vals['mapserver-url'] = config.map_url;
-    }
-
     $(document).on('pageinit', '#settings-page', settingsPage);
     $(document).on('pageremove', '#settings-page', save);
 
