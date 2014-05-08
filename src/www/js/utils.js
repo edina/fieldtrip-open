@@ -55,9 +55,9 @@ String.prototype.hashCode = function(){
 define(['settings', 'config'], function(settings, config){
 
     // list of UUID of devices used internally
-    var priviliged_users = [];
-    if(config.priviliged_users){
-        priviliged_users = config.priviliged_users.split(',');
+    var priviligedUsers = [];
+    if(config.priviligedUsers){
+        priviligedUsers = config.priviligedUsers.split(',');
     }
 
     var userId = 'none';
@@ -71,11 +71,11 @@ define(['settings', 'config'], function(settings, config){
 
     // setup default saved records view
     if(localStorage.getItem('records-layout') === undefined){
-        if(config.saved_records_records_id){
+        if(config.savedRecordsRecordsId){
             localStorage.setItem('records-layout', 'records-list');
         }
         else{
-            localStorage.setItem('records-layout', config.saved_records_records_id);
+            localStorage.setItem('records-layout', config.savedRecordsRecordsId);
         }
     }
 
@@ -354,7 +354,7 @@ var _base = {
                 url += ':' + location.port;
             }
 
-            return url += '/' + config.map_baselayer;
+            return url += '/' + config.mapBaseLayer;
         }
     },
 
@@ -370,13 +370,13 @@ var _base = {
      */
     getMapSettings: function(){
         return {
-            'baseLayer': config.map_baselayer,
-            'epsg': config.map_epsg,
-            'layerName': config.map_layername,
-            'proj': config.map_proj,
-            'type': config.map_type,
-            'url': config.map_url,
-            'version': config.map_serviceversion
+            'baseLayer': config.mapBaseLayer,
+            'epsg': config.mapEpsg,
+            'layerName': config.mapLayerName,
+            'proj': config.mapProj,
+            'type': config.mapType,
+            'url': config.mapUrl,
+            'version': config.mapServiceVersion
         };
     },
 
@@ -401,7 +401,7 @@ var _base = {
      */
     getServerUrl: function() {
         if(isMobileApp){
-            return config.web_url;
+            return config.webUrl;
         }
         else{
             return 'http://' + location.hostname + '/ftgb';
@@ -435,8 +435,8 @@ var _base = {
      * Go to main map page
      */
     gotoMapPage: function(){
-        if(config.records_click_map_page){
-            $.mobile.changePage(config.records_click_map_page);
+        if(config.recordsClickMapPage){
+            $.mobile.changePage(config.recordsClickMapPage);
         }
         else{
             $.mobile.changePage('map.html');
@@ -494,14 +494,22 @@ var _base = {
      user is always a privileged user.
      */
     isPrivilegedUser: function(){
-        if(isMobileApp &&
-           $.inArray(device.uuid, config.priviliged_users) === -1){
-            console.debug(device.uuid + " is a non privileged user");
-            return false;
+        var isPrivileged = false;
+        if(isMobileApp){
+            if(config.priviligedUsers &&
+               $.inArray(device.uuid, config.priviligedUsers.split(',') !== -1)){
+                isPrivileged = true;
+            }
         }
         else{
-            return true;
+            isPrivileged = true;
         }
+
+        if(!isPrivileged){
+            console.debug(device.uuid + " is a non privileged user");
+        }
+
+        return isPrivileged;
     },
 
     /**
@@ -598,7 +606,7 @@ var _base = {
      * @return Should end user license / splash be shown?
      */
     showStartPopup: function(){
-        if(config.end_user_licence && !this.isPrivilegedUser()){
+        if(config.endUserLicence && !this.isPrivilegedUser()){
             return true;
         }
         else{

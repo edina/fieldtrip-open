@@ -18,5 +18,6 @@
         "setTimeout": false,
         "setInterval": false,
         "window": false
-    }
+    },
+    "camelcase": true
 }
