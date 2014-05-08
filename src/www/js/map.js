@@ -80,6 +80,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var fetchCapabilities = function(){
         var map = _this.map;
         var baseLayerName = map.baseLayer.layername;
+        console.log(map.baseLayer)
 
         var applyDefaults = $.proxy(function(){
             tileMapCapabilities = {'tileSet': []};
@@ -887,14 +888,6 @@ var _this = {
      */
     setBaseLayer: function(layer){
         baseLayer = layer;
-    },
-
-    /**
-     * Set the full base map url
-     * @param url
-     */
-    setBaseMapFullURL: function(url){
-        this.baseMapFullURL = url;
     },
 
     /**
