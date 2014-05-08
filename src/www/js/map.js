@@ -83,9 +83,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
         var applyDefaults = $.proxy(function(){
             if(_this.isBaseLayerTMS()){
-                _this.baseMapFullURL = _this.getTMSURL() + serviceVersion + '/' + baseLayerName + '/';
-            }
-            else{
+                _this.baseMapFullURL = _this.getTMSURL();
+            }else{
                 _this.baseMapFullURL = utils.getMapServerUrl();
             }
             tileMapCapabilities = {'tileSet': []};
@@ -490,7 +489,8 @@ var _this = {
      * @return openlayers base layer.
      */
     getBaseMapFullURL: function(){
-        return this.baseMapFullURL;
+        this.postInit();
+        return this.baseMapFullURL+ serviceVersion + '/' + this.map.baseLayer.layername + '/';
     },
 
 
