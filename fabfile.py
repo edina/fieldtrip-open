@@ -50,9 +50,25 @@ import re, itertools
 import collections, sys
 
 
-CORDOVA_VERSION   = '3.3.1-0.4.2'
+CORDOVA_VERSION    = '3.3.1-0.4.2'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
+JSHINT_VERSION     = '2.5.0'
+
+"""
+Tools installed via npm.
+The v_search value is the expected output of running the command -v
+"""
+npm_commands = {
+    'cordova':{
+        'version': CORDOVA_VERSION,
+        'v_search': CORDOVA_VERSION
+    },
+    'jshint':{
+        'version': JSHINT_VERSION,
+        'v_search': 'jshint v{0}'.format(JSHINT_VERSION)
+    }
+}
 
 config = None
 
@@ -511,6 +527,10 @@ def install_plugins(target='local', cordova="True"):
                 if not os.path.isdir(src):
                     with lcd(proot):
                         local('git clone {0} {1}'.format(details, plugin))
+                        with lcd(plugin):
+                            local('ln -s {0} {1}'.format(
+                                os.path.join(root, 'scripts', 'pre-commit.sh'),
+                                os.path.join('.git', 'hooks', 'pre-commit')))
 
                 www = os.sep.join((proot, plugin, 'src', 'www'))
                 if os.path.exists(www):
@@ -540,6 +560,7 @@ def install_project(platform='android',
         _check_command('android')
         _check_command('ant')
     _check_command('cordova')
+    _check_command('jshint')
 
     root, proj_home, src_dir = _get_source()
 
@@ -574,7 +595,9 @@ def install_project(platform='android',
             print 'Try checking out project branch {0}'.format(project_branch)
             local('git checkout {0}'.format(project_branch))
     if not os.path.exists('.git/hooks/pre-commit'):
-        local('ln -s ../../scripts/pre-commit.sh .git/hooks/pre-commit')
+        local('ln -s {0} {1}'.format(
+            os.path.join(root, 'scripts', 'pre-commit.sh'),
+            os.path.join('.git', 'hooks', 'pre-commit')))
 
     # do some checks on the project
     theme_src = os.sep.join((proj_home, 'theme'))
@@ -819,24 +842,24 @@ def update_app():
         exit(-1)
 
 def _check_command(cmd):
-    """checks a command is in the path"""
+    """
+    Checks a command is in the path. If the command is an npm command and not
+    available it will be installed. npm commands are also checked that the
+    correct version is installed.
+    """
     with settings(warn_only=True):
         out = local('command -v {0}'.format(cmd), capture=True)
         if out.return_code != 0:
-            print '{0} needs to be installed and in your path'.format(cmd)
-            exit(0)
+            if cmd in npm_commands:
+                _install_npm_command(cmd)
+            else:
+                print '{0} needs to be installed and in your path'.format(cmd)
+                exit(0)
 
-    if cmd == 'cordova':
-        version = local('cordova -v', capture=True).strip();
-        print 'cordova version %s ' % version
-        if version != CORDOVA_VERSION:
-            _check_command('npm')
-            with settings(warn_only=True):
-                out = local('npm install -g cordova@{0}'.format(CORDOVA_VERSION), capture=True)
-                print 'out.return code %d ' % out.return_code
-                if out.return_code != 0:
-                    print 'Using sudo'
-                    local('sudo npm install -g cordova@{0}'.format(CORDOVA_VERSION))
+    if cmd in npm_commands:
+        version = local('{0} -v 2>&1'.format(cmd), capture=True)
+        if version != npm_commands[cmd]['v_search']:
+            _install_npm_command(cmd)
 
 def _check_config():
     """
@@ -999,6 +1022,19 @@ def _get_source(app='android'):
     proj_home = os.sep.join((root, 'project'))
     src_dir = os.sep.join((root, 'src'))
     return root, proj_home, src_dir
+
+def _install_npm_command(cmd):
+    """
+    Install npm command, if this fails to install locally, it will retry using
+    sudo.
+    """
+    _check_command('npm')
+    with settings(warn_only=True):
+        version = npm_commands[cmd]['version']
+        out = local('npm install -g {0}@{1}'.format(cmd, version), capture=True)
+        if out.return_code != 0:
+            print 'Using sudo'
+            local('sudo npm install -g {0}@{1}'.format(cmd, version))
 
 def _is_empty(any_structure):
     # TODO
