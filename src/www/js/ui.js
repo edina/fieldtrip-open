@@ -693,12 +693,14 @@ var _ui = {
     /**
      * Load Unit testing page.
      */
-    testPage: function(){
-        $("<link/>", {
-            rel: "stylesheet",
-            type: "text/css",
-            href: "css/ext/qunit.css"
-        }).appendTo("head");
+    testPageUnit: function(){
+        if($('script[data-requiremodule="QUnit"]').length === 0){
+            $("<link/>", {
+                rel: "stylesheet",
+                type: "text/css",
+                href: "css/ext/qunit.css"
+            }).appendTo("head");
+        }
 
         var pluginsLoaded = function(){
             // start QUnit.
@@ -741,6 +743,7 @@ var _ui = {
     },
 
     testPageSys: function(){
+
         $("<link/>", {
             rel: "stylesheet",
             type: "text/css",

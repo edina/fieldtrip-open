@@ -22,7 +22,6 @@
 
   <body>
 
-    <!-- TODO remove sync-page when https://github.com/edina/fieldtrip-open/issues/22 fixed -->
     <div id="home-page" data-role="page" data-theme="a" class="sync-page">
       {{header}}
 
@@ -54,7 +53,13 @@
 
     </div>
 
-    <div id="test-page" data-role="page" data-fullscreen="false">
+    <div id="unit-test-page" data-role="page" data-fullscreen="false">
+      <div id="qunit"></div>
+      <div id="qunit-fixture"></div>
+      <script data-main="js/tests/main" src="js/ext/requirejs.js"></script>
+      <a href="index.html">Back</a>
+    </div>
+    <div id="sys-test-page" data-role="page" data-fullscreen="false">
       <div id="qunit"></div>
       <div id="qunit-fixture"></div>
       <script data-main="js/tests/main" src="js/ext/requirejs.js"></script>

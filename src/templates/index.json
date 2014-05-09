@@ -84,7 +84,7 @@
                     "div": {
                         "class": "ui-block-b"
                     },
-                    "a": {"href": "#test-page"},
+                    "a": {"href": "#unit-test-page"},
                     "img": {
                         "src": "css/images/settings.png",
                         "alt": "Tests"

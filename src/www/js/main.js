@@ -133,7 +133,8 @@ function onDeviceReady(){
             'annotate-page': ui.annotatePage,
             'annotate-preview-page': ui.annotatePreviewPage,
             'saved-records-page': ui.savedRecordsPage,
-            'test-page': ui.testPage,
+            'sys-test-page': ui.testPageSys,
+            'unit-test-page': ui.testPageUnit,
         };
 
         $.each(onShows, function(id, func){
