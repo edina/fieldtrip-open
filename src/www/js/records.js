@@ -91,7 +91,7 @@ define(['utils'], function(utils){
                 msg += " Unknown Error.";
             }
             console.debug(msg);
-            notification.alert(msg);
+            navigator.notification.alert(msg);
         }
         else{
             console.debug("Capture error is undefined. Assume user cancelled.");
@@ -171,7 +171,7 @@ var _base = {
                 var msg = "Problem with " + url + " : status=" +
                     status + " : " + error;
                 console.error(msg);
-                notification.alert(msg);
+                navigator.notification.alert(msg);
             },
         });
     },

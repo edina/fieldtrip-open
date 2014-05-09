@@ -96,11 +96,11 @@ define(['settings', 'config'], function(settings, config){
                         callback(dir);
                     },
                     function(error){
-                        notification.alert('Failed to get file system:' + error);
+                        navigator.notification.alert('Failed to get file system:' + error);
                     });
             },
             function(error){
-                notification.alert('Failed to get file system:' + error);
+                navigator.notification.alert('Failed to get file system:' + error);
             }
         );
     };
