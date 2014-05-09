@@ -13,6 +13,7 @@
         "location": false,
         "navigator": false,
         "notification": false,
+        "OpenLayers": false,
         "plugins": false,
         "require": false,
         "setTimeout": false,

@@ -359,13 +359,13 @@ var _base = {
      */
     getMapSettings: function(){
         return {
-            'baseLayer': config.mapBaseLayer,
-            'epsg': config.mapEpsg,
-            'layerName': config.mapLayerName,
-            'proj': config.mapProj,
-            'type': config.mapType,
-            'url': config.mapUrl,
-            'version': config.mapServiceVersion
+            'baseLayer': config.mapbaselayer,
+            'epsg': config.mapepsg,
+            'layerName': config.maplayername,
+            'proj': config.mapproj,
+            'type': config.maptype,
+            'url': config.mapurl,
+            'version': config.mapserviceversion
         };
     },
 
