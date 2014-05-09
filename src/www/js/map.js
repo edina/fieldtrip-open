@@ -1022,7 +1022,7 @@ var _this = {
                     $('#map-record-popup-text').append(html).append(coords).trigger('create');
                 };
 
-                $('#map-record-popup h3').text(annotation.record.name);
+                $('#map-record-popup h1').text(annotation.record.name);
                 $('#map-record-popup-text').text('');
 
                 $.each(annotation.record.fields, function(i, entry){
@@ -1049,7 +1049,7 @@ var _this = {
         });
 
         // Close popup on click
-        popup.on('click',  function() {
+        $('#close-popup').on('click',  function() {
             popup.popup('close');
         });
 
