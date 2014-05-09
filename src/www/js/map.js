@@ -54,7 +54,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
-    if(mapSettings.baselayer === 'osm'){
+    if(mapSettings.baseLayer === 'osm'){
         internalProjection = new OpenLayers.Projection('EPSG:900913');
         baseLayer = new OpenLayers.Layer.OSM();
     }
