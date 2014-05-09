@@ -344,7 +344,11 @@ var _base = {
      * @return The field trip GB map server URL.
      */
     getMapServerUrl: function(){
-        return settings.get('mapserver-url');
+        var mapserverurl = settings.get('mapserver-url');
+        if(!mapserverurl){
+          mapserverurl = this.getMapSettings().url;
+        }
+        return mapserverurl;
     },
 
     /**

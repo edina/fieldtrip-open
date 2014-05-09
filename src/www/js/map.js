@@ -570,9 +570,6 @@ var _this = {
     getTMSURL: function(root){
         if(!root){
             root = utils.getMapServerUrl();
-            if(!root){
-                root = utils.getMapSettings().url;
-            }
         }
         return root += TMS_URL;
     },
