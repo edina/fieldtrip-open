@@ -1023,6 +1023,7 @@ var _this = {
                 };
 
                 $('#map-record-popup h1').text(annotation.record.name);
+                sessionStorage.setItem('toBeDeleted',records.getAnnotationIdFromSavedRecords(annotation));
                 $('#map-record-popup-text').text('');
 
                 $.each(annotation.record.fields, function(i, entry){
@@ -1052,7 +1053,32 @@ var _this = {
         $('#close-popup').on('click',  function() {
             popup.popup('close');
         });
+        // delete a saved record
+        $(document).off('click', '.saved-records-delete');
+        $(document).on(
+            'click',
+            '.saved-records-delete',
+            $.proxy(function(event){
+                
+                //Close existing popup and open delete confirmation
+                popup.popup('close');
+                popup.on( "popupafterclose", function( event, ui ) {                  
+                     $('#saved-records-delete-popup').popup('open');
+                });
+               
+            }, this)
+        );
 
+        // delete confirm
+        $('#saved-record-delete-confirm').click($.proxy(function(event){
+           
+            var id = sessionStorage.getItem('toBeDeleted');
+            sessionStorage.removeItem('toBeDeleted');
+            records.deleteAnnotation(id, true);
+            this.refreshRecords();
+            $('#saved-records-delete-popup').popup('close');
+           
+        }, this));
 
     },
 

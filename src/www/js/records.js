@@ -254,7 +254,10 @@ var _base = {
 
             //remove geofence if one exists
             if(typeof(geofencing) !== 'undefined'){
-                geofencing.removeRegion(id);
+                // Check if removeRegion function exists
+                if(typeof(geofencing.removeRegion) !== 'undefined'){
+                   geofencing.removeRegion(id); 
+                }
             }
 
             // save to local storage
