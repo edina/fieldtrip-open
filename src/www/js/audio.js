@@ -187,6 +187,6 @@ Audio.prototype.onSuccess = function(position){
  * Error playing audio track.
  */
 Audio.prototype.onError = function(error){
-    notification.alert('code: '    + error.code    + '\n' +
+    navigator.notification.alert('code: '    + error.code    + '\n' +
           'message: ' + error.message + '\n');
 };
