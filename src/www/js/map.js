@@ -54,7 +54,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
-    if(mapSettings.baseLayer === 'osm'){
+    if(mapSettings.baselayer === 'osm'){
         internalProjection = new OpenLayers.Projection('EPSG:900913');
         baseLayer = new OpenLayers.Layer.OSM();
     }
@@ -571,7 +571,7 @@ var _this = {
         if(!root){
             root = utils.getMapServerUrl();
             if(!root){
-                root = utils.getMapSettings().url;
+                root = mapSettings().url;
             }
         }
         return root += TMS_URL;
