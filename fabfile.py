@@ -288,6 +288,11 @@ def generate_html(platform="android", cordova=False):
     def _get_header_footer_data(templates_path):
         header_data = _get_data(templates_path["core"], 'header.json', templates_path["project"])
         footer_data = _get_data(templates_path["core"], 'footer.json', templates_path["project"])
+        for d in templates_path["plugins"]:
+            if os.path.exists(os.path.join(d, 'header.json')):
+                _do_merge('header.json', header_data, d)
+            if os.path.exists(os.path.join(d, 'footer.json')):
+                _do_merge('footer.json', footer_data, d)
         return header_data, footer_data
 
     def _generate_templates(environ, templates):
@@ -348,7 +353,7 @@ def generate_html(platform="android", cordova=False):
                     value = settings_config[plg]
                     if value.startswith('{'):
                         data = json.loads(value, object_pairs_hook=collections.OrderedDict)
-                        print data
+                        #print data
                     else:
                         data = value
             settings.append(tmpl.render(settings=data))
