@@ -49,9 +49,11 @@ fi
 FILES=$(git diff --name-only HEAD | grep ".js$")
 echo ${FILES}
 for file in ${FILES}; do
-    `jshint $file 1>&2`
-    if [ $? -ne 0 ] ; then
-        echo "\nFix the above jshint problems before committing"
-        exit 1
+    if [ $file != 'src/templates/config.js' ] ; then
+        `jshint $file 1>&2`
+        if [ $? -ne 0 ] ; then
+            echo "\nFix the above jshint problems before committing"
+            exit 1
+        fi
     fi
 done

@@ -1,23 +1,25 @@
 {
+    "browser": true,
     "globalstrict": true,
+    "camelcase": true,
     "globals": {
-        "$": false,
         "console": false,
         "clearInterval": false,
+        "clearTimeout": false,
         "define": false,
         "device": false,
-        "document": false,
-        "jQuery": false,
         "LocalFileSystem": false,
         "localStorage": false,
         "location": false,
+        "module": false,
         "navigator": false,
         "notification": false,
         "plugins": false,
         "require": false,
         "setTimeout": false,
-        "setInterval": false,
-        "window": false
+        "setInterval": false
     },
-    "camelcase": true
+    "indent": "4",
+    "jquery": true,
+    "maxparams": "3"
 }

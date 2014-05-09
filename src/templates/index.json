@@ -89,8 +89,20 @@
                         "src": "css/images/settings.png",
                         "alt": "Tests"
                     },
-                    "title": "Tests"
+                    "title": "Unit Tests"
+                },
+                "item3": {
+                    "div": {
+                        "class": "ui-block-c"
+                    },
+                    "a": {"href": "#sys-test-page"},
+                    "img": {
+                        "src": "css/images/settings.png",
+                        "alt": "Tests"
+                    },
+                    "title": "System Tests"
                 }
+
             }
         }
     },
