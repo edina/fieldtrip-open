@@ -602,7 +602,6 @@ div.record-extra > div > img {
 #saved-records-page-header{
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    background: #2c3f62;
     color: white;
     margin: 0;
     padding: 0 0 1em 0;
@@ -629,7 +628,6 @@ div.record-extra > div > img {
     padding-bottom: 0.5em;
     padding-left: 1em;
     color: white;
-    background: #2c3f62;
 }
 
 #annotate-preview-detail{
