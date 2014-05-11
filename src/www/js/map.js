@@ -184,8 +184,9 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     };
 
     /**
-     * Display all annotations on speficied layer.
+     * Display annotations for specified track on speficied layer.
      * @param layer The layer to use.
+     * @param trackId The id of track for which to show records
      */
     var showAnnotationsForTrack = function(layer, trackId){
         var features = [];
@@ -212,6 +213,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
         layer.addFeatures(features);
     };
+
+
 var _this = {
 
     /**
@@ -231,7 +234,7 @@ var _this = {
      * Set up openlayer map.
      */
     init: function(){
-        this.recordClickListeners = [];
+        this.recordClickListeners = {};
         var options = {
             controls: [],
             projection: INTERNAL_PROJECTION,
@@ -458,10 +461,11 @@ var _this = {
     },
 
     /**
-     * Listen for
+     * Allow a plugin to listen for click events
      */
-    addRecordClickListener: function(callback){
-        this.recordClickListeners.push(callback);
+    addRecordClickListener: function(listener){
+       
+          this.recordClickListeners[listener.name] = listener.callback ;
     },
 
     /**
@@ -1114,7 +1118,6 @@ var _this = {
         var layer = this.getRecordsLayer();
         showAnnotationsForTrack(layer, trackId ) ;    
     },
-
 
     showTrackRecords: function()
     {
