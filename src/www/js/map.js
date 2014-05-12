@@ -1022,8 +1022,7 @@ var _this = {
             popupbeforeposition: function() {
                 var showRecord = function(html){
 
-                    var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
-                    $('#map-record-popup-text').append(html).append(coords).trigger('create');
+                    $('#map-record-popup-text').append(html).trigger('create');
                 };
 
                 $('#map-record-popup h1').text(annotation.record.name);
@@ -1035,7 +1034,7 @@ var _this = {
                     var type = records.typeFromId(entry.id);
 
                     if(type === 'image'){
-                        html = '<img src="' + entry.val + '" width=100%"/>';
+                        html = '<img src="' + entry.val + '" alt='+annotation.record.name+'"/>';
                         showRecord(html);
                     }
                     else if(type === 'audio'){
