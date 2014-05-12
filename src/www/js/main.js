@@ -71,7 +71,7 @@ function onDeviceReady(){
         }
     });
 
-    require(['ui', 'map'], function(ui, map) {
+    require(['ui', 'map', 'tests/main'], function(ui, map, tests) {
         map.init();
 
         // called when all plugins are finished loading
@@ -133,8 +133,6 @@ function onDeviceReady(){
             'annotate-page': ui.annotatePage,
             'annotate-preview-page': ui.annotatePreviewPage,
             'saved-records-page': ui.savedRecordsPage,
-            'sys-test-page': ui.testPageSys,
-            'unit-test-page': ui.testPageUnit,
         };
 
         $.each(onShows, function(id, func){
