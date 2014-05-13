@@ -31,11 +31,16 @@ DAMAGE.
 
 "use strict";
 
-define(['QUnit', 'tests/records', 'tests/map'], function(QUnit, records, map){
-    /**
-     * Load Unit tests.
-     */
-    var unitTestPage = function(){
+define(['QUnit'], function(QUnit){
+    var pageId;
+    var previouslyRun = false;
+
+
+    var cleanTestPage = function(){
+        $('#qunit-tests').empty();
+    };
+
+    var init = function(){
         if($('link[href="../css/ext/qunit.css"]').length === 0){
             $("<link/>", {
                 rel: "stylesheet",
@@ -44,24 +49,20 @@ define(['QUnit', 'tests/records', 'tests/map'], function(QUnit, records, map){
             }).appendTo("head");
         }
 
-        var previouslyRun = false;
         if($('#qunit-tests li').length > 0){
-            $('#qunit-tests').empty();
+            //cleanTestPage();
             previouslyRun = true;
         }
+    };
 
+    var runPlugins = function(fileName, autoRun){
         var pluginsLoaded = function(){
             if(!previouslyRun){
                 // start QUnit.
                 QUnit.load();
                 QUnit.start();
-
             }
         };
-
-        // run the core tests.
-        records.run();
-        map.run();
 
         // run plugin tests
         $.getJSON('theme/project.json', function(f){
@@ -71,9 +72,12 @@ define(['QUnit', 'tests/records', 'tests/map'], function(QUnit, records, map){
             if(noOfPlugins > 0){
                 var loaded = 0;
                 $.each(fieldtrip, function(name){
-                    require(["plugins/" + name + "/js/tests.js"], function(tests){
+                    require(["plugins/" + name + "/js/" + fileName], function(tests){
                         console.debug(name + " tests loaded");
-                        tests.run();
+                        if(tests){
+                            tests.run();
+                        }
+
                         ++loaded;
 
                         if(loaded === noOfPlugins){
@@ -88,6 +92,106 @@ define(['QUnit', 'tests/records', 'tests/map'], function(QUnit, records, map){
         });
     };
 
-    $(document).on('pageshow', '#unit-test-page', unitTestPage);
-});
+    var sysTestPage = function(){
+        $('#test-page-sys').show();
 
+        require(['tests/systests'], function(systests) {
+            $.each(systests.tests, function(name, test){
+                var method = 'jings';
+                //$('#qunit-tests-list').append('<li data-autodividers="true">' + name + '</li>')
+                //$('#qunit-tests-list').append('<li><a href="#" class="qunit-single-test" test="' + name + '">' + name + '</a></li>');
+
+            });
+
+            $('#qunit-tests-list').listview('refresh');
+
+            $('#test-page-runall').unbind();
+            $('#test-page-runall').on('click', function(){
+                //cleanTestPage();
+
+                systests.run();
+
+                setTimeout(function(){
+                    QUnit.load();
+                    QUnit.start();
+                }, 2000);
+
+            });
+
+            $('#test-page-restart').unbind();
+            $('#test-page-restart').on('click', function(){
+                //cleanTestPage();
+                //initTests(options);
+            });
+
+            $('.qunit-single-test').unbind();
+            $('.qunit-single-test').on('click', function(){
+                // runSingleTest($(this).attr('test'),
+                //               $(this).attr('method'));
+            });
+
+            // run plugin tests
+            // $.getJSON('theme/project.json', function(f){
+            //     var fieldtrip = f.plugins.fieldtrip;
+            //     var noOfPlugins = Object.keys(fieldtrip).length;
+
+            //     if(noOfPlugins > 0){
+            //         var loaded = 0;
+            //         $.each(fieldtrip, function(name){
+            //             require(["plugins/" + name + "/js/" + fileName], function(tests){
+            //                 console.debug(name + " tests loaded");
+            //                 if(tests){
+            //                     tests.run();
+            //                 }
+
+            //                 ++loaded;
+
+            //                 if(loaded === noOfPlugins){
+            //                     pluginsLoaded();
+            //                 }
+            //             });
+            //         });
+            //     }
+            //     else{
+            //         pluginsLoaded();
+            //     }
+            // });
+
+            //runPlugins('systests.js', true);
+            //QUnit.load();
+        });
+    };
+
+    /**
+     * Load Unit tests.
+     */
+    var unitTestPage = function(){
+        $('#test-page-sys').hide();
+        cleanTestPage();
+
+        require(['tests/records', 'tests/map'], function(records, map) {
+            // run the core tests.
+            records.run();
+            map.run();
+
+            runPlugins('tests.js', false);
+        });
+    };
+
+    var testPage = function(e){
+        init();
+
+        if(pageId === 'unit-test-page'){
+            unitTestPage();
+        }
+        else{
+            sysTestPage();
+        }
+    };
+
+    $(document).on('vclick', '.test-page-but', function(e){
+        pageId = $(e.target).parent().attr('id');
+        $.mobile.changePage('#test-page');
+    });
+    $(document).on('pageshow', '#test-page', testPage);
+});

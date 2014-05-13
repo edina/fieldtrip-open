@@ -33,16 +33,14 @@ DAMAGE.
 
 /* global OpenLayers */
 
-define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, utils, proj4js){
+define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(// jshint ignore:line
+    ol, records, utils, proj4js){
     var RESOLUTIONS = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
-    var POST_LOCATE_ZOOM_TO = RESOLUTIONS.length - 1;
 
     var internalProjection;
     var externalProjection = new OpenLayers.Projection("EPSG:4326");
     var TMS_URL = "/mapcache/tms";
-    var DEFAULT_USER_LON = -2.421976;
-    var DEFAULT_USER_LAT = 53.825564;
     //var GPS_LOCATE_TIMEOUT = 10000;
     var GPS_LOCATE_TIMEOUT = 3000;
 
@@ -50,7 +48,9 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     var serviceVersion = "1.0.0"; // TODO needs parameterised
 
     var ANNOTATE_POSITION_ATTR = 'annotate_pos';
-    var USER_POSITION_ATTR = 'user_pos';
+
+    var defaultUserLon = -2.421976;
+    var defaultUserLat = 53.825564;
 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
@@ -169,12 +169,14 @@ var _this = {
     GPS_ACCURACY_FLAG: true,
 
     /**
-     * Override default lon lat values
+     * Resolution level to zoom to after user locate.
      */
-    overrideDefaultLonLat: function(lon, lat){
-        DEFAULT_USER_LON = lon;
-        DEFAULT_USER_LAT = lat;
-    },
+    POST_LOCATE_ZOOM_TO: RESOLUTIONS.length - 1,
+
+    /**
+     * Use position attribute name.
+     */
+    USER_POSITION_ATTR: 'user_pos',
 
     /**
      * Set up openlayer map.
@@ -324,11 +326,11 @@ var _this = {
 
         // create default user position
         this.userLonLat = new OpenLayers.LonLat(
-            DEFAULT_USER_LON,
-            DEFAULT_USER_LAT);
+            defaultUserLon,
+            defaultUserLat);
         this.userLonLat.gpsPosition = {
-            longitude: DEFAULT_USER_LON,
-            latitude: DEFAULT_USER_LAT,
+            longitude: defaultUserLon,
+            latitude: defaultUserLat,
             heading: 130,
             altitude: 150
         };
@@ -337,10 +339,12 @@ var _this = {
         this.map.addControl(drag);
         drag.activate();
 
-        this.setCentre(DEFAULT_USER_LON,
-                       DEFAULT_USER_LAT,
-                       MIN_LOCATE_ZOOM_TO,
-                       true);
+        this.setCentre({
+            lon: defaultUserLon,
+            lat: defaultUserLat,
+            zoom: MIN_LOCATE_ZOOM_TO,
+            wgs84: true
+        });
     },
 
     /**
@@ -515,6 +519,17 @@ var _this = {
     },
 
     /**
+     * @return The coordinates of the user, in external projection, based on the
+     * position of the user icon. ({<OpenLayers.LonLat>}).
+     */
+    getLocateCoords: function(){
+        var geom = this.getLocateLayer().getFeaturesByAttribute(
+            'id', this.USER_POSITION_ATTR)[0].geometry;
+
+        return this.toExternal(new OpenLayers.LonLat(geom.x, geom.y));
+    },
+
+    /**
      * @return layer with the user icon.
      */
     getLocateLayer: function(){
@@ -635,8 +650,8 @@ var _this = {
                 //  just go to center of UK
                 var pos = {
                     coords: {
-                        longitude: DEFAULT_USER_LON,
-                        latitude: DEFAULT_USER_LAT,
+                        longitude: defaultUserLon,
+                        latitude: defaultUserLat,
                         heading: 130,
                         altitude: 150
                     }
@@ -679,7 +694,7 @@ var _this = {
     },
 
     /**
-     * TODO
+     * Timeout duration for geo location.
      */
     geolocateTimeout: GPS_LOCATE_TIMEOUT,
 
@@ -702,8 +717,8 @@ var _this = {
             function(){
                 callback({
                     coords: {
-                        longitude: DEFAULT_USER_LON,
-                        latitude: DEFAULT_USER_LAT,
+                        longitude: defaultUserLon,
+                        latitude: defaultUserLat,
                         heading: 130,
                         altitude: 150
                     }
@@ -894,21 +909,23 @@ var _this = {
 
     /**
      * Centre map with zoom level.
-     * @param lon
-     * @param lat
-     * @param zoom
-     * @param wgs84
+     * options:
+     *   lon
+     *   lat
+     *   zoom
+     *   wgs84
      */
-    setCentre: function(lon, lat, zoom, wgs84){
+    setCentre: function(options){
         var lonlat;
-        if(wgs84){
-            lonlat = this.toInternal(new OpenLayers.LonLat(lon, lat));
+        if(options.wgs84){
+            lonlat = this.toInternal(new OpenLayers.LonLat(options.lon, options.lat));
         }
         else{
-            lonlat = new OpenLayers.LonLat(lon, lat);
+            lonlat = new OpenLayers.LonLat(options.lon, options.lat);
         }
 
-        if(!zoom){
+        var zoom = options.zoom;
+        if(!options.zoom){
             zoom = this.map.getZoom();
         }
 
@@ -923,7 +940,22 @@ var _this = {
      */
     setCentreStr: function(lonLatStr, zoom, wgs84){
         var lonLat = lonLatStr.split(',');
-        this.setCentre(lonLat[0], lonLat[1], zoom, wgs84);
+        this.setCentre({
+            lon: lonLat[0],
+            lat: lonLat[1],
+            zoom: zoom,
+            wgs84: wgs84
+        });
+    },
+
+    /**
+     * Override default lon lat values.
+     * @param lon
+     * @param lat
+     */
+    setDefaultLonLat: function(lon, lat){
+        defaultUserLon = lon;
+        defaultUserLat = lat;
     },
 
     /**
@@ -953,7 +985,11 @@ var _this = {
 
         layer.addFeatures([new OpenLayers.Feature.Vector(geom)]);
 
-        this.setCentre(poi.centre.lon, poi.centre.lat, poi.zoom);
+        this.setCentre({
+            lon: poi.centre.lon,
+            lat: poi.centre.lat,
+            zoom: poi.zoom
+        });
         this.map.zoomTo(this.map.getZoom() - 2);
     },
 
@@ -1053,11 +1089,12 @@ var _this = {
         }
 
         if(annotation){
-            this.setCentre(
-                annotation.record.point.lon,
-                annotation.record.point.lat,
-                undefined,
-                false);
+            this.setCentre({
+                lon: annotation.record.point.lon,
+                lat: annotation.record.point.lat,
+                zoom: undefined,
+                wgs84: false
+            });
         }
 
         layer.setVisibility(true);
@@ -1082,12 +1119,10 @@ var _this = {
         this.map.addLayer(layer);
         this.map.setBaseLayer(layer);
 
-        this.postLocateZoomTo = POST_LOCATE_ZOOM_TO;
-
         // make sure switching to closed doesn't leave
         // the user at a zoom level that is not available
-        if(this.map.getZoom() > POST_LOCATE_ZOOM_TO){
-            this.map.setCenter(this.userLonLat, this.postLocateZoomTo);
+        if(this.map.getZoom() > this.POST_LOCATE_ZOOM_TO){
+            this.map.setCenter(this.userLonLat, this.POST_LOCATE_ZOOM_TO);
         }
     },
 
@@ -1129,21 +1164,27 @@ var _this = {
             lonlat = this.map.getCenter();
         }
 
-        this.updateLayer(this.getAnnotateLayer(),
-                         ANNOTATE_POSITION_ATTR,
-                         undefined,
-                         lonlat);
+        this.updateLayer({
+            layer: this.getAnnotateLayer(),
+            id: ANNOTATE_POSITION_ATTR,
+            zoom: undefined,
+            lonLat: lonlat
+        });
     },
 
     /**
      * Update a vector layer centred on users location.
-     * @param layer The layer to update.
-     * @id The id of the user icon feature.
-     * @zoom The map zoom level to zoom to.
-     * @lonLat The current location of the user.
+     * options:
+     *   layer: The layer to update.
+     *   id: The id of the user icon feature.
+     *   zoom: The map zoom level to zoom to.
+     *   lonLat: The current location of the user.
      */
-    updateLayer: function(layer, id, zoom, lonLat){
+    updateLayer: function(options){
+        var id = options.id;
+        var layer = options.layer;
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
+        var lonLat = options.lonLat;
         if(lonLat === undefined || lonLat === null){
             lonLat = this.toInternal(this.userLonLat);
         }
@@ -1167,7 +1208,7 @@ var _this = {
         layer.setVisibility(true);
         layer.redraw();
 
-        this.map.setCenter(lonLat, zoom);
+        this.map.setCenter(lonLat, options.zoom);
     },
 
     /**
@@ -1176,10 +1217,14 @@ var _this = {
     updateLocateLayer: function(){
         var zoom = this.map.getZoom();
         if(zoom < MIN_LOCATE_ZOOM_TO){
-            zoom = POST_LOCATE_ZOOM_TO;
+            zoom = this.POST_LOCATE_ZOOM_TO;
         }
 
-        this.updateLayer(this.getLocateLayer(), USER_POSITION_ATTR, zoom);
+        this.updateLayer({
+            layer: this.getLocateLayer(),
+            id: this.USER_POSITION_ATTR,
+            zoom: zoom
+        });
     },
 
     /**

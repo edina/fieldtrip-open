@@ -690,54 +690,6 @@ var _ui = {
         $('#saved-annotations-list-list').listview('refresh');
     },
 
-    testPageSys: function(){
-
-        $("<link/>", {
-            rel: "stylesheet",
-            type: "text/css",
-            href: "css/ext/qunit.css"
-        }).appendTo("head");
-
-        var pluginsLoaded = function(){
-            // start QUnit.
-            QUnit.load();
-            QUnit.start();
-        };
-
-        require(
-            ['QUnit', 'tests/records', 'tests/map'],
-            function(QUnit, records, map) {
-                // run the core tests.
-                records.run();
-                map.run();
-
-                // run plugin tests
-                $.getJSON('theme/project.json', function(f){
-                    var fieldtrip = f.plugins.fieldtrip;
-                    var noOfPlugins = Object.keys(fieldtrip).length;
-
-                    if(noOfPlugins > 0){
-                        var loaded = 0;
-                        $.each(fieldtrip, function(name){
-                            require(["plugins/" + name + "/js/tests.js"], function(tests){
-                                console.debug(name + " tests loaded");
-                                tests.run();
-                                ++loaded;
-
-                                if(loaded === noOfPlugins){
-                                    pluginsLoaded();
-                                }
-                            });
-                        });
-                    }
-                    else{
-                        pluginsLoaded();
-                    }
-                });
-            }
-        );
-    },
-
     /**
      * Toggle current active tab.
      */
