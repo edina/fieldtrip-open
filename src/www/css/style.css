@@ -428,9 +428,7 @@ body .ui-loader-textonly{
     width : inherit;
 }
 
-#audio-icon {
-    width:20%;
-}
+
 
 /* Reduce sync icon size in grid view */
 li.active .saved-records-list-synced-false {
