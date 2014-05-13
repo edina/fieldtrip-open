@@ -1010,18 +1010,12 @@ var _this = {
      */
     createPopup: function(annotation) {
 
-        // Get point and convert
-        var point =  this.toExternal(this.map.center);
-        var lon = point.lon;
-        var lat = point.lat;
-
         var popup =  $('#map-record-popup');
 
         popup.off('popupbeforeposition');
         popup.on({
             popupbeforeposition: function() {
                 var showRecord = function(html){
-
                     $('#map-record-popup-text').append(html).trigger('create');
                 };
 
