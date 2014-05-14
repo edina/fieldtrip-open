@@ -686,6 +686,11 @@ def install_project(platform='android',
     # set up cordova/fieldtrip plugins
     install_plugins(target)
 
+    #add permissions for html5 geolocation, it might be not needed with the
+    #next upgrade of cordova
+    if platform == 'android':
+        _add_permissions(os.path.join(runtime, 'platforms', platform))
+
     # add project specific files
     update_app()
 
@@ -845,6 +850,23 @@ def update_app():
     else:
         print "\nProject has no platforms directory: {0}".format(platforms)
         exit(-1)
+
+def _add_permissions(platform):
+    manifest = os.path.join(platform, 'AndroidManifest.xml')
+    with open(manifest, 'r') as f:
+        data = f.readlines()
+        f.close()
+    new_data = []
+    i=0
+    for l in data:
+        new_data.append(l)
+        if "uses-sdk android:minSdkVersion=" in l and i==0:
+            new_data.append('\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />')
+            new_data.append('\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n')
+            i=i+1
+    with open(manifest, 'w') as f:
+        f.writelines(new_data)
+        f.close()
 
 def _check_command(cmd):
     """
