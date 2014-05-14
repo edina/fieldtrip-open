@@ -53,16 +53,22 @@
 
     </div>
 
-    <div id="unit-test-page" data-role="page" data-fullscreen="false">
+    <div id="test-page" data-role="page" data-fullscreen="false">
+      <div id="test-page-sys" class="ui-grid-b">
+        <div  id="test-page-runall" class="ui-block-a">
+          <a data-role="button">Run All</a>
+        </div>
+        <div class="ui-block-b">
+          <a id="test-page-restart" data-role="button">Reload</a>
+        </div>
+        <!-- <div class="ui-block-c"> -->
+        <!--   <a href="index.html">Back</a> -->
+        <!-- </div> -->
+      </div>
+
       <div id="qunit"></div>
       <div id="qunit-fixture"></div>
-      <script data-main="js/tests/main" src="js/ext/requirejs.js"></script>
       <a href="index.html">Back</a>
-    </div>
-    <div id="sys-test-page" data-role="page" data-fullscreen="false">
-      <div id="qunit"></div>
-      <div id="qunit-fixture"></div>
-      <script data-main="js/tests/main" src="js/ext/requirejs.js"></script>
     </div>
 
   </body>

@@ -82,9 +82,13 @@
                 },
                 "item2": {
                     "div": {
+                        "id": "home-unit-test-but",
                         "class": "ui-block-b"
                     },
-                    "a": {"href": "#unit-test-page"},
+                    "a": {
+                        "href": "#",
+                        "class": "test-page-but"
+                    },
                     "img": {
                         "src": "css/images/settings.png",
                         "alt": "Tests"
@@ -95,7 +99,10 @@
                     "div": {
                         "class": "ui-block-c"
                     },
-                    "a": {"href": "#sys-test-page"},
+                    "a": {
+                        "href": "#",
+                        "class": "test-page-but"
+                    },
                     "img": {
                         "src": "css/images/settings.png",
                         "alt": "Tests"

@@ -71,14 +71,6 @@ define(['QUnit', 'map'], function(QUnit, map) {
         changePageByFile('map.html', '#map-page', cb);
     };
 
-    var goToTestPage = function(cb){
-        goHome(function(){
-            var id = '#test-page';
-            $.mobile.changePage(id);
-            changePageCheck(id, cb);
-        });
-    };
-
     var tests = {
         'Geo Locate': function(){
             goToMap(function(){
@@ -103,28 +95,34 @@ define(['QUnit', 'map'], function(QUnit, map) {
                     if(lonlat.lon !== LON && lonlat.lat !== LAT){
                         ok(true, 'Geo Position located');
                         clearInterval(timer);
-                        goToTestPage(function(){
-                            start();
-                        });
+                        start();
                     }
                 }, INTERVAL_POLL);
             });
+        },
+        'test two': function(){
+            ok(true, 'Geo Position located');
+            start();
         }
     };
-
 
     var run = function() {
         module("System Tests");
         $.each(tests, function(name, test){
             asyncTest(name, test);
         });
+    };
 
-        QUnit.done(function(){
-            goToTestPage();
+return {
+    tests: tests,
+    run: run,
+    goToTestPage: function(cb){
+        goHome(function(){
+            var id = '#test-page';
+            $.mobile.changePage(id);
+            changePageCheck(id, cb);
         });
-    };
+    }
+};
 
-    return {
-        tests: tests, run: run
-    };
 });

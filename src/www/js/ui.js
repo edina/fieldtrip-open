@@ -291,7 +291,6 @@ var _ui = {
 
             // show terms and conditions
             if(localStorage.getItem('eula-accepted') === null){
-                //$.mobile.changePage('splash.html');
                 $('#home-eula-popup').popup({dismissible: false});
                 $('#home-eula-popup').popup('open');
                 $('.ui-footer').hide();
