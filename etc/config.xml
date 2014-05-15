@@ -17,7 +17,7 @@
   <access origin="{{url}}" />
   {%endfor%}
 
-  <preference name="webviewbounce" value="true" />
+  <preference name="webviewbounce" value="false" />
   <preference name="keepRunning" value="true"/>
 
   <content src="index.html" />
