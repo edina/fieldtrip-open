@@ -16,7 +16,8 @@
     <label for="form-textarea-1">Description</label>
     <textarea name="form-textarea-1"
               id="form-textarea-1"
-              placeholder="">
+              placeholder=""
+              required>
     </textarea>
   </div>
 

@@ -430,9 +430,9 @@ body .ui-loader-textonly{
 
 
 
-/* Reduce sync icon size in grid view */
-li.active .saved-records-list-synced-false {
-    background-size: 28px 27px;
+/* Remove some elements from grid view */
+li.active  .ui-block-b.saved-records-view, li.active .ui-grid-b .ui-block-c, li.active .saved-records-list-synced-false {
+    display : none;
 }
 
 #layout-toggle > div.ui-controlgroup-controls {
@@ -469,15 +469,6 @@ div.record-extra > div > img {
 #saved-records-list .active .ui-block-a{
     /* width: 17%; */
     width: 0%;
-}
-
-
-#saved-records-list-list li.active div.ui-block-c {
-    margin-right: 1%;
-}
-
-#saved-records-list-list li.active div.ui-block-b {
-    width : 63%;
 }
 
 /* For grid view float left */
