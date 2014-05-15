@@ -1,3 +1,4 @@
+
 {
     "browser": true,
     "globalstrict": true,
@@ -8,6 +9,7 @@
         "clearTimeout": false,
         "define": false,
         "device": false,
+        "FileTransfer": false,
         "LocalFileSystem": false,
         "localStorage": false,
         "location": false,

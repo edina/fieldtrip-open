@@ -120,7 +120,7 @@ var _base = {
             url = 'editors/' + form + '.edtr';
         }
         else{
-            url = editorsDir.toNativeURL() + '/' + form + '.edtr';
+            url =  utils.getFilePath(editorsDir) + '/' + form + '.edtr';
         }
 
         $.ajax({
@@ -751,13 +751,13 @@ var _base = {
      * @param dir Optional directory object. If undefined use assestDir.
      * @param callback The function that is executed when file has finished writing.
      */
-    writeToFile: function(fileName, data, dir, callback){
-        if(dir === undefined){
-            dir = assetsDir;
-        }
-
-        utils.writeToFile(fileName, data, dir, callback);
-    }
+    //writeToFile: function(fileName, data, dir, callback){
+    //    if(dir === undefined){
+    //        dir = assetsDir;
+    //    }
+    //
+    //    utils.writeToFile(fileName, data, dir, callback);
+    //}
 };
 
 var _this = {};
