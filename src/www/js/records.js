@@ -742,22 +742,7 @@ var _base = {
     typeFromId: function(id){
         var s = id.indexOf('-') + 1;
         return id.substr(s, id.lastIndexOf('-') - s);
-    },
-
-    /**
-     * Write string to file
-     * @param fileName The new file name.
-     * @param data The new file content.
-     * @param dir Optional directory object. If undefined use assestDir.
-     * @param callback The function that is executed when file has finished writing.
-     */
-    //writeToFile: function(fileName, data, dir, callback){
-    //    if(dir === undefined){
-    //        dir = assetsDir;
-    //    }
-    //
-    //    utils.writeToFile(fileName, data, dir, callback);
-    //}
+    }
 };
 
 var _this = {};
