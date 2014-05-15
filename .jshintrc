@@ -1,12 +1,10 @@
 
 {
+    "camelcase": true,
     "browser": true,
     "globalstrict": true,
-    "camelcase": true,
     "globals": {
         "console": false,
-        "clearInterval": false,
-        "clearTimeout": false,
         "define": false,
         "device": false,
         "FileTransfer": false,
@@ -19,8 +17,7 @@
         "OpenLayers": false,
         "plugins": false,
         "require": false,
-        "setTimeout": false,
-        "setInterval": false
+        "webdb": false
     },
     "indent": "4",
     "jquery": true,
