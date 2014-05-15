@@ -87,6 +87,26 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
             QUnit.init();
             QUnit.start();
             systests.run();
+
+            // run plugin tests
+            $.getJSON('theme/project.json', function(f){
+                var fieldtrip = f.plugins.fieldtrip;
+                var noOfPlugins = Object.keys(fieldtrip).length;
+
+                if(noOfPlugins > 0){
+                    $.each(fieldtrip, function(name){
+                        require(["plugins/" + name + "/js/tests.js"], function(tests){
+                            console.debug(name + " tests loaded");
+                            console.log(tests);
+                            if(tests && tests.sys){
+                                console.log(tests.sys);
+                                tests.sys.run();
+                            }
+                        });
+                    });
+                }
+            });
+
         });
 
         $('#test-page-restart').unbind();
@@ -100,33 +120,6 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
             // runSingleTest($(this).attr('test'),
             //               $(this).attr('method'));
         });
-
-        // run plugin tests
-        // $.getJSON('theme/project.json', function(f){
-        //     var fieldtrip = f.plugins.fieldtrip;
-        //     var noOfPlugins = Object.keys(fieldtrip).length;
-
-        //     if(noOfPlugins > 0){
-        //         var loaded = 0;
-        //         $.each(fieldtrip, function(name){
-        //             require(["plugins/" + name + "/js/" + fileName], function(tests){
-        //                 console.debug(name + " tests loaded");
-        //                 if(tests){
-        //                     tests.run();
-        //                 }
-
-        //                 ++loaded;
-
-        //                 if(loaded === noOfPlugins){
-        //                     pluginsLoaded();
-        //                 }
-        //             });
-        //         });
-        //     }
-        //     else{
-        //         pluginsLoaded();
-        //     }
-        // });
     };
 
     /**
@@ -135,6 +128,9 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
     var unitTestPage = function(){
         $('#test-page-sys').hide();
         cleanTestPage();
+
+        QUnit.init();
+        QUnit.start();
 
         require(['tests/records', 'tests/map'], function(records, map) {
             // run the core tests.
@@ -148,8 +144,8 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
                 if(noOfPlugins > 0){
                     $.each(fieldtrip, function(name){
                         require(["plugins/" + name + "/js/tests.js"], function(tests){
-                            if(tests){
-                                tests.run();
+                            if(tests && tests.unit){
+                                tests.unit.run();
                             }
                         });
                     });

@@ -63,12 +63,56 @@ define(['QUnit', 'map'], function(QUnit, map) {
         return changePageCheck(target, cb);
     };
 
+    var clickAndTest = function(options){
+        var delay = 0; // delay before doing click
+        if(typeof(options.delay) !== 'undefined'){
+            delay = options.delay;
+        }
+
+        setTimeout(function(){
+            $(options.id).click();
+            intervalTest(options);
+        }, delay);
+    };
+
     var goHome = function(cb){
         changePageByFile('index.html', '#home-page', cb);
     };
 
     var goToMap = function(cb){
         changePageByFile('map.html', '#map-page', cb);
+    };
+
+    var intervalTest = function(options){
+        var count = 0; // running count of attempts
+        var attempts = 20; // max number of attempts
+        var poll = INTERVAL_POLL; // poll interval between attempts
+
+        if(typeof(options.attempts) !== 'undefined'){
+            attempts = options.attempts;
+        }
+        if(typeof(options.poll) !== 'undefined'){
+            poll = options.poll;
+        }
+
+        var timer = setInterval(function() {
+            if(options.test()){
+                ok(true, 'Element ' + options.id + ' found');
+                clearInterval(timer);
+                options.cb(true);
+            }
+            else{
+                if(count > attempts){
+                    ok(false, 'Timeout for ' + options.id);
+                    clearInterval(timer);
+                    options.cb(false);
+                }
+                else{
+                    console.debug('Waiting for ' + options.id);
+                    ++count;
+                }
+            }
+        }, poll);
     };
 
     var tests = {
@@ -116,13 +160,26 @@ define(['QUnit', 'map'], function(QUnit, map) {
 return {
     tests: tests,
     run: run,
+    clickAndTest: function(options){
+        clickAndTest(options);
+    },
+    changePageCheck: function(id, cb){
+        changePageCheck(id, cb);
+    },
+    goToMap: function(cb){
+        goToMap(cb);
+    },
     goToTestPage: function(cb){
         goHome(function(){
             var id = '#test-page';
             $.mobile.changePage(id);
             changePageCheck(id, cb);
         });
-    }
+    },
+    intervalTest: function(options){
+        intervalTest(options);
+    },
+
 };
 
 });
