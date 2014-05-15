@@ -254,6 +254,14 @@ var _base = {
         return documentBase;
     },
 
+    getFilePath: function(dir){
+      if(config.noCdvFileProtocol){
+        return dir.toNativeURL();
+      } else {
+        return dir.toURL();
+      }
+    },
+
     /**
      * @param error The error obj.
      * @return File error message as a string.
@@ -688,31 +696,31 @@ var _base = {
      * @param dir Optional directory object.
      * @param callback The function that is executed when file has finished writing.
      */
-    writeToFile: function(fileName, data, dir, callback){
+    writeToFile: function(options, dir, callback){
         dir.getFile(
-            fileName,
+            options.fileName,
             {create: true, exclusive: false},
             function(fileEntry){
                 fileEntry.createWriter(
                     function(writer){
                         writer.onwrite = function(evt) {
-                            console.debug('File ' + fileName +
+                            console.debug('File ' + options.fileName +
                                           ' written to ' + dir.fullPath);
                             if(callback){
                                 callback();
                             }
                         };
-                        writer.write(data);
+                        writer.write(options.data);
                     },
                     function(error){
-                        console.error("Failed to write to file:" + fileName +
+                        console.error("Failed to write to file:" + options.fileName +
                                       ". errcode = " + error.code);
                     }
                 );
             },
             function(error){
                 console.error(error + " : " + error.code);
-                console.error("Failed to create file: " + fileName +
+                console.error("Failed to create file: " + options.fileName +
                               ". " + _this.getFileErrorMsg(error));
             }
         );
