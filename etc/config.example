@@ -18,18 +18,9 @@ runtime_dir=ftex
 author_email=example@ed.ac.uk
 access_urls=
 version=1.0.0.0
+
+;project URL
 url=
-
-; details for mapserver urls
-; mapserver_urls=<urls comma separated>
-mapserver_urls=
-; mapserver_names=<names for the urls above comma separated>
-mapserver_names=
-
-; details for pcapi urls <urls comma separated>
-pcapi_urls=
-; <names for the urls above comma separated>
-pcapi_names=
 
 
 [release]
@@ -60,16 +51,23 @@ email_official=<email>
 ; the values in the app section becomes config.js in the application
 [app]
 
-map_baselayer=osm
+; use end user license dialog?
+enduserlicence=false
+
+;map
+mapbaselayer=osm
 
 ;here's what you need for something alternative from osm and you need to provide epsg as well
-;map_baselayer=fgb
-;map_epsg=EPSG:27700
-;map_proj=+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs
-;map_layerurl=http://fieldtripgb.edina.ac.uk/
-;map_layername=fieldtripgb@BNG
-;map_serviceVersion=1.0.0
-;map_imgtype=jpg
+;mapbaselayer=fgb
+;mapepsg=EPSG:27700
+;mapproj=+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs
+;maplayerurl=http://fieldtripgb.edina.ac.uk/
+;maplayername=fieldtripgb@BNG
+;mapserviceversion=1.0.0
+;maptype=jpg
 
 ; the java package of the android application
 package=uk.ac.edina.example
+
+
+[settings]
