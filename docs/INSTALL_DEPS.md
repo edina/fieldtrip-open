@@ -28,9 +28,9 @@ sudo pip install fabric jinja2 beautifulsoup4 html5lib
 npm install -g cordova bower
 ```
 
-### Android
+### Android SDK
 
-[Android install](http://developer.android.com/sdk/installing/index.html)
+[Android install](http://developer.android.com/sdk/index.html)
 
 Ensure the sdk/tools directory is in your path.
 
