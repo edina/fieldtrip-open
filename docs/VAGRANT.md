@@ -6,10 +6,10 @@
 
 [http://docs.vagrantup.com/v2/installation/index.html](http://docs.vagrantup.com/v2/installation/index.html)
 
-```
 
 ### Setup VM
 
+```
 $ vagrant init gmh04/ftopen32
 $ vagrant up
 $ vagrant ssh
