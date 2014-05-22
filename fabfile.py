@@ -53,6 +53,8 @@ import collections, sys
 CORDOVA_VERSION    = '3.3.1-0.4.2'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
+NPM_VERSION        = '1.4.10'
+BOWER_VERSION      = '1.3.3'
 JSHINT_VERSION     = '2.5.0'
 
 """
@@ -60,9 +62,14 @@ Tools installed via npm.
 The v_search value is the expected output of running the command -v
 """
 npm_commands = {
+    'npm':{
+        'version': NPM_VERSION
+    },
     'cordova':{
         'version': CORDOVA_VERSION,
-        'v_search': CORDOVA_VERSION
+    },
+    'bower':{
+        'version': BOWER_VERSION,
     },
     'jshint':{
         'version': JSHINT_VERSION,
@@ -562,10 +569,8 @@ def install_project(platform='android',
     project_branch - project branch name
     """
     if platform == 'android':
-        _check_command('android')
-        _check_command('ant')
-    _check_command('cordova')
-    _check_command('jshint')
+        _check_commands(['android', 'ant'])
+    _check_commands(['cordova', 'npm', 'bower', 'jshint'])
 
     root, proj_home, src_dir = _get_source()
 
@@ -884,9 +889,22 @@ def _check_command(cmd):
                 exit(0)
 
     if cmd in npm_commands:
-        version = local('{0} -v 2>&1'.format(cmd), capture=True)
-        if version != npm_commands[cmd]['v_search']:
+        current_version = local('{0} -v 2>&1'.format(cmd), capture=True)
+        if 'v_search' in npm_commands[cmd]:
+            version = npm_commands[cmd]['v_search']
+        else:
+            version = npm_commands[cmd]['version']
+        if current_version != version:
             _install_npm_command(cmd)
+
+def _check_commands(cmds):
+    """
+    Checks all commands are in the path. If the command is an npm command and not
+    available it will be installed. npm commands are also checked that the
+    correct version is installed.
+    """
+    for command in cmds:
+        _check_command(command)
 
 def _check_config():
     """
@@ -1055,7 +1073,6 @@ def _install_npm_command(cmd):
     Install npm command, if this fails to install locally, it will retry using
     sudo.
     """
-    _check_command('npm')
     with settings(warn_only=True):
         version = npm_commands[cmd]['version']
         out = local('npm install -g {0}@{1}'.format(cmd, version), capture=True)

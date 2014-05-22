@@ -1,9 +1,13 @@
-### [Install VirtualBox](https://www.virtualbox.org/manual/ch02.html)
+### Install VirtualBox
 
-### [Install Vagrant](http://docs.vagrantup.com/v2/installation/index.html)
+[https://www.virtualbox.org/manual/ch02.html](https://www.virtualbox.org/manual/ch02.html)
+
+### Install Vagrant
+
+[http://docs.vagrantup.com/v2/installation/index.html](http://docs.vagrantup.com/v2/installation/index.html)
 
 ```
-wget https://raw.githubusercontent.com/edina/fieldtrip-open/master/vagrant/Vagrantfile https://raw.githubusercontent.com/edina/fieldtrip-open/master/vagrant/bootstrap.sh
+$ vagrant init gmh04/ftopen32
 $ vagrant up
 $ vagrant ssh
 ```
