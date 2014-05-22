@@ -909,11 +909,26 @@ var _this = {
         this.map.events.register('zoomend', obj, func);
     },
 
+    
+    /**
+     * TODO
+     */
+    registerTileLoad: function(obj) {
+    
+        tile.events.register('loadend', obj, function(evt){
+                
+                console.debug("tile loaded") ;
+            
+            });
+    
+    },
+    
     /**
      * TODO
      */
     removeAllFeatures: function(layer){
         layer.removeAllFeatures();
+        
     },
 
     /**
