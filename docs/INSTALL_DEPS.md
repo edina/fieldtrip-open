@@ -3,8 +3,12 @@
 #### apt
 
 ```
-sudo apt-get install python-setuptools python2.7-dev ant
+sudo apt-get install python-setuptools python2.7-dev
 ```
+
+#### RPM
+
+TODO
 
 #### MAC
 
@@ -51,3 +55,4 @@ To run fieldtrip on a desktop browser the runtime www directory should be served
     CustomLog /var/log/apache2/access.log combined
 </VirtualHost>
 ```
+
