@@ -49,7 +49,7 @@ $ vagrant ssh
 $ git clone https://github.com/edina/fieldtrip-open.git
 ```
 
-or write access:
+or with write access:
 
 ```
 $ git clone git@github.com:edina/fieldtrip-open.git
