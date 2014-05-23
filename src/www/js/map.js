@@ -909,11 +909,30 @@ var _this = {
         this.map.events.register('zoomend', obj, func);
     },
 
+    
+    /**
+     * TODO
+     */
+    registerTileLoad: function(obj) {
+    
+    
+     
+        this.map.layers[0].events.register('tileloaded', this.map.layers[0], function(evt){
+                
+                // console.debug("tile loaded:" + evt.div) ;
+                evt.tile.imgDiv.alt="map tile" ;
+                //TODO look up location with unlock!
+            
+            });
+    
+    },
+    
     /**
      * TODO
      */
     removeAllFeatures: function(layer){
         layer.removeAllFeatures();
+        
     },
 
     /**
