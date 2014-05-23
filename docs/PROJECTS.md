@@ -30,7 +30,8 @@ The json file theme/project.json will define a list of plugins the project wishe
         ],
         "fieldtrip": {
             "offline-maps": "0.0.1",
-            "sync", "git@github.com:edina/fieldtrip-sync.git"
+            "sync", "git@github.com:edina/fieldtrip-sync.git",
+            "gps-tracking": "git@github.com:edina/fieldtrip-gps-tracking.git -b mybranch"
         }
     }
 }
@@ -44,6 +45,7 @@ The json file theme/project.json will define a list of plugins the project wishe
 
 * offline-maps: will use the release tagged 0.0.1.
 * sync: will use the master branch of the plugin found at the defined git repository.
+* gps-tracking: will use the mybranch branch of the defined git repository.
 
 For details on fieldtrip plugin development see [plugin development documentation](PLUGINS.md).
 
