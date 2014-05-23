@@ -20,12 +20,20 @@ $ vagrant up
 
 Add the following to your Vagrantfile
 
+#### USB support
+
     config.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--usb', 'on']
       vb.customize ['usbfilter', 'add', '0', '--target', :id, '--name', 'android', '--vendorid', '<vid>', '--productid', '<pid>']
     end
 
 Where `vid` is the vendor id and `pid` os the product id of the device (run `VBoxManage list usbhost` to determine).
+
+#### Apache
+
+    config.vm.network "forwarded_port", guest: 3232, host: <port>
+    
+Where `port` is the port you wish to assign the Fieldtrip desktop app.
 
 ### Login to VM
 
