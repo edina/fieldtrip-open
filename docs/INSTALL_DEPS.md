@@ -1,3 +1,5 @@
+The following outlines the steps for getting Fieldtrip Open development environment setup on a *nix machine.
+
 ### [html5lib](https://pypi.python.org/pypi/html5lib) dependencies
 
 #### apt
