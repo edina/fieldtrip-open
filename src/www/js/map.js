@@ -915,9 +915,13 @@ var _this = {
      */
     registerTileLoad: function(obj) {
     
-        tile.events.register('loadend', obj, function(evt){
+    
+     
+        this.map.layers[0].events.register('tileloaded', this.map.layers[0], function(evt){
                 
-                console.debug("tile loaded") ;
+                // console.debug("tile loaded:" + evt.div) ;
+                evt.tile.imgDiv.alt="map tile" ;
+                //TODO look up location with unlock!
             
             });
     
