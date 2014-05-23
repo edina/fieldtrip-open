@@ -5,6 +5,10 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "hashicorp/precise32"
-  config.vm.provision :shell, :path => "bootstrap.sh"
+  config.vm.box = "gmh04/ftopen32"
+  #config.vm.provider :virtualbox do |vb|
+  #  vb.customize ['modifyvm', :id, '--usb', 'on']
+  #  vb.customize ['usbfilter', 'add', '0', '--target', :id, '--name', 'android', '--vendorid', '<vid>', '--productid', '<pid>']
+  #end
+  config.vm.network :forwarded_port, host: 3232, guest: 3232
 end
