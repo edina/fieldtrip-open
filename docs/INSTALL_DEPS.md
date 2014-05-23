@@ -1,4 +1,4 @@
-### [Pip](https://pypi.python.org/pypi/pip), [html5lib](https://pypi.python.org/pypi/html5lib) dependency and [Apache Ant](http://ant.apache.org/) (android only)
+[html5lib](https://pypi.python.org/pypi/html5lib) dependencies
 
 #### apt
 
@@ -13,6 +13,8 @@ TODO
 #### MAC
 
 TODO
+
+### [Pip](https://pypi.python.org/pypi/pip)
 
 ```
 sudo easy_install pip
