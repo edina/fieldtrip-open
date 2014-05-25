@@ -212,6 +212,31 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
+        console.debug("features:" + features) ;
+        $.each(features, function(index, feature){
+                
+                var featureMarkerElement = document.getElementById(feature.geometry.id) ;
+                 // set alt tag for the marker
+                 var record = records.getSavedRecord(feature.attributes.id) ;
+                 var name =  record.record.name ;
+                 var description = record.record.fields[0].val ;
+                 var altText = feature.attributes.type ;
+                 if (description != undefined && description.length > 2) {
+                    
+                    altText = altText + " " + description ;
+                 }
+                 else{
+                    altText = altText + "  " + name ; 
+                 }
+                featureMarkerElement.setAttribute("alt", altText);
+            
+                
+            }) ;
+        
+        // document.getElementById(features[0].geometry.id).setAttribute("alt", "test note");
+        // document.getElementById(features[0].geometry.id).alt
+        // TODO features[0].geometry.id
+        // features[0].data.id
     };
 
 
