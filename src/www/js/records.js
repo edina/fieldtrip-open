@@ -32,9 +32,14 @@ DAMAGE.
 "use strict";
 
 define(['utils'], function(utils){
+
+    var DOCUMENTS_SCHEME_PREFIX = "documents://";
+    
     var assetsDir;
     var editorsDir;
-
+    
+    
+    
     if(utils.isMobileDevice()){
         // create directory structure for annotations
         utils.getPersistentRoot(function(root){
@@ -767,7 +772,53 @@ var _base = {
         if (navigator.device !== undefined){
             navigator.device.capture.captureAudio(
                 function(mediaFiles){
-                    callback(mediaFiles[0].fullPath);
+                
+                
+                    var fileURI = mediaFiles[0].fullPath;
+                    
+                    //move the file from tmp to assets dir
+                    var copiedFile = function (fileEntry) {
+            
+                        console.log("copied file: " + fileEntry.fullPath);
+                        callback(DOCUMENTS_SCHEME_PREFIX + fileEntry.fullPath);
+                    }
+                    
+                    var gotFileEntry = function(fileEntry) {
+                        
+                        
+                        var gotFileSystem = function(fileSystem){
+                            
+                            fileEntry.copyTo( fileSystem, fileEntry.name ,copiedFile, captureError);
+                        };
+                        
+                        // get file system to copy or move image file to
+                    
+                        utils.getPersistentRoot(gotFileSystem);
+                        
+                    };
+                    
+                    var imgFileName = fileURI.substr(fileURI.lastIndexOf('/')+1);
+                    
+                    var testTemp = function(fileSystem){
+                            var reader = fileSystem.root.createReader();
+                            reader.readEntries(function(entries) {
+
+                            var i;
+                            for (i = 0; i < entries.length; i++) {
+                            
+                                console.log(entries[i].name);
+                                if(entries[i].name === imgFileName){
+                                    
+                                    gotFileEntry(entries[i]);
+                                }
+                                
+                            }
+                        })
+                    };
+                    
+                    
+                    window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, testTemp, captureError);
+                
                 },
                 captureError,
                 {limit: 1}
