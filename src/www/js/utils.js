@@ -507,6 +507,10 @@ var _base = {
      * secs.
      */
     inform: function(message, duration, error){
+      
+        $('.ui-loader').attr('alt', "Alert" + message) ;
+        $('.ui-loader').attr('aria-live', 'polite') ;
+        $('.ui-loader').attr('aria-label', "Alert " + message) ;
         if($('.ui-loader').is(":visible")){
             if(typeof(error) !== 'undefined' && error){
                 $('.ui-loader').addClass('error');

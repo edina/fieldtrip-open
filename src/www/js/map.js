@@ -152,10 +152,12 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
+         addAltTextToFeatureMarkers(features) ; // markers only available after features added to layer
+         
     };
 
     /**
-     * Display all annotations on speficied layer.
+     * Display track annotations on speficied layer.
      * @param layer The layer to use.
      */
     var showTrackAnnotations = function(layer){
@@ -181,6 +183,20 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
+        // wait until abse layer finsinshed loading before adding alt text to track icons
+        
+        
+                                  
+        baseLayer.events.register("loadend", layer, function() {
+            
+                console.log("features" + features) ;
+                if (features != null && features != undefined && features.length > 0) {
+                    addAltTextToFeatureMarkers(features) ;
+                   // baseLayer.events.unregister("loadend", layer, this) ;
+                }
+                    
+            });
+        
     };
 
     /**
@@ -212,7 +228,16 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
-        console.debug("features:" + features) ;
+        addAltTextToFeatureMarkers(features) ; // markers only available after features added to layer
+       
+        
+        
+    };
+    
+    var addAltTextToFeatureMarkers = function(features)
+    {
+         console.debug("features:" + features) ;
+        utils.inform("test message", 1000) ;
         $.each(features, function(index, feature){
                 
                 var featureMarkerElement = document.getElementById(feature.geometry.id) ;
@@ -228,15 +253,25 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                  else{
                     altText = altText + "  " + name ; 
                  }
-                featureMarkerElement.setAttribute("alt", altText);
-            
+                 
+                 if (featureMarkerElement !== null && featureMarkerElement !== undefined)
+                 {
+                    
+                    featureMarkerElement.setAttribute("alt", altText);
+                    featureMarkerElement.setAttribute("role", "button");
+                    if (feature.attributes.type === "track") {
+                        featureMarkerElement.setAttribute("tabindex", index + 1);
+                    }
+                    else
+                    {
+                        featureMarkerElement.setAttribute("tabindex", index + 2);
+                    }
+                 }
+                    
+             
                 
             }) ;
         
-        // document.getElementById(features[0].geometry.id).setAttribute("alt", "test note");
-        // document.getElementById(features[0].geometry.id).alt
-        // TODO features[0].geometry.id
-        // features[0].data.id
     };
 
 
@@ -946,6 +981,7 @@ var _this = {
                 
                 // console.debug("tile loaded:" + evt.div) ;
                 evt.tile.imgDiv.alt="map tile" ;
+                evt.tile.imgDiv.role="presentation" ;
                 //TODO look up location with unlock!
             
             });
@@ -1159,9 +1195,10 @@ var _this = {
     showTrackRecords: function()
     {
         var layer = this.getRecordsLayer();
-       showTrackAnnotations(layer) ;
+        showTrackAnnotations(layer) ;
         layer.setVisibility(true);
         layer.refresh();
+        
     },
 
     /**
