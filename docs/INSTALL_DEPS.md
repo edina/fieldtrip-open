@@ -5,16 +5,16 @@ The following outlines the steps for getting Fieldtrip Open development environm
 #### apt
 
 ```
-sudo apt-get install python-setuptools python2.7-dev
+sudo apt-get install python-setuptools python2.7-dev wget
 ```
 
 #### RPM
 
 TODO
 
-#### MAC
+#### MAC (with homebrew)
 
-TODO
+sudo brew install wget
 
 ### [Pip](https://pypi.python.org/pypi/pip)
 
