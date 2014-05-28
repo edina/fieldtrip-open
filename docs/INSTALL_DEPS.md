@@ -5,16 +5,18 @@ The following outlines the steps for getting Fieldtrip Open development environm
 #### apt
 
 ```
-sudo apt-get install python-setuptools python2.7-dev
+sudo apt-get install python-setuptools python2.7-dev wget
 ```
 
 #### RPM
 
 TODO
 
-#### MAC
+#### MAC (with homebrew)
 
-TODO
+```
+sudo brew install wget
+```
 
 ### [Pip](https://pypi.python.org/pypi/pip)
 
@@ -40,7 +42,7 @@ npm install -g cordova bower
 
 [Android install](http://developer.android.com/sdk/index.html)
 
-Ensure the sdk/tools directory is in your path.
+Ensure the sdk tools and platforms-tools directories are in your path.
 
 ### IOS
 
@@ -48,7 +50,7 @@ TODO
 
 ### Desktop
 
-To run fieldtrip on a desktop browser the runtime www directory should be served from the root of the web server. On apache this can be achieved by setting up a virtualhost, e.g:
+To run fieldtrip on a desktop browser the runtime www directory should be served from the root of the web server. On apache this can be achieved by setting up a virtualhost, e.g (for apache 2.2):
 
 ```
 <VirtualHost *:1234>
@@ -59,4 +61,3 @@ To run fieldtrip on a desktop browser the runtime www directory should be served
     CustomLog /var/log/apache2/access.log combined
 </VirtualHost>
 ```
-
