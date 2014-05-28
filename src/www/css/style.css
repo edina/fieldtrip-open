@@ -319,7 +319,7 @@ body .ui-loader-textonly{
 .ui-popup{
     padding: 1em;
     z-index: 3000;
-    text-align: center;
+    /* text-align: center; */
 }
 
 .ui-popup-container{
@@ -327,8 +327,9 @@ body .ui-loader-textonly{
 }
 
 .ui-popup p{
-    font-size: 16px;
+    font-size: 25px;
     padding: 0.2em;
+    padding-top: 1.3em;
 }
 
 
