@@ -570,7 +570,7 @@ def install_project(platform='android',
     """
     if platform == 'android':
         _check_commands(['android', 'ant'])
-    _check_commands(['cordova', 'npm', 'bower', 'jshint'])
+    _check_commands(['cordova', 'npm', 'bower', 'jshint', 'wget'])
 
     root, proj_home, src_dir = _get_source()
 

@@ -949,9 +949,18 @@ var _this = {
     },
 
     /**
+     * Set users default location.
+     * @param lonLat OpenLayers lonLat in internal projection.
+     */
+    setDefaultLocation: function(lonLat){
+        var extLonLat = this.toExternal(lonLat);
+        this.setDefaultLonLat(extLonLat.lon, extLonLat.lat);
+    },
+
+    /**
      * Override default lon lat values.
-     * @param lon
-     * @param lat
+     * @param lon Longitude in external projection.
+     * @param lat Latitude in extenal projection.
      */
     setDefaultLonLat: function(lon, lat){
         defaultUserLon = lon;
