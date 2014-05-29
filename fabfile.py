@@ -229,6 +229,7 @@ def generate_html(platform="android", cordova=False):
 
     #setup paths
     root, proj_home, src_dir = _get_source()
+
     #the final destination of html generated files
     export_path = os.sep.join((src_dir, 'www'))
 
@@ -926,12 +927,22 @@ def _check_config():
                     print "File not found, can't continue."
                     exit(0)
             else:
-                local('scp {0} {1}'.format(answer, conf_dir))
+                port = _config('location_port')
+                if port:
+                    local('scp -P {0} {1} {2}'.format(port, answer, conf_dir))
+                else:
+                    local('scp {0} {1}'.format(answer, conf_dir))
 
     # pick up any changes from remote config
     location = _config('location')
+    print location
     if location.find('@') != -1:
-        local('rsync -avz {0} {1}'.format(location, conf_dir))
+        port = _config('location_port')
+        if port:
+            local("rsync -avz -e 'ssh -p {0}' {1} {2}".format(
+                port, location, conf_dir))
+        else:
+            local('rsync -avz {0} {1}'.format(location, conf_dir))
         config = None # make sure it is re-read
 
 def _config(key, section='install'):
@@ -952,7 +963,12 @@ def _config(key, section='install'):
         if key == None:
             return config._sections[section]
         else:
-            return config.get(section, key)
+            val = None
+            try:
+                val = config.get(section, key)
+            except ConfigParser.NoOptionError:
+                pass
+            return val
     else:
         return None
 
