@@ -19,6 +19,6 @@
 
   <preference name="webviewbounce" value="true" />
   <preference name="keepRunning" value="true"/>
-
+  <preference name="DisallowOverscroll" value="true" />
   <content src="index.html" />
 </widget>
