@@ -583,6 +583,10 @@ def install_project(platform='android',
         asset_dir =  os.sep.join((src_dir, 'www'))
         local('ln -s {0}'.format(asset_dir))
 
+        # Replace default config.xml and symlink to our version
+        local('rm config.xml')
+        local('ln -s %s' % os.sep.join(('www','config.xml')))
+
         # link to project theme
         theme = os.sep.join((asset_dir, 'theme'))
         if not os.path.exists(theme):
