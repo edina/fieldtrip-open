@@ -157,10 +157,12 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
     };
 
     
-    var baseLayerLoadListener = function(layer)
+    var featureLayerLoadListener = function(evt)
     {
-        addAltTextToFeatureMarkers(layer.features) ;
-        layer.events.unregister("featureselected", layer, baseLayerLoadListener) ;
+        var features = [] ;
+        features.push(evt.feature) ;
+        addAltTextToFeatureMarkers(features) ;
+ //       layer.events.unregister("featureselected", layer, baseLayerLoadListener) ;
         
         
     };
@@ -193,42 +195,20 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
         layer.addFeatures(features);
         // wait until abse layer finsinshed loading before adding alt text to track icons
-        
-        if (layer.getVisibility()) {
+      
+      
+        if (layer.getVisibility())
+        {
+            addAltTextToFeatureMarkers(features) ;
             
-            //code
-                   addAltTextToFeatureMarkers(features) ;
         }
         else
         {
-            layer.events.register("featureselected", layer, baseLayerLoadListener) ;
-            
-            
-                                      /*
-                                      {
-            
-                console.log("features" + features) ;
-                if (features != null && features != undefined && features.length > 0) {
-                }
-                    
-            });
-            
-            */
+            layer.events.register("featureselected", layer, featureLayerLoadListener) ;
+                          
         }
-        /*                          
-        baseLayer.events.register("loadend", layer, function() {
-            
-                console.log("features" + features) ;
-                if (features != null && features != undefined && features.length > 0) {
-             
-                   // baseLayer.events.unregister("loadend", layer, this) ;
-                }
-                    
-            });
-        */
-        
     };
-
+    
     /**
      * Display annotations for specified track on speficied layer.
      * @param layer The layer to use.
@@ -276,14 +256,12 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                  var name =  record.record.name ;
                  var description = record.record.fields[0].val ;
                  var altText = feature.attributes.type ;
-                 if (description != undefined && description.length > 2 && altText !== "track") {
+                 if (description != undefined && description.length > 4 && altText !== "track")
+                 {
                     
                     altText = altText + " " + description ;
                  }
-                 else{
-                    altText = altText + "  " + name ; 
-                 }
-                 
+                                 
                  if (featureMarkerElement !== null && featureMarkerElement !== undefined)
                  {
                     
@@ -291,7 +269,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                     featureMarkerElement.setAttribute("aria-label", altText);
                     featureMarkerElement.setAttribute("role", "button");
                     if (feature.attributes.type === "track") {
-                        featureMarkerElement.setAttribute("tabindex", index + 1);
+                        featureMarkerElement.setAttribute("tabindex", 0);
                     }
                     else
                     {
@@ -1011,10 +989,9 @@ var _this = {
         this.map.layers[0].events.register('tileloaded', this.map.layers[0], function(evt){
                 
                 // console.debug("tile loaded:" + evt.div) ;
+                evt.tile.imgDiv.setAttribute("role", "presentation")
                 evt.tile.imgDiv.alt="map tile" ;
-                evt.tile.imgDiv.role="presentation" ;
-                //TODO look up location with unlock!
-            
+               
             });
     
     },
