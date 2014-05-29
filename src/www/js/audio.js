@@ -47,7 +47,7 @@ return{
         return '<div class="annotate-audio-taken">' + label + '\
 <input type="hidden" value="' + url + '"/>\
 <p id="annotate-audio-position" role="marquee">0.0 sec</p>\
-<a id="annotate-audio-button" class="annotate-audio-stopped" alt="toggle play audio" onclick="playAudio();" data-theme="a" data-iconpos="notext" href="#" data-role="button" role="button"></a>\
+<a id="annotate-audio-button" class="annotate-audio-stopped" aria-label="toggle play audio" onclick="playAudio();" data-theme="a" data-iconpos="notext" href="#" data-role="button" role="button"></a>\
 </div>';
     },
 }

@@ -156,6 +156,15 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
          
     };
 
+    
+    var baseLayerLoadListener = function(layer)
+    {
+        addAltTextToFeatureMarkers(layer.features) ;
+        layer.events.unregister("featureselected", layer, baseLayerLoadListener) ;
+        
+        
+    };
+    
     /**
      * Display track annotations on speficied layer.
      * @param layer The layer to use.
@@ -185,17 +194,38 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         layer.addFeatures(features);
         // wait until abse layer finsinshed loading before adding alt text to track icons
         
-        
-                                  
+        if (layer.getVisibility()) {
+            
+            //code
+                   addAltTextToFeatureMarkers(features) ;
+        }
+        else
+        {
+            layer.events.register("featureselected", layer, baseLayerLoadListener) ;
+            
+            
+                                      /*
+                                      {
+            
+                console.log("features" + features) ;
+                if (features != null && features != undefined && features.length > 0) {
+                }
+                    
+            });
+            
+            */
+        }
+        /*                          
         baseLayer.events.register("loadend", layer, function() {
             
                 console.log("features" + features) ;
                 if (features != null && features != undefined && features.length > 0) {
-                    addAltTextToFeatureMarkers(features) ;
+             
                    // baseLayer.events.unregister("loadend", layer, this) ;
                 }
                     
             });
+        */
         
     };
 
@@ -246,7 +276,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                  var name =  record.record.name ;
                  var description = record.record.fields[0].val ;
                  var altText = feature.attributes.type ;
-                 if (description != undefined && description.length > 2) {
+                 if (description != undefined && description.length > 2 && altText !== "track") {
                     
                     altText = altText + " " + description ;
                  }
@@ -258,6 +288,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                  {
                     
                     featureMarkerElement.setAttribute("alt", altText);
+                    featureMarkerElement.setAttribute("aria-label", altText);
                     featureMarkerElement.setAttribute("role", "button");
                     if (feature.attributes.type === "track") {
                         featureMarkerElement.setAttribute("tabindex", index + 1);
