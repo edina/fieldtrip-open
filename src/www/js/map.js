@@ -429,8 +429,8 @@ var _this = {
         // user location layer
         var locateLayerStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
         locateLayerStyle.externalGraphic = "css/images/user.png";
-        locateLayerStyle.graphicWidth = 20;
-        locateLayerStyle.graphicHeight = 20;
+        locateLayerStyle.graphicWidth = 40;
+        locateLayerStyle.graphicHeight = 40;
         locateLayerStyle.graphicOpacity = 1;
         locateLayerStyle.rotation = "${imageRotation}";
         var locateLayer = new OpenLayers.Layer.Vector(
@@ -1368,11 +1368,14 @@ var _this = {
 
     /**
      * Update locate layer with users geo location.
+     * optional zoom level for map
      */
-    updateLocateLayer: function(){
-        var zoom = this.map.getZoom();
-        if(zoom < MIN_LOCATE_ZOOM_TO){
-            zoom = POST_LOCATE_ZOOM_TO;
+    updateLocateLayer: function(zoom){
+        if(!zoom){
+            var zoom = this.map.getZoom();
+            if(zoom < MIN_LOCATE_ZOOM_TO){
+                zoom = POST_LOCATE_ZOOM_TO;
+            }
         }
 
         this.updateLayer(this.getLocateLayer(), USER_POSITION_ATTR, zoom);
