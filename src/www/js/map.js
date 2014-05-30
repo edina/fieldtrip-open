@@ -152,20 +152,15 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
+        
+        if (layer.getVisibility())
+        {
          addAltTextToFeatureMarkers(features) ; // markers only available after features added to layer
-         
+        }
     };
 
     
-    var featureLayerLoadListener = function(evt)
-    {
-        var features = [] ;
-        features.push(evt.feature) ;
-        addAltTextToFeatureMarkers(features) ;
- //       layer.events.unregister("featureselected", layer, baseLayerLoadListener) ;
-        
-        
-    };
+    
     
     /**
      * Display track annotations on speficied layer.
@@ -194,7 +189,6 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
-        // wait until abse layer finsinshed loading before adding alt text to track icons
       
       
         if (layer.getVisibility())
@@ -202,11 +196,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
             addAltTextToFeatureMarkers(features) ;
             
         }
-        else
-        {
-            layer.events.register("featureselected", layer, featureLayerLoadListener) ;
-                          
-        }
+    
     };
     
     /**
@@ -238,8 +228,11 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
-        addAltTextToFeatureMarkers(features) ; // markers only available after features added to layer
-       
+        
+        if (layer.getVisibility())
+        {
+          addAltTextToFeatureMarkers(features) ; // markers only available after features added to layer
+        }
         
         
     };
@@ -1102,6 +1095,8 @@ var _this = {
 
         var popup =  $('#map-record-popup');
 
+        
+        
         popup.off('popupbeforeposition');
         popup.on({
             popupbeforeposition: function() {
