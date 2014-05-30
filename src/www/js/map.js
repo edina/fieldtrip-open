@@ -422,6 +422,8 @@ var _this = {
         this.map.addLayers([positionMarkerLayer,
                             recordsLayer,
                             locateLayer]);
+        
+        locateLayer.div.setAttribute("alt" , "location marker") ;
 
         var TN = OpenLayers.Class(OpenLayers.Control.TouchNavigation, {
             defaultClick: $.proxy(this.showRecordDetail, this),
@@ -1209,6 +1211,13 @@ var _this = {
         
     },
 
+    addAltTags: function()
+    {
+        var layer = this.getRecordsLayer();
+        addAltTextToFeatureMarkers(layer.features) ;
+    },
+    
+    
     /**
      * Display records on map.
      */
@@ -1336,7 +1345,12 @@ var _this = {
         else {
             annotationFeature[0].move(lonLat);
         }
-
+     
+        annotationFeature[0].layer.div.setAttribute("alt", "location maker updated") ;
+        annotationFeature[0].layer.div.setAttribute("aria-label", "location maker" + lonLat.lon + ", " + lonLat.lat) ;
+        annotationFeature[0].layer.div.setAttribute("aria-live", "polite") ;
+        annotationFeature[0].layer.div.setAttribute("role", "marquee") ;
+        // utils.inform("current location updated", 1000 );       
         layer.setVisibility(true);
         layer.redraw();
 
