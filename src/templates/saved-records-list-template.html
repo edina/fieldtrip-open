@@ -14,7 +14,7 @@
         <%type = records.typeFromId(field.id)%>
 
         <% if (field.label === "Description") { %>
-            <p class='ellipsis'><%=field.val%></p>
+            <p class='description'><%=field.val%></p>
         <%}%>
 
         <% if (type === "image") { %>
