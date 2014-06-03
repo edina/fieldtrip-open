@@ -50,7 +50,7 @@ import re, itertools
 import collections, sys
 
 
-CORDOVA_VERSION    = '3.3.1-0.4.2'
+CORDOVA_VERSION    = '3.5.0-0.2.4'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
 NPM_VERSION        = '1.4.10'
