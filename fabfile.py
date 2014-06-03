@@ -269,7 +269,7 @@ def generate_html(platform="android", cordova=False):
 
     def _get_letter(obj):
         """ TODO """
-        i = len(obj)-1
+        i = len(obj)-2
         return chr(i+ord('a'))
 
     def _is_valid_file(f):
