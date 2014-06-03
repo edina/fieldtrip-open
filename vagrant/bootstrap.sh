@@ -6,6 +6,9 @@ apt-get -y install ant bash build-essential emacs23 git make openjdk-7-jdk pytho
 easy_install pip
 pip install fabric jinja2 beautifulsoup4 html5lib
 
+# install pcapi dependencies
+sudo apt-get install libxml2-dev libxslt1-dev libsqlite3-dev libapache2-mod-wsgi
+
 # install nodejs
 sudo -u vagrant mkdir /home/vagrant/local
 cd /home/vagrant/local
