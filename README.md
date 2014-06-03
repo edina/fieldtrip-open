@@ -4,7 +4,7 @@ Fieldtrip-Open is a mobile mapping and data collection platform.
 
 ### Dependencies
 
-[Install notes](docs/INSTALL_DEPS.md)
+To set up the development environment on GNU Linux or MAC, see [Install notes](docs/INSTALL_DEPS.md). Alternatively, there is a Ubuntu VM preconfigured for Fieldtrip Open development, see [Vagrant Notes](docs/VAGRANT.md).
 
 ### Install
 

@@ -1,14 +1,24 @@
-### [Pip](https://pypi.python.org/pypi/pip), [html5lib](https://pypi.python.org/pypi/html5lib) dependency and [Apache Ant](http://ant.apache.org/) (android only)
+The following outlines the steps for getting Fieldtrip Open development environment setup on a *nix machine.
+
+### [html5lib](https://pypi.python.org/pypi/html5lib) dependencies
 
 #### apt
 
 ```
-sudo apt-get install python-setuptools python2.7-dev ant
+sudo apt-get install python-setuptools python2.7-dev wget
 ```
 
-#### MAC
+#### RPM
 
 TODO
+
+#### MAC (with homebrew)
+
+```
+sudo brew install wget
+```
+
+### [Pip](https://pypi.python.org/pypi/pip)
 
 ```
 sudo easy_install pip
@@ -32,7 +42,7 @@ npm install -g cordova bower
 
 [Android install](http://developer.android.com/sdk/index.html)
 
-Ensure the sdk/tools directory is in your path.
+Ensure the sdk tools and platforms-tools directories are in your path.
 
 ### IOS
 
@@ -40,7 +50,7 @@ TODO
 
 ### Desktop
 
-To run fieldtrip on a desktop browser the runtime www directory should be served from the root of the web server. On apache this can be achieved by setting up a virtualhost, e.g:
+To run fieldtrip on a desktop browser the runtime www directory should be served from the root of the web server. On apache this can be achieved by setting up a virtualhost, e.g (for apache 2.2):
 
 ```
 <VirtualHost *:1234>

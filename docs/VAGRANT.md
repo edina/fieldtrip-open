@@ -12,7 +12,7 @@ The following outlines the steps for getting Fieldtrip Open development environm
 ### Setup VM
 
 ```
-$ vagrant init gmh04/ftopen32
+$ vagrant init ftopen/ubuntu32
 $ vagrant up
 ```
 
@@ -49,7 +49,7 @@ $ vagrant ssh
 $ git clone https://github.com/edina/fieldtrip-open.git
 ```
 
-or write access:
+or with write access:
 
 ```
 $ git clone git@github.com:edina/fieldtrip-open.git

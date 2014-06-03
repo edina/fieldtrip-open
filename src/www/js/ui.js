@@ -467,9 +467,14 @@ var _ui = {
         }, this));
 
         $('#annotate-preview-ok').click($.proxy(function(){
+            var lonLat = map.getAnnotationCoords(false);
             records.saveAnnotationWithCoords(
                 this.currentAnnotation,
-                map.getAnnotationCoords(false));
+                lonLat);
+
+            // update default location to be last selected location
+            map.setDefaultLocation(lonLat);
+
             map.refreshRecords(this.currentAnnotation);
             this.currentAnnotation = undefined;
             utils.gotoMapPage();
