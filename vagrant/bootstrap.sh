@@ -7,7 +7,7 @@ easy_install pip
 pip install fabric jinja2 beautifulsoup4 html5lib
 
 # install pcapi dependencies
-sudo apt-get install libxml2-dev libxslt1-dev libsqlite3-dev libapache2-mod-wsgi
+sudo apt-get install libxml2-dev libxslt1-dev libsqlite3-dev libapache2-mod-wsgi imagemagick
 
 # install nodejs
 sudo -u vagrant mkdir /home/vagrant/local
