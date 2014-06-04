@@ -67,6 +67,10 @@ function playAudio(){
 
     // for android ensure url begins with file:///
     url = url.replace("file:/m", "file:///m");
+    
+    //media player plugin has not been updated to latest cdvfile format
+    //see https://github.com/edina/spatial-memories/issues/45
+    url = url.replace("cdvfile://localhost/persistent//" , "documents://");
 
     if(currentAudio){
         if(currentAudio.src !== url){
