@@ -4,7 +4,7 @@
 apt-get update
 apt-get -y install ant bash build-essential emacs23 git make openjdk-7-jdk python-setuptools python2.7-dev unzip vim
 easy_install pip
-pip install fabric jinja2 beautifulsoup4 html5lib
+pip install fabric jinja2 beautifulsoup4 html5lib configparser
 
 # install pcapi dependencies
 sudo apt-get install libxml2-dev libxslt1-dev libsqlite3-dev libapache2-mod-wsgi imagemagick
