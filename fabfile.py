@@ -29,25 +29,26 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 """
 
+from bs4 import BeautifulSoup
+from copy import copy, deepcopy
+from configparser import ConfigParser, ExtendedInterpolation, NoOptionError
 from email.mime.text import MIMEText
-
 from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings, task
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from jinja2 import Environment, PackageLoader, FileSystemLoader
-from bs4 import BeautifulSoup
-from copy import copy, deepcopy
 
 import xml.etree.ElementTree as ET
 
 import ast
 import codecs
-import ConfigParser
+import collections
+import itertools
 import json
 import os
 import smtplib
-import re, itertools
-import collections, sys
+import sys
+import re
 
 
 CORDOVA_VERSION    = '3.5.0-0.2.4'
@@ -198,7 +199,10 @@ def generate_config_js(version=None, fetch_config=True):
     # using config initialises it
     _config('name')
 
-    values = dict(config.items('app'))
+    # convert items list into dictionary
+    values = {}
+    for entry in config.items('app'):
+        values[str(entry[0])] = str(entry[1])
     values['version'] = str(version)
 
     templates = os.sep.join((src_dir, 'templates'))
@@ -361,7 +365,6 @@ def generate_html(platform="android", cordova=False):
                     value = settings_config[plg]
                     if value.startswith('{'):
                         data = json.loads(value, object_pairs_hook=collections.OrderedDict)
-                        #print data
                     else:
                         data = value
             settings.append(tmpl.render(settings=data))
@@ -959,7 +962,7 @@ def _config(key, section='install'):
 
     global config
     if config == None:
-        config = ConfigParser.ConfigParser()
+        config = ConfigParser(interpolation=ExtendedInterpolation())
         conf_file = os.sep.join((_get_source()[0], 'etc', 'config.ini'))
         config.read(conf_file)
 
@@ -970,7 +973,7 @@ def _config(key, section='install'):
             val = None
             try:
                 val = config.get(section, key)
-            except ConfigParser.NoOptionError:
+            except NoOptionError:
                 pass
             return val
     else:
