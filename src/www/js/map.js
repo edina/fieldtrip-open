@@ -246,31 +246,34 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                 var featureMarkerElement = document.getElementById(feature.geometry.id) ;
                  // set alt tag for the marker
                  var record = records.getSavedRecord(feature.attributes.id) ;
-                 var name =  record.record.name ;
-                 var description = record.record.fields[0].val ;
-                 var altText = feature.attributes.type ;
-                 if (description != undefined && description.length > 4 && altText !== "track")
-                 {
+                 if (record !== undefined && record !== null) {
                     
-                    altText = altText + " " + description ;
-                 }
+                 
+                   var name =  record.record.name ;
+                   var description = record.record.fields[0].val ;
+                   var altText = feature.attributes.type ;
+                   if (description != undefined && description.length > 4 && altText !== "track")
+                   {
+                    
+                      altText = altText + " " + description ;
+                   }
                                  
-                 if (featureMarkerElement !== null && featureMarkerElement !== undefined)
-                 {
+                   if (featureMarkerElement !== null && featureMarkerElement !== undefined)
+                   {
+                      
+                      featureMarkerElement.setAttribute("alt", altText);
+                      featureMarkerElement.setAttribute("aria-label", altText);
+                      featureMarkerElement.setAttribute("role", "button");
+                      if (feature.attributes.type === "track") {
+                          featureMarkerElement.setAttribute("tabindex", 1);
+                      }
+                      else
+                      {
+                          featureMarkerElement.setAttribute("tabindex", index + 2);
+                      }
+                   }
                     
-                    featureMarkerElement.setAttribute("alt", altText);
-                    featureMarkerElement.setAttribute("aria-label", altText);
-                    featureMarkerElement.setAttribute("role", "button");
-                    if (feature.attributes.type === "track") {
-                        featureMarkerElement.setAttribute("tabindex", 0);
-                    }
-                    else
-                    {
-                        featureMarkerElement.setAttribute("tabindex", index + 2);
-                    }
                  }
-                    
-             
                 
             }) ;
         
