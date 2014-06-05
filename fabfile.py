@@ -427,6 +427,47 @@ def generate_html_ios():
     generate_html(platform="ios")
 
 @task
+def generate_location_cache():
+    import math
+    import requests
+
+    # glasgow city centre
+    top_left = (55.8717, -4.2737)
+    bottom_right = (55.8538, -4.2408)
+    zoom = 16
+
+    def deg2num(lat_deg, lon_deg, zoom):
+        lat_rad = math.radians(lat_deg)
+        n = 2.0 ** zoom
+        xtile = int((lon_deg + 180.0) / 360.0 * n)
+        ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
+        return (xtile, ytile)
+
+    def num2deg(xtile, ytile, zoom):
+        n = 2.0 ** zoom
+        lon_deg = xtile / n * 360.0 - 180.0
+        lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
+        lat_deg = math.degrees(lat_rad)
+        return (lat_deg, lon_deg)
+
+    startTile = deg2num(top_left[0], top_left[1], zoom)
+    endTile = deg2num(bottom_right[0], bottom_right[1], zoom)
+
+    for xtile in range(startTile[0], endTile[0]):
+        for ytile in range(startTile[1], endTile[1]):
+            #nw = num2deg(xtile, ytile, zoom)
+            ne = num2deg(xtile + 1, ytile, zoom)
+            #se = num2deg(xtile + 1, ytile + 1, zoom)
+            sw = num2deg(xtile, ytile + 1, zoom)
+
+            url = 'http://unlock.edina.ac.uk/ws/search?format=json&minx={0}&miny={1}&maxx={2}&maxy={3}&featureType=Populated%20Place*&childTypes=true&buffer=100'.format(sw[1], sw[0], ne[1], ne[0])
+            print url
+            result = requests.get(url).json()
+            print result['totalResults']
+            if int(result['totalResults']) > 0:
+                print result
+
+@task
 def install_plugins(target='local', cordova="True"):
     """
     Set up project plugins
