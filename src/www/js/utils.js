@@ -49,6 +49,20 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
+// Hack to get rid of whitespace in e.g textarea that is added during generate_html step
+jQuery.fn.cleanWhitespace = function() {
+    this.contents().filter(function() {
+        if (this.nodeType != 3) {
+            $(this).htmlClean();
+            return false;
+        }
+        else {
+            this.textContent = $.trim(this.textContent);
+            return !/\S/.test(this.nodeValue);
+        }
+    }).remove();
+    return this;
+}
 
 define(['settings', 'config'], function(settings, config){
 

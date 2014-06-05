@@ -17,8 +17,7 @@
     <textarea name="form-textarea-1"
               id="form-textarea-1"
               placeholder=""
-              required>
-    </textarea>
+              required></textarea>
   </div>
 
   <div id="text-buttons" class="fieldcontain ui-grid-a">
