@@ -511,7 +511,7 @@ var _base = {
      * @return Check if supplied annotation is a track or not
      */
     isTrack: function(annotation) {
-        return annotation.trackId === undefined;
+        return annotation.record.trackId === undefined;
     },
     
     /**
@@ -555,7 +555,7 @@ var _base = {
         }
         var filteredRecords = {};
         $.each(this.getSavedRecords(), function(objId, annotation){
-            var trackId = annotation['trackId'];
+            var trackId = annotation.record.trackId;
             if(trackId !== undefined){ 
                 // convert id to String in case it was passed in as a number
                 if (trackId === id.toString()) {
@@ -728,7 +728,7 @@ var _base = {
         // text annotation with no pre-existing trackId 
         if (annotation.record.editor === 'text.edtr') {
 
-            if (annotation.trackId === undefined) {
+            if (annotation.record.trackId === undefined) {
                 $.event.trigger({
                     type:    "newTextCreated",
                     id: id,
