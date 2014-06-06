@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # An example hook script to verify what is about to be committed.
 # Called by "git commit" with no arguments.  The hook should
@@ -46,8 +46,12 @@ then
 	exit 1
 fi
 
+# enforce styles
+SYEXP=(
+    "}(\s+)?else" "Ensure else statements are on a new line"
+)
+
 FILES=$(git diff --name-only HEAD | grep ".js$")
-echo ${FILES}
 for file in ${FILES}; do
     if [ $file != 'src/templates/config.js' ] ; then
         `jshint $file 1>&2`
@@ -55,5 +59,19 @@ for file in ${FILES}; do
             echo "\nFix the above jshint problems before committing"
             exit 1
         fi
+
+        for i in ${!SYEXP[*]}
+        do
+            if [ $((i % 2)) -eq 0 ] ; then
+                exp=${SYEXP[$i]}
+                `grep -n -E $exp $file 1>&2`
+                if [ $? -eq 0 ] ; then
+                    let "next = $i + 1"
+                    echo  $file: ${SYEXP[$next]}
+                    echo $'\nFix the above style problems before committing'
+                    exit 1
+                fi
+            fi
+        done
     fi
 done
