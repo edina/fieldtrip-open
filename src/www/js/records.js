@@ -243,15 +243,23 @@ var _base = {
 
         if(annotation !== undefined){
             // TODO: what about assets?
-            if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
+            if(this.isTrack(annotation)){
                 if(typeof(annotation.file) !== 'undefined'){
                     utils.deleteFile(
-                        annotation.file.substr(annotation.file.lastIndexOf('/') + 1),
-                        assetsDir,
-                        function(){
-                            console.debug("GPX file deleted: " + annotation.file);
-                        });
+                            annotation.file.substr(annotation.file.lastIndexOf('/') + 1),
+                            assetsDir,
+                            function(){
+                                console.debug("GPX file deleted: " + annotation.file);
+                            });
                 }
+                // Remove annotations associated with track
+                var associatedRecords = this.getSavedRecordsForTrack(annotation);
+                var records = this;
+                $.each(associatedRecords, function(key, value){
+                    records.deleteAnnotation(records.getAnnotationIdFromSavedRecords(value));
+                    // Refresh saved annotations as recursive call above means it is out of date
+                    annotations = records.getSavedRecords();
+                });
             }
 
             // remove annotation from hash
