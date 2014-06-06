@@ -97,9 +97,7 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
                     $.each(fieldtrip, function(name){
                         require(["plugins/" + name + "/js/tests.js"], function(tests){
                             console.debug(name + " tests loaded");
-                            console.log(tests);
                             if(tests && tests.sys){
-                                console.log(tests.sys);
                                 tests.sys.run();
                             }
                         });

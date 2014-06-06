@@ -163,6 +163,9 @@ return {
     clickAndTest: function(options){
         clickAndTest(options);
     },
+    changePageByFile: function(page, target, cb){
+        changePageByFile(page, target, cb);
+    },
     changePageCheck: function(id, cb){
         changePageCheck(id, cb);
     },
