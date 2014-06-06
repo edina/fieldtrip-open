@@ -27,7 +27,7 @@ sudo easy_install pip
 ### [Fabric](http://docs.fabfile.org) and related dependencies:
 
 ```
-sudo pip install fabric jinja2 beautifulsoup4 html5lib
+sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
 ```
 
 ### nodejs (must be installed locally)
