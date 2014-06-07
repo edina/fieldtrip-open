@@ -1,52 +1,67 @@
-The following outlines the steps for getting Fieldtrip Open development environment setup on a *nix machine.
+# Dependencies
 
-### [html5lib](https://pypi.python.org/pypi/html5lib) dependencies
+### Python and NodeJS
 
-#### apt
+Use your favorite package manager to install:
 
+- [Python 2.7](https://www.python.org/download/releases/2.7)
+- [Pip](https://pypi.python.org/pypi/pip)
+- [nodejs](http://nodejs.org/)
+- [Apache Ant](http://ant.apache.org/) (for android only)
+- [wget](https://www.gnu.org/software/wget/) (OSX)
+
+#### Linux
+
+##### Ubuntu / Debian
 ```
-sudo apt-get install python-setuptools python2.7-dev wget
-```
-
-#### RPM
-
-TODO
-
-#### MAC (with homebrew)
-
-```
-sudo brew install wget
-```
-
-### [Pip](https://pypi.python.org/pypi/pip)
-
-```
-sudo easy_install pip
+sudo apt-get install python-setuptools python2.7-dev nodejs ant
 ```
 
-### [Fabric](http://docs.fabfile.org) and related dependencies:
+#### OSX
+Add OSX and iOS sections to the dependencies doc
+
+##### Macports
 
 ```
-sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
+sudo port install apache-ant python27 py27-pip nodejs wget
 ```
 
-### nodejs (must be installed locally)
+##### Brew
+Add OSX and iOS sections to the dependencies doc
+```
+brew install ant python node wget
+```
+
+### Nodejs (preferably installed locally)
 
 [nodejs install](https://github.com/joyent/node/wiki/installation)
 
+### Fabric
+
+Install some libraries used for the deploy:
+
 ```
-npm install -g cordova bower
+sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
+
 ```
 
-### Android SDK
+## Target Platforms
+
+### Android
+Add OSX and iOS sections to the dependencies doc
 
 [Android install](http://developer.android.com/sdk/index.html)
 
 Ensure the sdk tools and platforms-tools directories are in your path.
 
-### IOS
+### iOS
 
-TODO
+- [XCode](https://developer.apple.com/xcode/)
+- Command-line utilities for the iOS Simulator.
+
+  ```
+  sudo npm install -g ios-sim ios-deploy
+  ```
 
 ### Desktop
 
