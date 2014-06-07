@@ -596,7 +596,7 @@ def install_project(platform='android',
 
         local('rm -rf {0}'.format(runtime))
     else:
-        os.mkdir(runtime)
+        os.makedirs(runtime)
 
     # create project repo
     if not os.path.exists('project'):
