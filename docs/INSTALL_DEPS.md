@@ -40,7 +40,6 @@ Install some libraries used for the deploy:
 
 ```
 sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
-
 ```
 
 ## Target Platforms
