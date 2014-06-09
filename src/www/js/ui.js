@@ -374,9 +374,34 @@ var _ui = {
                 event.preventDefault();
 
                 utils.hideKeyboard();
+                
+                
+                 var success = function (annotation){
+                    map.getLocation(function(position){
+
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+                        map.pointToInternal(position.coords);
+
+                        // save record and refresh map
+                        var geofenceId = records.saveAnnotationWithCoords(
+                            annotation,
+                            position.coords
+                        );
+                        
+
+                       // geofenceRecord( geofenceId, {"lat": latitude,  "lon":longitude});
+          
+
+                        map.refreshRecords(annotation);
+                        utils.gotoMapPage();
+                    });
+
+                }
 
                 // process the form
-                this.currentAnnotation = records.processAnnotation(type);
+                this.currentAnnotation = records.processAnnotation(type, success);
+
             }, this));
 
             // if annotation in progress repopulate fields

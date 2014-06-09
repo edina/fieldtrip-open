@@ -702,11 +702,7 @@ var _base = {
         }, this));
 
         if(valid){
-            // nasty I know: but changing page in a setTimeout allows
-            // time for the keyboard to close
-            setTimeout(function(){
-                $.mobile.changePage('annotate-preview.html');
-            }, 300);
+            successCallBack(annotation);
         }
         else{
             utils.inform('Required field not populated');
