@@ -1,32 +1,60 @@
-### [Pip](https://pypi.python.org/pypi/pip), [html5lib](https://pypi.python.org/pypi/html5lib) dependency and [Apache Ant](http://ant.apache.org/) (android only)
+# Dependencies
 
-#### apt
+### Python and NodeJS
+
+Use your favorite package manager to install:
+
+- [Python 2.7](https://www.python.org/download/releases/2.7)
+- [Pip](https://pypi.python.org/pypi/pip)
+- [nodejs](http://nodejs.org/)
+- [npm](https://www.npmjs.org/)
+- [Apache Ant](http://ant.apache.org/) (for android deploy)
+- [wget](https://www.gnu.org/software/wget/) (OSX)
+
+#### Linux
+
+##### Ubuntu / Debian
+```
+sudo apt-get install python-setuptools python2.7-dev nodejs npm
+sudo apt-get ant
+```
+
+#### OSX
+
+##### Macports
 
 ```
-sudo apt-get install python-setuptools python2.7-dev ant
+sudo port install python27 py27-pip nodejs npm
+sudo port install apache-ant
+sudo port install wget
 ```
 
-#### MAC
+##### Brew
+```
+brew install python node
+brew install ant
+brew install wget
+```
 
-TODO
+### Apache Cordoba
+
+Install Apache Cordova
 
 ```
-sudo easy_install pip
+sudo npm install -g cordova
 ```
 
-### [Fabric](http://docs.fabfile.org) and related dependencies:
+### Fabric
+
+Install some libraries used for the deploy:
 
 ```
 sudo pip install fabric jinja2 beautifulsoup4 html5lib
+sudo npm install -g bower
 ```
 
-### nodejs (must be installed locally)
+## Target Platforms
 
-[nodejs install](https://github.com/joyent/node/wiki/installation)
-
-```
-npm install -g cordova bower
-```
 
 ### Android
 
@@ -34,9 +62,14 @@ npm install -g cordova bower
 
 Ensure the sdk/tools directory is in your path.
 
-### IOS
+### iOS
 
-TODO
+- [XCode](https://developer.apple.com/xcode/)
+- Command-line utilities for the iOS Simulator.
+
+  ```
+  sudo npm install -g ios-sim ios-deploy
+  ```
 
 ### Desktop
 
