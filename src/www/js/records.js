@@ -580,7 +580,7 @@ var _base = {
      * Process annotation/record from an HTML5 form.
      * @param type Form type - image, text, audio or custom
      */
-    processAnnotation: function(type){
+    processAnnotation: function(type, successCallBack){
         var valid = true;
         var annotation = {
             "record": {
