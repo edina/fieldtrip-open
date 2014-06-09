@@ -6,7 +6,6 @@ Use your favorite package manager to install:
 
 - [Python 2.7](https://www.python.org/download/releases/2.7)
 - [Pip](https://pypi.python.org/pypi/pip)
-- [nodejs](http://nodejs.org/)
 - [Apache Ant](http://ant.apache.org/) (for android only)
 - [wget](https://www.gnu.org/software/wget/) (OSX)
 
