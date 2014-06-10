@@ -81,6 +81,32 @@ npm_commands = {
 config = None
 
 @task
+def check_plugins():
+    """
+    Check if newer versions of cordova plugin are available.
+    """
+    _check_command('plugman')
+
+    json_file = os.path.join(_get_source()[1], 'theme', 'project.json')
+    if os.path.exists(json_file):
+        plugins = json.loads(open(json_file).read())['plugins']['cordova']
+        for plugin in plugins:
+            name, version = plugin.split('@')
+            out = local('plugman info {0}'.format(name), capture=True)
+            lines = out.split('\n')
+            for line in lines:
+                info = line.split(':')
+                if info[0] == 'version':
+                    latest_version = info[1].strip()
+            if version != latest_version:
+                print '*** {0}@{1} newer plugin {2} available ***'.format(name, version, latest_version)
+            else:
+                print '{0} up to date'.format(name)
+    else:
+        print 'Where is the plugins file?: {0}'.format(json_file)
+        exit(-1)
+
+@task
 def clean():
     """
     Tidy up app. This should be run before switching projects.
@@ -138,10 +164,7 @@ def deploy_android():
     Deploy to android device connected to machine
     """
 
-    _check_command('ant')
-    _check_command('adb')
-    _check_command('cordova')
-    _check_command('android')
+    _check_commands(['ant', 'adb', 'cordova', 'android'])
 
     # generate html for android
     generate_html(cordova=True)
