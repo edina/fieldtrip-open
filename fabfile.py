@@ -616,7 +616,8 @@ def install_project(platform='android',
     # do some checks on the project
     theme_src = os.sep.join((proj_home, 'theme'))
     if not os.path.exists(os.sep.join((theme_src, 'project.json'))):
-        print "\n*** WARNING: No project.json found in project"
+        print "\n*** ERROR: No project.json found in project"
+        exit(-1)
     theme_css = os.sep.join((theme_src, 'css'))
     if not os.path.exists(os.sep.join((theme_css, 'jqm-style.css'))):
         print "\n*** WARNING: No jqm-style.css found in project: {0}".format(theme_css)
