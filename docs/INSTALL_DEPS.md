@@ -9,9 +9,9 @@ Use your favorite package manager to install:
 - [Apache Ant](http://ant.apache.org/) (for android only)
 - [wget](https://www.gnu.org/software/wget/)
 
-#### Linux
+#### GNU Linux
 
-##### Ubuntu / Debian
+##### Debian / Ubuntu
 ```
 sudo apt-get install ant python-setuptools python2.7-dev nodejs wget
 ```
@@ -72,4 +72,10 @@ To run fieldtrip on a desktop browser the runtime www directory should be served
     LogLevel info
     CustomLog /var/log/apache2/access.log combined
 </VirtualHost>
+```
+
+Ensure apache is listening on the port:
+
+```
+Listen 1234
 ```
