@@ -379,18 +379,16 @@ var _ui = {
                  var success = function (annotation){
                     map.getLocation(function(position){
 
-                        var latitude = position.coords.latitude;
-                        var longitude = position.coords.longitude;
-                        map.pointToInternal(position.coords);
+
+                        var coords = map.pointToInternal(position.coords);
+                        coords.lat = coords.latitude;
+                        coords.lon = coords.longitude;
 
                         // save record and refresh map
                         var geofenceId = records.saveAnnotationWithCoords(
                             annotation,
-                            position.coords
+                            coords
                         );
-                        
-
-                       // geofenceRecord( geofenceId, {"lat": latitude,  "lon":longitude});
           
 
                         map.refreshRecords(annotation);

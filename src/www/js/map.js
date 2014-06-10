@@ -941,22 +941,29 @@ var _this = {
     /**
      * Covert a point object to internal projection.
      * @param point A point object with external projection.
+     * @return A point object reprojected to internal projection.
      */
     pointToInternal: function(point){
+        var retValue;
         var lonLat;
         if(typeof(point.longitude) === 'undefined'){
             lonLat = this.toInternal(
                 new OpenLayers.LonLat(point.lon, point.lat));
+            retValue = {
+                'lon': lonLat.lon,
+                'lat': lonLat.lat
+            };
         }
         else{
             lonLat = this.toInternal(
                 new OpenLayers.LonLat(point.longitude, point.latitude));
-            point.longitude = lonLat.lon;
-            point.latitude = lonLat.lat;
+            retValue = {
+                'longitude': lonLat.lon,
+                'latitude': lonLat.lat
+            };
         }
 
-        point.lon = lonLat.lon;
-        point.lat = lonLat.lat;
+        return retValue;
     },
 
     /**
