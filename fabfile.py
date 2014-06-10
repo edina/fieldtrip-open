@@ -1070,6 +1070,13 @@ def _generate_config_xml():
     environ = Environment(loader=FileSystemLoader('etc'))
     config_template = environ.get_template("config.xml")
     version = versions['project']
+
+    access_urls = _config('access_urls')
+    if access_urls:
+        access_urls = access_urls.split(",")
+    else:
+        access_urls = []
+
     filedata = config_template.render(
         name=_config('name'),
         package=_config('package', section='app'),
@@ -1077,7 +1084,7 @@ def _generate_config_xml():
         version_code=version.replace(".", ""),
         author_email=_config('author_email'),
         url=_config('url'),
-        access_urls = _config('access_urls').split(","))
+        access_urls=access_urls)
     _write_data(os.sep.join((src_dir, 'www', 'config.xml')), filedata)
 
 def _get_branch_name(dir):
