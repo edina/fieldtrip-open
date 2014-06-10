@@ -6,19 +6,17 @@ Use your favorite package manager to install:
 
 - [Python 2.7](https://www.python.org/download/releases/2.7)
 - [Pip](https://pypi.python.org/pypi/pip)
-- [nodejs](http://nodejs.org/)
 - [Apache Ant](http://ant.apache.org/) (for android only)
-- [wget](https://www.gnu.org/software/wget/) (OSX)
+- [wget](https://www.gnu.org/software/wget/)
 
 #### Linux
 
 ##### Ubuntu / Debian
 ```
-sudo apt-get install python-setuptools python2.7-dev nodejs ant
+sudo apt-get install ant python-setuptools python2.7-dev nodejs wget
 ```
 
 #### OSX
-Add OSX and iOS sections to the dependencies doc
 
 ##### Macports
 
@@ -42,7 +40,6 @@ Install some libraries used for the deploy:
 
 ```
 sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
-
 ```
 
 ## Target Platforms
