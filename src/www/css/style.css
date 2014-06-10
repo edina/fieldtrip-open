@@ -132,6 +132,7 @@ body .ui-loader{
     left: 0;
     right: 0;
     color: black;
+    background-color: white;
     opacity: 1;
     min-width: 50%;
     min-height: 20%;
@@ -222,7 +223,6 @@ body .ui-loader-textonly{
     position: relative;
     left: 2%;
     background: white;
-    color: #2c3f62;
     min-height: 96%;
     height: 96%;
     width: 96%;
@@ -258,7 +258,7 @@ body .ui-loader-textonly{
 .non-map-content{
     padding: 1em;
     background: white;
-    color: #2c3f62;
+    color: black;
 }
 
 .nav-icons div{

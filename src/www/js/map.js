@@ -84,7 +84,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(// jshint ign
         var applyDefaults = $.proxy(function(){
             if(_this.isBaseLayerTMS()){
                 _this.baseMapFullURL = _this.getTMSURL();
-            }else{
+            }
+            else{
                 _this.baseMapFullURL = utils.getMapServerUrl();
             }
             tileMapCapabilities = {'tileSet': []};
@@ -116,7 +117,8 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(// jshint ign
                             // store units per pixel of each zoom level
                             tileMapCapabilities.tileSet[i] = $(element).attr('units-per-pixel');
                         }, this));
-                    }else{
+                    }
+                    else{
                         console.debug("Capabilities does not contain tileset details. Use defaults.");
                         applyDefaults();
                     }
@@ -894,7 +896,8 @@ var _this = {
     },
 
     /**
-     * TODO
+     * Remove layer from map.
+     * @param layer An openlayers layer.
      */
     removeLayer: function(layer){
         this.map.removeLayer(layer);
