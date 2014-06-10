@@ -1,52 +1,64 @@
-The following outlines the steps for getting Fieldtrip Open development environment setup on a *nix machine.
+# Dependencies
 
-### [html5lib](https://pypi.python.org/pypi/html5lib) dependencies
+### Python and NodeJS
 
-#### apt
+Use your favorite package manager to install:
 
+- [Python 2.7](https://www.python.org/download/releases/2.7)
+- [Pip](https://pypi.python.org/pypi/pip)
+- [Apache Ant](http://ant.apache.org/) (for android only)
+- [wget](https://www.gnu.org/software/wget/)
+
+#### Linux
+
+##### Ubuntu / Debian
 ```
-sudo apt-get install python-setuptools python2.7-dev wget
-```
-
-#### RPM
-
-TODO
-
-#### MAC (with homebrew)
-
-```
-sudo brew install wget
+sudo apt-get install ant python-setuptools python2.7-dev nodejs wget
 ```
 
-### [Pip](https://pypi.python.org/pypi/pip)
+#### OSX
+
+##### Macports
 
 ```
-sudo easy_install pip
+sudo port install apache-ant python27 py27-pip nodejs wget
 ```
 
-### [Fabric](http://docs.fabfile.org) and related dependencies:
+##### Brew
+Add OSX and iOS sections to the dependencies doc
+```
+brew install ant python node wget
+```
+
+### Nodejs (preferably installed locally)
+
+[nodejs install](https://github.com/joyent/node/wiki/installation)
+
+### Fabric
+
+Install some libraries used for the deploy:
 
 ```
 sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
 ```
 
-### nodejs (must be installed locally)
+## Target Platforms
 
-[nodejs install](https://github.com/joyent/node/wiki/installation)
-
-```
-npm install -g cordova bower
-```
-
-### Android SDK
+### Android
+Add OSX and iOS sections to the dependencies doc
 
 [Android install](http://developer.android.com/sdk/index.html)
 
 Ensure the sdk tools and platforms-tools directories are in your path.
 
-### IOS
+### iOS
 
-TODO
+- [XCode](https://developer.apple.com/xcode/)
+- Command-line utilities for the iOS Simulator.
+
+  ```
+  sudo npm install -g ios-sim ios-deploy
+  ```
 
 ### Desktop
 
