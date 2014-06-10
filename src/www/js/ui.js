@@ -367,6 +367,8 @@ var _ui = {
 
                 }
             });
+            
+            
 
             // submit form
             $('#annotate-form').submit($.proxy(function(event){
@@ -375,8 +377,9 @@ var _ui = {
 
                 utils.hideKeyboard();
                 
+                var that = this;
                 
-                 var success = function (annotation){
+                var success = function (annotation){
                     map.getLocation(function(position){
 
 
@@ -392,6 +395,7 @@ var _ui = {
           
 
                         map.refreshRecords(annotation);
+                        that.currentAnnotation = undefined;
                         utils.gotoMapPage();
                     });
 
