@@ -411,6 +411,7 @@ var _this = {
             'locate',
             {
                 style: locateLayerStyle,
+                renderers: ["Canvas"]
             }
         );
 
