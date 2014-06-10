@@ -141,6 +141,7 @@ fab generate_html
 ### Examples
 
 * [Basic Example](https://github.com/edina/fieldtrip-example)
-* [COBWEB](https://github.com/edina/fieldtrip-cobweb)
+* [Botani Tours](https://github.com/edina/botanitours)
+* [COBWEB](https://github.com/cobweb-eu/fieldtrip-cobweb)
 * [Fieldtrip GB](https://github.com/edina/fieldtrip-gb)
 * [Spatial Memories](https://github.com/edina/spatial-memories)
