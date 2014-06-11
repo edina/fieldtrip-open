@@ -16,7 +16,8 @@ runtime_dir=ftex
 
 ; details for config.xml
 author_email=example@ed.ac.uk
-access_urls=
+access_urls=http://a.tile.openstreetmap.org,http://b.tile.openstreetmap.org,http://c.tile.openstreetmap.org
+
 version=1.0.0.0
 
 ;project URL
