@@ -48,7 +48,7 @@ fi
 
 # enforce styles
 SYEXP=(
-    "}(\s+)?else" "Ensure else statements are on a new line"
+    "}(\s+)?else(?!.*jshint ignore:line)" "Ensure else statements are on a new line"
 )
 
 FILES=$(git diff --name-only HEAD | grep ".js$")
@@ -56,7 +56,7 @@ for file in ${FILES}; do
     if [ $file != 'src/templates/config.js' ] ; then
         `jshint $file 1>&2`
         if [ $? -ne 0 ] ; then
-            echo "\nFix the above jshint problems before committing"
+            echo $'\nFix the above jshint problems before committing'
             exit 1
         fi
 
@@ -64,7 +64,7 @@ for file in ${FILES}; do
         do
             if [ $((i % 2)) -eq 0 ] ; then
                 exp=${SYEXP[$i]}
-                `grep -n -E $exp $file 1>&2`
+                `grep -n -P '$exp' $file 1>&2`
                 if [ $? -eq 0 ] ; then
                     let "next = $i + 1"
                     echo  $file: ${SYEXP[$next]}
