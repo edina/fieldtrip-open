@@ -33,8 +33,33 @@ DAMAGE.
 
 /* global asyncTest, equal, ok, start */
 
-define(['QUnit', 'map'], function(QUnit, map) {
+define(['QUnit', 'map', 'records'], function(QUnit, map, records){
     var INTERVAL_POLL = 200;
+
+    var addRecord = function(description, cb){
+        goToTextRecordPage(function(){
+            // save annotation
+            $('#form-textarea-1').val(description);
+            $('input[value=Save]').click();
+
+            changePageCheck('#annotate-preview-page', function(){
+                intervalTest({
+                    'id': 'annotatecoords',
+                    'test': function(){
+                        return typeof(map.getAnnotationCoords(false)) !== 'undefined';
+                    },
+                    'cb': function(){
+                        $('input[value=Save]').click();
+                        changePageCheck('#map-page', function(){
+                            cb();
+                        });
+                    },
+                    'attempts': 100
+                });
+            });
+        });
+    };
+
     var changePageCheck = function(id, cb){
         var count = 0;
         var timer = setInterval(function() {
@@ -75,12 +100,36 @@ define(['QUnit', 'map'], function(QUnit, map) {
         }, delay);
     };
 
+    var complete = function(){
+        goHome(function(){
+            var id = '#test-page';
+            $.mobile.changePage(id);
+            changePageCheck(id, function(){
+                start();
+            });
+        });
+    };
+
     var goHome = function(cb){
-        changePageByFile('index.html', '#home-page', cb);
+        changePageByFile('index.html', '#home-page', function(){
+            cb();
+        });
     };
 
     var goToMap = function(cb){
         changePageByFile('map.html', '#map-page', cb);
+    };
+
+    var goToTextRecordPage = function(cb){
+        goHome(function(){
+            $('a.annotate-text-form').mousedown();
+
+            changePageCheck('#annotate-page', function(){
+                setTimeout(function(){
+                    cb();
+                }, 1000); // allow annotate page time to initialise
+            });
+        });
     };
 
     var intervalTest = function(options){
@@ -97,13 +146,13 @@ define(['QUnit', 'map'], function(QUnit, map) {
 
         var timer = setInterval(function() {
             if(options.test()){
-                ok(true, 'Element ' + options.id + ' found');
+                //ok(true, 'Element ' + options.id + ' found');
                 clearInterval(timer);
                 options.cb(true);
             }
             else{
                 if(count > attempts){
-                    ok(false, 'Timeout for ' + options.id);
+                    //ok(false, 'Timeout for ' + options.id);
                     clearInterval(timer);
                     options.cb(false);
                 }
@@ -139,27 +188,38 @@ define(['QUnit', 'map'], function(QUnit, map) {
                     if(lonlat.lon !== LON && lonlat.lat !== LAT){
                         ok(true, 'Geo Position located');
                         clearInterval(timer);
-                        start();
+                        complete();
                     }
                 }, INTERVAL_POLL);
             });
         },
-        'test two': function(){
-            ok(true, 'Geo Position located');
-            start();
+        'Save Text Record': function(){
+            var count = records.getSavedRecordsCount();
+            addRecord('test text annotation description', function(){
+                var newCount = records.getSavedRecordsCount();
+                // check local annotations count is incremented
+                equal(newCount, count + 1, 'New record has been created');
+                complete();
+            });
         }
     };
 
-    var run = function() {
+    var run = function(toRun) {
         module("System Tests");
         $.each(tests, function(name, test){
-            asyncTest(name, test);
+            // if no filter is defined always run test
+            if(toRun === undefined || name === toRun){
+                asyncTest(name, test);
+            }
         });
     };
 
 return {
     tests: tests,
     run: run,
+    complete: function(){
+        complete();
+    },
     clickAndTest: function(options){
         clickAndTest(options);
     },
@@ -169,18 +229,21 @@ return {
     changePageCheck: function(id, cb){
         changePageCheck(id, cb);
     },
+    goHome: function(cb){
+        goHome(cb);
+    },
     goToMap: function(cb){
         goToMap(cb);
     },
-    goToTestPage: function(cb){
-        goHome(function(){
-            var id = '#test-page';
-            $.mobile.changePage(id);
-            changePageCheck(id, cb);
-        });
+    goToRecordsPage: function(cb){
+        changePageByFile('saved-annotations.html', '#saved-annotations-page', cb);
     },
     intervalTest: function(options){
         intervalTest(options);
+    },
+    runSingleTest: function(name){
+        //intervalTest(options);
+        run(name);
     },
 
 };

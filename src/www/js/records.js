@@ -516,6 +516,18 @@ var _base = {
     },
 
     /**
+     * @return Number of locally stored records/annotations.
+     */
+    getSavedRecordsCount: function(){
+        var i = 0;
+        $.each(this.getSavedRecords(), function(){
+            i++;
+        });
+
+        return i;
+    },
+
+    /**
      * Process annotation/record from an HTML5 form.
      * @param type Form type - image, text, audio or custom
      */

@@ -50,10 +50,11 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
     };
 
    var cleanTestPage = function(){
-        // this is deprecated but its not clear sure how to do this otherwise
-        QUnit.reset();
-        $('#qunit-tests').empty();
-        $('#qunit-testresult').empty();
+       // this is deprecated but its not clear sure how to do this otherwise
+       QUnit.reset();
+       $('#qunit-tests').empty();
+       $('#qunit-testresult').empty();
+       $('#qunit-test-list').empty();
     };
 
     var isUnitTest = function(){
@@ -70,22 +71,40 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
 
             $.each(systests.tests, function(name, test){
                 var method = 'jings';
-                //$('#qunit-tests-list').append('<li data-autodividers="true">' + name + '</li>')
-                //$('#qunit-tests-list').append('<li><a href="#" class="qunit-single-test" test="' + name + '">' + name + '</a></li>');
+                $('#qunit-tests-list').append('<li><a href="#" class="qunit-single-test" test="' + name + '">' + name + '</a></li>');
+            });
 
+            // get plugin tests
+            $.getJSON('theme/project.json', function(f){
+                var fieldtrip = f.plugins.fieldtrip;
+                var noOfPlugins = Object.keys(fieldtrip).length;
+
+                if(noOfPlugins > 0){
+                    $.each(fieldtrip, function(name){
+                        require(["plugins/" + name + "/js/tests.js"], function(tests){
+                            ++count;
+                            $('#qunit-tests-list').append('<li><a href="#" class="qunit-single-test" test="' + name + '">' + name + '</a></li>');
+
+                            if(noOfPlugins === count){
+                                $('#qunit-tests-list').listview('refresh');
+                            }
+                        });
+                    });
+                }
+                else{
+                    $('#qunit-tests-list').listview('refresh');
+                }
             });
         }
-
-
-        $('#qunit-tests-list').listview('refresh');
 
         $('#test-page-runall').unbind();
         $('#test-page-runall').on('click', function(){
             cleanTestPage();
             sysTestsRunning = true;
-            //
+
             QUnit.init();
             QUnit.start();
+
             systests.run();
 
             // run plugin tests
@@ -104,7 +123,6 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
                     });
                 }
             });
-
         });
 
         $('#test-page-restart').unbind();
@@ -115,8 +133,16 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
 
         $('.qunit-single-test').unbind();
         $('.qunit-single-test').on('click', function(){
-            // runSingleTest($(this).attr('test'),
-            //               $(this).attr('method'));
+            var name = $(this).attr('test');
+
+            cleanTestPage();
+            sysTestsRunning = true;
+
+            QUnit.init();
+            QUnit.start();
+
+            module("System Tests");
+            systests.runSingleTest(name);
         });
     };
 
@@ -162,11 +188,10 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
         }
     };
 
+    var count = 0;
     QUnit.done(function(e){
         if(!isUnitTest()){
-            systests.goToTestPage(function(){
-                sysTestsRunning = false;
-            });
+            //
         }
     });
 

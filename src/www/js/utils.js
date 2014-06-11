@@ -254,12 +254,17 @@ var _base = {
         return documentBase;
     },
 
+    /**
+     * @param dir Directory on the device.
+     * @return The full path of the directory.
+     */
     getFilePath: function(dir){
-      if(config.noCdvFileProtocol){
-        return dir.toNativeURL();
-      } else {
-        return dir.toURL();
-      }
+        if(config.noCdvFileProtocol){
+            return dir.toNativeURL();
+        }
+        else {
+            return dir.toURL();
+        }
     },
 
     /**
@@ -497,8 +502,8 @@ var _base = {
     isPrivilegedUser: function(){
         var isPrivileged = false;
         if(isMobileApp){
-            if(config.priviligedUsers &&
-               $.inArray(device.uuid, config.priviligedUsers.split(',') !== -1)){
+            if(config.priviligedusers &&
+               $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)){
                 isPrivileged = true;
             }
         }
