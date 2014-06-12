@@ -7,7 +7,7 @@
            id="form-text-1"
            type="text"
            value="Audio"
-           required="true"
+           required="required"
            maxlength="40"/>
   </div>
 
@@ -29,7 +29,7 @@
              accept="audio/*"
              capture="microphone"
              value=""
-             required="true"
+             required="required"
              class="audio_capture"/>
     </div>
   </div>

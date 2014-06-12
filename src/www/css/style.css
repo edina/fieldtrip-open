@@ -509,16 +509,10 @@ div.record-extra > div > img {
 
 #annotate-form{
     position: relative;
-    padding: 0.5em 2em 0 2em;
+    padding: 1.5em 2em 0 2em;
     max-height: 92%;
     overflow: auto;
 }
-
-/* #annotate-gps-form{ */
-/*     padding: 2em; */
-/* } */
-
-
 
 .button-wrapper p{
     font-size: 12px !important;

@@ -5,7 +5,7 @@
     <input name="form-text-1"
            id="form-text-1"
            type="text"
-           required="true"
+           required="required"
            value="Image"
            maxlength="40"/>
   </div>
@@ -24,11 +24,11 @@
              accept="image/png"
              capture="camera"
              value=""
-             required="true"
+             required="required"
              class="photo_capture"/>
     </div>
-  </div> 
-   
+  </div>
+
 
   <div id="image-buttons" class="fieldcontain ui-grid-a">
     <div class="ui-block-a">

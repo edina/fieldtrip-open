@@ -132,11 +132,11 @@ var _base = {
                     var btn = '<div id="annotate-image-' + index + '" class="image-chooser ui-grid-a">\
 <div class="ui-block-a">\
 <a class="annotate-image-take" href="#">\
-<img src="css/images/images.png"></a><p>Camera</p>\
+<img src="css/images/images.png" alt="Take Photo"></a><p>Camera</p>\
 </div>\
 <div class="ui-block-b">\
 <a class="annotate-image-get" href="#">\
-<img src="css/images/gallery.png"></a><p>Gallery</p>\
+<img src="css/images/gallery.png" alt="Choose Photo"></a><p>Gallery</p>\
 </div></div>';
 
                     $(input).parent().append(btn + that.getImageSizeControl());
@@ -144,7 +144,7 @@ var _base = {
                 $.each($('input[capture=microphone]'), function(index, input){
                     var btn = '<div id="annotate-audio-' + index + '">\
 <a class="annotate-audio" href="#">\
-<img src="css/images/audio.png"></a><p>Start</p>\
+<img src="css/images/audio.png" alt="Take Audio"></a><p>Start</p>\
 </div>';
 
                     $(input).parent().append(btn);

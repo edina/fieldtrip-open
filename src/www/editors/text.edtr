@@ -6,7 +6,7 @@
     <input name="form-text-1"
            id="form-text-1"
            type="text"
-           required="true"
+           required="required"
            value="Text"
            maxlength="40"/>
   </div>
