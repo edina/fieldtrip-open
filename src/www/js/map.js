@@ -768,6 +768,20 @@ var _this = {
                                        options.updateAnnotateLayer,
                                        dontHideLoadingDialog);
             }
+            
+            //retry if options has interval
+            var that = this;
+            
+            console.log('Retrying');
+            if(options.interval > 0){
+                setTimeout(function(){
+                    console.log(options);
+                    
+                    that.geoLocate(options);
+
+                }, 5000);
+            }
+            
         }, this);
 
         // clear watch if already defined
