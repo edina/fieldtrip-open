@@ -97,6 +97,19 @@ define(['utils'], function(utils){
             console.debug("Capture error is undefined. Assume user cancelled.");
         }
     };
+    
+    /**
+    *@param error Cordova error. If user cancels this will be undefined or CaptureError.CAPTURE_NO_MEDIA_FILES
+    */
+    var captureAudioError = function(error) {
+       
+        console.log("error code " + error);
+        if(error !== undefined && error.code === CaptureError.CAPTURE_NO_MEDIA_FILES){
+            console.debug('canceled audio recording');
+        } else {
+            captureError(error);
+        }
+    }
 
 var _base = {
     IMAGE_UPLOAD_SIZE: "imageUploadSize",
@@ -824,7 +837,7 @@ var _base = {
                     window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, testTemp, captureError);
                 
                 },
-                captureError,
+                captureAudioError,
                 {limit: 1}
             );
         }
