@@ -52,6 +52,9 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
+
+    var locations;
+
     if(mapSettings.baseLayer === 'osm'){
         INTERNAL_PROJECTION = new OpenLayers.Projection('EPSG:900913')
         baseLayer = new OpenLayers.Layer.OSM();
@@ -152,16 +155,16 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
-        
+
         if (layer.getVisibility())
         {
          addAltTextToFeatureMarkers(features) ; // markers only available after features added to layer
         }
     };
 
-    
-    
-    
+
+
+
     /**
      * Display track annotations on speficied layer.
      * @param layer The layer to use.
@@ -189,16 +192,16 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
-      
-      
+
+
         if (layer.getVisibility())
         {
             addAltTextToFeatureMarkers(features) ;
-            
+
         }
-    
+
     };
-    
+
     /**
      * Display annotations for specified track on speficied layer.
      * @param layer The layer to use.
@@ -228,39 +231,39 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
         });
 
         layer.addFeatures(features);
-        
+
         if (layer.getVisibility())
         {
           addAltTextToFeatureMarkers(features) ; // markers only available after features added to layer
         }
-        
-        
+
+
     };
-    
+
     var addAltTextToFeatureMarkers = function(features)
     {
          console.debug("features:" + features) ;
         utils.inform("test message", 1000) ;
         $.each(features, function(index, feature){
-                
+
                 var featureMarkerElement = document.getElementById(feature.geometry.id) ;
                  // set alt tag for the marker
                  var record = records.getSavedRecord(feature.attributes.id) ;
                  if (record !== undefined && record !== null) {
-                    
-                 
+
+
                    var name =  record.record.name ;
                    var description = record.record.fields[0].val ;
                    var altText = feature.attributes.type ;
                    if (description != undefined && description.length > 4 && altText !== "track")
                    {
-                    
+
                       altText = altText + " " + description ;
                    }
-                                 
+
                    if (featureMarkerElement !== null && featureMarkerElement !== undefined)
                    {
-                      
+
                       featureMarkerElement.setAttribute("alt", altText);
                       featureMarkerElement.setAttribute("aria-label", altText);
                       featureMarkerElement.setAttribute("role", "button");
@@ -272,11 +275,11 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                           featureMarkerElement.setAttribute("tabindex", index + 2);
                       }
                    }
-                    
+
                  }
-                
+
             }) ;
-        
+
     };
 
 
@@ -419,7 +422,7 @@ var _this = {
         this.map.addLayers([positionMarkerLayer,
                             recordsLayer,
                             locateLayer]);
-        
+
         locateLayer.div.setAttribute("alt" , "location marker") ;
 
         var TN = OpenLayers.Class(OpenLayers.Control.TouchNavigation, {
@@ -457,6 +460,10 @@ var _this = {
         var drag = new OpenLayers.Control.DragFeature(positionMarkerLayer);
         this.map.addControl(drag);
         drag.activate();
+
+        $.getJSON('js/ext/locations.json', function(data){
+            locations = data;
+        });
 
         this.setCentre(DEFAULT_USER_LON,
                        DEFAULT_USER_LAT,
@@ -532,7 +539,7 @@ var _this = {
      * Allow a plugin to listen for click events
      */
     addRecordClickListener: function(listener){
-       
+
           this.recordClickListeners[listener.name] = listener.callback ;
     },
 
@@ -768,20 +775,20 @@ var _this = {
                                        options.updateAnnotateLayer,
                                        dontHideLoadingDialog);
             }
-            
+
             //retry if options has interval
             var that = this;
-            
+
             console.log('Retrying');
             if(options.interval > 0){
                 setTimeout(function(){
                     console.log(options);
-                    
+
                     that.geoLocate(options);
 
                 }, 5000);
             }
-            
+
         }, this);
 
         // clear watch if already defined
@@ -905,6 +912,26 @@ var _this = {
     },
 
     /**
+     * Convert longitude to TMS tile number.
+     * @param lon in WGS84.
+     * @param zoom level.
+     * @return Tile number.
+     */
+    long2tile: function(lon, zoom){
+        return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom)));
+    },
+
+    /**
+     * Convert latitude to TMS tile number.
+     * @param lat in WGS84.
+     * @param zoom level
+     * @return Tile number.
+     */
+    lat2tile: function(lat, zoom)  {
+        return (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)));
+    },
+
+    /**
      * Receive a new user position.
      * @param position The GPS position http://docs.phonegap.com/en/2.1.0/cordova_geolocation_geolocation.md.html#Position.
      * @param updateAnnotateLayer Should annotate layer be updated after position
@@ -998,30 +1025,30 @@ var _this = {
         this.map.events.register('zoomend', obj, func);
     },
 
-    
+
     /**
      * TODO
      */
     registerTileLoad: function(obj) {
-    
-    
-     
+
+
+
         this.map.layers[0].events.register('tileloaded', this.map.layers[0], function(evt){
-                
+
                 // console.debug("tile loaded:" + evt.div) ;
                 evt.tile.imgDiv.setAttribute("role", "presentation")
                 evt.tile.imgDiv.alt="map tile" ;
-               
+
             });
-    
+
     },
-    
+
     /**
      * TODO
      */
     removeAllFeatures: function(layer){
         layer.removeAllFeatures();
-        
+
     },
 
     /**
@@ -1120,8 +1147,8 @@ var _this = {
 
         var popup =  $('#map-record-popup');
 
-        
-        
+
+
         popup.off('popupbeforeposition');
         popup.on({
             popupbeforeposition: function() {
@@ -1166,25 +1193,25 @@ var _this = {
             'click',
             '.saved-records-delete',
             $.proxy(function(event){
-                
+
                 //Close existing popup and open delete confirmation
                 popup.popup('close');
-                popup.on( "popupafterclose", function( event, ui ) {                  
+                popup.on( "popupafterclose", function( event, ui ) {
                      $('#saved-records-delete-popup').popup('open');
                 });
-               
+
             }, this)
         );
 
         // delete confirm
         $('#saved-record-delete-confirm').click($.proxy(function(event){
-           
+
             var id = sessionStorage.getItem('toBeDeleted');
             sessionStorage.removeItem('toBeDeleted');
             records.deleteAnnotation(id, true);
             this.refreshRecords();
             $('#saved-records-delete-popup').popup('close');
-           
+
         }, this));
 
     },
@@ -1219,7 +1246,7 @@ var _this = {
     {
 
         var layer = this.getRecordsLayer();
-        showAnnotationsForTrack(layer, trackId ) ;    
+        showAnnotationsForTrack(layer, trackId ) ;
     },
 
     showTrackRecords: function()
@@ -1228,7 +1255,7 @@ var _this = {
         showTrackAnnotations(layer) ;
         layer.setVisibility(true);
         layer.refresh();
-        
+
     },
 
     addAltTags: function()
@@ -1236,8 +1263,8 @@ var _this = {
         var layer = this.getRecordsLayer();
         addAltTextToFeatureMarkers(layer.features) ;
     },
-    
-    
+
+
     /**
      * Display records on map.
      */
@@ -1346,6 +1373,7 @@ var _this = {
      */
     updateLayer: function(layer, id, zoom, lonLat){
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
+
         if(lonLat === undefined || lonLat === null){
             lonLat = this.toInternal(this.userLonLat);
         }
@@ -1365,12 +1393,32 @@ var _this = {
         else {
             annotationFeature[0].move(lonLat);
         }
-     
+
+        var locationText;
+        var zoom = 18;
+        if(locations){
+            var tileStr = this.long2tile(this.userLonLat.lon, zoom) + "-" +
+                this.lat2tile(this.userLonLat.lat, zoom);
+            locationText = locations[tileStr];
+
+            if($('#map-location-text').length === 0){
+                $('#gpscapture-page').append('<div id="map-location-text"><div>');
+            }
+            $('#map-location-text').text(locationText);
+        }
+
+        if(locationText){
+            annotationFeature[0].layer.div.setAttribute("aria-label", locationText);
+        }
+        else{
+            annotationFeature[0].layer.div.setAttribute("aria-label", "location maker" + lonLat.lon + ", " + lonLat.lat) ;
+        }
+
         annotationFeature[0].layer.div.setAttribute("alt", "location maker updated") ;
-        annotationFeature[0].layer.div.setAttribute("aria-label", "location maker" + lonLat.lon + ", " + lonLat.lat) ;
         annotationFeature[0].layer.div.setAttribute("aria-live", "polite") ;
         annotationFeature[0].layer.div.setAttribute("role", "marquee") ;
-        // utils.inform("current location updated", 1000 );       
+
+        // utils.inform("current location updated", 1000 );
         layer.setVisibility(true);
         layer.redraw();
 

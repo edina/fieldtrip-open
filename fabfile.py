@@ -432,9 +432,18 @@ def generate_location_cache():
     import requests
 
     # glasgow city centre
-    top_left = (55.8717, -4.2737)
-    bottom_right = (55.8538, -4.2408)
-    zoom = 16
+    # top_left = (55.8717, -4.2737)
+    # bottom_right = (55.8538, -4.2408)
+
+    # edinburgh
+    # top_left = (55.9868, -3.2759)
+    # bottom_right = (55.8982, -3.1030)
+
+    # newington
+    top_left = (55.9432, -3.1939)
+    bottom_right = (55.9238, -3.1549)
+
+    zoom = 18
 
     def deg2num(lat_deg, lon_deg, zoom):
         lat_rad = math.radians(lat_deg)
@@ -453,19 +462,29 @@ def generate_location_cache():
     startTile = deg2num(top_left[0], top_left[1], zoom)
     endTile = deg2num(bottom_right[0], bottom_right[1], zoom)
 
+    locations = {}
+
     for xtile in range(startTile[0], endTile[0]):
         for ytile in range(startTile[1], endTile[1]):
-            #nw = num2deg(xtile, ytile, zoom)
-            ne = num2deg(xtile + 1, ytile, zoom)
-            #se = num2deg(xtile + 1, ytile + 1, zoom)
-            sw = num2deg(xtile, ytile + 1, zoom)
-
-            url = 'http://unlock.edina.ac.uk/ws/search?format=json&minx={0}&miny={1}&maxx={2}&maxy={3}&featureType=Populated%20Place*&childTypes=true&buffer=100'.format(sw[1], sw[0], ne[1], ne[0])
-            print url
+            # the following commented our code is for unlock
+            #ne = num2deg(xtile + 1, ytile, zoom)
+            #sw = num2deg(xtile, ytile + 1, zoom)
+            #url = 'http://unlock.edina.ac.uk/ws/search?format=json&minx={0}&miny={1}&maxx={2}&maxy={3}&featureType=Populated%20Place*&childTypes=true&buffer=100'.format(sw[1], sw[0], ne[1], ne[0])
+            # use osm place lookup
+            centre = num2deg(xtile + 0.5, ytile + 0.5, zoom)
+            url = 'http://nominatim.openstreetmap.org/reverse?format=xml&lat={0}&lon={1}&zoom=16&addressdetails=1&format=json'.format(centre[0], centre[1])
             result = requests.get(url).json()
-            print result['totalResults']
-            if int(result['totalResults']) > 0:
-                print result
+            address = result['address']
+
+            if 'road' in address:
+                text = '{0}, {1}'.format(address['road'], address['suburb'])
+            else:
+                text = address['suburb']
+
+            locations['{0}-{1}'.format(xtile, ytile)] = text
+
+    jfile = os.path.join(_get_source()[2], 'www', 'js', 'ext', 'locations.json')
+    _write_data(jfile, json.dumps(locations))
 
 @task
 def install_plugins(target='local', cordova="True"):
