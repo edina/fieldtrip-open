@@ -212,11 +212,33 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
                 asyncTest(name, test);
             }
         });
+
+        $.getJSON('theme/project.json', function(f){
+            var fieldtrip = f.plugins.fieldtrip;
+            var noOfPlugins = Object.keys(fieldtrip).length;
+
+            if(noOfPlugins > 0){
+                $.each(fieldtrip, function(name){
+                    require(["plugins/" + name + "/js/tests.js"], function(tests){
+                        console.debug(name + " tests loaded");
+                        if(tests && tests.sys){
+                            if(toRun === undefined || name === toRun){
+                                //asyncTest(name, test);
+                                tests.sys.run();
+                            }
+                        }
+                    });
+                });
+            }
+        });
     };
 
 return {
     tests: tests,
     run: run,
+    addRecord: function(desc, cb){
+        addRecord(desc, cb);
+    },
     complete: function(){
         complete();
     },
@@ -236,16 +258,14 @@ return {
         goToMap(cb);
     },
     goToRecordsPage: function(cb){
-        changePageByFile('saved-annotations.html', '#saved-annotations-page', cb);
+        changePageByFile('saved-records.html', '#saved-records-page', cb);
     },
     intervalTest: function(options){
         intervalTest(options);
     },
     runSingleTest: function(name){
-        //intervalTest(options);
         run(name);
     },
-
 };
 
 });

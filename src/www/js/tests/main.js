@@ -106,33 +106,16 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
             QUnit.start();
 
             systests.run();
-
-            // run plugin tests
-            $.getJSON('theme/project.json', function(f){
-                var fieldtrip = f.plugins.fieldtrip;
-                var noOfPlugins = Object.keys(fieldtrip).length;
-
-                if(noOfPlugins > 0){
-                    $.each(fieldtrip, function(name){
-                        require(["plugins/" + name + "/js/tests.js"], function(tests){
-                            console.debug(name + " tests loaded");
-                            if(tests && tests.sys){
-                                tests.sys.run();
-                            }
-                        });
-                    });
-                }
-            });
         });
 
         $('#test-page-restart').unbind();
-        $('#test-page-restart').on('click', function(){
+        $('#test-page-restart').on('vclick', function(){
             //cleanTestPage();
             //initTests(options);
         });
 
-        $('.qunit-single-test').unbind();
-        $('.qunit-single-test').on('click', function(){
+        $(document).off('vclick', '.qunit-single-test');
+        $(document).on('vclick', '.qunit-single-test', function(){
             var name = $(this).attr('test');
 
             cleanTestPage();
