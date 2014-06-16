@@ -508,6 +508,8 @@ var _ui = {
     homePage: function(event){
         capturePageListeners();
 
+        utils.touchScroll('#home-content');
+
         $('.help-block a').unbind();
         $('.help-block a').on('taphold', function(){
             $.mobile.changePage('settings.html');

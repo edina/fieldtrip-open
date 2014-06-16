@@ -48,7 +48,7 @@ fi
 
 # enforce styles
 SYEXP=(
-    "}(\s+)?else(?!.*jshint ignore:line)" "Ensure else statements are on a new line"
+    "}(\s+)?else" "Ensure else statements are on a new line"
 )
 
 FILES=$(git diff --name-only HEAD | grep ".js$")
@@ -64,7 +64,7 @@ for file in ${FILES}; do
         do
             if [ $((i % 2)) -eq 0 ] ; then
                 exp=${SYEXP[$i]}
-                `grep -n -P '$exp' $file 1>&2`
+                `grep -n -P '$exp(?!.*jshint ignore:line)' $file 1>&2`
                 if [ $? -eq 0 ] ; then
                     let "next = $i + 1"
                     echo  $file: ${SYEXP[$next]}

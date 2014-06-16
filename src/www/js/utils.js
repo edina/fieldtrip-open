@@ -219,6 +219,16 @@ var _base = {
     },
 
     /**
+     * @return The username and password of cloud test user.
+     */
+    getCloudTestUser: function(){
+        return {
+            name: config.testclouduser,
+            pass: config.testcloudpass
+        };
+    },
+
+    /**
      * @return Internet connection status.
      * {object} val - cordova connection state value, str - a textual value.
      */
@@ -250,7 +260,7 @@ var _base = {
     /**
      * @return The document base of the app.
      */
-    getDocumentBase: function (){
+    getDocumentBase: function(){
         return documentBase;
     },
 
@@ -447,6 +457,13 @@ var _base = {
         else{
             $.mobile.changePage('map.html');
         }
+    },
+
+    /**
+     * @return Is this an android device?
+     */
+    isAndroid: function(){
+        return isTouchDevice() && device.platform === 'Android';
     },
 
     /**
@@ -658,10 +675,11 @@ var _base = {
     },
 
     /**
-     * Android workaround for overflow: auto support. See http://chris-barr.com/index.php/entry/scrolling_a_overflowauto_element_on_a_touch_screen_device/
+     * Android workaround for overflow: auto support. Only applicable to android 2. See http://chris-barr.com/index.php/entry/scrolling_a_overflowauto_element_on_a_touch_screen_device/
      */
     touchScroll: function(selector) {
-        if(isTouchDevice()){
+        var version = device.version.replace(".", "").substr(0, 2);
+        if(this.isAndroid() && version < 24){
             var scrollStartPosY = 0;
             var scrollStartPosX = 0;
 
