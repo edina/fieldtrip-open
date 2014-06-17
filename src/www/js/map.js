@@ -1402,23 +1402,11 @@ var _this = {
             locationText = locations[tileStr];
 
             if($('#map-location-text').length === 0){
-                $('#gpscapture-page').append('<div id="map-location-text"><div>');
+                $('#gpscapture-page').append('<div ><p aria-live="assertive" id="map-location-text"><p></div>');
             }
             $('#map-location-text').text(locationText);
         }
 
-        if(locationText){
-            annotationFeature[0].layer.div.setAttribute("aria-label", locationText);
-        }
-        else{
-            annotationFeature[0].layer.div.setAttribute("aria-label", "location maker" + lonLat.lon + ", " + lonLat.lat) ;
-        }
-
-        annotationFeature[0].layer.div.setAttribute("alt", "location maker updated") ;
-        annotationFeature[0].layer.div.setAttribute("aria-live", "polite") ;
-        annotationFeature[0].layer.div.setAttribute("role", "marquee") ;
-
-        // utils.inform("current location updated", 1000 );
         layer.setVisibility(true);
         layer.redraw();
 
