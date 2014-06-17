@@ -675,11 +675,15 @@ var _base = {
     },
 
     /**
-     * Android workaround for overflow: auto support. Only applicable to android 2. See http://chris-barr.com/index.php/entry/scrolling_a_overflowauto_element_on_a_touch_screen_device/
+     * Android workaround for overflow: auto support. Only applicable to android 2 and doesn't work for embedded divs, e.g the records page. See http://chris-barr.com/index.php/entry/scrolling_a_overflowauto_element_on_a_touch_screen_device/
      */
     touchScroll: function(selector) {
-        var version = device.version.replace(".", "").substr(0, 2);
-        if(this.isAndroid() && version < 24){
+        if(this.isAndroid()){
+            var version = device.version.replace(".", "").substr(0, 2);
+            if(version > 23){
+                return;
+            }
+
             var scrollStartPosY = 0;
             var scrollStartPosX = 0;
 

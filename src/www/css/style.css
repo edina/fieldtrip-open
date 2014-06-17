@@ -551,7 +551,8 @@ div.record-extra > div > img {
 
 #saved-records-list{
     position: relative;
-    /* overflow: auto; */
+    overflow-x: hidden;
+    overflow-y: visible;
     margin: 0
 }
 
@@ -604,23 +605,20 @@ div.record-extra > div > img {
 #saved-records-page-header .ui-block-a{
     margin: 0;
     padding: 0;
-    /* width: 60%; */
+    width: 60%;
 }
 
 #saved-records-page-header .ui-block-b{
     margin: 0;
     padding: 0.2em;
-    /* width: 40%; */
+    width: 40%;
 }
 
 #settings-page h2,
 #annotate-preview-page h2,
 #saved-records-page-header h2{
     margin: 0;
-    padding: 0;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    padding-left: 1em;
+    padding: 1em 0 0 1em;
     color: white;
 }
 

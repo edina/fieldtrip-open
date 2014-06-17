@@ -628,18 +628,16 @@ var _ui = {
             ).trigger('create');
         };
 
-        $.each(annotations, $.proxy(function(id, annotation){
+        $.each(annotations, function(id, annotation){
             if(annotation){
                 addAnnotation(id, annotation);
             }
             else{
                 // empty entry, just delete it
                 delete annotations[id];
-                this.records.setSavedAnnotations(annotations);
+                records.setSavedAnnotations(annotations);
             }
-
-        }, this));
-
+        });
 
         // Annotations loaded at this point so we can setup layout
         // Check if preference previously set
@@ -692,8 +690,6 @@ var _ui = {
                 utils.gotoMapPage();
             }
         );
-
-        $('#saved-annotations-list-list').listview('refresh');
     },
 
     /**
