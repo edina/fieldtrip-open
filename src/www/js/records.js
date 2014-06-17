@@ -174,7 +174,7 @@ var _base = {
 
                 // hide original input elements
                 $('input[capture]').parent().hide();
-
+                $('#text-buttons span').attr("aria-hidden",'true');
                 callback();
             },
             error: function(jqXHR, status, error){
