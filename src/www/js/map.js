@@ -1418,10 +1418,7 @@ var _this = {
      */
     updateLocateLayer: function(zoom){
         if(!zoom){
-            var zoom = this.map.getZoom();
-            if(zoom < MIN_LOCATE_ZOOM_TO){
-                zoom = POST_LOCATE_ZOOM_TO;
-            }
+            zoom = this.map.getZoom();
         }
 
         this.updateLayer(this.getLocateLayer(), USER_POSITION_ATTR, zoom);
