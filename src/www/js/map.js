@@ -242,8 +242,7 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
 
     var addAltTextToFeatureMarkers = function(features)
     {
-         console.debug("features:" + features) ;
-        utils.inform("test message", 1000) ;
+        console.debug("features:" + features) ;
         $.each(features, function(index, feature){
 
                 var featureMarkerElement = document.getElementById(feature.geometry.id) ;
