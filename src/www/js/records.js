@@ -33,7 +33,7 @@ DAMAGE.
 
 define(['utils'], function(utils){
 
-    var DOCUMENTS_SCHEME_PREFIX = "documents://";
+    var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     
     var assetsDir;
     var editorsDir;
