@@ -2,13 +2,8 @@
 
   <!-- note: class="fieldcontain" is required for record processing-->
   <div class="fieldcontain" id="fieldcontain-text-1">
-    <label for="form-text-1">Title</label>
-    <input name="form-text-1"
-           id="form-text-1"
-           type="text"
-           required="true"
-           value="Text"
-           maxlength="40"/>
+      <p>Title:</p>
+      <p id="text-title"></p>
   </div>
 
   <!-- note: class="fieldcontain" is required for record processing-->

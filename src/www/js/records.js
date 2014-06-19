@@ -167,9 +167,9 @@ var _base = {
 
                     $(input).parent().append(btn);
                 });
-
-                utils.appendDateTimeToInput("#form-text-1");
-
+                
+                $("#text-title").append("Text " + utils.getSimpleDate());
+                
                 form.trigger('create');
 
                 // hide original input elements
@@ -713,6 +713,12 @@ var _base = {
                 annotation.record['fields'].push(record);
             }
         }, this));
+
+
+        var title = $('#text-title');
+        if(title.length >0){
+            annotation.record.name = title.text();
+        }
 
         if(valid){
             successCallBack(annotation);
