@@ -1221,3 +1221,9 @@ def _write_data(fil, filedata):
     f = open(fil, 'w')
     f.write(filedata)
     f.close()
+
+# import any project tasks
+proj_dir = _get_source()[1]
+if os.path.exists(os.path.join(proj_dir, 'fabtasks.py')):
+    sys.path.append(proj_dir)
+    import fabtasks as ptasks
