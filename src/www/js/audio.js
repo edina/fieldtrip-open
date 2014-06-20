@@ -32,6 +32,127 @@ DAMAGE.
 "use strict";
 
 define(function(){
+
+    var currentAudio;
+
+    var MAX_VOLUME = 10;
+    var volume = MAX_VOLUME;
+    
+/*** Audio Object decorates a Cordova Media Object ************/
+
+    var createNewAudio = function(src) {
+        var audio = {};
+       
+        audio.status = Media.MEDIA_NONE;
+       
+        audio.media = new Media(src,
+                                audio.onSuccess,
+                                audio.onError,
+                                function(status) {audio.status = status;}
+                                );
+       
+       
+        audio.play =  function(){
+       
+            audio.media.play();
+
+            $('#annotate-audio-button').removeClass('annotate-audio-stopped');
+            $('#annotate-audio-button').addClass('annotate-audio-started');
+
+            // update media position every second
+            if(audio.mediaTimer == null) {
+                audio.mediaTimer = setInterval(function(){
+                    audio.media.getCurrentPosition(
+                       function(position) {
+                            if (position > -1) {
+                                $('#annotate-audio-position').text((position.toFixed(1)) + ' sec');
+                            }
+                        },
+                        // error callback
+                        function(e) {
+                            console.error("Error getting pos=" + e);
+                        }
+                    );
+                }, 1000);
+            }
+
+        };
+        /**
+        */
+        audio.src = function() {
+            return src;
+        };
+       
+        /**
+         * Release audio resources.
+         */
+        audio.destroy = function(){
+            if(audio.media){
+                audio.release();
+            }
+        };
+
+
+
+        /**
+         * Pause audio track.
+         */
+        audio.pause = function(){
+            if (audio.media){
+                audio.media.pause();
+            }
+        };
+
+        /**
+         * Stop audio track.
+         */
+        audio.stop = function(){
+            if (audio.media){
+                audio.media.stop();
+            }
+
+            audio.clear();
+        };
+       
+       
+        /**
+         * Clear audio track.
+         */
+        audio.clear = function(){
+            clearInterval(audio.mediaTimer);
+            audio.mediaTimer = null;
+
+            $('#annotate-audio-position').text('0.0 sec');
+
+            $('#annotate-audio-button').addClass('annotate-audio-stopped');
+            $('#annotate-audio-button').removeClass('annotate-audio-started');
+        };
+
+
+
+        /**
+         * Audio track has successfully played.
+         */
+        audio.onSuccess = function(position){
+            audio.clear();
+        };
+
+        /**
+         * Error playing audio track.
+         */
+        audio.onError = function(error){
+            alert('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+        };
+       
+
+        return audio;
+
+
+    }
+    
+/************************** End Audio Object ***************************/
+
 return{
 
     /**
@@ -46,147 +167,80 @@ return{
 
         return '<div class="annotate-audio-taken">' + label + '\
 <input type="hidden" value="' + url + '"/>\
-<p id="annotate-audio-position" role="timer">0.0 sec</p>\
-<a id="annotate-audio-button" class="annotate-audio-stopped" aria-label="play audio" onclick="playAudio();" data-theme="a" data-iconpos="notext" href="#" data-role="button" role="button"></a>\
+<p id="annotate-audio-position" >0.0 sec</p>\
+<span id="vol-level" class="annotate-vol-level" >10</span>\
+<a id="annotate-audio-button" class="annotate-audio-stopped" aria-label="play audio" data-theme="a" data-iconpos="notext" href="#" data-role="button" role="button"></a>\
+    <div aria-label="Volume Controls" class="volume-control-buttons" role="toolbar"> \
+      <a aria-label="Increase Volume" id="increase-vol-button" data-role="button" role="button" >\
+        +\
+      </a>\
+      <a aria-label="Decrease Volume" id="decrease-vol-button" data-role="button" role="button">\
+        -\
+      </a>\
+    </div>\
 </div>';
     },
+    /**
+    * Play audio track.
+    */
+    playAudio: function(){
+       
+        var url = $('.annotate-audio-taken input').attr('value');
+
+        // for android ensure url begins with file:///
+        url = url.replace("file:/m", "file:///m");
+        
+        //media player plugin has not been updated to latest cdvfile format
+        //see https://github.com/edina/spatial-memories/issues/45
+        url = url.replace("cdvfile://localhost/persistent/" , "documents://");
+
+        if(currentAudio){
+       
+            if(currentAudio.src !== url){
+                currentAudio.destroy();
+                currentAudio = new createNewAudio(url);
+            }
+        } else {
+            currentAudio = createNewAudio(url);
+        }
+       
+       
+        if(currentAudio.status === Media.MEDIA_RUNNING ||
+            currentAudio.status === Media.MEDIA_STARTING){
+            currentAudio.stop();
+        } else{
+            currentAudio.play();
+            currentAudio.media.setVolume(volume / MAX_VOLUME );
+        }
+    },
+    increaseVolume : function(){
+
+        volume = (volume === MAX_VOLUME)  ? MAX_VOLUME : volume + 1;
+    
+        this.updateVolumeIfPlaying();
+    
+
+    },
+    decreaseVolume : function(){
+
+        volume = (volume === 0) ? 0 : volume - 1;
+        
+        this.updateVolumeIfPlaying();
+    
+    },
+    updateVolumeIfPlaying : function(){
+
+        $('#vol-level').text(volume);
+        if(currentAudio && currentAudio.media && currentAudio.media.status){
+            if(currentAudio.media.status === Media.MEDIA_RUNNING || currentAudio.media.status === Media.MEDIA_STARTING ){
+                currentAudio.media.setVolume(volume/MAX_VOLUME);
+            }
+        }
+
+    }
 }
 
 });
 
-// TODO migrate below to requirejs syntax
 
-// current/last played audio
-var currentAudio;
 
-/**
- * Play audio track.
- */
-function playAudio(){
-    var url = $('.annotate-audio-taken input').attr('value');
-
-    // for android ensure url begins with file:///
-    url = url.replace("file:/m", "file:///m");
-    
-    //media player plugin has not been updated to latest cdvfile format
-    //see https://github.com/edina/spatial-memories/issues/45
-    url = url.replace("cdvfile://localhost/persistent/" , "documents://");
-
-    if(currentAudio){
-        if(currentAudio.src !== url){
-            currentAudio.destroy();
-            currentAudio = new Audio(url);
-        }
-    }
-    else{
-        currentAudio = new Audio(url);
-    }
-
-    if(currentAudio.status === Media.MEDIA_RUNNING ||
-       currentAudio.status === Media.MEDIA_STARTING){
-        currentAudio.stop();
-    }
-    else{
-        currentAudio.play();
-    }
-};
-
-/**
- * Audio media class.
- * @param src The media file.
- */
-function Audio(src){
-    // Create Media object from src
-    this.media = new Media(src,
-                           $.proxy(this.onSuccess, this),
-                           $.proxy(this.onError, this),
-                           $.proxy(function(status) {
-                               this.status = status;
-                           }, this));
-
-    this.status = Media.MEDIA_NONE;
-};
-
-/**
- * Play audio track.
- */
-Audio.prototype.play = function() {
-    this.media.play();
-
-    $('#annotate-audio-button').removeClass('annotate-audio-stopped');
-    $('#annotate-audio-button').addClass('annotate-audio-started');
-
-    // update media position every second
-    if(this.mediaTimer == null) {
-        this.mediaTimer = setInterval($.proxy(function(){
-            this.media.getCurrentPosition(
-                $.proxy(function(position) {
-                    if (position > -1) {
-                        $('#annotate-audio-position').text((position.toFixed(1)) + ' sec');
-                    }
-                }, this),
-                // error callback
-                function(e) {
-                    console.error("Error getting pos=" + e);
-                }
-            );
-        }, this), 1000);
-    }
-};
-
-/**
- * Release audio resources.
- */
-Audio.prototype.destroy = function(){
-    if(this.media){
-        this.media.release();
-    }
-};
-
-/**
- * Pause audio track.
- */
-Audio.prototype.pause = function(){
-    if (this.media){
-        this.media.pause();
-    }
-};
-
-/**
- * Stop audio track.
- */
-Audio.prototype.stop = function(){
-    if (this.media){
-        this.media.stop();
-    }
-
-    this.clear();
-};
-
-/**
- * Clear audio track.
- */
-Audio.prototype.clear = function(){
-    clearInterval(this.mediaTimer);
-    this.mediaTimer = null;
-
-    $('#annotate-audio-position').text('0.0 sec');
-
-    $('#annotate-audio-button').addClass('annotate-audio-stopped');
-    $('#annotate-audio-button').removeClass('annotate-audio-started');
-}
-
-/**
- * Audio track has successfully played.
- */
-Audio.prototype.onSuccess = function(position){
-    this.clear();
-};
-
-/**
- * Error playing audio track.
- */
-Audio.prototype.onError = function(error){
-    alert('code: '    + error.code    + '\n' +
-          'message: ' + error.message + '\n');
-};
