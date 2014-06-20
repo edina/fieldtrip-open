@@ -55,7 +55,7 @@ CORDOVA_VERSION    = '3.5.0-0.2.4'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
 NPM_VERSION        = '1.4.10'
-BOWER_VERSION      = '1.3.3'
+BOWER_VERSION      = '1.3.5'
 JSHINT_VERSION     = '2.5.0'
 
 """
@@ -91,17 +91,18 @@ def check_plugins():
     if os.path.exists(json_file):
         plugins = json.loads(open(json_file).read())['plugins']['cordova']
         for plugin in plugins:
-            name, version = plugin.split('@')
-            out = local('plugman info {0}'.format(name), capture=True)
-            lines = out.split('\n')
-            for line in lines:
-                info = line.split(':')
-                if info[0] == 'version':
-                    latest_version = info[1].strip()
-            if version != latest_version:
-                print '*** {0}@{1} newer plugin {2} available ***'.format(name, version, latest_version)
-            else:
-                print '{0} up to date'.format(name)
+            if '@' in plugin:
+                name, version = plugin.split('@')
+                out = local('plugman info {0}'.format(name), capture=True)
+                lines = out.split('\n')
+                for line in lines:
+                    info = line.split(':')
+                    if info[0] == 'version':
+                        latest_version = info[1].strip()
+                if version != latest_version:
+                    print '*** {0}@{1} newer plugin {2} available ***'.format(name, version, latest_version)
+                else:
+                    print '{0} up to date'.format(name)
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
@@ -171,7 +172,7 @@ def deploy_android():
 
     with lcd(_get_runtime()[1]):
         device = None
-        local('cordova build')
+        local('cordova build android')
 
         with settings(warn_only=True):
             cmd = 'cordova run android 2>&1'
@@ -551,7 +552,6 @@ def install_plugins(target='local', cordova="True"):
                 # if repository given in https:// format convert to git@
                 print 'Converting {0} to '.format(details)
                 details = 'git@{0}.git'.format(details[8:]).replace('/', ':', 1)
-                print details
 
             if not details[0:3] == 'git':
                 # bower plugin
