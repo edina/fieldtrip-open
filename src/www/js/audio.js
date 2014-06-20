@@ -70,7 +70,7 @@ function playAudio(){
     
     //media player plugin has not been updated to latest cdvfile format
     //see https://github.com/edina/spatial-memories/issues/45
-    url = url.replace("cdvfile://localhost/persistent//" , "documents://");
+    url = url.replace("cdvfile://localhost/persistent/" , "documents://");
 
     if(currentAudio){
         if(currentAudio.src !== url){
