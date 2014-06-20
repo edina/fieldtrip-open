@@ -1394,10 +1394,10 @@ var _this = {
         }
 
         var locationText;
-        var zoom = 18;
+        var maxZoomLevel = 18;
         if(locations){
-            var tileStr = this.long2tile(this.userLonLat.lon, zoom) + "-" +
-                this.lat2tile(this.userLonLat.lat, zoom);
+            var tileStr = this.long2tile(this.userLonLat.lon, maxZoomLevel) + "-" +
+                this.lat2tile(this.userLonLat.lat, maxZoomLevel);
             locationText = locations[tileStr];
 
             if($('#map-location-text').length === 0){
