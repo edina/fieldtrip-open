@@ -204,7 +204,7 @@ return{
        
             if(currentAudio.src !== url){
                 currentAudio.destroy();
-                currentAudio = new createNewAudio(url);
+                currentAudio = createNewAudio(url);
             }
         } else {
             currentAudio = createNewAudio(url);
