@@ -45,7 +45,7 @@ define(function(){
     **/
     var createNewAudio = function(src) {
         var audio = {};
-       
+        audio.src = src;
         audio.status = Media.MEDIA_NONE;
        
        
@@ -99,12 +99,6 @@ define(function(){
             }
 
         };
-        /**
-        */
-        audio.src = function() {
-            return src;
-        };
-       
         /**
          * Release audio resources.
          */
@@ -237,8 +231,9 @@ return{
     updateVolumeIfPlaying : function(){
 
         $('#vol-level').text(volume);
-        if(currentAudio && currentAudio.media && currentAudio.media.status){
-            if(currentAudio.media.status === Media.MEDIA_RUNNING || currentAudio.media.status === Media.MEDIA_STARTING ){
+        if(currentAudio && currentAudio.status){
+            if(currentAudio.status === Media.MEDIA_RUNNING || currentAudio.status === Media.MEDIA_STARTING ){
+                
                 currentAudio.media.setVolume(volume/MAX_VOLUME);
             }
         }
