@@ -40,10 +40,32 @@ define(function(){
     
 /*** Audio Object decorates a Cordova Media Object ************/
 
+    /***
+    * param src - the location of the audio.
+    **/
     var createNewAudio = function(src) {
         var audio = {};
        
         audio.status = Media.MEDIA_NONE;
+       
+       
+        
+        /**
+         * Audio track has successfully played.
+         */
+        audio.onSuccess = function(position){
+            audio.clear();
+        };
+
+        /**
+         * Error playing audio track.
+         */
+        audio.onError = function(error){
+            alert('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+        };
+       
+
        
         audio.media = new Media(src,
                                 audio.onSuccess,
@@ -88,7 +110,7 @@ define(function(){
          */
         audio.destroy = function(){
             if(audio.media){
-                audio.release();
+                audio.media.release();
             }
         };
 
@@ -129,22 +151,6 @@ define(function(){
         };
 
 
-
-        /**
-         * Audio track has successfully played.
-         */
-        audio.onSuccess = function(position){
-            audio.clear();
-        };
-
-        /**
-         * Error playing audio track.
-         */
-        audio.onError = function(error){
-            alert('code: '    + error.code    + '\n' +
-                  'message: ' + error.message + '\n');
-        };
-       
 
         return audio;
 
