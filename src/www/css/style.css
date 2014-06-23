@@ -139,7 +139,7 @@ body .ui-loader{
     margin-left: auto;
     margin-right: auto;
     overflow: auto;
-}
+}src/www/css/style
 
 .ui-loader h1{
     width: 100%;
@@ -532,6 +532,13 @@ div.record-extra > div > img {
     width: 12em;
     padding: 1em;
 }
+
+.annotate-vol-level{
+    padding: 0.5em;
+    font-size: 26px;
+    float : right;
+}
+
 
 .annotate-audio-stopped{
     background-image: url("../css/images/play.png");
