@@ -441,13 +441,17 @@ li.active  .ui-block-b.saved-records-view, li.active .ui-grid-b .ui-block-c, li.
 }
 
 .ellipsis {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 98%;
-    padding-left: 1%;
-    padding-right: 1%;
-    clear: both;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 98% ;
+    padding-left: 1% !important;
+    padding-right: 1% !important;
+    clear: both !important;
+}
+
+.ellipsis.ui-title{
+    width: 83% !important;
 }
 
 .record-extra {
