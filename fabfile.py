@@ -1017,12 +1017,12 @@ def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     """
 
     runtime = _get_runtime()[1];
-    apk = os.sep.join((runtime, 'platforms', 'android', 'bin', file_name))
+    apk = os.sep.join((runtime, 'platforms', 'android', 'ant-build', file_name))
 
     # copy to server
     target_dir = '{0}/{1}'.format(_config('dir', section='release'), version)
     if not exists(target_dir):
-        run('mkdir {0}'.format(target_dir))
+        run('mkdir -p {0}'.format(target_dir))
 
     target_file = os.sep.join((target_dir, file_name))
     if exists(target_file) and not overwrite:
