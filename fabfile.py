@@ -415,7 +415,6 @@ def generate_html(platform="android", cordova=False):
 
         header_template = environ_core.get_template("header.html")
         footer_template = environ_core.get_template("footer.html")
-        #print current_path
 
         for path, dirs, files in os.walk(current_path):
             for f in files:
@@ -430,7 +429,10 @@ def generate_html(platform="android", cordova=False):
                         data_in_plugins = _check_for_data(paths, f)
                         if len(data_in_plugins)>0:
                             for p in data_in_plugins:
-                                data = _get_data(current_path, f, p)
+                                if data == None:
+                                    data = _get_data(current_path, f, p)
+                                else:
+                                    _merge(data, _get_data(current_path, f, p))
 
                     #merge with the data in json
                     if data:
