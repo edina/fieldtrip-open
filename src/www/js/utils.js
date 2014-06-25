@@ -519,18 +519,19 @@ var _base = {
     isPrivilegedUser: function(){
         var isPrivileged = false;
         if(isMobileApp){
-            if(config.priviligedusers &&
-               $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)){
-                isPrivileged = true;
+            if(config.priviligedusers){
+                if ((config.priviligedusers instanceof Array &&
+                     $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)) ||
+                    device.uuid === config.priviligedusers){
+                    isPrivileged = true;
+                }
             }
         }
         else{
             isPrivileged = true;
         }
 
-        if(!isPrivileged){
-            console.debug(device.uuid + " is a non privileged user");
-        }
+        console.debug(device.uuid + " privileged user is "+isPrivileged);
 
         return isPrivileged;
     },
