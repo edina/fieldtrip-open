@@ -551,7 +551,6 @@ def install_plugins(target='local', cordova="True"):
                 # if repository given in https:// format convert to git@
                 print 'Converting {0} to '.format(details)
                 details = 'git@{0}.git'.format(details[8:]).replace('/', ':', 1)
-                print details
 
             if not details[0:3] == 'git':
                 # bower plugin

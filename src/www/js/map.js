@@ -1086,7 +1086,8 @@ var _this = {
         });
 
         // Close popup on click
-        popup.on('click',  function() {
+        popup.off('vclick');
+        popup.on('vclick',  function() {
             popup.popup('close');
         });
     },
