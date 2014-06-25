@@ -513,6 +513,32 @@ def generate_html_ios():
     generate_html(platform="ios")
 
 @task
+def install_cordova_plugin(repo, platform='android', target='local'):
+    """
+    Install cordova plugin from a local directory.
+    """
+    _check_command('cordova')
+
+    if not os.path.exists(repo):
+        print "Can't find plugin {0}".format(repo)
+        exit(-1)
+    plugin_xml = os.path.join(repo, 'plugin.xml')
+    if not os.path.exists(plugin_xml):
+        print "Cordova plugins need a plugin.xml file: {0}".format(plugin_xml)
+        exit(-1)
+
+    runtime = _get_runtime(target)[1]
+
+    import xml.etree.ElementTree as ET
+    root = ET.parse(plugin_xml).getroot()
+    id = root.attrib['id']
+    with lcd(runtime):
+        with settings(warn_only=True):
+            # remove plugin first
+            local('cordova plugin rm {0}'.format(id))
+        local('cordova plugin add {0}'.format(repo))
+
+@task
 def install_plugins(target='local', cordova="True"):
     """
     Set up project plugins
