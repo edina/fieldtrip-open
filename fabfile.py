@@ -157,6 +157,8 @@ def deploy_ios():
     with lcd(_get_runtime()[1]):
         device = None
         local('cordova build ios')
+        
+    update_app()
 
 @task
 def generate_docs():
@@ -692,7 +694,8 @@ def install_project(platform='android',
     install_plugins(target)
 
     # add project specific files
-    update_app()
+    if platform == 'android':
+        update_app()
 
     # process tempates
     generate_html(platform='desktop')
