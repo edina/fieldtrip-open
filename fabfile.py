@@ -415,7 +415,6 @@ def generate_html(platform="android", cordova=False):
 
         header_template = environ_core.get_template("header.html")
         footer_template = environ_core.get_template("footer.html")
-        #print current_path
 
         for path, dirs, files in os.walk(current_path):
             for f in files:
@@ -430,7 +429,10 @@ def generate_html(platform="android", cordova=False):
                         data_in_plugins = _check_for_data(paths, f)
                         if len(data_in_plugins)>0:
                             for p in data_in_plugins:
-                                data = _get_data(current_path, f, p)
+                                if data == None:
+                                    data = _get_data(current_path, f, p)
+                                else:
+                                    _merge(data, _get_data(current_path, f, p))
 
                     #merge with the data in json
                     if data:
@@ -1041,12 +1043,12 @@ def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     """
 
     runtime = _get_runtime()[1];
-    apk = os.sep.join((runtime, 'platforms', 'android', 'bin', file_name))
+    apk = os.sep.join((runtime, 'platforms', 'android', 'ant-build', file_name))
 
     # copy to server
     target_dir = '{0}/{1}'.format(_config('dir', section='release'), version)
     if not exists(target_dir):
-        run('mkdir {0}'.format(target_dir))
+        run('mkdir -p {0}'.format(target_dir))
 
     target_file = os.sep.join((target_dir, file_name))
     if exists(target_file) and not overwrite:
