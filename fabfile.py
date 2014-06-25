@@ -55,7 +55,7 @@ CORDOVA_VERSION    = '3.5.0-0.2.4'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
 NPM_VERSION        = '1.4.10'
-BOWER_VERSION      = '1.3.3'
+BOWER_VERSION      = '1.3.5'
 JSHINT_VERSION     = '2.5.0'
 
 """
@@ -91,17 +91,18 @@ def check_plugins():
     if os.path.exists(json_file):
         plugins = json.loads(open(json_file).read())['plugins']['cordova']
         for plugin in plugins:
-            name, version = plugin.split('@')
-            out = local('plugman info {0}'.format(name), capture=True)
-            lines = out.split('\n')
-            for line in lines:
-                info = line.split(':')
-                if info[0] == 'version':
-                    latest_version = info[1].strip()
-            if version != latest_version:
-                print '*** {0}@{1} newer plugin {2} available ***'.format(name, version, latest_version)
-            else:
-                print '{0} up to date'.format(name)
+            if '@' in plugin:
+                name, version = plugin.split('@')
+                out = local('plugman info {0}'.format(name), capture=True)
+                lines = out.split('\n')
+                for line in lines:
+                    info = line.split(':')
+                    if info[0] == 'version':
+                        latest_version = info[1].strip()
+                if version != latest_version:
+                    print '*** {0}@{1} newer plugin {2} available ***'.format(name, version, latest_version)
+                else:
+                    print '{0} up to date'.format(name)
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
@@ -171,7 +172,7 @@ def deploy_android():
 
     with lcd(_get_runtime()[1]):
         device = None
-        local('cordova build')
+        local('cordova build android')
 
         with settings(warn_only=True):
             cmd = 'cordova run android 2>&1'
@@ -414,7 +415,6 @@ def generate_html(platform="android", cordova=False):
 
         header_template = environ_core.get_template("header.html")
         footer_template = environ_core.get_template("footer.html")
-        #print current_path
 
         for path, dirs, files in os.walk(current_path):
             for f in files:
@@ -429,7 +429,10 @@ def generate_html(platform="android", cordova=False):
                         data_in_plugins = _check_for_data(paths, f)
                         if len(data_in_plugins)>0:
                             for p in data_in_plugins:
-                                data = _get_data(current_path, f, p)
+                                if data == None:
+                                    data = _get_data(current_path, f, p)
+                                else:
+                                    _merge(data, _get_data(current_path, f, p))
 
                     #merge with the data in json
                     if data:
@@ -508,6 +511,32 @@ def generate_html(platform="android", cordova=False):
 @task
 def generate_html_ios():
     generate_html(platform="ios")
+
+@task
+def install_cordova_plugin(repo, platform='android', target='local'):
+    """
+    Install cordova plugin from a local directory.
+    """
+    _check_command('cordova')
+
+    if not os.path.exists(repo):
+        print "Can't find plugin {0}".format(repo)
+        exit(-1)
+    plugin_xml = os.path.join(repo, 'plugin.xml')
+    if not os.path.exists(plugin_xml):
+        print "Cordova plugins need a plugin.xml file: {0}".format(plugin_xml)
+        exit(-1)
+
+    runtime = _get_runtime(target)[1]
+
+    import xml.etree.ElementTree as ET
+    root = ET.parse(plugin_xml).getroot()
+    id = root.attrib['id']
+    with lcd(runtime):
+        with settings(warn_only=True):
+            # remove plugin first
+            local('cordova plugin rm {0}'.format(id))
+        local('cordova plugin add {0}'.format(repo))
 
 @task
 def install_plugins(target='local', cordova="True"):
@@ -1014,12 +1043,12 @@ def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     """
 
     runtime = _get_runtime()[1];
-    apk = os.sep.join((runtime, 'platforms', 'android', 'bin', file_name))
+    apk = os.sep.join((runtime, 'platforms', 'android', 'ant-build', file_name))
 
     # copy to server
     target_dir = '{0}/{1}'.format(_config('dir', section='release'), version)
     if not exists(target_dir):
-        run('mkdir {0}'.format(target_dir))
+        run('mkdir -p {0}'.format(target_dir))
 
     target_file = os.sep.join((target_dir, file_name))
     if exists(target_file) and not overwrite:

@@ -1,4 +1,4 @@
-<form id="annotate-audio-record" data-ajax="false">
+<form id="annotate-audio-record" data-ajax="false" novalidate>
 
   <!-- note: class="fieldcontain" is required for record processing-->
   <div class="fieldcontain" id="fieldcontain-text-1">
@@ -30,7 +30,7 @@
              capture="microphone"
              value=""
              required="required"
-             class="audio_capture"/>
+             class="audio_capture" novalidate />
     </div>
   </div>
 

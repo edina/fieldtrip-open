@@ -1,4 +1,4 @@
-<form id="annotate-image-record" data-ajax="false">
+<form id="annotate-image-record" data-ajax="false" novalidate>
 
   <div class="fieldcontain" id="fieldcontain-text-1">
     <label for="form-text-1">Title</label>
@@ -25,7 +25,7 @@
              capture="camera"
              value=""
              required="required"
-             class="photo_capture"/>
+             class="photo_capture" />
     </div>
   </div>
 
