@@ -168,14 +168,15 @@ return{
         return '<div class="annotate-audio-taken">' + label + '\
 <input type="hidden" value="' + url + '"/>\
 <p id="annotate-audio-position" >0.0 sec</p>\
-<span id="vol-level" class="annotate-vol-level" aria-label="Volume Level" >' + volume  +'</span>\
 <a id="annotate-audio-button" class="annotate-audio-stopped" aria-label="play audio" data-theme="a" data-iconpos="notext" href="#" data-role="button" role="button"></a>\
     <div aria-label="Volume Controls" class="volume-control-buttons" role="toolbar"> \
+        Volume (0 to ' + MAX_VOLUME + ') : \
+        <span id="vol-level" class="annotate-vol-level" aria-label="Volume Level" >' + volume  +'</span>\
       <a aria-label="Increase Volume" id="increase-vol-button" data-role="button" role="button" >\
-        +\
+        Vol +\
       </a>\
       <a aria-label="Decrease Volume" id="decrease-vol-button" data-role="button" role="button">\
-        -\
+        Vol -\
       </a>\
     </div>\
 </div>';
