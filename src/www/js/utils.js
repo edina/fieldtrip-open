@@ -639,7 +639,9 @@ var _base = {
             isPrivileged = true;
         }
 
-        console.debug(device.uuid + " privileged user is "+isPrivileged);
+        if(!isPrivileged){
+            console.debug(device.uuid + " privileged user is "+isPrivileged);
+        }
 
         return isPrivileged;
     },
