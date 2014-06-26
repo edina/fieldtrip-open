@@ -282,8 +282,10 @@ var _base = {
 
     /**
      * Delete all files from a dir
+     * @param directory that items will be removed from
      * @param dirName The directory that needs to be empty.
-     * @param callback Function will be called when file is successfully deleted.
+     * @param callback Function will return a dir value if file is successfully deleted
+     * otherwise undefined.
      */
     deleteAllFilesFromDir: function(directory, dirName, callback){
         // easiest way to do this is to delete the directory and recreate it
