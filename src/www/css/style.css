@@ -139,7 +139,9 @@ body .ui-loader{
     margin-left: auto;
     margin-right: auto;
     overflow: auto;
-}src/www/css/style
+    background: none;
+    border: none;
+}
 
 .ui-loader h1{
     width: 100%;
