@@ -68,6 +68,7 @@ define(['config'], function(config){
      * Save current settings to localstorage.
      */
     var save = function(){
+        $('.ui-title').text('Spatial Memories');
         $.each($('[name=settings-entry]'), getControlValue);
         localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
     };
