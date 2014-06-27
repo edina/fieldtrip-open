@@ -282,14 +282,14 @@ var _base = {
 
     /**
      * Delete all files from a dir
-     * @param directory that items will be removed from
+     * @param localDir that items will be removed from
      * @param dirName The directory that needs to be empty.
      * @param callback Function will return a dir value if file is successfully deleted
      * otherwise undefined.
      */
-    deleteAllFilesFromDir: function(directory, dirName, callback){
+    deleteAllFilesFromDir: function(localDir, dirName, callback){
         // easiest way to do this is to delete the directory and recreate it
-        directory.removeRecursively(
+        localDir.removeRecursively(
             function(){
                 getPersistentRoot(function(root){
                     root.getDirectory(
@@ -309,6 +309,41 @@ var _base = {
                 console.error("Problem deleting directory");
                 callback();
             }
+        );
+    },
+
+    /**
+     * fileTransfer, function for transferring file to the app
+     * @param source the url of the file in the cloud
+     * @param the local file that is saved to
+     */
+    fileTransfer: function(source, target, callback){
+
+        console.debug("download: " + source + " to " + target);
+        var ft = new FileTransfer();
+
+        ft.onprogress = $.proxy(function(progressEvent) {
+            if (progressEvent.lengthComputable) {
+                this.inform(Math.round((progressEvent.loaded / progressEvent.total)*100) + "%");
+            }
+        }, this);
+
+        ft.download(
+            encodeURI(source),
+            target,
+            $.proxy(function(entry) {
+                console.debug("download complete: ");
+                callback(true);
+            }, this),
+            $.proxy(function(error) {
+                // if this fails first check whitelist in cordova.xml
+                this.informError("Problem syncing " + name);
+                console.error("Problem downloading asset: " + error.source +
+                        " to: " + error.target +
+                        " error: " + this.getFileTransferErrorMsg(error) +
+                        "http status: " + error.http_status);// jshint ignore:line
+                callback(false);
+            }, this)
         );
     },
 
