@@ -76,6 +76,8 @@ define(['config'], function(config){
      * Open settings page.
      */
     var settingsPage = function(){
+
+        $('.ui-title').text('Settings');
         require(['utils'], function(utils){
             $.each(vals, function(name, entry){
                 var id = '#settings-' + name;
