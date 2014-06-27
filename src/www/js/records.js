@@ -738,10 +738,13 @@ var _base = {
         var savedAnnotations = this.getSavedRecords();
 
         if(id === undefined){
-            var date = new Date();
-            annotation.record['timestamp'] = date;
-            id = date.getTime().toString();
-            annotation.record.geofenceId = id;
+            id = annotation.record.geofenceId;
+            if(id === undefined){
+                var date = new Date();
+                annotation.record['timestamp'] = date;
+                id = date.getTime().toString();
+                annotation.record.geofenceId = id;
+            }
         }
 
         savedAnnotations[id] = annotation;
