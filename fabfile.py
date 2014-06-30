@@ -434,16 +434,20 @@ def generate_location_cache():
     import requests
 
     # glasgow city centre
-    # top_left = (55.8717, -4.2737)
-    # bottom_right = (55.8538, -4.2408)
+    #top_left = (55.8717, -4.2737)
+    #bottom_right = (55.8538, -4.2408)
+    
+    #bens pick of glasgow
+    top_left = (55.8795, -4.2995)
+    bottom_right = (55.8454, -4.2121)
 
     # edinburgh
     # top_left = (55.9868, -3.2759)
     # bottom_right = (55.8982, -3.1030)
 
     # newington
-    top_left = (55.9432, -3.1939)
-    bottom_right = (55.9238, -3.1549)
+    #top_left = (55.9432, -3.1939)
+    #bottom_right = (55.9238, -3.1549)
 
     zoom = 18
 
@@ -476,6 +480,7 @@ def generate_location_cache():
             centre = num2deg(xtile + 0.5, ytile + 0.5, zoom)
             url = 'http://nominatim.openstreetmap.org/reverse?format=xml&lat={0}&lon={1}&zoom=16&addressdetails=1&format=json'.format(centre[0], centre[1])
             result = requests.get(url).json()
+            print result
             address = result['address']
 
             if 'road' in address:
