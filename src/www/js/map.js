@@ -36,6 +36,7 @@ DAMAGE.
 define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(// jshint ignore:line
     ol, records, utils, proj4js){
     var RESOLUTIONS = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
+    var BOUNDS = new OpenLayers.Bounds (0,0,700000,1300000);
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
 
     var internalProjection;
@@ -57,6 +58,14 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(// jshint ign
     if(mapSettings.baseLayer === 'osm'){
         internalProjection = new OpenLayers.Projection('EPSG:900913');
         baseLayer = new OpenLayers.Layer.OSM();
+        BOUNDS = new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34);
+        RESOLUTIONS = [156543.03390625, 78271.516953125, 39135.7584765625,
+                      19567.87923828125, 9783.939619140625, 4891.9698095703125,
+                      2445.9849047851562, 1222.9924523925781, 611.4962261962891,
+                      305.74811309814453, 152.87405654907226, 76.43702827453613,
+                      38.218514137268066, 19.109257068634033, 9.554628534317017,
+                      4.777314267158508, 2.388657133579254, 1.194328566789627,
+                      0.5971642833948135, 0.25, 0.1, 0.05];
     }
     else{
         var proj = mapSettings.epsg;
@@ -188,9 +197,10 @@ var _this = {
         var options = {
             controls: [],
             projection: internalProjection,
+            displayProjection: externalProjection,
             units: 'm',
             resolutions: RESOLUTIONS,
-            maxExtent: new OpenLayers.Bounds (0,0,700000,1300000),
+            maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34),
             theme: null,
         };
 
@@ -424,7 +434,7 @@ var _this = {
      * function for adding TMS layers on the map
      * @param OpenLayers.Layer
      */
-    addTMSLayer: function(layer){
+    addMapLayer: function(layer){
         this.map.addLayer(layer);
     },
 
@@ -453,13 +463,39 @@ var _this = {
     },
 
     /**
+     * function for adding MBTiles layer
+     * @param options.name name of the layer that is added on the map
+     * @param options.url the url of the mbtiles server
+     * @param options.db the name of the db
+     */
+    addRemoteMBTilesLayer: function(options){
+        var mbtilesLayer = new OpenLayers.Layer.TMS(options.name, options.url, {
+            getURL: function mbtilesURL (bounds) {
+                var res = this.map.getResolution();
+                var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+                var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+                var z = this.map.getZoom();
+                // Deal with Bing layers zoom difference...
+                if (this.map.baseLayer.CLASS_NAME == 'OpenLayers.Layer.VirtualEarth' || this.map.baseLayer.CLASS_NAME == 'OpenLayers.Layer.Bing') {
+                    z = z + 1;
+                }
+                return this.url+"?db="+options.db+"&z="+z+"&x="+x+"&y="+((1 << z) - y - 1);
+            },
+            isBaseLayer: false,
+            opacity: 0.7
+        });
+        // See: http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection
+        
+        this.map.addLayer(mbtilesLayer);
+    },
+
+    /**
      * check if layer exists on map
      * @param name of the layer
      * @return true, false
      */
     checkIfLayerExists: function(name){
-        console.log(this.map.getLayersByName(name).length);
-        return (this.map.getLayersByName(name).length > 0)
+        return (this.map.getLayersByName(name).length > 0);
     },
 
     /**
