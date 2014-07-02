@@ -1,4 +1,5 @@
 config.xml
 cordova*
-*.html
+data
 theme
+*.html

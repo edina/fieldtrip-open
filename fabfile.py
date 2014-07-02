@@ -529,7 +529,6 @@ def install_cordova_plugin(repo, platform='android', target='local'):
 
     runtime = _get_runtime(target)[1]
 
-    import xml.etree.ElementTree as ET
     root = ET.parse(plugin_xml).getroot()
     id = root.attrib['id']
     with lcd(runtime):
@@ -1186,11 +1185,15 @@ def _is_in_branch(repo, branch):
 
     return is_in_branch
 
+def _make_dir(path):
+    # make path if it doesn't exist
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 def _make_dirs(dirs):
-    """ make dirs if not exist"""
+    # make directories if they don't exist
     for d in dirs:
-        if not os.path.exists(d):
-            os.makedirs(d)
+        _make_dir(d)
 
 def _merge(a, b, path=None):
     """
@@ -1223,6 +1226,12 @@ def _prettify(output, indent='2'):
         s = soup.div.prettify()
     r = re.compile(r'^(\s*)', re.MULTILINE)
     return r.sub(r'\1\1', s)
+
+def _path_join(*dirs):
+    # create path and make sure directory exists
+    path = os.path.join(*dirs)
+    _make_dir(path)
+    return path
 
 def _read_data(fil):
     """ TODO """
