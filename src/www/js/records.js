@@ -40,25 +40,11 @@ define(['utils'], function(utils){
 
     if(utils.isMobileDevice()){
         // create directory structure for annotations
-        utils.getPersistentRoot(function(root){
-            root.getDirectory(
-                "assets",
-                {create: true, exclusive: false},
-                function(dir){
-                    assetsDir = dir;
-                },
-                function(error){
-                    utils.inform('Failed finding assets directory. Saving will be disabled: ' + error);
-                });
-            root.getDirectory(
-                "editors",
-                {create: true, exclusive: false},
-                function(dir){
-                    editorsDir = dir;
-                },
-                function(error){
-                    utils.inform('Failed finding editors directory. Custom forms will be disabled: ' + error);
-                });
+        utils.createDir('assets', function(dir){
+            assetsDir = dir;
+        });
+        utils.createDir('editors', function(dir){
+            editorsDir = dir;
         });
     }
 
@@ -219,28 +205,10 @@ var _base = {
      */
     deleteAllEditors: function(callback){
         // easiest way to do this is to delete the directory and recreate it
-        editorsDir.removeRecursively(
-            function(){
-                utils.getPersistentRoot(function(root){
-                    root.getDirectory(
-                        "editors",
-                        {create: true, exclusive: false},
-                        function(dir){
-                            editorsDir = dir;
-                            callback();
-                        },
-                        function(error){
-                            utils.inform('Failed finding editors directory. Custom forms will be disabled: ' + error);
-                            callback();
-                        }
-                    );
-                });
-            },
-            function(error){
-                console.error("Problem deleting directory");
-                callback();
-            }
-        );
+        utils.deleteAllFilesFromDir(editorsDir, 'editors', function(dir){
+            editorsDir = dir;
+            callback();
+        });
     },
 
     /**

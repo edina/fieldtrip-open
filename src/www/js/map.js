@@ -421,6 +421,14 @@ var _this = {
     },
 
     /**
+     * function for adding TMS layers on the map
+     * @param OpenLayers.Layer
+     */
+    addTMSLayer: function(layer){
+        this.map.addLayer(layer);
+    },
+
+    /**
      * Add a new style record icons.
      * @param options
      *   type - the record type
@@ -442,6 +450,16 @@ var _this = {
         });
 
         this.getRecordsLayer().styleMap.styles["default"].rules.push(rule);
+    },
+
+    /**
+     * check if layer exists on map
+     * @param name of the layer
+     * @return true, false
+     */
+    checkIfLayerExists: function(name){
+        console.log(this.map.getLayersByName(name).length);
+        return (this.map.getLayersByName(name).length > 0)
     },
 
     /**
@@ -1086,7 +1104,8 @@ var _this = {
         });
 
         // Close popup on click
-        popup.on('click',  function() {
+        popup.off('vclick');
+        popup.on('vclick',  function() {
             popup.popup('close');
         });
     },

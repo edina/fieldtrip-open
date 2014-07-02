@@ -106,6 +106,49 @@ define(['settings', 'config'], function(settings, config){
     };
 
     /**
+     * Get permanent root directory
+     * @param callback function to be executed when persistent root is found
+     * @return Persistent file system.
+     */
+    var getPersistentRoot = function(callback){
+        return getFileSystemRoot(callback, LocalFileSystem.PERSISTENT);
+    };
+
+    /**
+     * Use jquery modal loader popup for inform alert. Note: Cannot be used in
+     * pageinit.
+     * @param message The text to display.
+     * @param duration The duration of the message in milliseconds. Default is 2
+     * secs.
+     */
+    var inform = function(message, duration, error){
+        if($('.ui-loader').is(":visible")){
+            if(typeof(error) !== 'undefined' && error){
+                $('.ui-loader').addClass('error');
+            }
+            else{
+                $('.ui-loader').removeClass('error');
+            }
+
+            $('.ui-loader h1').html(message);
+            return;
+        }
+
+        if(duration === undefined){
+            duration = 2000;
+        }
+
+        $.mobile.loading('show', {
+            text: message,
+            textonly: true,
+        });
+
+        setTimeout(function(){
+            $.mobile.loading('hide');
+        }, duration);
+    };
+
+    /**
      * @return Is this device a touch device?
      */
     var isTouchDevice = function(){
@@ -184,6 +227,25 @@ var _base = {
     },
 
     /**
+     * create Directory
+     * @param dirName directory name that needs to be created
+     * @param callback Function will be called when dir is successfully created.
+     */
+    createDir: function(dirName, callback){
+        this.getPersistentRoot(function(root){
+            root.getDirectory(
+                dirName,
+                {create: true, exclusive: false},
+                function(dir){
+                    callback(dir);
+                },
+                function(error){
+                    inform('Failed finding assets directory. Saving will be disabled: ' + error);
+                });
+        });
+    },
+
+    /**
      * Delete a file from file system.
      * @param fileName The name of the file to delete.
      * @param dir The directory the file belongs to.
@@ -216,6 +278,73 @@ var _base = {
                 }
             );
         }
+    },
+
+    /**
+     * Delete all files from a dir
+     * @param localDir that items will be removed from
+     * @param dirName The directory that needs to be empty.
+     * @param callback Function will return a dir value if file is successfully deleted
+     * otherwise undefined.
+     */
+    deleteAllFilesFromDir: function(localDir, dirName, callback){
+        // easiest way to do this is to delete the directory and recreate it
+        localDir.removeRecursively(
+            function(){
+                getPersistentRoot(function(root){
+                    root.getDirectory(
+                        dirName,
+                        {create: true, exclusive: false},
+                        function(dir){
+                            callback(dir);
+                        },
+                        function(error){
+                            inform('Failed finding editors directory. Custom forms will be disabled: ' + error);
+                            callback();
+                        }
+                    );
+                });
+            },
+            function(error){
+                console.error("Problem deleting directory");
+                callback();
+            }
+        );
+    },
+
+    /**
+     * fileTransfer, function for transferring file to the app
+     * @param source the url of the file in the cloud
+     * @param the local file that is saved to
+     */
+    fileTransfer: function(source, target, callback){
+
+        console.debug("download: " + source + " to " + target);
+        var ft = new FileTransfer();
+
+        ft.onprogress = $.proxy(function(progressEvent) {
+            if (progressEvent.lengthComputable) {
+                this.inform(Math.round((progressEvent.loaded / progressEvent.total)*100) + "%");
+            }
+        }, this);
+
+        ft.download(
+            encodeURI(source),
+            target,
+            $.proxy(function(entry) {
+                console.debug("download complete: ");
+                callback(true);
+            }, this),
+            $.proxy(function(error) {
+                // if this fails first check whitelist in cordova.xml
+                this.informError("Problem syncing " + name);
+                console.error("Problem downloading asset: " + error.source +
+                        " to: " + error.target +
+                        " error: " + this.getFileTransferErrorMsg(error) +
+                        "http status: " + error.http_status);// jshint ignore:line
+                callback(false);
+            }, this)
+        );
     },
 
     /**
@@ -401,9 +530,7 @@ var _base = {
      * @param callback function to be executed when persistent root is found
      * @return Persistent file system.
      */
-    getPersistentRoot: function(callback){
-        return getFileSystemRoot(callback, LocalFileSystem.PERSISTENT);
-    },
+    getPersistentRoot: getPersistentRoot,
 
     /**
      * @return The name of the root directory.
@@ -477,6 +604,24 @@ var _base = {
     },
 
     /**
+     * Use jquery modal loader popup for inform alert. Note: Cannot be used in
+     * pageinit.
+     * @param message The text to display.
+     * @param duration The duration of the message in milliseconds. Default is 2
+     * secs.
+     */
+    inform: inform,
+
+    /**
+     * Use jquery modal loader popup for error alert. Note: Cannot be used in
+     * pageinit.
+     * @param message The text to display.
+     */
+    informError: function(message){
+        this.inform(message, 2000, true);
+    },
+
+    /**
      * @return Is the browser chrome?
      */
     isChrome: function(){
@@ -519,9 +664,12 @@ var _base = {
     isPrivilegedUser: function(){
         var isPrivileged = false;
         if(isMobileApp){
-            if(config.priviligedusers &&
-               $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)){
-                isPrivileged = true;
+            if(config.priviligedusers){
+                if ((config.priviligedusers instanceof Array &&
+                     $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)) ||
+                    device.uuid === config.priviligedusers){
+                    isPrivileged = true;
+                }
             }
         }
         else{
@@ -529,7 +677,7 @@ var _base = {
         }
 
         if(!isPrivileged){
-            console.debug(device.uuid + " is a non privileged user");
+            console.debug(device.uuid + " privileged user is "+isPrivileged);
         }
 
         return isPrivileged;
@@ -546,49 +694,6 @@ var _base = {
         else {
             return false;
         }
-    },
-
-    /**
-     * Use jquery modal loader popup for inform alert. Note: Cannot be used in
-     * pageinit.
-     * @param message The text to display.
-     * @param duration The duration of the message in milliseconds. Default is 2
-     * secs.
-     */
-    inform: function(message, duration, error){
-        if($('.ui-loader').is(":visible")){
-            if(typeof(error) !== 'undefined' && error){
-                $('.ui-loader').addClass('error');
-            }
-            else{
-                $('.ui-loader').removeClass('error');
-            }
-
-            $('.ui-loader h1').html(message);
-            return;
-        }
-
-        if(duration === undefined){
-            duration = 2000;
-        }
-
-        $.mobile.loading('show', {
-            text: message,
-            textonly: true,
-        });
-
-        setTimeout(function(){
-            $.mobile.loading('hide');
-        }, duration);
-    },
-
-    /**
-     * Use jquery modal loader popup for error alert. Note: Cannot be used in
-     * pageinit.
-     * @param message The text to display.
-     */
-    informError: function(message){
-        this.inform(message, 2000, true);
     },
 
     /**

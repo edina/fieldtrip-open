@@ -478,7 +478,7 @@ def generate_html(platform="android", cordova=False):
                                     popup_template = environ_popup.get_template(data["popups"][popup]["template"])
                                     print "POPUP: adding {0} popup from plugins in {1}".format(data["popups"][popup]["template"], htmlfile)
                                 elif len(res) > 1:
-                                    print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"], )
+                                    print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"])
                                     sys.exit()
                                 else:
                                     popup_template = environ.get_template(data["popups"][popup]["template"])
