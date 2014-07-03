@@ -1194,6 +1194,33 @@ var _this = {
     },
 
     /**
+     * function for getting the latitude from y and z
+     * @return latitude
+     */
+    tileTMS2lat: function (y,z) {
+        var ymax = 1 << z;
+        y = ymax - y - 1;
+        return this.tile2lat(y,z);
+    },
+
+    /**
+     * function for getting the latitude from y and z
+     * @return latitude
+     */
+    tile2lat: function (y,z) {
+        var n=Math.PI-2*Math.PI*y/Math.pow(2,z);
+        return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
+    },
+
+    /**
+     * function for getting the longitude from x and z
+     * @return longitude
+     */
+    tile2long: function(x,z) {
+        return (x/Math.pow(2,z)*360-180);
+    },
+
+    /**
      * TODO
      */
     toInternal: function(lonlat){
