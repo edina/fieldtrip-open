@@ -80,75 +80,6 @@ define(['settings', 'config'], function(settings, config){
     }
 
     /**
-     * Get application root directory.
-     * @param callback Function executed after root has been retrieved.
-     * @param type LocalFileSystem.PERSISTENT or LocalFileSystem.TEMPORARY
-     */
-    var getFileSystemRoot = function(callback, type){
-        window.requestFileSystem(
-            type,
-            0,
-            function(fileSystem){
-                fileSystem.root.getDirectory(
-                    _this.getRootDir(),
-                    {create: true, exclusive: false},
-                    function(dir){
-                        callback(dir);
-                    },
-                    function(error){
-                        navigator.notification.alert('Failed to get file system:' + error);
-                    });
-            },
-            function(error){
-                navigator.notification.alert('Failed to get file system:' + error);
-            }
-        );
-    };
-
-    /**
-     * Get permanent root directory
-     * @param callback function to be executed when persistent root is found
-     * @return Persistent file system.
-     */
-    var getPersistentRoot = function(callback){
-        return getFileSystemRoot(callback, LocalFileSystem.PERSISTENT);
-    };
-
-    /**
-     * Use jquery modal loader popup for inform alert. Note: Cannot be used in
-     * pageinit.
-     * @param message The text to display.
-     * @param duration The duration of the message in milliseconds. Default is 2
-     * secs.
-     */
-    var inform = function(message, duration, error){
-        if($('.ui-loader').is(":visible")){
-            if(typeof(error) !== 'undefined' && error){
-                $('.ui-loader').addClass('error');
-            }
-            else{
-                $('.ui-loader').removeClass('error');
-            }
-
-            $('.ui-loader h1').html(message);
-            return;
-        }
-
-        if(duration === undefined){
-            duration = 2000;
-        }
-
-        $.mobile.loading('show', {
-            text: message,
-            textonly: true,
-        });
-
-        setTimeout(function(){
-            $.mobile.loading('hide');
-        }, duration);
-    };
-
-    /**
      * @return Is this device a touch device?
      */
     var isTouchDevice = function(){
@@ -179,7 +110,7 @@ define(['settings', 'config'], function(settings, config){
         return number + ""; // always return a string
     };
 
-var _base = {
+return {
 
     /**
      * TODO
@@ -224,127 +155,6 @@ var _base = {
      */
     capitaliseFirstLetter: function(string){
         return string.charAt(0).toUpperCase() + string.slice(1);
-    },
-
-    /**
-     * create Directory
-     * @param dirName directory name that needs to be created
-     * @param callback Function will be called when dir is successfully created.
-     */
-    createDir: function(dirName, callback){
-        this.getPersistentRoot(function(root){
-            root.getDirectory(
-                dirName,
-                {create: true, exclusive: false},
-                function(dir){
-                    callback(dir);
-                },
-                function(error){
-                    inform('Failed finding assets directory. Saving will be disabled: ' + error);
-                });
-        });
-    },
-
-    /**
-     * Delete a file from file system.
-     * @param fileName The name of the file to delete.
-     * @param dir The directory the file belongs to.
-     * @param callback Function will be called when file is successfully deleted.
-     */
-    deleteFile: function(fileName, dir, callback){
-        if(dir === undefined){
-            console.warn("Target directory not defined: " + dir);
-        }
-        else{
-            dir.getFile(
-                fileName,
-                {create: true, exclusive: false},
-                function(fileEntry){
-                    fileEntry.remove(
-                        function(entry){
-                            console.debug("File deleted: " + fileName);
-                            if(callback){
-                                callback();
-                            }
-                        },
-                        function(error){
-                            console.error("Failed to delete file:" + fileName +
-                                          ". errcode = " + error.code);
-                        });
-                },
-                function(error){
-                    console.error("Failed to delete file: " + fileName +
-                                  ". errcode = " + error.code);
-                }
-            );
-        }
-    },
-
-    /**
-     * Delete all files from a dir
-     * @param localDir that items will be removed from
-     * @param dirName The directory that needs to be empty.
-     * @param callback Function will return a dir value if file is successfully deleted
-     * otherwise undefined.
-     */
-    deleteAllFilesFromDir: function(localDir, dirName, callback){
-        // easiest way to do this is to delete the directory and recreate it
-        localDir.removeRecursively(
-            function(){
-                getPersistentRoot(function(root){
-                    root.getDirectory(
-                        dirName,
-                        {create: true, exclusive: false},
-                        function(dir){
-                            callback(dir);
-                        },
-                        function(error){
-                            inform('Failed finding editors directory. Custom forms will be disabled: ' + error);
-                            callback();
-                        }
-                    );
-                });
-            },
-            function(error){
-                console.error("Problem deleting directory");
-                callback();
-            }
-        );
-    },
-
-    /**
-     * fileTransfer, function for transferring file to the app
-     * @param source the url of the file in the cloud
-     * @param the local file that is saved to
-     */
-    fileTransfer: function(source, target, callback){
-
-        console.debug("download: " + source + " to " + target);
-        var ft = new FileTransfer();
-
-        ft.onprogress = $.proxy(function(progressEvent) {
-            if (progressEvent.lengthComputable) {
-                this.inform(Math.round((progressEvent.loaded / progressEvent.total)*100) + "%");
-            }
-        }, this);
-
-        ft.download(
-            encodeURI(source),
-            target,
-            $.proxy(function(entry) {
-                console.debug("download complete: ");
-                callback(true);
-            }, this),
-            $.proxy(function(error) {
-                // if this fails first check whitelist in cordova.xml
-                this.informError("Problem syncing " + name);
-                console.error("Problem downloading asset: " + error.source +
-                        " to: " + error.target +
-                        " error: " + this.getFileTransferErrorMsg(error) +
-                        "http status: " + error.http_status);// jshint ignore:line
-                callback(false);
-            }, this)
-        );
     },
 
     /**
@@ -538,20 +348,6 @@ var _base = {
     },
 
     /**
-     * Get permanent root directory
-     * @param callback function to be executed when persistent root is found
-     * @return Persistent file system.
-     */
-    getPersistentRoot: getPersistentRoot,
-
-    /**
-     * @return The name of the root directory.
-     */
-    getRootDir: function(){
-        return "edina";
-    },
-
-    /**
      * @return The field trip server web server URL.
      */
     getServerUrl: function() {
@@ -574,16 +370,6 @@ var _base = {
             zeroFill(today.getHours()) + "h" +
             zeroFill(today.getMinutes()) + "m" +
             zeroFill(today.getSeconds()) + "s";
-    },
-
-    /**
-     * Get temporary root directory, this is secure and deleted if application is
-     * uninstalled.
-     * @param callback The function to be called when filesystem is retrieved.
-     * @return Temporary file system.
-     */
-    getTemporaryRoot: function(callback){
-        return getFileSystemRoot(callback, LocalFileSystem.TEMPORARY);
     },
 
     /**
@@ -622,7 +408,32 @@ var _base = {
      * @param duration The duration of the message in milliseconds. Default is 2
      * secs.
      */
-    inform: inform,
+    inform: function(message, duration, error){
+        if($('.ui-loader').is(":visible")){
+            if(typeof(error) !== 'undefined' && error){
+                $('.ui-loader').addClass('error');
+            }
+            else{
+                $('.ui-loader').removeClass('error');
+            }
+
+            $('.ui-loader h1').html(message);
+            return;
+        }
+
+        if(duration === undefined){
+            duration = 2000;
+        }
+
+        $.mobile.loading('show', {
+            text: message,
+            textonly: true,
+        });
+
+        setTimeout(function(){
+            $.mobile.loading('hide');
+        }, duration);
+    },
 
     /**
      * Use jquery modal loader popup for error alert. Note: Cannot be used in
@@ -831,64 +642,7 @@ var _base = {
     /**
      * App version.
      */
-    version: config.version,
-
-    /**
-     * Write string to file
-     * @param fileName The new file name.
-     * @param data The new file content.
-     * @param dir Optional directory object.
-     * @param callback The function that is executed when file has finished writing.
-     */
-    writeToFile: function(options, dir, callback){
-        dir.getFile(
-            options.fileName,
-            {create: true, exclusive: false},
-            function(fileEntry){
-                fileEntry.createWriter(
-                    function(writer){
-                        writer.onwrite = function(evt) {
-                            console.debug('File ' + options.fileName +
-                                          ' written to ' + dir.fullPath);
-                            if(callback){
-                                callback();
-                            }
-                        };
-                        writer.write(options.data);
-                    },
-                    function(error){
-                        console.error("Failed to write to file:" + options.fileName +
-                                      ". errcode = " + error.code);
-                    }
-                );
-            },
-            function(error){
-                console.error(error + " : " + error.code);
-                console.error("Failed to create file: " + options.fileName +
-                              ". " + _this.getFileErrorMsg(error));
-            }
-        );
-    }
+    version: config.version
 };
-
-var _this = {};
-var _android = {
-    /**
-     * @return Get app root name. For android make sure the directory is deleted
-     * when the app is uninstalled.
-     */
-    getRootDir: function(){
-        return "Android/data/" + config.package;
-    }
-};
-
-if(_base.isIOSApp()){
-    _this = _base;
-}
-else{
-    $.extend(_this, _base, _android);
-}
-
-return _this;
 
 });

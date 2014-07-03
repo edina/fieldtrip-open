@@ -34,16 +34,16 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Camera */
 
-define(['utils'], function(utils){
+define(['utils', 'file'], function(utils, file){
     var assetsDir;
     var editorsDir;
 
     if(utils.isMobileDevice()){
         // create directory structure for annotations
-        utils.createDir('assets', function(dir){
+        file.createDir('assets', function(dir){
             assetsDir = dir;
         });
-        utils.createDir('editors', function(dir){
+        file.createDir('editors', function(dir){
             editorsDir = dir;
         });
     }
@@ -106,7 +106,7 @@ var _base = {
             url = 'editors/' + form + '.edtr';
         }
         else{
-            url =  utils.getFilePath(editorsDir) + '/' + form + '.edtr';
+            url =  file.getFilePath(editorsDir) + '/' + form + '.edtr';
         }
 
         $.ajax({
@@ -205,7 +205,7 @@ var _base = {
      */
     deleteAllEditors: function(callback){
         // easiest way to do this is to delete the directory and recreate it
-        utils.deleteAllFilesFromDir(editorsDir, 'editors', function(dir){
+        file.deleteAllFilesFromDir(editorsDir, 'editors', function(dir){
             editorsDir = dir;
             callback();
         });
@@ -223,7 +223,7 @@ var _base = {
             // TODO: what about assets?
             if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
                 if(typeof(annotation.file) !== 'undefined'){
-                    utils.deleteFile(
+                    file.deleteFile(
                         annotation.file.substr(annotation.file.lastIndexOf('/') + 1),
                         assetsDir,
                         function(){
@@ -278,7 +278,7 @@ var _base = {
         if(dir === undefined){
             dir = assetsDir;
         }
-        utils.deleteFile(fileName, dir, callback);
+        file.deleteFile(fileName, dir, callback);
     },
 
     /**
