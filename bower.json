@@ -18,8 +18,9 @@
     "dependencies": {
         "jquery": "1.9.1",
         "jquery-mobile-bower": "1.3.2",
-        "iscroll": "4.2",
         "jquery-mobile-iscrollview-amd": "1.2.9",
+        "iscroll": "4.2",
+        "leaflet": "0.7.3",
         "requirejs": "2.1.9",
         "requirejs-text": "2.0.10",
         "underscore": "1.5.2",
@@ -39,6 +40,10 @@
         ],
         "jquery-mobile-iscrollview-amd": [
             "lib/jquery.mobile.iscrollview-closure-min.js"
+        ],
+        "leaflet": [
+            "dist/leaflet.js",
+            "dist/leaflet.css"
         ],
         "requirejs": [
             "require.js"

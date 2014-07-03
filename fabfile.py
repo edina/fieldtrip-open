@@ -411,7 +411,6 @@ def generate_html(platform="android", cordova=False):
         environ_project = Environment(loader=FileSystemLoader(paths["project"]))
         environ.globals["_get_letter"] = _get_letter
         environ_project.globals["_get_letter"] = _get_letter
-        #environ.globals["_sorted"] = _sorted
 
         header_template = environ_core.get_template("header.html")
         footer_template = environ_core.get_template("footer.html")
@@ -470,9 +469,7 @@ def generate_html(platform="android", cordova=False):
                         popups=[]
                         if "popups" in data:
                             for popup in data["popups"]:
-                                #print data["popups"][popup]["template"]
                                 res = _check_for_template(data["popups"][popup]["template"])
-                                #print len(res)
                                 if len(res) == 1:
                                     environ_popup = Environment(loader=FileSystemLoader(res[0]))
                                     popup_template = environ_popup.get_template(data["popups"][popup]["template"])
@@ -519,6 +516,7 @@ def install_cordova_plugin(repo, platform='android', target='local'):
     """
     _check_command('cordova')
 
+    repo = os.path.expanduser(repo)
     if not os.path.exists(repo):
         print "Can't find plugin {0}".format(repo)
         exit(-1)
@@ -633,7 +631,7 @@ def install_project(platform='android',
 
     target_dir, runtime = _get_runtime(target)
     js_ext_dir = os.sep.join(('www', 'js', 'ext'))
-    css_dir = os.sep.join(('www', 'css', 'ext'))
+    css_ext_dir = os.sep.join(('www', 'css', 'ext'))
 
     if os.path.exists(runtime):
         # check if they want to delete existing installation
@@ -726,7 +724,7 @@ def install_project(platform='android',
         # clean up old installs
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_ext_dir))
-            local('rm {0}/*.css'.format(css_dir))
+            local('rm {0}/*.css'.format(css_ext_dir))
             local('rm {0}/plugins/*'.format(asset_dir))
 
         # set up bower dependecies
@@ -737,10 +735,15 @@ def install_project(platform='android',
                 f = f.replace('x.x', version)
                 src = os.sep.join((bower_home, dep, f))
                 f_name = dep.replace('-bower', '')
+
+                if f_name == 'leaflet' and  _config('maplib', section='app') != 'leaflet':
+                    # only install leaflet if required
+                    continue
+
                 if f[len(f) - 2:] == 'js':
                     dest = os.sep.join((js_ext_dir, '{0}.js'.format(f_name)))
                 else:
-                    dest = os.sep.join((css_dir, '{0}.css'.format(f_name)))
+                    dest = os.sep.join((css_ext_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
 
     # generate config js
@@ -778,22 +781,23 @@ def install_project(platform='android',
         local('cp {0} {1}'.format(os.sep.join((proj4js_path, 'lib', 'proj4js-compressed.js')),
                                   os.sep.join((js_ext_dir, 'proj4js.js'))))
 
-    # check if openlayers is installed
-    ol_dir = 'OpenLayers-%s' % OPENLAYERS_VERSION
-    ol_path = os.sep.join((dist_path, ol_dir))
+    if _config('maplib', section='app') != 'leaflet':
+        # check if openlayers is installed
+        ol_dir = 'OpenLayers-%s' % OPENLAYERS_VERSION
+        ol_path = os.sep.join((dist_path, ol_dir))
 
-    if not os.path.exists(ol_path):
-        # install openlayers
-        with lcd(dist_path):
-            ol_tar_file_name = '%s.tar.gz' % ol_dir
-            ol_tar = 'http://openlayers.org/download/%s' % ol_tar_file_name
-            local('wget %s' % ol_tar)
-            local('tar xvfz %s' % ol_tar_file_name)
+        if not os.path.exists(ol_path):
+            # install openlayers
+            with lcd(dist_path):
+                ol_tar_file_name = '%s.tar.gz' % ol_dir
+                ol_tar = 'http://openlayers.org/download/%s' % ol_tar_file_name
+                local('wget %s' % ol_tar)
+                local('tar xvfz %s' % ol_tar_file_name)
 
-    with lcd(os.sep.join((ol_path, 'build'))):
-        cfg_file = os.sep.join((src_dir, 'etc', 'openlayers-mobile.cfg'))
-        js_mobile = os.sep.join((runtime, js_ext_dir, 'openlayers.js'))
-        local('./build.py %s %s' % (cfg_file, js_mobile))
+        with lcd(os.sep.join((ol_path, 'build'))):
+            cfg_file = os.sep.join((src_dir, 'etc', 'openlayers-mobile.cfg'))
+            js_mobile = os.sep.join((runtime, js_ext_dir, 'openlayers.js'))
+            local('./build.py %s %s' % (cfg_file, js_mobile))
 
 @task
 def install_project_ios():

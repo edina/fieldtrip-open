@@ -394,19 +394,6 @@ var _base = {
     },
 
     /**
-     * @param dir Directory on the device.
-     * @return The full path of the directory.
-     */
-    getFilePath: function(dir){
-        if(config.noCdvFileProtocol){
-            return dir.toNativeURL();
-        }
-        else {
-            return dir.toURL();
-        }
-    },
-
-    /**
      * @param error The error obj.
      * @return File error message as a string.
      */
@@ -457,6 +444,19 @@ var _base = {
     },
 
     /**
+     * @param dir Directory on the device.
+     * @return The full path of the directory.
+     */
+    getFilePath: function(dir){
+        if(config.noCdvFileProtocol){
+            return dir.toNativeURL();
+        }
+        else {
+            return dir.toURL();
+        }
+    },
+
+    /**
      * @param error The error obj.
      * @return File error message as a string.
      */
@@ -490,6 +490,18 @@ var _base = {
         return '?version=' + this.version +
             '&id=' + userId +
             '&app=free&cache=' + cache;
+    },
+
+    /**
+     * @return The map library name (openlayers or leaflet)
+     */
+    getMapLib: function(){
+        var lib = 'openlayers';
+        if(config.maplib){
+            lib = config.maplib;
+        }
+
+        return lib;
     },
 
     /**

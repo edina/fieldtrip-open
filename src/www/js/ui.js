@@ -563,7 +563,7 @@ var _ui = {
             }
         }, this));
 
-        if(map.getRecordsLayer().visibility){
+        if(map.isRecordsLayerVisible()){
             recordsVisible();
         }
         else{

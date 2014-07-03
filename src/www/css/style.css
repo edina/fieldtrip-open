@@ -782,3 +782,9 @@ div.record-extra > div > img {
    border-top: none;
    text-align: center;
 }
+
+/********* Leaflet *************/
+
+.leaflet-control-zoom{
+    display: none;
+}
