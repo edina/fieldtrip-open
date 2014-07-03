@@ -64,8 +64,7 @@ define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
         //var map = _this.map;
         var baseLayerName;
         if(_this.map){
-            baseLayerName = _this.map.getBaseLayerName();
-            //baseLayer.layername;
+            baseLayerName = _this.getBaseLayerName();
         }
 
         var applyDefaults = $.proxy(function(){
@@ -165,10 +164,17 @@ var _base = {
     },
 
     /**
+     * @return layer with the user icon.
+     */
+    getBaseLayerName: function(){
+        return this.getLayerName(this.getBaseLayer());
+    },
+
+    /**
      * @return full URL of the map.
      */
     getBaseMapFullURL: function(){
-        return this.baseMapFullURL+ serviceVersion + '/' + this.map.baseLayer.layername + '/';
+        return this.baseMapFullURL + serviceVersion + '/' + this.map.baseLayer.layername + '/';
     },
 
     /**
@@ -1204,6 +1210,14 @@ var _openlayers = {
     },
 
     /**
+     * @param layer
+     * @return The name of the layer.
+     */
+    getLayerName: function(layer){
+        return layer.name;
+    },
+
+    /**
      * @return current map zoom level.
      */
     getZoom: function(){
@@ -1323,35 +1337,6 @@ var _openlayers = {
 
         this.map.setCenter(lonlat, zoom);
     },
-
-    /**
-     * Display all annotations on speficied layer.
-     * @param layer The layer to use.
-     */
-    // var showAnnotations = function(layer){
-    //     var features = [];
-
-    //     //Utils.printObj(records.getSavedrecords());
-
-    //     $.each(records.getSavedRecords(), function(id, annotation){
-    //         var record = annotation.record;
-    //         if(record.point !== undefined){
-    //             features.push(new OpenLayers.Feature.Vector(
-    //                 new OpenLayers.Geometry.Point(record.point.lon,
-    //                                               record.point.lat),
-    //                 {
-    //                     'id': id,
-    //                     'type': records.getEditorId(annotation)
-    //                 }
-    //             ));
-    //         }
-    //         else{
-    //             console.debug("record " + id + " has no location");
-    //         }
-    //     });
-
-    //     layer.addFeatures(features);
-    // };
 
     /**
      * Add bounding box to layer and centre map.
@@ -1553,13 +1538,6 @@ var _leaflet = {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             maxZoom: this.MAX_ZOOM
         }).addTo(this.map);
-
-        // this.map = L.map('map', { zoomControl:false }).setView([55.6, -3.5], 13).setZoom(7);
-        // L.Icon.Default.imagePath = 'images';
-        // new L.Control.Zoom({ position: 'topright' }).addTo(this.map);
-        // L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
-        //     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        //     maxZoom: 18}).addTo(this.map);
     },
 
     /**
@@ -1705,12 +1683,16 @@ var _leaflet = {
 };
 
 if(utils.getMapLib() === 'leaflet'){
-    require(['ext/leaflet'], function(){});
+    require(['ext/leaflet'], function(){
+        _this.init();
+    });
     $('head').prepend('<link rel="stylesheet" href="css/ext/leaflet.css" type="text/css" />');
     $.extend(_this, _base, _leaflet);
 }
 else{
-    require(['ext/openlayers'], function(){});
+    require(['ext/openlayers'], function(){
+        _this.init();
+    });
     $.extend(_this, _base, _openlayers);
 }
 
