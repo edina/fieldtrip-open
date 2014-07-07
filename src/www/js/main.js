@@ -72,8 +72,6 @@ function onDeviceReady(){
     });
 
     require(['ui', 'map', 'tests/main'], function(ui, map, tests) {
-        map.init();
-
         // called when all plugins are finished loading
         var pluginsComplete = function(){
             // when all plugins are finished loading finialise map
