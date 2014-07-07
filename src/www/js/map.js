@@ -64,8 +64,7 @@ define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
         //var map = _this.map;
         var baseLayerName;
         if(_this.map){
-            baseLayerName = _this.map.getBaseLayerName();
-            //baseLayer.layername;
+            baseLayerName = _this.getBaseLayerName();
         }
 
         var applyDefaults = $.proxy(function(){
@@ -165,10 +164,17 @@ var _base = {
     },
 
     /**
+     * @return layer with the user icon.
+     */
+    getBaseLayerName: function(){
+        return this.getLayerName(this.getBaseLayer());
+    },
+
+    /**
      * @return full URL of the map.
      */
     getBaseMapFullURL: function(){
-        return this.baseMapFullURL+ serviceVersion + '/' + this.map.baseLayer.layername + '/';
+        return this.baseMapFullURL + serviceVersion + '/' + this.map.baseLayer.layername + '/';
     },
 
     /**
@@ -1212,6 +1218,14 @@ var _openlayers = {
     },
 
     /**
+     * @param layer
+     * @return The name of the layer.
+     */
+    getLayerName: function(layer){
+        return layer.name;
+    },
+
+    /**
      * @return current map zoom level.
      */
     getZoom: function(){
@@ -1748,12 +1762,16 @@ var _leaflet = {
 };
 
 if(utils.getMapLib() === 'leaflet'){
-    require(['ext/leaflet'], function(){});
+    require(['ext/leaflet'], function(){
+        _this.init();
+    });
     $('head').prepend('<link rel="stylesheet" href="css/ext/leaflet.css" type="text/css" />');
     $.extend(_this, _base, _leaflet);
 }
 else{
-    require(['ext/openlayers'], function(){});
+    require(['ext/openlayers'], function(){
+        _this.init();
+    });
     $.extend(_this, _base, _openlayers);
 }
 
