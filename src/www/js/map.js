@@ -476,6 +476,14 @@ var _base = {
     },
 
     /**
+     * Remove layer from map.
+     * @param layer.
+     */
+    removeLayer: function(layer){
+        this.map.removeLayer(layer);
+    },
+
+    /**
      * Set centre of the map with a comma separated lon lat string
      * @params lonLatStr The point to centre on as a comma seperated string
      * @zoom The new zoom level
@@ -1276,7 +1284,7 @@ var _openlayers = {
 
     /**
      * Register an object and function to receive map zoom change updates.
-     * @param obj
+     * @param obj - Object scope
      * @param callback
      */
     registerZoom: function(obj, callback){
@@ -1289,14 +1297,6 @@ var _openlayers = {
      */
     removeAllFeatures: function(layer){
         layer.removeAllFeatures();
-    },
-
-    /**
-     * Remove layer from map.
-     * @param layer An openlayers layer.
-     */
-    removeLayer: function(layer){
-        this.map.removeLayer(layer);
     },
 
     /**
@@ -1323,35 +1323,6 @@ var _openlayers = {
 
         this.map.setCenter(lonlat, zoom);
     },
-
-    /**
-     * Display all annotations on speficied layer.
-     * @param layer The layer to use.
-     */
-    // var showAnnotations = function(layer){
-    //     var features = [];
-
-    //     //Utils.printObj(records.getSavedrecords());
-
-    //     $.each(records.getSavedRecords(), function(id, annotation){
-    //         var record = annotation.record;
-    //         if(record.point !== undefined){
-    //             features.push(new OpenLayers.Feature.Vector(
-    //                 new OpenLayers.Geometry.Point(record.point.lon,
-    //                                               record.point.lat),
-    //                 {
-    //                     'id': id,
-    //                     'type': records.getEditorId(annotation)
-    //                 }
-    //             ));
-    //         }
-    //         else{
-    //             console.debug("record " + id + " has no location");
-    //         }
-    //     });
-
-    //     layer.addFeatures(features);
-    // };
 
     /**
      * Add bounding box to layer and centre map.
@@ -1474,9 +1445,30 @@ var _leaflet = {
      * Set up openlayer map.
      */
     init: function(){
-        //_base.init();
         this.MAX_ZOOM = 18;
-        this.minLocateZoomTo = this.MAX_ZOOM - 3;
+        this.minLocateZoomTo = this.MAX_ZOOM - 10;
+    },
+
+    addGeoJSONLayer: function(data){
+        var layer;
+        if(this.map){
+            layer = L.geoJson(data, {
+                pointToLayer: $.proxy(function(feature, latlng) {
+                    var icon = L.divIcon({
+                        className: 'cluster-icon',
+                        html: '<div class="cluster-icon-text">' + feature.properties.count + '</div>',
+                        iconSize: [40, 40]
+                    });
+
+                    return L.marker(latlng, {icon: icon}).addTo(this.map);
+                }, this),
+                onEachFeature: function (feature, layer) {
+                    //layer.bindPopup(feature.properties.count);
+                }
+            }).addTo(this.map);
+        }
+
+        return layer;
     },
 
     /**
@@ -1538,28 +1530,37 @@ var _leaflet = {
     },
 
     /**
-     * Render the map on a defined div.
+     * Render the map on a defined div. Note the difference in the way the
+     leaflet map is enabled. As it has no render function it need to be
+     initialised each time the page is displayed.
      * @param div The div id.
      */
     display: function(div){
         this.map = L.map('map');
-        var centre = [defaultUserLat, defaultUserLon];
-        if(this.userLonLat){
-            centre = [this.userLonLat.lat, this.userLonLat.lng];
-        }
-        this.map.setView(centre, this.minLocateZoomTo);
+
+        // create base layer
         L.tileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
             subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             maxZoom: this.MAX_ZOOM
         }).addTo(this.map);
 
-        // this.map = L.map('map', { zoomControl:false }).setView([55.6, -3.5], 13).setZoom(7);
-        // L.Icon.Default.imagePath = 'images';
-        // new L.Control.Zoom({ position: 'topright' }).addTo(this.map);
-        // L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
-        //     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        //     maxZoom: 18}).addTo(this.map);
+        // set up listeners
+        if(this.dragend){
+            this.map.on('dragend', this.dragend);
+        }
+        if(this.zoomend){
+            this.map.on('zoomend', this.zoomend);
+        }
+        if(this.onready){
+            this.map.on('load', this.onready);
+        }
+
+        var centre = [defaultUserLat, defaultUserLon];
+        if(this.userLonLat){
+            centre = [this.userLonLat.lat, this.userLonLat.lng];
+        }
+        this.map.setView(centre, this.minLocateZoomTo);
     },
 
     /**
@@ -1576,6 +1577,13 @@ var _leaflet = {
      */
     getBaseLayer: function(){
 
+    },
+
+    /**
+     * @return Current map extent/Bounds.
+     */
+    getExtent: function(){
+        return this.map.getBounds();
     },
 
     /**
@@ -1600,7 +1608,12 @@ var _leaflet = {
      * @return current map zoom level.
      */
     getZoom: function(){
-        return 2;
+        if(this.map){
+            return this.map.getZoom();
+        }
+        else{
+            return -1;
+        }
     },
 
     /**
@@ -1645,6 +1658,36 @@ var _leaflet = {
     },
 
     /**
+     * Register an object and function to receive map initialised event.
+     * @param obj - Object scope
+     * @param callback
+     */
+    registerReady: function(obj, callback){
+        // TODO - support multiple listerners
+        this.onready = $.proxy(callback, obj);
+    },
+
+    /**
+     * Register an object and function to receive map pan events.
+     * @param obj
+     * @param callback
+     */
+    registerPan: function(obj, callback){
+        // TODO - support multiple listerners
+        //this.dragend = $.proxy(callback, obj);
+    },
+
+    /**
+     * Register an object and function to receive map zoom change updates.
+     * @param obj
+     * @param callback
+     */
+    registerZoom: function(obj, callback){
+        // TODO - support multiple listerners
+        this.zoomend = $.proxy(callback, obj);
+    },
+
+    /**
      * Centre map with zoom level.
      * options:
      *   lon
@@ -1661,7 +1704,7 @@ var _leaflet = {
      * @param layer
      */
     showLayer: function(layer){
-        //this.getLocateLayer().setVisibility(true);
+
     },
 
     /**

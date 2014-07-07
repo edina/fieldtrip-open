@@ -788,3 +788,14 @@ div.record-extra > div > img {
 .leaflet-control-zoom{
     display: none;
 }
+
+.cluster-icon{
+    background: url("../css/images/cluster.png") 50% 50% no-repeat;
+    background-size: 32px 32px;
+}
+
+.cluster-icon-text{
+    padding: 12px 0 0 8px;
+    color: black;
+    font-size: 10px;
+}
