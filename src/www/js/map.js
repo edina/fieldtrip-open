@@ -33,8 +33,8 @@ DAMAGE.
 
 /* global OpenLayers */
 
-define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(// jshint ignore:line
-    ol, records, utils, proj4js){
+define(['ext/openlayers', 'settings', 'records', 'utils', 'proj4js'], function(// jshint ignore:line
+    ol, settings, records, utils, proj4js){
     var RESOLUTIONS = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
     var BOUNDS = new OpenLayers.Bounds (0,0,700000,1300000);
     var MIN_LOCATE_ZOOM_TO = RESOLUTIONS.length - 3;
@@ -177,7 +177,7 @@ var _this = {
     /**
      * Enable high accuracy flag.
      */
-    GPS_ACCURACY_FLAG: true,
+    GPS_ACCURACY_FLAG: settings.get('accuracy-gps') === 'true',
 
     /**
      * Resolution level to zoom to after user locate.
@@ -726,6 +726,7 @@ var _this = {
         }
 
         // if interval is defined create a watch
+        console.log("GPS Accuracy is "+this.GPS_ACCURACY_FLAG);
         if(options.interval > 0){
             this.geoLocationWatchID = navigator.geolocation.watchPosition(
                 onSuccess,
@@ -1264,6 +1265,14 @@ var _this = {
             zoom: undefined,
             lonLat: lonlat
         });
+    },
+
+    /**
+     * function for updating the GPS Accuracy flag
+     * @param value
+     */
+    updateAccuracyGPS: function(value){
+        this.GPS_ACCURACY_FLAG = (value === 'true');
     },
 
     /**
