@@ -736,7 +736,7 @@ def install_project(platform='android',
                 src = os.sep.join((bower_home, dep, f))
                 f_name = dep.replace('-bower', '')
 
-                if f_name == 'leaflet' and  _config('maplib', section='app') != 'leaflet':
+                if (f_name == 'leaflet' or f_name == 'leaflet.marketcluster') and  _config('maplib', section='app') != 'leaflet':
                     # only install leaflet if required
                     continue
 

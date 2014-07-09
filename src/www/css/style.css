@@ -789,13 +789,15 @@ div.record-extra > div > img {
     display: none;
 }
 
-.cluster-icon{
+.cluster-icon,
+.marker-cluster{
     background: url("../css/images/cluster.png") 50% 50% no-repeat;
     background-size: 32px 32px;
 }
 
-.cluster-icon-text{
-    padding: 12px 0 0 8px;
+.leaflet-marker-icon div{
+    padding: 12px 0 0 0;
     color: black;
     font-size: 10px;
+    text-align: center;
 }

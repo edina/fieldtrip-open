@@ -1460,9 +1460,13 @@ var _leaflet = {
      */
     init: function(){
         this.MAX_ZOOM = 18;
-        this.minLocateZoomTo = this.MAX_ZOOM - 10;
+        this.minLocateZoomTo = this.MAX_ZOOM - 5;
     },
 
+    /**
+     * Add geojson layer to map.
+     * @param data Geojson object.
+     */
     addGeoJSONLayer: function(data){
         var layer;
         if(this.map){
@@ -1498,22 +1502,27 @@ var _leaflet = {
 
     /**
      * Add a new layer to the map.
-     * @param options
-     *   id - layer id
-     *   style - some styles
-     *   visible - intitial visibility
+     * @param layer
      */
-    addLayer: function(options){
-
+    addLayer: function(layer){
+        this.map.addLayer(layer);
     },
 
     /**
-     * Add multiple markers to the map.
-     * @param layer The layers to add the markers to.
-     * @param markers An array of markers.
+     * Add a marker to the given layer.
+     * @param point Marker latlon.
+     * @param title
+     * @param layer
      */
-    addMarkers: function(layer){
+    addMarker: function(point, title, layer){
+        var marker = new L.marker(
+            new L.LatLng(point.lat, point.lon),
+            {
+                title: title
+            }
+        );
 
+        layer.addLayer(marker);
     },
 
     /**
@@ -1521,7 +1530,7 @@ var _leaflet = {
      * @param layer to add.
      */
     addMapLayer: function(layer){
-
+        this.addLayer(layer);
     },
 
     /**
@@ -1535,12 +1544,10 @@ var _leaflet = {
     },
 
     /**
-     * Create a marker for a given FT annotation.
-     * @param id Annotation id
-     * @param annotation FT annotation object.
+     *
      */
-    createMarker: function(id, annotation){
-
+    createMarkerLayer: function(){
+        return new L.markerClusterGroup();
     },
 
     /**
@@ -1763,7 +1770,9 @@ var _leaflet = {
 
 if(utils.getMapLib() === 'leaflet'){
     require(['ext/leaflet'], function(){
-        _this.init();
+        require(['ext/leaflet.markercluster'], function(){
+            _this.init();
+        });
     });
     $('head').prepend('<link rel="stylesheet" href="css/ext/leaflet.css" type="text/css" />');
     $.extend(_this, _base, _leaflet);
