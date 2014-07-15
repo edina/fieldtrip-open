@@ -801,3 +801,7 @@ div.record-extra > div > img {
     font-size: 10px;
     text-align: center;
 }
+
+.leaflet-popup-content{
+    color: black;
+}

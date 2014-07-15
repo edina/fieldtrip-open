@@ -1298,10 +1298,10 @@ var _openlayers = {
 
     /**
      * Register an object and function to receive map zoom change updates.
-     * @param obj - Object scope
      * @param callback
+     * @param obj - Object scope
      */
-    registerZoom: function(obj, callback){
+    registerZoom: function(callback, obj){
         this.map.events.register('zoomend', obj, callback);
     },
 
@@ -1513,6 +1513,7 @@ var _leaflet = {
      * @param point Marker latlon.
      * @param title
      * @param layer
+     * @return Newly created marker.
      */
     addMarker: function(point, title, layer){
         var marker = new L.marker(
@@ -1523,6 +1524,7 @@ var _leaflet = {
         );
 
         layer.addLayer(marker);
+        return marker;
     },
 
     /**
@@ -1562,7 +1564,7 @@ var _leaflet = {
         // create base layer
         L.tileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
             subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
             maxZoom: this.MAX_ZOOM
         }).addTo(this.map);
 
@@ -1680,30 +1682,30 @@ var _leaflet = {
 
     /**
      * Register an object and function to receive map initialised event.
-     * @param obj - Object scope
      * @param callback
+     * @param obj Optional object scope
      */
-    registerReady: function(obj, callback){
+    registerReady: function(callback, obj){
         // TODO - support multiple listerners
         this.onready = $.proxy(callback, obj);
     },
 
     /**
      * Register an object and function to receive map pan events.
-     * @param obj
      * @param callback
+     * @param obj Optional object scope
      */
-    registerPan: function(obj, callback){
+    registerPan: function(callback, obj){
         // TODO - support multiple listerners
-        //this.dragend = $.proxy(callback, obj);
+        this.dragend = $.proxy(callback, obj);
     },
 
     /**
      * Register an object and function to receive map zoom change updates.
-     * @param obj
      * @param callback
+     * @param obj Optional object scope
      */
-    registerZoom: function(obj, callback){
+    registerZoom: function(callback, obj){
         // TODO - support multiple listerners
         this.zoomend = $.proxy(callback, obj);
     },
