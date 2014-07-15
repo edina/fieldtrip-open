@@ -1546,7 +1546,18 @@ var _leaflet = {
     },
 
     /**
-     *
+     * Create a bounding box.
+     * @param sw Botton left.
+     * @param ne Top right
+     * @return L.latLngBounds
+     */
+    createBounds: function(sw, ne){
+        return new L.latLngBounds(sw, ne);
+    },
+
+    /**
+     * Creat cluster group for markers.
+     * @return L.markerClusterGroup.
      */
     createMarkerLayer: function(){
         return new L.markerClusterGroup();
