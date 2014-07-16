@@ -51,6 +51,8 @@ define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
     var USER_LOCATION = 'locate';
     var RECORDS_LAYER = 'records_layer';
 
+    var EVT_HIDE_RECORDS = 'evt-hide-records';
+
     var defaultUserLon = -2.421976;
     var defaultUserLat = 53.825564;
 
@@ -417,15 +419,11 @@ var _base = {
      * Remove all annotations / records from map.
      */
     hideRecordsLayer: function(){
-        this.getRecordsLayer().setVisibility(false);
+        this.hideLayer(this.getRecordsLayer());
 
-        $.each(this.map.layers, function(i, layer){
-            // TODO - what does the map know about GPS Tracks?
-
-            // GPS tracks are on a seperate layer beginning with 'gps-track-'
-            if(layer.name.substr(0, 10) === 'gps-track-'){
-                layer.setVisibility(false);
-            }
+        // fire hide records event
+        $.event.trigger({
+            type: EVT_HIDE_RECORDS,
         });
     },
 
@@ -451,11 +449,15 @@ var _base = {
         this.userLonLat.gpsPosition = position.coords;
 
         if(position.coords.heading){
-            if(this.getAnnotateLayer().features.length > 0){
-                // set rotation to heading direction, doesn't work on most android
-                // devices, see http://devel.edina.ac.uk:7775/issues/4852
-                this.getAnnotateLayer().features[0].attributes.imageRotation =
-                    360 - position.coords.heading;
+            var annotateLayer = this.getAnnotateLayer();
+            if(annotateLayer){
+                var features = this.getLayerFeatures(annotateLayer);
+                if(features.length > 0){
+                    // set rotation to heading direction, doesn't work on most android
+                    // devices, see http://devel.edina.ac.uk:7775/issues/4852
+                    annotateLayer.features[0].attributes.imageRotation =
+                        360 - position.coords.heading;
+                }
             }
         }
 
@@ -624,7 +626,7 @@ var _base = {
      */
     showRecordsLayer: function(annotation){
         var layer = this.getRecordsLayer();
-        if(layer.features.length === 0){
+        if(this.getLayerFeatures(layer).length === 0){
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
@@ -648,8 +650,8 @@ var _base = {
             });
         }
 
-        layer.setVisibility(true);
-        layer.refresh();
+        this.showLayer(layer);
+        //layer.refresh(); remove? put back in if ol refresh problem
     },
 
     /**
@@ -1218,6 +1220,15 @@ var _openlayers = {
     },
 
     /**
+     * Get all features on a layer.
+     * @param layer
+     * @return array of Openlayers features.
+     */
+    getLayerFeatures: function(layer){
+        return layer.features;
+    },
+
+    /**
      * @param layer
      * @return The name of the layer.
      */
@@ -1460,14 +1471,15 @@ var _leaflet = {
      */
     init: function(){
         this.MAX_ZOOM = 18;
-        this.minLocateZoomTo = this.MAX_ZOOM - 5;
+        this.minLocateZoomTo = this.MAX_ZOOM - 2;
     },
 
     /**
      * Add geojson layer to map.
      * @param data Geojson object.
+     * @param callback Function executed on feature click.
      */
-    addGeoJSONLayer: function(data){
+    addGeoJSONLayer: function(data, callback){
         var layer;
         if(this.map){
             layer = L.geoJson(data, {
@@ -1481,7 +1493,9 @@ var _leaflet = {
                     return L.marker(latlng, {icon: icon}).addTo(this.map);
                 }, this),
                 onEachFeature: function (feature, layer) {
-                    //layer.bindPopup(feature.properties.count);
+                    layer.on('click', function(){
+                        callback(feature);
+                    });
                 }
             }).addTo(this.map);
         }
@@ -1536,6 +1550,17 @@ var _leaflet = {
     },
 
     /**
+     * Add multiple markers to the map.
+     * @param layer The layers to add the markers to.
+     * @param markers An array of markers.
+     */
+    addMarkers: function(layer, markers){
+        $.each(markers, function(i, marker){
+            layer.addLayer(marker);
+        });
+    },
+
+    /**
      * Add a new style record icons.
      * @param options
      *   type - the record type
@@ -1556,6 +1581,21 @@ var _leaflet = {
     },
 
     /**
+     * Create a marker for a given FT annotation.
+     * @param id Annotation id
+     * @param annotation FT annotation object.
+     * @return OpenLayers.Feature.Vector
+     */
+    createMarker: function(id, annotation){
+        var marker = new L.marker([annotation.record.point.lat,
+                                   annotation.record.point.lon]);
+
+        //marker'id': id,
+        //        'type': records.getEditorId(annotation)
+        return marker;
+    },
+
+    /**
      * Creat cluster group for markers.
      * @return L.markerClusterGroup.
      */
@@ -1570,7 +1610,7 @@ var _leaflet = {
      * @param div The div id.
      */
     display: function(div){
-        this.map = L.map('map');
+        this.map = L.map(div);
 
         // create base layer
         L.tileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
@@ -1589,6 +1629,12 @@ var _leaflet = {
         if(this.onready){
             this.map.on('load', this.onready);
         }
+
+        var annotateLayer = L.layerGroup();
+        var recordsLayer = L.layerGroup();
+        this.layers = {};
+        this.layers[RECORDS_LAYER] = recordsLayer;
+        this.layers[PADDLE_MARKER] = annotateLayer;
 
         var centre = [defaultUserLat, defaultUserLon];
         if(this.userLonLat){
@@ -1621,21 +1667,33 @@ var _leaflet = {
     },
 
     /**
+     * Get layer group.
+     * @param layerName
+     * @return Leaflet layer by name.
+     */
+    getLayer: function(layerName){
+        if(this.map){
+            return this.layers[layerName];
+        }
+    },
+
+    /**
+     * Get all features on a layer.
+     * @param layer
+     * @return array of leaflet leaflet layers.
+     */
+    getLayerFeatures: function(layer){
+        if(layer){
+            return layer.getLayers();
+        }
+    },
+
+    /**
      * @return The coordinates of the user, in external projection, based on the
      * position of the user icon.
      */
     getLocateCoords: function(){
 
-    },
-
-    /**
-     * @param layerName
-     * @return Leaflet layer by name.
-     */
-    getLayer: function(layerName){
-        return {
-            features: []
-        };
     },
 
     /**
@@ -1655,7 +1713,9 @@ var _leaflet = {
      * @param layer The layer to hide.
      */
     hideLayer: function(layer){
-
+        if(this.map){
+            this.map.removeLayer(layer);
+        }
     },
 
     /**
@@ -1730,7 +1790,10 @@ var _leaflet = {
      *   external - use external projection.
      */
     setCentre: function(options){
-
+        this.map.setView(
+            L.latLng(options.lat, options.lon),
+            options.zoom
+        );
     },
 
     /**
@@ -1763,12 +1826,24 @@ var _leaflet = {
      * Update a vector layer centred on users location.
      * options:
      *   layer: The layer to update.
-     *   id: The id of the user icon feature.
+     *   id: The id of the icon feature.
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
      */
     updateLayer: function(options){
+        var layer = options.layer;
+        if(layer){
+            //layer.clearLayers()
+            //var pos = options.lonLat
+            //L.marker([pos.lat, pos.lng], ).addTo(this.map);
+        }
+    },
 
+    /**
+     * Update map size after dynamic change in map size.
+     */
+    updateSize: function(options){
+        // doesn't apply to leaflet
     },
 
     /**
@@ -1778,6 +1853,19 @@ var _leaflet = {
      */
     updateUserPosition: function(lon, lat){
         this.userLonLat = L.latLng(lat, lon);
+    },
+
+    /**
+     * Zoom map.
+     * @param levels Number of zoom levels to zoom.
+     */
+    zoomIn: function(levels){
+        if(levels === undefined || typeof(levels) === 'object'){
+            this.map.zoomIn();
+        }
+        else{
+            this.map.zoomIn(levels);
+        }
     }
 };
 
