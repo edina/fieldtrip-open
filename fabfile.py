@@ -1011,7 +1011,7 @@ def _check_config():
             local('rsync -avz {0} {1}'.format(location, conf_dir))
         config = None # make sure it is re-read
 
-def _config(key, section='install'):
+def _config(key=None, section='install'):
     """
     Get config value for key.
 

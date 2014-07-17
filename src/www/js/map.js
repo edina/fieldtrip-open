@@ -1477,24 +1477,24 @@ var _leaflet = {
     /**
      * Add geojson layer to map.
      * @param data Geojson object.
+     * @param icon is a function that is executed for each point on the layer.
+     * It expects and icon object to be returned.
      * @param callback Function executed on feature click.
      */
-    addGeoJSONLayer: function(data, callback){
+    addGeoJSONLayer: function(data, icon, callback){
         var layer;
         if(this.map){
             layer = L.geoJson(data, {
                 pointToLayer: $.proxy(function(feature, latlng) {
-                    var icon = L.divIcon({
-                        className: 'cluster-icon',
-                        html: '<div class="cluster-icon-text">' + feature.properties.count + '</div>',
-                        iconSize: [40, 40]
-                    });
-
-                    return L.marker(latlng, {icon: icon}).addTo(this.map);
+                    return L.marker(
+                        latlng,
+                        {
+                            icon: icon(feature)
+                        }).addTo(this.map);
                 }, this),
                 onEachFeature: function (feature, layer) {
                     layer.on('click', function(){
-                        callback(feature);
+                        callback(feature, layer);
                     });
                 }
             }).addTo(this.map);
@@ -1525,15 +1525,15 @@ var _leaflet = {
     /**
      * Add a marker to the given layer.
      * @param point Marker latlon.
-     * @param title
+     * @param icon A leaflet icon.
      * @param layer
      * @return Newly created marker.
      */
-    addMarker: function(point, title, layer){
+    addMarker: function(point, icon, layer){
         var marker = new L.marker(
             new L.LatLng(point.lat, point.lon),
             {
-                title: title
+                icon: icon
             }
         );
 
@@ -1587,12 +1587,8 @@ var _leaflet = {
      * @return OpenLayers.Feature.Vector
      */
     createMarker: function(id, annotation){
-        var marker = new L.marker([annotation.record.point.lat,
-                                   annotation.record.point.lon]);
-
-        //marker'id': id,
-        //        'type': records.getEditorId(annotation)
-        return marker;
+        return new L.marker([annotation.record.point.lat,
+                             annotation.record.point.lon]);
     },
 
     /**
