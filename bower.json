@@ -21,6 +21,7 @@
         "jquery-mobile-iscrollview-amd": "1.2.9",
         "iscroll": "4.2",
         "leaflet": "0.7.3",
+        "leaflet.markercluster": "0.4.0",
         "requirejs": "2.1.9",
         "requirejs-text": "2.0.10",
         "underscore": "1.5.2",
@@ -44,6 +45,10 @@
         "leaflet": [
             "dist/leaflet.js",
             "dist/leaflet.css"
+        ],
+        "leaflet.markercluster": [
+            "dist/leaflet.markercluster.js",
+            "dist/MarkerCluster.css"
         ],
         "requirejs": [
             "require.js"

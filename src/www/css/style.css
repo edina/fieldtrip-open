@@ -788,3 +788,36 @@ div.record-extra > div > img {
 .leaflet-control-zoom{
     display: none;
 }
+
+.cluster-icon,
+.marker-cluster{
+    background: url("../css/images/cluster.png") 50% 50% no-repeat;
+    background-size: 32px 32px;
+}
+
+.leaflet-marker-icon div{
+    padding: 12px 0 0 0;
+    color: black;
+    font-size: 10px;
+    text-align: center;
+}
+
+.leaflet-popup-content{
+    color: black;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    width: 40px;
+    height: 40px;
+    font-size: 38px;
+}
+
+#poi-popup img{
+    max-width: 100% !important;
+    max-height: 100%;
+}
+
+#poi-popup{
+    height: 100%;
+    width: 100%;
+}

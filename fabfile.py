@@ -160,9 +160,11 @@ def clean():
         local('rmdir plugins')
 
 @task
-def deploy_android():
+def deploy_android(uninstall='False'):
     """
     Deploy to android device connected to machine
+
+    uninstall - use this flag to first uninstall app.
     """
 
     _check_commands(['ant', 'adb', 'cordova', 'android'])
@@ -171,7 +173,9 @@ def deploy_android():
     generate_html(cordova=True)
 
     with lcd(_get_runtime()[1]):
-        device = None
+        if _str2bool(uninstall):
+            local('adb uninstall {0}'.format(_config('package', section='app')))
+
         local('cordova build android')
 
         with settings(warn_only=True):
@@ -736,7 +740,7 @@ def install_project(platform='android',
                 src = os.sep.join((bower_home, dep, f))
                 f_name = dep.replace('-bower', '')
 
-                if f_name == 'leaflet' and  _config('maplib', section='app') != 'leaflet':
+                if (f_name == 'leaflet' or f_name == 'leaflet.marketcluster') and  _config('maplib', section='app') != 'leaflet':
                     # only install leaflet if required
                     continue
 

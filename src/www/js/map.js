@@ -51,6 +51,8 @@ define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
     var USER_LOCATION = 'locate';
     var RECORDS_LAYER = 'records_layer';
 
+    var EVT_HIDE_RECORDS = 'evt-hide-records';
+
     var defaultUserLon = -2.421976;
     var defaultUserLat = 53.825564;
 
@@ -417,15 +419,11 @@ var _base = {
      * Remove all annotations / records from map.
      */
     hideRecordsLayer: function(){
-        this.getRecordsLayer().setVisibility(false);
+        this.hideLayer(this.getRecordsLayer());
 
-        $.each(this.map.layers, function(i, layer){
-            // TODO - what does the map know about GPS Tracks?
-
-            // GPS tracks are on a seperate layer beginning with 'gps-track-'
-            if(layer.name.substr(0, 10) === 'gps-track-'){
-                layer.setVisibility(false);
-            }
+        // fire hide records event
+        $.event.trigger({
+            type: EVT_HIDE_RECORDS,
         });
     },
 
@@ -451,11 +449,15 @@ var _base = {
         this.userLonLat.gpsPosition = position.coords;
 
         if(position.coords.heading){
-            if(this.getAnnotateLayer().features.length > 0){
-                // set rotation to heading direction, doesn't work on most android
-                // devices, see http://devel.edina.ac.uk:7775/issues/4852
-                this.getAnnotateLayer().features[0].attributes.imageRotation =
-                    360 - position.coords.heading;
+            var annotateLayer = this.getAnnotateLayer();
+            if(annotateLayer){
+                var features = this.getLayerFeatures(annotateLayer);
+                if(features.length > 0){
+                    // set rotation to heading direction, doesn't work on most android
+                    // devices, see http://devel.edina.ac.uk:7775/issues/4852
+                    annotateLayer.features[0].attributes.imageRotation =
+                        360 - position.coords.heading;
+                }
             }
         }
 
@@ -479,6 +481,14 @@ var _base = {
     refreshRecords: function(annotation){
         this.getRecordsLayer().removeAllFeatures();
         this.showRecordsLayer(annotation);
+    },
+
+    /**
+     * Remove layer from map.
+     * @param layer.
+     */
+    removeLayer: function(layer){
+        this.map.removeLayer(layer);
     },
 
     /**
@@ -616,7 +626,7 @@ var _base = {
      */
     showRecordsLayer: function(annotation){
         var layer = this.getRecordsLayer();
-        if(layer.features.length === 0){
+        if(this.getLayerFeatures(layer).length === 0){
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
@@ -640,8 +650,8 @@ var _base = {
             });
         }
 
-        layer.setVisibility(true);
-        layer.refresh();
+        this.showLayer(layer);
+        //layer.refresh(); remove? put back in if ol refresh problem
     },
 
     /**
@@ -1210,6 +1220,15 @@ var _openlayers = {
     },
 
     /**
+     * Get all features on a layer.
+     * @param layer
+     * @return array of Openlayers features.
+     */
+    getLayerFeatures: function(layer){
+        return layer.features;
+    },
+
+    /**
      * @param layer
      * @return The name of the layer.
      */
@@ -1290,10 +1309,10 @@ var _openlayers = {
 
     /**
      * Register an object and function to receive map zoom change updates.
-     * @param obj
      * @param callback
+     * @param obj - Object scope
      */
-    registerZoom: function(obj, callback){
+    registerZoom: function(callback, obj){
         this.map.events.register('zoomend', obj, callback);
     },
 
@@ -1303,14 +1322,6 @@ var _openlayers = {
      */
     removeAllFeatures: function(layer){
         layer.removeAllFeatures();
-    },
-
-    /**
-     * Remove layer from map.
-     * @param layer An openlayers layer.
-     */
-    removeLayer: function(layer){
-        this.map.removeLayer(layer);
     },
 
     /**
@@ -1459,9 +1470,37 @@ var _leaflet = {
      * Set up openlayer map.
      */
     init: function(){
-        //_base.init();
         this.MAX_ZOOM = 18;
-        this.minLocateZoomTo = this.MAX_ZOOM - 3;
+        this.minLocateZoomTo = this.MAX_ZOOM - 2;
+    },
+
+    /**
+     * Add geojson layer to map.
+     * @param data Geojson object.
+     * @param callback Function executed on feature click.
+     */
+    addGeoJSONLayer: function(data, callback){
+        var layer;
+        if(this.map){
+            layer = L.geoJson(data, {
+                pointToLayer: $.proxy(function(feature, latlng) {
+                    var icon = L.divIcon({
+                        className: 'cluster-icon',
+                        html: '<div class="cluster-icon-text">' + feature.properties.count + '</div>',
+                        iconSize: [40, 40]
+                    });
+
+                    return L.marker(latlng, {icon: icon}).addTo(this.map);
+                }, this),
+                onEachFeature: function (feature, layer) {
+                    layer.on('click', function(){
+                        callback(feature);
+                    });
+                }
+            }).addTo(this.map);
+        }
+
+        return layer;
     },
 
     /**
@@ -1477,22 +1516,29 @@ var _leaflet = {
 
     /**
      * Add a new layer to the map.
-     * @param options
-     *   id - layer id
-     *   style - some styles
-     *   visible - intitial visibility
+     * @param layer
      */
-    addLayer: function(options){
-
+    addLayer: function(layer){
+        this.map.addLayer(layer);
     },
 
     /**
-     * Add multiple markers to the map.
-     * @param layer The layers to add the markers to.
-     * @param markers An array of markers.
+     * Add a marker to the given layer.
+     * @param point Marker latlon.
+     * @param title
+     * @param layer
+     * @return Newly created marker.
      */
-    addMarkers: function(layer){
+    addMarker: function(point, title, layer){
+        var marker = new L.marker(
+            new L.LatLng(point.lat, point.lon),
+            {
+                title: title
+            }
+        );
 
+        layer.addLayer(marker);
+        return marker;
     },
 
     /**
@@ -1500,7 +1546,18 @@ var _leaflet = {
      * @param layer to add.
      */
     addMapLayer: function(layer){
+        this.addLayer(layer);
+    },
 
+    /**
+     * Add multiple markers to the map.
+     * @param layer The layers to add the markers to.
+     * @param markers An array of markers.
+     */
+    addMarkers: function(layer, markers){
+        $.each(markers, function(i, marker){
+            layer.addLayer(marker);
+        });
     },
 
     /**
@@ -1514,30 +1571,76 @@ var _leaflet = {
     },
 
     /**
-     * Create a marker for a given FT annotation.
-     * @param id Annotation id
-     * @param annotation FT annotation object.
+     * Create a bounding box.
+     * @param sw Botton left.
+     * @param ne Top right
+     * @return L.latLngBounds
      */
-    createMarker: function(id, annotation){
-
+    createBounds: function(sw, ne){
+        return new L.latLngBounds(sw, ne);
     },
 
     /**
-     * Render the map on a defined div.
+     * Create a marker for a given FT annotation.
+     * @param id Annotation id
+     * @param annotation FT annotation object.
+     * @return OpenLayers.Feature.Vector
+     */
+    createMarker: function(id, annotation){
+        var marker = new L.marker([annotation.record.point.lat,
+                                   annotation.record.point.lon]);
+
+        //marker'id': id,
+        //        'type': records.getEditorId(annotation)
+        return marker;
+    },
+
+    /**
+     * Creat cluster group for markers.
+     * @return L.markerClusterGroup.
+     */
+    createMarkerLayer: function(){
+        return new L.markerClusterGroup();
+    },
+
+    /**
+     * Render the map on a defined div. Note the difference in the way the
+     leaflet map is enabled. As it has no render function it need to be
+     initialised each time the page is displayed.
      * @param div The div id.
      */
     display: function(div){
-        this.map = L.map('map');
+        this.map = L.map(div);
+
+        // create base layer
+        L.tileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
+            subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+            maxZoom: this.MAX_ZOOM
+        }).addTo(this.map);
+
+        // set up listeners
+        if(this.dragend){
+            this.map.on('dragend', this.dragend);
+        }
+        if(this.zoomend){
+            this.map.on('zoomend', this.zoomend);
+        }
+        if(this.onready){
+            this.map.on('load', this.onready);
+        }
+
+        var annotateLayer = L.layerGroup();
+        var recordsLayer = L.layerGroup();
+        this.layers = {};
+        this.layers[RECORDS_LAYER] = recordsLayer;
+        this.layers[PADDLE_MARKER] = annotateLayer;
+
         var centre = [defaultUserLat, defaultUserLon];
         if(this.userLonLat){
             centre = [this.userLonLat.lat, this.userLonLat.lng];
         }
         this.map.setView(centre, this.minLocateZoomTo);
-        L.tileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
-            subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            maxZoom: this.MAX_ZOOM
-        }).addTo(this.map);
     },
 
     /**
@@ -1557,6 +1660,35 @@ var _leaflet = {
     },
 
     /**
+     * @return Current map extent/Bounds.
+     */
+    getExtent: function(){
+        return this.map.getBounds();
+    },
+
+    /**
+     * Get layer group.
+     * @param layerName
+     * @return Leaflet layer by name.
+     */
+    getLayer: function(layerName){
+        if(this.map){
+            return this.layers[layerName];
+        }
+    },
+
+    /**
+     * Get all features on a layer.
+     * @param layer
+     * @return array of leaflet leaflet layers.
+     */
+    getLayerFeatures: function(layer){
+        if(layer){
+            return layer.getLayers();
+        }
+    },
+
+    /**
      * @return The coordinates of the user, in external projection, based on the
      * position of the user icon.
      */
@@ -1565,20 +1697,15 @@ var _leaflet = {
     },
 
     /**
-     * @param layerName
-     * @return Leaflet layer by name.
-     */
-    getLayer: function(layerName){
-        return {
-            features: []
-        };
-    },
-
-    /**
      * @return current map zoom level.
      */
     getZoom: function(){
-        return 2;
+        if(this.map){
+            return this.map.getZoom();
+        }
+        else{
+            return -1;
+        }
     },
 
     /**
@@ -1586,7 +1713,9 @@ var _leaflet = {
      * @param layer The layer to hide.
      */
     hideLayer: function(layer){
-
+        if(this.map){
+            this.map.removeLayer(layer);
+        }
     },
 
     /**
@@ -1623,6 +1752,36 @@ var _leaflet = {
     },
 
     /**
+     * Register an object and function to receive map initialised event.
+     * @param callback
+     * @param obj Optional object scope
+     */
+    registerReady: function(callback, obj){
+        // TODO - support multiple listerners
+        this.onready = $.proxy(callback, obj);
+    },
+
+    /**
+     * Register an object and function to receive map pan events.
+     * @param callback
+     * @param obj Optional object scope
+     */
+    registerPan: function(callback, obj){
+        // TODO - support multiple listerners
+        this.dragend = $.proxy(callback, obj);
+    },
+
+    /**
+     * Register an object and function to receive map zoom change updates.
+     * @param callback
+     * @param obj Optional object scope
+     */
+    registerZoom: function(callback, obj){
+        // TODO - support multiple listerners
+        this.zoomend = $.proxy(callback, obj);
+    },
+
+    /**
      * Centre map with zoom level.
      * options:
      *   lon
@@ -1631,7 +1790,10 @@ var _leaflet = {
      *   external - use external projection.
      */
     setCentre: function(options){
-
+        this.map.setView(
+            L.latLng(options.lat, options.lon),
+            options.zoom
+        );
     },
 
     /**
@@ -1639,7 +1801,7 @@ var _leaflet = {
      * @param layer
      */
     showLayer: function(layer){
-        //this.getLocateLayer().setVisibility(true);
+
     },
 
     /**
@@ -1664,12 +1826,24 @@ var _leaflet = {
      * Update a vector layer centred on users location.
      * options:
      *   layer: The layer to update.
-     *   id: The id of the user icon feature.
+     *   id: The id of the icon feature.
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
      */
     updateLayer: function(options){
+        var layer = options.layer;
+        if(layer){
+            //layer.clearLayers()
+            //var pos = options.lonLat
+            //L.marker([pos.lat, pos.lng], ).addTo(this.map);
+        }
+    },
 
+    /**
+     * Update map size after dynamic change in map size.
+     */
+    updateSize: function(options){
+        // doesn't apply to leaflet
     },
 
     /**
@@ -1679,12 +1853,27 @@ var _leaflet = {
      */
     updateUserPosition: function(lon, lat){
         this.userLonLat = L.latLng(lat, lon);
+    },
+
+    /**
+     * Zoom map.
+     * @param levels Number of zoom levels to zoom.
+     */
+    zoomIn: function(levels){
+        if(levels === undefined || typeof(levels) === 'object'){
+            this.map.zoomIn();
+        }
+        else{
+            this.map.zoomIn(levels);
+        }
     }
 };
 
 if(utils.getMapLib() === 'leaflet'){
     require(['ext/leaflet'], function(){
-        _this.init();
+        require(['ext/leaflet.markercluster'], function(){
+            _this.init();
+        });
     });
     $('head').prepend('<link rel="stylesheet" href="css/ext/leaflet.css" type="text/css" />');
     $.extend(_this, _base, _leaflet);
