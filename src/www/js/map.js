@@ -51,8 +51,6 @@ define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
     var USER_LOCATION = 'locate';
     var RECORDS_LAYER = 'records_layer';
 
-    var EVT_HIDE_RECORDS = 'evt-hide-records';
-
     var defaultUserLon = -2.421976;
     var defaultUserLat = 53.825564;
 
@@ -121,6 +119,12 @@ define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
     };
 
 var _base = {
+
+    /**
+     * Hide records on map event name.
+     */
+    EVT_HIDE_RECORDS: 'evt-hide-records',
+
 
     /**
      * Enable high accuracy flag.
@@ -423,7 +427,7 @@ var _base = {
 
         // fire hide records event
         $.event.trigger({
-            type: EVT_HIDE_RECORDS,
+            type: this.EVT_HIDE_RECORDS,
         });
     },
 
@@ -634,7 +638,7 @@ var _base = {
                     features.push(this.createMarker(id, annotation));
                 }
                 else{
-                    console.debug("record " + id + " has no location");
+                   console.debug("record " + id + " has no location");
                 }
             }, this));
 
@@ -1249,6 +1253,18 @@ var _openlayers = {
      */
     hideLayer: function(layer){
         layer.setVisibility(false);
+    },
+
+    /**
+     * Hide layers whose name startswith layerName.
+     * @param layerName
+     */
+    hideLayerByName: function(layerName){
+        $.each(this.map.layers, $.proxy(function(i, layer){
+            if(layer.name.substr(0, layerName.length) === layerName){
+                this.hideLayer(layer);
+            }
+        }, this));
     },
 
     /**
