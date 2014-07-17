@@ -624,7 +624,7 @@ var _base = {
                     features.push(this.createMarker(id, annotation));
                 }
                 else{
-                    console.debug("record " + id + " has no location");
+                   console.debug("record " + id + " has no location");
                 }
             }, this));
 

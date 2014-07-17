@@ -732,7 +732,7 @@ var _ios = {
      * Construct the object for the options of the image for IOS.
      */
     getImageOptions: function(sourceType, encodingType){
-        var options = _base.getImageOptions();
+        var options = _base.getImageOptions(sourceType, encodingType);
         options.saveToPhotoAlbum = true;
         return options;
     }
