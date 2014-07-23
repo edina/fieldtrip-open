@@ -531,6 +531,9 @@ var _ui = {
         // map render must happen in pageshow
         map.display(divId);
 
+        map.showLocateLayer();
+        map.hideAnnotateLayer();
+
         // force redraw, specifically for closing of record details dialog
         resizePage();
     },
@@ -570,8 +573,9 @@ var _ui = {
             recordsHidden();
         }
 
-        map.showLocateLayer();
-        map.hideAnnotateLayer();
+        // TODO is openlayers ok with this?
+        // map.showLocateLayer();
+        // map.hideAnnotateLayer();
     },
 
     /**

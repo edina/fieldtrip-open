@@ -789,6 +789,22 @@ div.record-extra > div > img {
     display: none;
 }
 
+.text-marker-icon{
+    background: url("../css/images/textmarker.png") 50% 50% no-repeat;
+}
+
+.image-marker-icon{
+    background: url("../css/images/imagemarker.png") 50% 50% no-repeat;
+}
+
+.custom-marker-icon{
+    background: url("../css/images/custommarker.png") 50% 50% no-repeat;
+}
+
+.annotate-marker-icon{
+    background: url("../css/images/marker.png") 50% 50% no-repeat;
+}
+
 .cluster-icon,
 .marker-cluster{
     background: url("../css/images/cluster.png") 50% 50% no-repeat;

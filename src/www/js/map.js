@@ -413,6 +413,18 @@ var _base = {
     geolocateTimeout: GPS_LOCATE_TIMEOUT,
 
     /**
+     * @return current map zoom level.
+     */
+    getZoom: function(){
+        if(this.map){
+            return this.map.getZoom();
+        }
+        else{
+            return -1;
+        }
+    },
+
+    /**
      * Hide annotation layer.
      */
     hideAnnotateLayer: function(){
@@ -483,7 +495,7 @@ var _base = {
      * @param annotation The annotation to centre on.
      */
     refreshRecords: function(annotation){
-        this.getRecordsLayer().removeAllFeatures();
+        this.removeAllFeatures(this.getRecordsLayer());
         this.showRecordsLayer(annotation);
     },
 
@@ -630,7 +642,11 @@ var _base = {
      */
     showRecordsLayer: function(annotation){
         var layer = this.getRecordsLayer();
-        if(this.getLayerFeatures(layer).length === 0){
+
+        if(layer === undefined){
+            this.showRecordsOnDisplay = annotation;
+        }
+        else if(this.getLayerFeatures(layer).length === 0){
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
@@ -638,24 +654,21 @@ var _base = {
                     features.push(this.createMarker(id, annotation));
                 }
                 else{
-                   console.debug("record " + id + " has no location");
+                    console.debug("record " + id + " has no location");
                 }
             }, this));
-
             this.addMarkers(layer, features);
+            if(annotation){
+                this.setCentre({
+                    lon: annotation.record.point.lon,
+                    lat: annotation.record.point.lat,
+                    zoom: undefined,
+                    external: false
+                });
+            }
+            this.showLayer(layer);
+            //layer.refresh(); remove? put back in if ol refresh problem
         }
-
-        if(annotation){
-            this.setCentre({
-                lon: annotation.record.point.lon,
-                lat: annotation.record.point.lat,
-                zoom: undefined,
-                external: false
-            });
-        }
-
-        this.showLayer(layer);
-        //layer.refresh(); remove? put back in if ol refresh problem
     },
 
     /**
@@ -1075,6 +1088,7 @@ var _openlayers = {
      */
     addMarkers: function(layer, markers){
         layer.addFeatures(markers);
+        layer.addTo(this.map);
     },
 
     /**
@@ -1238,13 +1252,6 @@ var _openlayers = {
      */
     getLayerName: function(layer){
         return layer.name;
-    },
-
-    /**
-     * @return current map zoom level.
-     */
-    getZoom: function(){
-        return this.map.getZoom();
     },
 
     /**
@@ -1602,9 +1609,25 @@ var _leaflet = {
      * @param annotation FT annotation object.
      * @return OpenLayers.Feature.Vector
      */
-    createMarker: function(id, annotation){
-        return new L.marker([annotation.record.point.lat,
-                             annotation.record.point.lon]);
+    createMarker: function(id, annotation, icon){
+        if(icon === undefined){
+            var className = 'custom-marker-icon';
+            if(annotation.record.editor === 'text.edtr'){
+                className = 'text-marker-icon';
+            }
+            else if(annotation.editor === 'image.edtr'){
+                className = 'image-marker-icon';
+            }
+            icon = L.divIcon({
+                className: className,
+                iconSize: [35, 50]
+            });
+        }
+
+        return new L.marker(
+            [annotation.record.point.lat, annotation.record.point.lon],
+            {icon: icon}
+        );
     },
 
     /**
@@ -1642,17 +1665,38 @@ var _leaflet = {
             this.map.on('load', this.onready);
         }
 
-        var annotateLayer = L.layerGroup();
+        // records layer
         var recordsLayer = L.layerGroup();
         this.layers = {};
         this.layers[RECORDS_LAYER] = recordsLayer;
-        this.layers[PADDLE_MARKER] = annotateLayer;
+        recordsLayer.addTo(this.map);
 
         var centre = [defaultUserLat, defaultUserLon];
         if(this.userLonLat){
             centre = [this.userLonLat.lat, this.userLonLat.lng];
         }
-        this.map.setView(centre, this.minLocateZoomTo);
+
+        // annotate layer
+        var annotateLayer = new L.marker(
+            centre,
+            {
+                draggable:'true',
+                icon: L.divIcon({
+                    className: 'annotate-marker-icon',
+                    iconSize: [65, 65]
+                }),
+            }
+        );
+        this.layers[PADDLE_MARKER] = annotateLayer;
+        annotateLayer.addTo(this.map);
+
+        if(this.showRecordsOnDisplay){
+            this.showRecordsLayer(this.showRecordsOnDisplay);
+            this.showRecordsOnDisplay = undefined;
+        }
+        else{
+            this.map.setView(centre, this.minLocateZoomTo);
+        }
     },
 
     /**
@@ -1661,7 +1705,9 @@ var _leaflet = {
      * @return Current annotation coordinates.
      */
     getAnnotationCoords: function(ext){
-
+        var lonLat = this.layers[PADDLE_MARKER].getLatLng();
+        lonLat.lon = lonLat.lng;
+        return lonLat;
     },
 
     /**
@@ -1695,8 +1741,11 @@ var _leaflet = {
      * @return array of leaflet leaflet layers.
      */
     getLayerFeatures: function(layer){
-        if(layer){
+        if(layer && layer.getLayers){
             return layer.getLayers();
+        }
+        else{
+            return [];
         }
     },
 
@@ -1706,18 +1755,6 @@ var _leaflet = {
      */
     getLocateCoords: function(){
 
-    },
-
-    /**
-     * @return current map zoom level.
-     */
-    getZoom: function(){
-        if(this.map){
-            return this.map.getZoom();
-        }
-        else{
-            return -1;
-        }
     },
 
     /**
@@ -1794,17 +1831,32 @@ var _leaflet = {
     },
 
     /**
+     * Remove all features from layer. In leaflet just remove the layer from map.
+     * @param layer.
+     */
+    removeAllFeatures: function(layer){
+        layer.removeLayer(this.map);
+    },
+
+    /**
      * Centre map with zoom level.
      * options:
      *   lon
      *   lat
      *   zoom
-     *   external - use external projection.
+     *   external - use external projection (TODO?).
      */
     setCentre: function(options){
+        var zoom = options.zoom;
+        if(!zoom){
+            zoom = this.getZoom();
+            if(!zoom){
+                zoom = this.minLocateZoomTo;
+            }
+        }
         this.map.setView(
             L.latLng(options.lat, options.lon),
-            options.zoom
+            zoom
         );
     },
 
@@ -1831,7 +1883,8 @@ var _leaflet = {
      * @return Cloned external point.
      */
     toExternal: function(point){
-
+        // currently no reprojection being done
+        return point;
     },
 
     /**
