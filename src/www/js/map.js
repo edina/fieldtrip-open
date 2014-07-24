@@ -642,8 +642,8 @@ var _base = {
      */
     showRecordsLayer: function(annotation){
         var layer = this.getRecordsLayer();
-
         if(layer === undefined){
+            // map hasn't been initialised yet
             this.showRecordsOnDisplay = annotation;
         }
         else if(this.getLayerFeatures(layer).length === 0){
@@ -668,6 +668,9 @@ var _base = {
             }
             this.showLayer(layer);
             //layer.refresh(); remove? put back in if ol refresh problem
+        }
+        else{
+            this.showLayer(layer);
         }
     },
 
@@ -1255,7 +1258,7 @@ var _openlayers = {
     },
 
     /**
-     * Hide map layer.
+     * Hide openlayers map layer.
      * @param layer - the layer to hide.
      */
     hideLayer: function(layer){
@@ -1665,9 +1668,10 @@ var _leaflet = {
             this.map.on('load', this.onready);
         }
 
+        this.layers = {};
+
         // records layer
         var recordsLayer = L.layerGroup();
-        this.layers = {};
         this.layers[RECORDS_LAYER] = recordsLayer;
         recordsLayer.addTo(this.map);
 
@@ -1691,6 +1695,7 @@ var _leaflet = {
         annotateLayer.addTo(this.map);
 
         if(this.showRecordsOnDisplay){
+            // a request to show record was made before map was initialised
             this.showRecordsLayer(this.showRecordsOnDisplay);
             this.showRecordsOnDisplay = undefined;
         }
@@ -1758,7 +1763,7 @@ var _leaflet = {
     },
 
     /**
-     * Hide map layer.
+     * Hide leaflet map layer.
      * @param layer The layer to hide.
      */
     hideLayer: function(layer){
@@ -1865,7 +1870,9 @@ var _leaflet = {
      * @param layer
      */
     showLayer: function(layer){
-
+        if(layer){
+            layer.addTo(this.map);
+        }
     },
 
     /**

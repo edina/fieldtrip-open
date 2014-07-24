@@ -521,7 +521,7 @@ var _ui = {
     },
 
     /**
-     * Set up maps page.
+     * Set up maps page (on pageShow).
      */
     mapPage: function(divId){
         if(typeof(divId) !== 'string'){
@@ -531,6 +531,7 @@ var _ui = {
         // map render must happen in pageshow
         map.display(divId);
 
+        // for leaflet enabling and disabling layers must come after display
         map.showLocateLayer();
         map.hideAnnotateLayer();
 
@@ -539,43 +540,56 @@ var _ui = {
     },
 
     /**
-     * Map page init.
+     * Map page init (on pageInit).
      */
     mapPageInit: function(){
-        // set up buttons when records are visible on map
-        var recordsVisible = function(){
-            $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
-            $('#map-records-buttons-list a').show();
-        };
-
-        // set up buttons when records are hidden
-        var recordsHidden = function(){
-            $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
-            $('#map-records-buttons-list a').hide();
-        };
-
         $('#map-records-buttons-ok').click($.proxy(function(event){
             var label = $('#map-records-buttons-ok .ui-btn-text').text();
             if(label === 'Show Records'){
-                map.showRecordsLayer();
-                recordsVisible();
+                this.mapPageRecordCentred();
             }
             else{
                 map.hideRecordsLayer();
-                recordsHidden();
+                this.mapPageRecordsHidden();
             }
         }, this));
 
         if(map.isRecordsLayerVisible()){
-            recordsVisible();
+            this.mapPageRecordsVisible();
         }
         else{
-            recordsHidden();
+            this.mapPageRecordsHidden();
         }
 
         // TODO is openlayers ok with this?
         // map.showLocateLayer();
         // map.hideAnnotateLayer();
+    },
+
+    /**
+     * Set up map page with record centred.
+     * @param annotation The record/annotation to centre on. Can be left undefined
+     * to leave map centred as is.
+     */
+    mapPageRecordCentred: function(annotation){
+        map.showRecordsLayer(annotation);
+        this.mapPageRecordsVisible();
+    },
+
+    /**
+     * Set map page buttons when records are hidden.
+     */
+    mapPageRecordsHidden: function(){
+        $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
+        $('#map-records-buttons-list a').hide();
+    },
+
+    /**
+     * Set up buttons when records are visible on map.
+     */
+    mapPageRecordsVisible: function(){
+        $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
+        $('#map-records-buttons-list a').show();
     },
 
     /**
@@ -681,7 +695,7 @@ var _ui = {
         $(document).on(
             'click',
             '.saved-records-view',
-            function(event){
+            $.proxy(function(event){
                 if(this.isMobileApp){
                     // this will prevent the event propagating to next screen
                     event.stopImmediatePropagation();
@@ -690,9 +704,9 @@ var _ui = {
                 var id = $(event.target).parents('li').attr('id');
                 var annotation = records.getSavedRecord(id);
 
-                map.showRecordsLayer(annotation);
-                utils.gotoMapPage();
-            }
+                // goto map page and show all records centred on record clicked
+                utils.gotoMapPage($.proxy(this.mapPageRecordCentred, this, annotation));
+            }, this)
         );
     },
 

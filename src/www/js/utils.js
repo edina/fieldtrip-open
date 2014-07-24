@@ -373,13 +373,18 @@ return {
     },
 
     /**
-     * Go to main map page
+     * Go to main map page.
+     * @param callback Optional callback function called on map page pageshow.
      */
-    gotoMapPage: function(){
+    gotoMapPage: function(callback){
         if(config.recordsClickMapPage){
             $.mobile.changePage(config.recordsClickMapPage);
         }
         else{
+            if(callback){
+                $(document).off('pageshow', '#map-page', callback);
+                $(document).on('pageshow', '#map-page', callback);
+            }
             $.mobile.changePage('map.html');
         }
     },
