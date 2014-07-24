@@ -382,8 +382,7 @@ return {
         }
         else{
             if(callback){
-                $(document).off('pageshow', '#map-page', callback);
-                $(document).on('pageshow', '#map-page', callback);
+                $(document).one('pageshow', '#map-page', callback);
             }
             $.mobile.changePage('map.html');
         }

@@ -557,13 +557,10 @@ div.record-extra > div > img {
     line-height: 150%
 }
 
-/* TODO: this should in in sync plugin */
-/* sync icon */
+/* spare column for plugins */
 #saved-records-list .ui-block-a{
     margin: 0;
     padding: 0;
-    /* width: 15%; */
-    /* height: 3.4em; */
     width: 0;
     height: 0;
 }

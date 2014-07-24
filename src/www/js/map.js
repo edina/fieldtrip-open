@@ -1091,7 +1091,6 @@ var _openlayers = {
      */
     addMarkers: function(layer, markers){
         layer.addFeatures(markers);
-        layer.addTo(this.map);
     },
 
     /**

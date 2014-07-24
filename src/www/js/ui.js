@@ -475,9 +475,10 @@ var _ui = {
             // update default location to be last selected location
             map.setDefaultLocation(lonLat);
 
-            var annotation = this.currentAnnotation;
-            utils.gotoMapPage($.proxy(this.mapPageRecordCentred, this, annotation));
-            this.currentAnnotation = undefined;
+            utils.gotoMapPage(function(){
+                this.mapPageRecordCentred(this.currentAnnotation);
+                this.currentAnnotation = undefined;
+            });
         }, this));
 
         utils.touchScroll('#annotate-preview-detail');
