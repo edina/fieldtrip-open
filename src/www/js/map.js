@@ -1780,7 +1780,7 @@ var _leaflet = {
     },
 
     /**
-     * @param The map layer.
+     * @param The leaflet map layer.
      * @return Is the layer currently visible?
      */
     isLayerVisible: function(layer){

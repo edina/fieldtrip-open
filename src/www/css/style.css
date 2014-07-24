@@ -469,10 +469,8 @@ div.record-extra > div > img {
 
 /* Alter sync button width for grid view */
 #saved-records-list .active .ui-block-a{
-    /* width: 17%; */
     width: 0%;
 }
-
 
 #saved-records-list-list li.active div.ui-block-c {
     margin-right: 1%;
@@ -485,7 +483,6 @@ div.record-extra > div > img {
 /* For grid view float left */
 #saved-records-page .ui-listview li.active {
     float : left;
-    /* height: 150px; */
 }
 
 @media (min-width: 320px) {
@@ -560,12 +557,15 @@ div.record-extra > div > img {
     line-height: 150%
 }
 
+/* TODO: this should in in sync plugin */
 /* sync icon */
 #saved-records-list .ui-block-a{
     margin: 0;
     padding: 0;
-    width: 15%;
-    height: 3.4em;
+    /* width: 15%; */
+    /* height: 3.4em; */
+    width: 0;
+    height: 0;
 }
 
 /* record text */
@@ -574,7 +574,7 @@ div.record-extra > div > img {
     padding: 1em 0 0 0;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 70%;
+    width: 85%;
 }
 
 #saved-records-list .ui-block-b a{
