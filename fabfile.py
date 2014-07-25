@@ -438,8 +438,8 @@ def generate_location_cache():
     #bottom_right = (55.8538, -4.2408)
     
     #bens pick of glasgow
-    top_left = (55.8795, -4.2995)
-    bottom_right = (55.8454, -4.2121)
+    #top_left = (55.8795, -4.2995)
+    #bottom_right = (55.8454, -4.2121)
 
     # edinburgh
     # top_left = (55.9868, -3.2759)
@@ -448,6 +448,10 @@ def generate_location_cache():
     # newington
     #top_left = (55.9432, -3.1939)
     #bottom_right = (55.9238, -3.1549)
+
+    #around scotstoun stadium (glasgow)
+    top_left = (55.889368, -4.351358)
+    bottom_right = (55.868377, -4.31608)   
 
     zoom = 18
 
@@ -484,7 +488,11 @@ def generate_location_cache():
             address = result['address']
 
             if 'road' in address:
-                text = '{0}, {1}'.format(address['road'], address['suburb'])
+                addressDetail = ''
+                if 'suburb' in address:
+                    addressDetail = address['suburb']
+                 
+                text = '{0}, {1}'.format(address['road'], addressDetail)
             else:
                 text = address['suburb']
 
