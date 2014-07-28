@@ -57,6 +57,7 @@ PROJ4JS_VERSION    = '1.1.0'
 NPM_VERSION        = '1.4.10'
 BOWER_VERSION      = '1.3.5'
 JSHINT_VERSION     = '2.5.0'
+PLUGMAN_VERSION    = '0.22.4'
 
 """
 Tools installed via npm.
@@ -75,6 +76,9 @@ npm_commands = {
     'jshint':{
         'version': JSHINT_VERSION,
         'v_search': 'jshint v{0}'.format(JSHINT_VERSION)
+    },
+    'plugman':{
+        'version': PLUGMAN_VERSION
     }
 }
 
