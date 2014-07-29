@@ -51,7 +51,7 @@ import sys
 import re
 
 
-CORDOVA_VERSION    = '3.5.0-0.2.4'
+CORDOVA_VERSION    = '3.5.0-0.2.6'
 OPENLAYERS_VERSION = '2.12'
 PROJ4JS_VERSION    = '1.1.0'
 NPM_VERSION        = '1.4.10'
