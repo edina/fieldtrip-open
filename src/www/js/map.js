@@ -964,7 +964,6 @@ var _openlayers = {
             USER_LOCATION,
             {
                 style: locateLayerStyle,
-                renderers: ["Canvas", "SVG", "VML"]
             }
         );
 
