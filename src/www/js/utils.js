@@ -492,9 +492,9 @@ return {
         var isPrivileged = false;
         if(isMobileApp){
             if(config.priviligedusers){
-                if ((config.priviligedusers instanceof Array &&
-                     $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)) ||
-                    device.uuid === config.priviligedusers){
+                if((config.priviligedusers.indexOf(',') != -1 &&
+                    $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)) ||
+                   device.uuid === config.priviligedusers){
                     isPrivileged = true;
                 }
             }
@@ -504,7 +504,7 @@ return {
         }
 
         if(!isPrivileged){
-            console.debug(device.uuid + " privileged user is "+isPrivileged);
+            console.debug(device.uuid + " privileged user is " + isPrivileged);
         }
 
         return isPrivileged;

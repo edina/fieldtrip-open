@@ -52,7 +52,7 @@ import re
 
 
 CORDOVA_VERSION    = '3.5.0-0.2.6'
-OPENLAYERS_VERSION = '2.12'
+OPENLAYERS_VERSION = '2.13.1'
 PROJ4JS_VERSION    = '1.1.0'
 NPM_VERSION        = '1.4.10'
 BOWER_VERSION      = '1.3.5'
@@ -64,18 +64,18 @@ Tools installed via npm.
 The v_search value is the expected output of running the command -v
 """
 npm_commands = {
-    'npm':{
-        'version': NPM_VERSION
+    'bower':{
+        'version': BOWER_VERSION,
     },
     'cordova':{
         'version': CORDOVA_VERSION,
     },
-    'bower':{
-        'version': BOWER_VERSION,
-    },
     'jshint':{
         'version': JSHINT_VERSION,
         'v_search': 'jshint v{0}'.format(JSHINT_VERSION)
+    },
+    'npm':{
+        'version': NPM_VERSION
     },
     'plugman':{
         'version': PLUGMAN_VERSION
@@ -778,16 +778,16 @@ def install_project(platform='android',
         os.makedirs(dist_path)
 
     # install proj4js
-    proj4js_path = os.sep.join((dist_path, 'proj4js'))
-    if not os.path.exists(proj4js_path):
-        with lcd(dist_path):
-            local('wget http://download.osgeo.org/proj4js/proj4js-{0}.zip'.format(PROJ4JS_VERSION))
-            local('unzip proj4js-{0}.zip'.format(PROJ4JS_VERSION))
+    # proj4js_path = os.sep.join((dist_path, 'proj4js'))
+    # if not os.path.exists(proj4js_path):
+    #     with lcd(dist_path):
+    #         local('wget http://download.osgeo.org/proj4js/proj4js-{0}.zip'.format(PROJ4JS_VERSION))
+    #         local('unzip proj4js-{0}.zip'.format(PROJ4JS_VERSION))
 
-    with lcd(runtime):
-        # copy it to ext folder
-        local('cp {0} {1}'.format(os.sep.join((proj4js_path, 'lib', 'proj4js-compressed.js')),
-                                  os.sep.join((js_ext_dir, 'proj4js.js'))))
+    # with lcd(runtime):
+    #     # copy it to ext folder
+    #     local('cp {0} {1}'.format(os.sep.join((proj4js_path, 'lib', 'proj4js-compressed.js')),
+    #                               os.sep.join((js_ext_dir, 'proj4js.js'))))
 
     if _config('maplib', section='app') != 'leaflet':
         # check if openlayers is installed

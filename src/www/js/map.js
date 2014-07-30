@@ -31,10 +31,12 @@ DAMAGE.
 
 "use strict";
 
-/* global OpenLayers, L */
+/* global OpenLayers, L, Proj4js */
 
-define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
-    records, utils, proj4js){
+
+define(['records', 'utils', 'proj4'], function(// jshint ignore:line
+    records, utils, proj4){
+
     var resolutions = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
 
     var internalProjectionText = 'EPSG:900913';
@@ -61,7 +63,6 @@ define(['records', 'utils', 'proj4js'], function(// jshint ignore:line
      * Fetch TMS capabilities from server and store as this.tileMapCapabilities.
      */
     var fetchCapabilities = function(){
-        //var map = _this.map;
         var baseLayerName;
         if(_this.map){
             baseLayerName = _this.getBaseLayerName();
@@ -646,7 +647,7 @@ var _base = {
             // map hasn't been initialised yet
             this.showRecordsOnDisplay = annotation;
         }
-        else if(this.getLayerFeatures(layer).length === 0){
+        else{
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
@@ -668,9 +669,6 @@ var _base = {
             }
             this.showLayer(layer);
             //layer.refresh(); remove? put back in if ol refresh problem
-        }
-        else{
-            this.showLayer(layer);
         }
     },
 
@@ -797,6 +795,14 @@ var _openlayers = {
      * Set up openlayers map.
      */
     init: function(){
+        // get proj4js 2.x working with openlayer 2.13, see
+        // http://osgeo-org.1560.x6.nabble.com/OL-2-13-1-latest-Proj4js-td5081636.html
+        window.Proj4js = {
+            Proj: function(code) { return proj4(Proj4js.defs[code]); },
+            defs: proj4.defs,
+            transform: proj4
+        };
+
         this.minLocateZoomTo = resolutions.length - 3;
         var bounds = new OpenLayers.Bounds (0,0,700000,1300000);
 
@@ -828,7 +834,7 @@ var _openlayers = {
         }
         else{
             var proj = mapSettings.epsg;
-            proj4js.defs[proj] = mapSettings.proj;
+            Proj4js.defs[proj] = mapSettings.proj;
             internalProjectionText = proj;
             baseLayer = new OpenLayers.Layer.TMS(
                 "osOpen",
@@ -958,7 +964,7 @@ var _openlayers = {
             USER_LOCATION,
             {
                 style: locateLayerStyle,
-                renderers: ["Canvas"]
+                renderers: ["Canvas", "SVG", "VML"]
             }
         );
 
