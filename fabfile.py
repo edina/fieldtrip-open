@@ -64,18 +64,18 @@ Tools installed via npm.
 The v_search value is the expected output of running the command -v
 """
 npm_commands = {
-    'npm':{
-        'version': NPM_VERSION
+    'bower':{
+        'version': BOWER_VERSION,
     },
     'cordova':{
         'version': CORDOVA_VERSION,
     },
-    'bower':{
-        'version': BOWER_VERSION,
-    },
     'jshint':{
         'version': JSHINT_VERSION,
         'v_search': 'jshint v{0}'.format(JSHINT_VERSION)
+    },
+    'npm':{
+        'version': NPM_VERSION
     },
     'plugman':{
         'version': PLUGMAN_VERSION
