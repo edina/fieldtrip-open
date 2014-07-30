@@ -47,26 +47,23 @@ function onDeviceReady(){
     require.config({
         paths: {
             "plugins": "../plugins",
+            "proj4": "ext/proj4",
             "templates": "../templates",
-            "theme": "../theme",
-            "proj4js": "ext/proj4js",
-            "underscore": "ext/underscore",
             "text": "ext/requirejs-text",
-            'QUnit': 'ext/qunit'
+            "theme": "../theme",
+            'QUnit': 'ext/qunit',
+            "underscore": "ext/underscore"
         },
         shim: {
-            "proj4js":{
-                exports: "Proj4js"
-            },
-            "underscore": {
-                exports: "_"
-            },
             'QUnit': {
                 exports: 'QUnit',
                 init: function() {
                     QUnit.config.autoload = false;
                     QUnit.config.autostart = false;
                 }
+            },
+            "underscore": {
+                exports: "_"
             }
         }
     });

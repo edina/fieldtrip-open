@@ -778,16 +778,16 @@ def install_project(platform='android',
         os.makedirs(dist_path)
 
     # install proj4js
-    proj4js_path = os.sep.join((dist_path, 'proj4js'))
-    if not os.path.exists(proj4js_path):
-        with lcd(dist_path):
-            local('wget http://download.osgeo.org/proj4js/proj4js-{0}.zip'.format(PROJ4JS_VERSION))
-            local('unzip proj4js-{0}.zip'.format(PROJ4JS_VERSION))
+    # proj4js_path = os.sep.join((dist_path, 'proj4js'))
+    # if not os.path.exists(proj4js_path):
+    #     with lcd(dist_path):
+    #         local('wget http://download.osgeo.org/proj4js/proj4js-{0}.zip'.format(PROJ4JS_VERSION))
+    #         local('unzip proj4js-{0}.zip'.format(PROJ4JS_VERSION))
 
-    with lcd(runtime):
-        # copy it to ext folder
-        local('cp {0} {1}'.format(os.sep.join((proj4js_path, 'lib', 'proj4js-compressed.js')),
-                                  os.sep.join((js_ext_dir, 'proj4js.js'))))
+    # with lcd(runtime):
+    #     # copy it to ext folder
+    #     local('cp {0} {1}'.format(os.sep.join((proj4js_path, 'lib', 'proj4js-compressed.js')),
+    #                               os.sep.join((js_ext_dir, 'proj4js.js'))))
 
     if _config('maplib', section='app') != 'leaflet':
         # check if openlayers is installed
