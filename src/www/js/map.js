@@ -646,7 +646,7 @@ var _base = {
             // map hasn't been initialised yet
             this.showRecordsOnDisplay = annotation;
         }
-        else if(this.getLayerFeatures(layer).length === 0){
+        else{
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
@@ -668,9 +668,6 @@ var _base = {
             }
             this.showLayer(layer);
             //layer.refresh(); remove? put back in if ol refresh problem
-        }
-        else{
-            this.showLayer(layer);
         }
     },
 
