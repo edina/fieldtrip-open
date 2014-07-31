@@ -842,3 +842,9 @@ div.record-extra > div > img {
     height: 100%;
     width: 100%;
 }
+
+#location-update-interval-container .caption{
+    width: 70%; /* match slider width */
+    padding-left: 65px;
+    text-align: center;
+}

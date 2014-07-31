@@ -122,6 +122,10 @@ function onDeviceReady(){
             ui.mapPageInit();
         });
 
+        $(document).on('pageremove', '#map-page', function(){
+            ui.mapPageRemove();
+        });
+
         var onShows = {
             'home-page': ui.homePage,
             'map-page': ui.mapPage,

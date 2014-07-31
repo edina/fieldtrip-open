@@ -57,6 +57,8 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
 
     var defaultUserLon = -2.421976;
     var defaultUserLat = 53.825564;
+    var defaultUserHeading = 130;
+    var defaultUserAltitude = 150;
 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
@@ -166,6 +168,15 @@ var _base = {
     },
 
     /**
+     * clear watch if already defined
+     */
+    clearGeoLocateWatch: function(){
+        if(this.geoLocationWatchID){
+            navigator.geolocation.clearWatch(this.geoLocationWatchID);
+        }
+    },
+
+    /**
      * @return layer with the draggable icon.
      */
     getAnnotateLayer: function(){
@@ -240,8 +251,8 @@ var _base = {
                     coords: {
                         longitude: defaultUserLon,
                         latitude: defaultUserLat,
-                        heading: 130,
-                        altitude: 150
+                        heading: defaultUserHeading,
+                        altitude: defaultUserAltitude
                     }
                 });
             },
@@ -330,6 +341,7 @@ var _base = {
      * @param secretly If true do not show page loading msg.
      * @param updateAnnotateLayer Should annotate layer be informed of new position?
      * @param useDefault If no user location found should default be used?
+     * @param timeout miliseconds before throwing a timeoout error
      */
     geoLocate: function(options){
         console.debug("Geolocate user: interval: " + options.interval +
@@ -337,8 +349,10 @@ var _base = {
                       " updateAnnotateLayer: " + options.updateAnnotateLayer +
                       " useDefault " + options.useDefault);
 
+        options.timeout =  options.timeout || this.geolocateTimeout;
+
         if(!options.secretly){
-            utils.inform('Waiting for GPS fix',10000);
+            utils.inform('Waiting for GPS fix', 10000);
         }
 
         // found user location
@@ -370,8 +384,8 @@ var _base = {
                     coords: {
                         longitude: defaultUserLon,
                         latitude: defaultUserLat,
-                        heading: 130,
-                        altitude: 150
+                        heading: defaultUserHeading,
+                        altitude: defaultUserAltitude
                     }
                 };
 
@@ -381,10 +395,7 @@ var _base = {
             }
         }, this);
 
-        // clear watch if already defined
-        if(this.geoLocationWatchID){
-            navigator.geolocation.clearWatch(this.geoLocationWatchID);
-        }
+        this.clearGeoLocateWatch();
 
         // if interval is defined create a watch
         if(options.interval > 0){
@@ -394,7 +405,7 @@ var _base = {
                 {
                     enableHighAccuracy: this.GPS_ACCURACY_FLAG,
                     maximumAge: options.interval,
-                    timeout: this.geolocateTimeout
+                    timeout:options.timeout
                 }
             );
         }
@@ -404,7 +415,7 @@ var _base = {
                 onError,
                 {
                     enableHighAccuracy: this.GPS_ACCURACY_FLAG,
-                    timeout: this.geolocateTimeout
+                    timeout: options.timeout
                 }
             );
         }
@@ -678,6 +689,41 @@ var _base = {
             }
             this.showLayer(layer);
             //layer.refresh(); remove? put back in if ol refresh problem
+        }
+    },
+
+    /**
+     * Start to update the location to the interval set in settings
+     */
+    startLocationUpdate: function(){
+        var _this = this;
+        var location = utils.getLocationSettings();
+        this.stopLocationUpdate();
+
+        if(location.autoUpdate){
+            console.debug('Setting location autoupdate:({0}, {1})'.format(location.autoUpdate,
+                                                                          location.interval));
+            var updateLocation = function(){
+                _this.geoLocate({
+                        interval: 0,
+                        secretly: true,
+                        updateAnnotateLayer: true,
+                        useDefault: false,
+                        timeout: 10000
+                });
+            };
+            this.locationUpdateWatch = setInterval(updateLocation, location.interval);
+            updateLocation();
+        }
+    },
+
+    /*
+     * Clear the current timer for the automatic location update
+     */
+    stopLocationUpdate: function(){
+        if(this.locationUpdateWatch){
+            console.debug('Clearing location autoupdate: ' + this.locationUpdateWatch);
+            clearInterval(this.locationUpdateWatch);
         }
     },
 
@@ -1017,8 +1063,8 @@ var _openlayers = {
         this.userLonLat.gpsPosition = {
             longitude: defaultUserLon,
             latitude: defaultUserLat,
-            heading: 130,
-            altitude: 150
+            heading: defaultUserHeading,
+            altitude: defaultUserAltitude
         };
 
         var drag = new OpenLayers.Control.DragFeature(positionMarkerLayer);

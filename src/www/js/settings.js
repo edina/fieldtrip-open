@@ -79,24 +79,17 @@ define(['config'], function(config){
      */
     var settingsPage = function(){
         require(['utils'], function(utils){
-            $.each(vals, function(name, entry){
-                var id = '#settings-' + name;
-                if(typeof(entry) !== 'undefined'){
-                    if(entry.type === 'select'){
-                        utils.selectVal(id, vals[name].val);
-                    }
-                    else if(entry.type === 'slider'){
-                        utils.sliderVal(id, vals[name].val);
-                    }
-                    else{
-                        $(id).val(vals[name].val);
-                    }
-                }
-            });
-
             $('#settings-clear-local-storage a').click(function(){
                 localStorage.clear();
                 utils.inform('done');
+            });
+
+            $('#settings-location-autoupdate').on('change', function(evt){
+                if($(evt.target).val() === "on"){
+                    $('#location-update-interval-container').show();
+                }else{
+                    $('#location-update-interval-container').hide();
+                }
             });
 
             $('#settings-ftgb').text(utils.version);
@@ -110,6 +103,23 @@ define(['config'], function(config){
             else{
                 $('#settings-cordova').text('n/a');
             }
+
+            $.each(vals, function(name, entry){
+                var id = '#settings-' + name;
+                if(typeof(entry) !== 'undefined'){
+                    if(entry.type === 'select'){
+                        utils.selectVal(id, vals[name].val);
+                        console.debug(id);
+                    }
+                    else if(entry.type === 'slider'){
+                        utils.sliderVal(id, vals[name].val);
+                    }
+                    else{
+                        $(id).val(vals[name].val);
+                    }
+                    $(id).trigger('change');
+                }
+            });
         });
     };
 

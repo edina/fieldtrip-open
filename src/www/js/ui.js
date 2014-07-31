@@ -562,6 +562,8 @@ var _ui = {
             this.mapPageRecordsHidden();
         }
 
+        map.startLocationUpdate();
+
         // TODO is openlayers ok with this?
         // map.showLocateLayer();
         // map.hideAnnotateLayer();
@@ -591,6 +593,14 @@ var _ui = {
     mapPageRecordsVisible: function(){
         $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
         $('#map-records-buttons-list a').show();
+    },
+
+    /*
+     * Map page remove
+     */
+    mapPageRemove: function(){
+        map.stopLocationUpdate();
+        map.clearGeoLocateWatch();
     },
 
     /**

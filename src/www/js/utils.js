@@ -51,6 +51,18 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
+/*
+    Add formated data method to String
+    Use: "{0} {1}".format('hello', 'world')
+*/
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+        return typeof args[number] != 'undefined' ? args[number] : match;
+        });
+    };
+}
 
 define(['settings', 'config'], function(settings, config){
 
@@ -345,6 +357,22 @@ return {
             'url': config.mapurl,
             'version': config.mapserviceversion
         };
+    },
+
+    /**
+     * @return A location object with the autoUpdate and interval from the settings
+     */
+    getLocationSettings: function(){
+        var location = {};
+        if(settings.get('location-autoupdate') === 'on'){
+            var interval = settings.get('location-update-interval');
+            location.autoUpdate = true;
+            // interval to Miliseconds
+            location.interval = (parseInt(interval) || 10) * 1000;
+        }else{
+            location.autoUpdate = false;
+        }
+        return location;
     },
 
     /**
