@@ -616,7 +616,7 @@ div.record-extra > div > img {
 #saved-records-page-header h2{
     margin: 0;
     padding: 1em 0 0 1em;
-    color: white;
+    color: black; /* this is for the default theme */
 }
 
 #annotate-preview-detail{

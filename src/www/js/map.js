@@ -37,7 +37,9 @@ DAMAGE.
 define(['records', 'utils', 'proj4'], function(// jshint ignore:line
     records, utils, proj4){
 
+    // default resolutions and bounds
     var resolutions = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
+    var BOUNDS = [0, 0, 700000, 1310720];
 
     var internalProjectionText = 'EPSG:900913';
     var externalProjectionText = 'EPSG:4326';
@@ -463,6 +465,13 @@ var _base = {
     },
 
     /**
+     * @return Is the base layer Open Street Map?
+     */
+    isOSM: function(){
+        return mapSettings.baseLayer === 'osm';
+    },
+
+    /**
      * Receive a new user position.
      * @param position The GPS position http://docs.phonegap.com/en/2.1.0/cordova_geolocation_geolocation.md.html#Position.
      * @param updateAnnotateLayer Should annotate layer be updated after position
@@ -838,9 +847,9 @@ var _openlayers = {
         };
 
         this.minLocateZoomTo = resolutions.length - 3;
-        var bounds = new OpenLayers.Bounds (0,0,700000,1300000);
 
-        if(mapSettings.baseLayer === 'osm'){
+        var bounds;
+        if(this.isOSM()){
             baseLayer = new OpenLayers.Layer.OSM();
             bounds = new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34);
             resolutions = [156543.03390625,
@@ -867,11 +876,19 @@ var _openlayers = {
                            0.05];
         }
         else{
+            bounds = new OpenLayers.Bounds(
+                BOUNDS[0],
+                BOUNDS[1],
+                BOUNDS[2],
+                BOUNDS[3]
+            );
+
             var proj = mapSettings.epsg;
             Proj4js.defs[proj] = mapSettings.proj;
             internalProjectionText = proj;
             baseLayer = new OpenLayers.Layer.TMS(
                 "osOpen",
+                // TODO - shouldn't this be utils.getTMSURL() ?
                 mapSettings.url + TMS_URL,
                 {
                     layername: mapSettings.layerName,
@@ -1556,11 +1573,17 @@ var _this = {};
 var _leaflet = {
 
     /**
-     * Set up openlayer map.
+     * Set up leaflet map.
      */
     init: function(){
-        this.MAX_ZOOM = 18;
-        this.minLocateZoomTo = this.MAX_ZOOM - 2;
+        if(this.isOSM()){
+            this.maxZoom = 18;
+        }
+        else{
+            this.maxZoom = resolutions.length -1;
+        }
+
+        this.minLocateZoomTo = this.maxZoom - 2;
     },
 
     /**
@@ -1660,6 +1683,13 @@ var _leaflet = {
     },
 
     /**
+     * Close currently displayed popup.
+     */
+    closePopup: function(){
+        this.map.closePopup();
+    },
+
+    /**
      * Create a bounding box.
      * @param sw Botton left.
      * @param ne Top right
@@ -1667,6 +1697,54 @@ var _leaflet = {
      */
     createBounds: function(sw, ne){
         return new L.latLngBounds(sw, ne);
+    },
+
+    /**
+     * Create leaflet map.
+     * @param div The div to attach the map to.
+     */
+    createMap: function(div){
+        if(this.isOSM()){
+            this.map = L.map(div);
+
+            // create base layer
+            this.baseLayer = L.tileLayer(
+                'http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
+                {
+                    subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
+                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                    maxZoom: this.maxZoom
+                }
+            );
+        }
+        else{
+            this.baseLayer = L.tileLayer(
+                this.getTMSURL() + mapSettings.version + "/" + mapSettings.layerName + '/{z}/{x}/{y}.' + mapSettings.type,
+                {
+                    attribution: 'FieldTripGB tiles provided by <a href="http://edina.ac.uk/">EDINA</a>  | Map data Â© <a href="http://openstreetmap.org/">OpenStreetMap</a>',
+                    continuousWorld: true,
+                    tms: true,
+                    maxZoom: this.maxZoom,
+                    bounds: [[60.8400, 1.7800],[49.9600, -7.5600]]
+                }
+            );
+
+            var crs = new L.Proj.CRS.TMS(
+                mapSettings.epsg,
+                mapSettings.proj,
+                BOUNDS,
+                {
+                    resolutions: resolutions
+                }
+            );
+
+            this.map = L.map(div, {
+                crs: crs,
+                maxBounds: this.baseLayer.options.bounds
+            });
+        }
+
+        this.baseLayer.addTo(this.map);
     },
 
     /**
@@ -1711,14 +1789,7 @@ var _leaflet = {
      * @param div The div id.
      */
     display: function(div){
-        this.map = L.map(div);
-
-        // create base layer
-        L.tileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
-            subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-            maxZoom: this.MAX_ZOOM
-        }).addTo(this.map);
+        this.createMap(div);
 
         // set up listeners
         if(this.dragend){
@@ -1782,7 +1853,7 @@ var _leaflet = {
      * @return leaflet base layer.
      */
     getBaseLayer: function(){
-
+        return this.baseLayer;
     },
 
     /**
@@ -2005,8 +2076,8 @@ var _leaflet = {
 };
 
 if(utils.getMapLib() === 'leaflet'){
-    require(['ext/leaflet'], function(){
-        require(['ext/leaflet.markercluster'], function(){
+    require(['leaflet'], function(){
+        require(['ext/leaflet.markercluster', 'ext/proj4leaflet'], function(){
             _this.init();
         });
     });
