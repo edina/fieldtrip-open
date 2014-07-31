@@ -23,6 +23,7 @@
         "leaflet": "0.7.3",
         "leaflet.markercluster": "0.4.0",
         "proj4": "2.2.1",
+        "proj4leaflet": "0.7.0",
         "qunit": "1.14.0",
         "requirejs": "2.1.9",
         "requirejs-text": "2.0.10",
@@ -57,6 +58,9 @@
         ],
         "proj4": [
             "dist/proj4.js"
+        ],
+        "proj4leaflet": [
+            "src/proj4leaflet.js"
         ],
         "requirejs": [
             "require.js"

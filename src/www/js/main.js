@@ -46,6 +46,7 @@ function onDeviceReady(){
     // set up requirejs config
     require.config({
         paths: {
+            "leaflet": "ext/leaflet",
             "plugins": "../plugins",
             "proj4": "ext/proj4",
             "templates": "../templates",
