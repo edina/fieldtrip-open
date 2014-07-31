@@ -476,19 +476,6 @@ var _base = {
                                 position.coords.latitude);
         this.userLonLat.gpsPosition = position.coords;
 
-        if(position.coords.heading){
-            var annotateLayer = this.getAnnotateLayer();
-            if(annotateLayer){
-                var features = this.getLayerFeatures(annotateLayer);
-                if(features.length > 0){
-                    // set rotation to heading direction, doesn't work on most android
-                    // devices, see http://devel.edina.ac.uk:7775/issues/4852
-                    annotateLayer.features[0].attributes.imageRotation =
-                        360 - position.coords.heading;
-                }
-            }
-        }
-
         // update user position
         this.updateLocateLayer();
 
@@ -698,7 +685,7 @@ var _base = {
                 _this.geoLocate({
                         interval: 0,
                         secretly: true,
-                        updateAnnotateLayer: true,
+                        updateAnnotateLayer: false,
                         useDefault: false,
                         timeout: 10000
                 });
@@ -800,7 +787,8 @@ var _base = {
         this.updateLayer({
             layer: this.getLocateLayer(),
             id: this.USER_POSITION_ATTR,
-            zoom: zoom
+            zoom: zoom,
+            rotate: true
         });
     },
 
@@ -1497,6 +1485,7 @@ var _openlayers = {
      *   id: The id of the user icon feature.
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
+     *   rotate: True or False if the marker should be rotated with the heading direction
      */
     updateLayer: function(options){
         var id = options.id;
@@ -1506,16 +1495,16 @@ var _openlayers = {
         if(lonLat === undefined || lonLat === null){
             lonLat = this.toInternal(this.userLonLat);
         }
-
         var point = new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat);
-        var v = new OpenLayers.Feature.Vector(point,
-                                              {'id': id});
 
         if(lonLat.gpsPosition){
             point.gpsPosition = lonLat.gpsPosition;
         }
 
+        // Create or move the feature
+        layer.setVisibility(true);
         if(annotationFeature.length === 0){
+            var v = new OpenLayers.Feature.Vector(point, {'id': id});
             annotationFeature = [v];
             layer.addFeatures(annotationFeature);
         }
@@ -1523,10 +1512,34 @@ var _openlayers = {
             annotationFeature[0].move(lonLat);
         }
 
-        layer.setVisibility(true);
-        layer.redraw();
+        var feature = annotationFeature[0];
 
-        this.map.setCenter(lonLat, options.zoom);
+        // Rotate the feature
+        if(options.rotate){
+            var heading = point.gpsPosition.heading || 0;
+            feature.attributes.imageRotation = heading;
+        }
+
+        var mapBounds = this.map.calculateBounds();
+        var innerBounds = mapBounds.clone().scale(0.8);
+        var featureBounds = feature.geometry.bounds;
+
+        // If is not in the viewport center the map
+        if(!mapBounds.containsBounds(featureBounds)){
+            this.map.setCenter(lonLat, options.zoom);
+        }else{
+            // If is in the edge of the map pan the map
+            if(!innerBounds.containsBounds(featureBounds)){
+                // Calculate how much to pan
+                var innerGeometry = innerBounds.toGeometry();
+                var delta = point.distanceTo(innerGeometry, {details: true});
+                var center = this.map.getCenter();
+                //var _center = {};
+                center.lon -= (delta.x1 - delta.x0);
+                center.lat -= (delta.y1 - delta.y0);
+                this.map.panTo(new OpenLayers.LonLat(center.lon, center.lat));
+            }
+        }
     },
 
     /**
