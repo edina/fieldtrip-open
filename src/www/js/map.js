@@ -1563,33 +1563,14 @@ var _leaflet = {
      * Set up leaflet map.
      */
     init: function(){
-        var maxZoom = 18;
         if(this.isOSM()){
-            // create base layer
-            this.baseLayer = L.tileLayer(
-                'http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
-                {
-                    subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
-                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-                    maxZoom: maxZoom
-                }
-            );
+            this.maxZoom = 18;
         }
         else{
-            maxZoom = resolutions.length -1;
-            this.baseLayer = L.tileLayer(
-                this.getTMSURL() + mapSettings.version + "/" + mapSettings.layerName + '/{z}/{x}/{y}.' + mapSettings.type,
-                {
-                    attribution: 'FieldTripGB tiles provided by <a href="http://edina.ac.uk/">EDINA</a>  | Map data Â© <a href="http://openstreetmap.org/">OpenStreetMap</a>',
-                    continuousWorld: true,
-                    tms: true,
-                    maxZoom: maxZoom,
-                    bounds: [[60.8400, 1.7800],[49.9600, -7.5600]]
-                }
-            );
+            this.maxZoom = resolutions.length -1;
         }
 
-        this.minLocateZoomTo = maxZoom - 2;
+        this.minLocateZoomTo = this.maxZoom - 2;
     },
 
     /**
@@ -1689,6 +1670,13 @@ var _leaflet = {
     },
 
     /**
+     * Close currently displayed popup.
+     */
+    closePopup: function(){
+        this.map.closePopup();
+    },
+
+    /**
      * Create a bounding box.
      * @param sw Botton left.
      * @param ne Top right
@@ -1705,8 +1693,29 @@ var _leaflet = {
     createMap: function(div){
         if(this.isOSM()){
             this.map = L.map(div);
+
+            // create base layer
+            this.baseLayer = L.tileLayer(
+                'http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg',
+                {
+                    subdomains: ['otile1', 'otile2', 'otile3', 'otile4'],
+                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+                    maxZoom: this.maxZoom
+                }
+            );
         }
         else{
+            this.baseLayer = L.tileLayer(
+                this.getTMSURL() + mapSettings.version + "/" + mapSettings.layerName + '/{z}/{x}/{y}.' + mapSettings.type,
+                {
+                    attribution: 'FieldTripGB tiles provided by <a href="http://edina.ac.uk/">EDINA</a>  | Map data Â© <a href="http://openstreetmap.org/">OpenStreetMap</a>',
+                    continuousWorld: true,
+                    tms: true,
+                    maxZoom: this.maxZoom,
+                    bounds: [[60.8400, 1.7800],[49.9600, -7.5600]]
+                }
+            );
+
             var crs = new L.Proj.CRS.TMS(
                 mapSettings.epsg,
                 mapSettings.proj,
