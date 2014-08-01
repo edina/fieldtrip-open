@@ -1565,7 +1565,7 @@ var _openlayers = {
         var innerBounds = mapBounds.clone().scale(0.8);
         var featureBounds = feature.geometry.bounds;
 
-        if(options.autopan === true || options.autocenter === true){
+        if(options.autopan === true){
             // If is not in the viewport center the map
             if(!mapBounds.containsBounds(featureBounds)){
                 this.map.setCenter(lonLat, options.zoom);
@@ -1582,6 +1582,10 @@ var _openlayers = {
                     center.lat -= (delta.y1 - delta.y0);
                     this.map.panTo(new OpenLayers.LonLat(center.lon, center.lat));
                 }
+            }
+        }else{
+            if(options.autocenter === true){
+                this.map.setCenter(lonLat, options.zoom);
             }
         }
     },
