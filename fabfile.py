@@ -53,7 +53,6 @@ import re
 
 CORDOVA_VERSION    = '3.5.0-0.2.6'
 OPENLAYERS_VERSION = '2.13.1'
-PROJ4JS_VERSION    = '1.1.0'
 NPM_VERSION        = '1.4.10'
 BOWER_VERSION      = '1.3.5'
 JSHINT_VERSION     = '2.5.0'
