@@ -200,8 +200,7 @@ var _base = {
     /**
      * Get the current centre and zoom level of the map.
      * @param ext In extenal projection?
-     * @returns:
-     * {Object} Object with two properties: centre and zoom level.
+     * @returns map centre object.
      */
     getCentre: function(ext){
         var centre = this.map.getCenter();
@@ -210,10 +209,7 @@ var _base = {
             centre = this.toExternal(centre);
         }
 
-        return {
-            centre: centre,
-            zoom: this.getZoom()
-        };
+        return centre;
     },
 
     /**
@@ -574,7 +570,6 @@ var _base = {
      * Show user's position.
      */
     showLocateLayer: function(){
-        //this.getLocateLayer().setVisibility(true);
         this.showLayer(this.getLocateLayer());
     },
 
@@ -583,20 +578,21 @@ var _base = {
      * @param evt Map Click event.
      */
     showRecordDetail: function(evt){
-        var feature = this.getRecordsLayer().getFeatureFromEvent(evt);
+        var feature = this.getFeatureFromEvent(this.getRecordsLayer(), evt);
         if(feature){
             var annotation = records.getSavedRecord(feature.attributes.id);
 
             this.showRecordDetailPopup(annotation);
-
             // give plugins a change to process the click first
             var showDetails = true;
-            $.each(this.recordClickListeners, function(i, func){
-                if(func(feature)){
-                    showDetails = false;
-                    return;
-                }
-            });
+            if(this.recordClickListeners){
+                $.each(this.recordClickListeners, function(i, func){
+                    if(func(feature)){
+                        showDetails = false;
+                        return;
+                    }
+                });
+            }
 
             if(showDetails){
                 $('#map-record-popup').popup('open');
@@ -611,13 +607,14 @@ var _base = {
      */
     showRecordDetailPopup: function(annotation) {
         // Get point and convert
-        var point =  this.toExternal(this.map.center);
+        var point =  this.toExternal(this.getCentre());
         var lon = point.lon;
         var lat = point.lat;
 
-        var popup =  $('#map-record-popup');
+        var popup = $('#map-record-popup');
 
         popup.off('popupbeforeposition');
+        popup.off('vclick');
         popup.on({
             popupbeforeposition: function() {
                 var showRecord = function(html){
@@ -648,13 +645,11 @@ var _base = {
                         showRecord(html);
                     }
                 });
+            },
+            vclick: function(){
+                // Close popup on click
+                popup.popup('close');
             }
-        });
-
-        // Close popup on click
-        popup.off('vclick');
-        popup.on('vclick',  function() {
-            popup.popup('close');
         });
     },
 
@@ -672,7 +667,14 @@ var _base = {
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
                 if(record.point !== undefined){
-                    features.push(this.createMarker(id, annotation));
+                    features.push(
+                        this.createMarker(
+                            {
+                                id: id,
+                                annotation: annotation
+                            }
+                        )
+                    );
                 }
                 else{
                     console.debug("record " + id + " has no location");
@@ -1153,7 +1155,7 @@ var _openlayers = {
     },
 
     /**
-     * Add multiple markers to the map.
+     * Add multiple markers to the openlayers map.
      * @param layer The layers to add the markers to.
      * @param markers An array of markers.
      */
@@ -1224,17 +1226,19 @@ var _openlayers = {
 
     /**
      * Create a marker for a given FT annotation.
-     * @param id Annotation id
-     * @param annotation FT annotation object.
+     * @param options
+     *   id - Annotation id
+     *   annotation - FT annotation object.
      * @return OpenLayers.Feature.Vector
      */
-    createMarker: function(id, annotation){
+    createMarker: function(options){
+        var annotation = options.annotation;
         return new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Point(
                 annotation.record.point.lon,
                 annotation.record.point.lat),
             {
-                'id': id,
+                'id': options.id,
                 'type': records.getEditorId(annotation)
             }
         );
@@ -1279,6 +1283,16 @@ var _openlayers = {
      */
     getBaseLayer: function(){
         return this.map.baseLayer;
+    },
+
+    /**
+     * Get clicked on feature.
+     * @param layer openlayers layer
+     * @ event click event.
+     * @return openlayers feature based on click event.
+     */
+    getFeatureFromEvent: function(layer, e){
+        return layer.getFeatureFromEvent(e);
     },
 
     /**
@@ -1736,11 +1750,18 @@ var _leaflet = {
 
     /**
      * Create a marker for a given FT annotation.
-     * @param id Annotation id
-     * @param annotation FT annotation object.
-     * @return OpenLayers.Feature.Vector
+     * @param options:
+     *   id - Annotation id
+     *   annotation - FT annotation object.
+     *   icon - Leaflet icon.
+     *   click - marker click handler function.
+     * @return L.marker
      */
-    createMarker: function(id, annotation, icon){
+    createMarker: function(options){
+        var annotation = options.annotation;
+        var icon = options.icon;
+        var click = options.click;
+
         if(icon === undefined){
             var className = 'custom-marker-icon';
             if(annotation.record.editor === 'text.edtr'){
@@ -1755,10 +1776,30 @@ var _leaflet = {
             });
         }
 
-        return new L.marker(
+        var marker = new L.marker(
             [annotation.record.point.lat, annotation.record.point.lon],
             {icon: icon}
         );
+
+        // attach attributes to marker, matches features in openlayers
+        marker.attributes = {
+            id: options.id,
+            type: annotation.record.type
+        };
+
+        // default click event handler is display record
+        var defaultMarkerClick = function(e){
+            this.showRecordDetail(e);
+        };
+
+        if(click === undefined){
+            // default handler is show record detail
+            click = $.proxy(this.showRecordDetail, this);
+        }
+
+        marker.on('click', click);
+
+        return marker;
     },
 
     /**
@@ -1848,6 +1889,14 @@ var _leaflet = {
      */
     getExtent: function(){
         return this.map.getBounds();
+    },
+
+    /**
+     * Get feature for a marker click event. In leaflet just return the target.
+     * @return event target.
+     */
+    getFeatureFromEvent: function(layer, e){
+        return e.target;
     },
 
     /**

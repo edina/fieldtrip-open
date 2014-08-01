@@ -391,38 +391,38 @@ var _ui = {
             if(this.currentAnnotation !== undefined){
                 $('#' + records.TITLE_ID).val(this.currentAnnotation.record.name);
                 $.each(this.currentAnnotation.record.fields, function(i, entry){
-                    var type = records.typeFromId(entry.id);
-                    if(type === 'text'){
+                    var fieldType = records.typeFromId(entry.id);
+                    if(fieldType === 'text'){
                         $('#' + entry.id + ' input').val(entry.val);
                     }
-                    else if(type === 'textarea'){
+                    else if(fieldType === 'textarea'){
                         $('#' + entry.id + ' textarea').val(entry.val);
                     }
-                    else if(type === 'image'){
+                    else if(fieldType === 'image'){
                         showImage('annotate-image-0', entry.val);
                     }
-                    else if(type === 'audio'){
+                    else if(fieldType === 'audio'){
                         showAudio('annotate-audio-0', entry.val);
                     }
-                    else if(type === 'checkbox'){
+                    else if(fieldType === 'checkbox'){
                         $.each(entry.val.split(','), function(j, name){
                             $('input[value=' + name + ']').prop('checked', true).checkboxradio('refresh');
                         });
                     }
-                    else if(type === 'radio'){
+                    else if(fieldType === 'radio'){
                         $('#' + entry.id + ' input[value=' + entry.val + ']').prop(
                             "checked", true).checkboxradio("refresh");
                     }
-                    else if(type === 'range'){
+                    else if(fieldType === 'range'){
                         $('#' + entry.id + ' input').val(entry.val);
                         $('#' + entry.id + ' input').slider('refresh');
                     }
-                    else if(type === 'select'){
+                    else if(fieldType === 'select'){
                         $('#' + entry.id + ' select').val(entry.val).attr(
                             "selected", true).selectmenu("refresh");
                     }
                     else{
-                        console.warn("Unknown field type: " + type);
+                        console.warn("Unknown field type: " + fieldType);
                     }
                 });
             }
@@ -563,10 +563,6 @@ var _ui = {
         }
 
         map.startLocationUpdate();
-
-        // TODO is openlayers ok with this?
-        // map.showLocateLayer();
-        // map.hideAnnotateLayer();
     },
 
     /**

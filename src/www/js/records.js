@@ -221,6 +221,7 @@ var _base = {
 
         if(annotation !== undefined){
             // TODO: what about assets?
+            // TODO what does core know about track?
             if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
                 if(typeof(annotation.file) !== 'undefined'){
                     file.deleteFile(
@@ -497,15 +498,16 @@ var _base = {
 
     /**
      * Process annotation/record from an HTML5 form.
-     * @param type Form type - image, text, audio or custom
+     * @param recordType record/Form type - image, text, audio or custom
      */
-    processAnnotation: function(type){
+    processAnnotation: function(recordType){
         var valid = true;
         var annotation = {
             "record": {
-                'editor': type + '.edtr',
+                'editor': recordType + '.edtr',
                 'fields': []
             },
+            "type": recordType,
             "isSynced": false
         };
 

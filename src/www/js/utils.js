@@ -216,6 +216,15 @@ return {
     },
 
     /**
+     * @param annotation Annotation record.
+     * @return The editor id for a given annotation.
+     */
+    getEditorId: function(annotation){
+        var record = annotation.record;
+        return record.editor.substr(0, record.editor.indexOf('.'));
+    },
+
+    /**
      * @param error The error obj.
      * @return File error message as a string.
      */
