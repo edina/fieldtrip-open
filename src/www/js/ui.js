@@ -124,7 +124,8 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
             watch: false,
             secretly: options.secretly,
             updateAnnotateLayer: options.updateAnnotateLayer,
-            useDefault: options.useDefault
+            useDefault: options.useDefault,
+            autocenter: options.autocenter
         });
     };
 
@@ -226,10 +227,11 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         '.user-locate',
         function(){
             geoLocate({
-                watch: true,
+                watch: false,
                 secretly: false,
                 updateAnnotateLayer: false,
-                useDefault: false
+                useDefault: false,
+                autocenter: true
             });
         }
     );

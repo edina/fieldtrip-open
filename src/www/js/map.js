@@ -340,6 +340,7 @@ var _base = {
      * @param timeout miliseconds before throwing a timeoout error
      * @param ttl How many seconds a cached location is valid (this parameter is ignored if watch is true)
      * @param watch if true a watch will be created and any previous watch will be cleared
+     * @param autocenter center the map to the user location?
      */
     geoLocate: function(options){
         console.debug("Geolocate user: interval: " + options.interval +
@@ -357,7 +358,12 @@ var _base = {
         // found user location
         var onSuccess = $.proxy(function(position){
             console.debug("Position found: "+ position.coords.latitude + "," + position.coords.longitude);
-            this.onPositionSuccess(position, options.updateAnnotateLayer, true);
+
+            _this.onPositionSuccess(position, {
+                updateAnnotateLayer: options.updateAnnotateLayer,
+                hideLoadingDialog: true,
+                autocenter: options.autocenter
+            });
             $.mobile.hidePageLoadingMsg();
         }, this);
 
@@ -388,9 +394,11 @@ var _base = {
                     }
                 };
 
-                this.onPositionSuccess(pos,
-                                       options.updateAnnotateLayer,
-                                       false);
+                this.onPositionSuccess(pos, {
+                    updateAnnotateLayer: options.updateAnnotateLayer,
+                    hideLoadingDialog: false,
+                    autocenter: options.autocenter
+                });
             }
         }, this);
 
@@ -478,26 +486,25 @@ var _base = {
     /**
      * Receive a new user position.
      * @param position The GPS position http://docs.phonegap.com/en/2.1.0/cordova_geolocation_geolocation.md.html#Position.
-     * @param updateAnnotateLayer Should annotate layer be updated after position
+     * @param options.updateAnnotateLayer Should annotate layer be updated after position
      * success?
-     * @param hideLoadingDialog Hide loading dialog after success
+     * @param options.hideLoadingDialog Hide loading dialog after success
+     * @param options.autocenter autocenter the map to the user location?
      */
-    onPositionSuccess: function(position,
-                                updateAnnotateLayer,
-                                hideLoadingDialog){
+    onPositionSuccess: function(position, options){
         this.updateUserPosition(position.coords.longitude,
                                 position.coords.latitude);
         this.userLonLat.gpsPosition = position.coords;
 
         // update user position
-        this.updateLocateLayer();
+        this.updateLocateLayer({autocenter: options.autocenter});
 
         // if necessary update annotate pin
-        if(updateAnnotateLayer){
+        if(options.updateAnnotateLayer){
             this.updateAnnotateLayer(this.toInternal(this.userLonLat));
         }
 
-        if(hideLoadingDialog){
+        if(options.hideLoadingDialog){
             $.mobile.hidePageLoadingMsg();
         }
     },
@@ -787,7 +794,8 @@ var _base = {
     /**
      * Update locate layer with users geo location.
      */
-    updateLocateLayer: function(){
+    updateLocateLayer: function(options){
+        options = options || {};
         var zoom = this.getZoom();
         if(zoom < this.minLocateZoomTo){
             zoom = this.POST_LOCATE_ZOOM_TO;
@@ -797,7 +805,8 @@ var _base = {
             layer: this.getLocateLayer(),
             id: this.USER_POSITION_ATTR,
             zoom: zoom,
-            rotate: true
+            rotate: true,
+            autocenter: options.autocenter
         });
     },
 
@@ -1515,14 +1524,14 @@ var _openlayers = {
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
      *   rotate: True or False if the marker should be rotated with the heading direction
-     *   autopan: True or False if we want to pan the map after updating the location, false by default
+     *   autocenter: True or False if we want to center the map after updating the location, false by default
      */
     updateLayer: function(options){
         var id = options.id;
         var layer = options.layer;
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
         var lonLat = options.lonLat;
-        options.autopan = options.autopan || false;
+        options.autocenter = options.autocenter || false;
 
         if(lonLat === undefined || lonLat === null){
             lonLat = this.toInternal(this.userLonLat);
@@ -1556,7 +1565,7 @@ var _openlayers = {
         var innerBounds = mapBounds.clone().scale(0.8);
         var featureBounds = feature.geometry.bounds;
 
-        if(options.autopan === true){
+        if(options.autopan === true || options.autocenter === true){
             // If is not in the viewport center the map
             if(!mapBounds.containsBounds(featureBounds)){
                 this.map.setCenter(lonLat, options.zoom);
