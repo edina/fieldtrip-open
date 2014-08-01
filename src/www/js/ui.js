@@ -121,7 +121,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         }
 
         map.geoLocate({
-            interval: 0,
+            watch: false,
             secretly: options.secretly,
             updateAnnotateLayer: options.updateAnnotateLayer,
             useDefault: options.useDefault
@@ -226,6 +226,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         '.user-locate',
         function(){
             geoLocate({
+                watch: true,
                 secretly: false,
                 updateAnnotateLayer: false,
                 useDefault: false
@@ -256,6 +257,7 @@ var _ui = {
      */
     init: function(){
         geoLocate({
+            watch: true,
             secretly: true,
             updateAnnotateLayer: false,
             useDefault: true
@@ -444,6 +446,7 @@ var _ui = {
         }
         else {
             geoLocate({
+                watch: true,
                 secretly: false,
                 updateAnnotateLayer: true,
                 useDefault: true
@@ -600,7 +603,6 @@ var _ui = {
      */
     mapPageRemove: function(){
         map.stopLocationUpdate();
-        map.clearGeoLocateWatch();
     },
 
     /**

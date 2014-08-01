@@ -84,14 +84,6 @@ define(['config'], function(config){
                 utils.inform('done');
             });
 
-            $('#settings-location-autoupdate').on('change', function(evt){
-                if($(evt.target).val() === "on"){
-                    $('#location-update-interval-container').show();
-                }else{
-                    $('#location-update-interval-container').hide();
-                }
-            });
-
             $('#settings-ftgb').text(utils.version);
             $('#settings-jquery').text($().jquery);
             $('#settings-jqm').text(jQuery.mobile.version);

@@ -45,7 +45,8 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
     var externalProjectionText = 'EPSG:4326';
 
     var TMS_URL = "/mapcache/tms";
-    var GPS_LOCATE_TIMEOUT = 3000;
+    var GPS_LOCATE_TIMEOUT = 30000;
+    var GPS_LOCATE_TTL = 0;
 
     var tileMapCapabilities;
     var serviceVersion = "1.0.0"; // TODO needs parameterised
@@ -337,11 +338,12 @@ var _base = {
 
     /**
      * Locate user on map.
-     * @param interval Time gap between updates. If 0 update only once.
      * @param secretly If true do not show page loading msg.
      * @param updateAnnotateLayer Should annotate layer be informed of new position?
      * @param useDefault If no user location found should default be used?
      * @param timeout miliseconds before throwing a timeoout error
+     * @param ttl How many seconds a cached location is valid (this parameter is ignored if watch is true)
+     * @param watch if true a watch will be created and any previous watch will be cleared
      */
     geoLocate: function(options){
         console.debug("Geolocate user: interval: " + options.interval +
@@ -350,6 +352,7 @@ var _base = {
                       " useDefault " + options.useDefault);
 
         options.timeout =  options.timeout || this.geolocateTimeout;
+        options.ttl =  options.ttl || this.geolocateTTL;
 
         if(!options.secretly){
             utils.inform('Waiting for GPS fix', 10000);
@@ -395,17 +398,15 @@ var _base = {
             }
         }, this);
 
-        this.clearGeoLocateWatch();
-
         // if interval is defined create a watch
-        if(options.interval > 0){
+        if(options.watch){
+            this.clearGeoLocateWatch();
             this.geoLocationWatchID = navigator.geolocation.watchPosition(
                 onSuccess,
                 onError,
                 {
                     enableHighAccuracy: this.GPS_ACCURACY_FLAG,
-                    maximumAge: options.interval,
-                    timeout:options.timeout
+                    timeout: options.timeout
                 }
             );
         }
@@ -415,6 +416,7 @@ var _base = {
                 onError,
                 {
                     enableHighAccuracy: this.GPS_ACCURACY_FLAG,
+                    maximumAge: options.ttl,
                     timeout: options.timeout
                 }
             );
@@ -425,6 +427,12 @@ var _base = {
      * Timeout duration for geo location.
      */
     geolocateTimeout: GPS_LOCATE_TIMEOUT,
+
+    /**
+     * Time which a cached feature is valid
+     */
+    geolocateTTL: GPS_LOCATE_TTL,
+
 
     /**
      * @return current map zoom level.
@@ -688,19 +696,12 @@ var _base = {
         this.stopLocationUpdate();
 
         if(location.autoUpdate){
-            console.debug('Setting location autoupdate:({0}, {1})'.format(location.autoUpdate,
-                                                                          location.interval));
-            var updateLocation = function(){
-                _this.geoLocate({
-                        interval: 0,
+            _this.geoLocate({
                         secretly: true,
                         updateAnnotateLayer: false,
                         useDefault: false,
-                        timeout: 10000
-                });
-            };
-            this.locationUpdateWatch = setInterval(updateLocation, location.interval);
-            updateLocation();
+                        watch: true
+            });
         }
     },
 
@@ -708,10 +709,7 @@ var _base = {
      * Clear the current timer for the automatic location update
      */
     stopLocationUpdate: function(){
-        if(this.locationUpdateWatch){
-            console.debug('Clearing location autoupdate: ' + this.locationUpdateWatch);
-            clearInterval(this.locationUpdateWatch);
-        }
+        this.clearGeoLocateWatch();
     },
 
     /**
@@ -1503,12 +1501,15 @@ var _openlayers = {
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
      *   rotate: True or False if the marker should be rotated with the heading direction
+     *   autopan: True or False if we want to pan the map after updating the location, false by default
      */
     updateLayer: function(options){
         var id = options.id;
         var layer = options.layer;
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
         var lonLat = options.lonLat;
+        options.autopan = options.autopan || false;
+
         if(lonLat === undefined || lonLat === null){
             lonLat = this.toInternal(this.userLonLat);
         }
@@ -1541,20 +1542,23 @@ var _openlayers = {
         var innerBounds = mapBounds.clone().scale(0.8);
         var featureBounds = feature.geometry.bounds;
 
-        // If is not in the viewport center the map
-        if(!mapBounds.containsBounds(featureBounds)){
-            this.map.setCenter(lonLat, options.zoom);
-        }else{
-            // If is in the edge of the map pan the map
-            if(!innerBounds.containsBounds(featureBounds)){
-                // Calculate how much to pan
-                var innerGeometry = innerBounds.toGeometry();
-                var delta = point.distanceTo(innerGeometry, {details: true});
-                var center = this.map.getCenter();
-                //var _center = {};
-                center.lon -= (delta.x1 - delta.x0);
-                center.lat -= (delta.y1 - delta.y0);
-                this.map.panTo(new OpenLayers.LonLat(center.lon, center.lat));
+        if(options.autopan === true){
+            // If is not in the viewport center the map
+            if(!mapBounds.containsBounds(featureBounds)){
+                this.map.setCenter(lonLat, options.zoom);
+            }
+            else{
+                // If is in the edge of the map pan the map
+                if(!innerBounds.containsBounds(featureBounds)){
+                    // Calculate how much to pan
+                    var innerGeometry = innerBounds.toGeometry();
+                    var delta = point.distanceTo(innerGeometry, {details: true});
+                    var center = this.map.getCenter();
+                    //var _center = {};
+                    center.lon -= (delta.x1 - delta.x0);
+                    center.lat -= (delta.y1 - delta.y0);
+                    this.map.panTo(new OpenLayers.LonLat(center.lon, center.lat));
+                }
             }
         }
     },

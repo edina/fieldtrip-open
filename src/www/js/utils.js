@@ -365,10 +365,7 @@ return {
     getLocationSettings: function(){
         var location = {};
         if(settings.get('location-autoupdate') === 'on'){
-            var interval = settings.get('location-update-interval');
             location.autoUpdate = true;
-            // interval to Miliseconds
-            location.interval = (parseInt(interval) || 10) * 1000;
         }else{
             location.autoUpdate = false;
         }
