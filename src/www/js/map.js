@@ -1472,11 +1472,11 @@ var _openlayers = {
         layer.addFeatures([new OpenLayers.Feature.Vector(geom)]);
 
         this.setCentre({
-            lon: poi.centre.lon,
-            lat: poi.centre.lat,
+            lon: poi.lon,
+            lat: poi.lat,
             zoom: poi.zoom
         });
-        this.map.zoomTo(this.getZoom() - 2);
+        this.map.zoomToExtent(geom.bounds);
     },
 
     /**
