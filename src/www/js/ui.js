@@ -100,10 +100,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         $('#home-exit-confirm').on(
             'vmousedown',
             function(){
-                // TODO - the gps track plugin needs to do this
-                // ensure any running track is completed
-                //this.annotations.gpsCaptureComplete();
-
+                map.trigger(map.EVT_BEFORE_EXIT);
                 navigator.app.exitApp();
             }
         );
