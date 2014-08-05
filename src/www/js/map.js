@@ -63,6 +63,7 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
 
     var mapSettings = utils.getMapSettings();
     var baseLayer;
+    var events = [];
 
     /**
      * Fetch TMS capabilities from server and store as this.tileMapCapabilities.
@@ -131,6 +132,10 @@ var _base = {
      */
     EVT_HIDE_RECORDS: 'evt-hide-records',
 
+    /**
+     * Before exit event
+     */
+    EVT_BEFORE_EXIT: 'evt-before-exit',
 
     /**
      * Enable high accuracy flag.
@@ -159,6 +164,46 @@ var _base = {
      */
     postInit: function(){
         fetchCapabilities();
+    },
+
+    /**
+     *   Publish/Suscribe functions for the map
+     */
+
+    /**
+     *  Suscribe to a event
+     *  @param e event name
+     *  @param callback the function to be executed
+    */
+    on: function(e, callback){
+        var event = events[e];
+        if(!event){
+            event = $.Callbacks();
+            events[e] = event;
+        }
+        event.add(event, callback);
+    },
+
+    /**
+      *  Remove all the callback for an event
+      *  @param e event name
+    */
+    off: function(e){
+        var event = events[e];
+        if(event){
+            event.remove(event);
+        }
+    },
+
+    /**
+      *  Trigger an event
+      *  @param e event name
+    */
+    trigger: function(e){
+        var event = events[e];
+        if(event){
+            event.fire.apply(this, arguments);
+        }
     },
 
     /**
