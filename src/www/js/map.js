@@ -388,7 +388,7 @@ var _base = {
      * @param autocenter center the map to the user location?
      */
     geoLocate: function(options){
-        console.debug("Geolocate user: interval: " + options.interval +
+        console.debug("Geolocate user: watch: " + options.watch +
                       " secretly: " + options.secretly +
                       " updateAnnotateLayer: " + options.updateAnnotateLayer +
                       " useDefault " + options.useDefault);
@@ -447,7 +447,6 @@ var _base = {
             }
         }, this);
 
-        // if interval is defined create a watch
         if(options.watch){
             this.clearGeoLocateWatch();
             this.geoLocationWatchID = navigator.geolocation.watchPosition(
@@ -742,7 +741,7 @@ var _base = {
     },
 
     /**
-     * Start to update the location to the interval set in settings
+     * Start to update the location
      */
     startLocationUpdate: function(){
         var _this = this;
