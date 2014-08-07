@@ -1622,13 +1622,13 @@ var _openlayers = {
                     var innerGeometry = innerBounds.toGeometry();
                     var delta = point.distanceTo(innerGeometry, {details: true});
                     var center = this.map.getCenter();
-                    //var _center = {};
                     center.lon -= (delta.x1 - delta.x0);
                     center.lat -= (delta.y1 - delta.y0);
                     this.map.panTo(new OpenLayers.LonLat(center.lon, center.lat));
                 }
             }
-        }else{
+        }
+        else{
             if(options.autocenter === true){
                 this.map.setCenter(lonLat, options.zoom);
             }
@@ -2005,6 +2005,13 @@ var _leaflet = {
      */
     getLocateCoords: function(){
 
+    },
+
+    /**
+     * @return Leaflet map.
+     */
+    getMap: function(){
+        return this.map;
     },
 
     /**

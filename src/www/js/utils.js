@@ -181,6 +181,7 @@ return {
     /**
      * Simple compare two objects function.
      * @param obj1
+     * @param obj2
      * @return true if objects are the same.
      */
     compare: function(obj1, obj2){
