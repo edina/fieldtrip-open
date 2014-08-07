@@ -180,7 +180,7 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
 
     $(document).on('vclick', '.test-page-but', function(e){
         pageId = $(e.target).parent().parent().attr('id');
-        $.mobile.changePage('#test-page');
+        $('body').pagecontainer('change', '#test-page');
     });
-    $(document).on('pageshow', '#test-page', testPage);
+    $(document).on('pagecontainershow', '#test-page', testPage);
 });

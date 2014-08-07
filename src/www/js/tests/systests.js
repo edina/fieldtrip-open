@@ -69,7 +69,7 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
                 ok(false, id + " not found");
                 cb();
             }
-            else if('#' + $($.mobile.activePage).attr('id') === id){
+            else if('#' + $('body').pagecontainer('getActivePage').get(0).id === id){
                 clearInterval(timer);
                 if(cb){
                     cb();
@@ -84,7 +84,7 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
     };
 
     var changePageByFile = function(page, target, cb){
-        $.mobile.changePage(page);
+        $('body').pagecontainer('change', page);
         return changePageCheck(target, cb);
     };
 
@@ -103,7 +103,7 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
     var complete = function(){
         goHome(function(){
             var id = '#test-page';
-            $.mobile.changePage(id);
+            $('body').pagecontainer('change', id);
             changePageCheck(id, function(){
                 start();
             });

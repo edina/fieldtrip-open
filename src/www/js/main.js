@@ -104,22 +104,22 @@ function onDeviceReady(){
             ui.toggleActiveInit(ids);
         });
 
-        $(document).on('pageinit', 'div[data-role="page"]', function(event){
+        $(document).on('pagecreate', 'div[data-role="page"]', function(event){
             // no use for this yet
         });
-        $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
+        $(document).on('pagecontainerbeforeshow', 'div[data-role="page"]', function(event){
             // no use for this yet
         });
-        $(document).on('pageshow', 'div[data-role="page"]', function(event){
+        $(document).on('pagecontainershow', 'div[data-role="page"]', function(event){
             ui.pageChange();
         });
 
-        $(document).on('pageinit', '#map-page', function(){
+        $(document).on('pagecreate', '#map-page', function(){
             // map page is special case, need to setup up openlayers before onshow
             ui.mapPageInit();
         });
 
-        $(document).on('pageremove', '#map-page', function(){
+        $(document).on('pagecontainerremove', '#map-page', function(){
             ui.mapPageRemove();
         });
 
@@ -133,7 +133,7 @@ function onDeviceReady(){
         };
 
         $.each(onShows, function(id, func){
-            $(document).on('pageshow',
+            $(document).on('pagecontainershow',
                            '#' + id,
                            $.proxy(func, ui));
         });

@@ -128,8 +128,8 @@ define(['config'], function(config){
         });
     }
 
-    $(document).on('pageinit', '#settings-page', settingsPage);
-    $(document).on('pageremove', '#settings-page', save);
+    $(document).on('pagecreate', '#settings-page', settingsPage);
+    $(document).on('pagecontainerremove', '#settings-page', save);
 
     /************************** public interface  ******************************/
 

@@ -168,7 +168,7 @@ var _base = {
      */
     annotate: function(type){
         localStorage.setItem('annotate-form-type', type);
-        $.mobile.changePage('annotate.html', {transition: "fade"});
+        $('body').pagecontainer('change', 'annotate.html', {transition: "fade"});
     },
 
     /**
@@ -626,7 +626,7 @@ var _base = {
             // nasty I know: but changing page in a setTimeout allows
             // time for the keyboard to close
             setTimeout(function(){
-                $.mobile.changePage('annotate-preview.html');
+                $('body').pagecontainer('change', 'annotate-preview.html');
             }, 300);
         }
         else{

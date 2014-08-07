@@ -132,7 +132,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
     var menuClick = function(){
         menuClicked = true;
         if(searchClicked){
-            $.mobile.changePage('settings.html');
+            $('body').pagecontainer('change', 'settings.html');
         }
 
         setTimeout(function(){
@@ -203,7 +203,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         searchClicked = true;
 
         if(menuClicked){
-            $.mobile.changePage('settings.html');
+            $('body').pagecontainer('change', 'settings.html');
         }
 
         setTimeout(function(){
@@ -514,7 +514,7 @@ var _ui = {
 
         $('.help-block a').unbind();
         $('.help-block a').on('taphold', function(){
-            $.mobile.changePage('settings.html');
+            $('body').pagecontainer('change', 'settings.html');
         });
 
         // exit button
@@ -603,8 +603,8 @@ var _ui = {
      * Function is called each time a page changes.
      */
     pageChange: function(){
-        $("[data-role=header]").fixedtoolbar({tapToggle: false});
-        $("[data-role=footer]").fixedtoolbar({tapToggle: false});
+        //$("[data-role=header]").fixedtoolbar({tapToggle: false});
+        //$("[data-role=footer]").fixedtoolbar({tapToggle: false});
 
         resizePage();
         this.toggleActive();
@@ -722,7 +722,7 @@ var _ui = {
      */
     toggleActive: function(){
         $(".ui-footer .ui-btn").removeClass('ui-btn-active');
-        var id = $.mobile.activePage[0].id;
+        var id = $('body').pagecontainer('getActivePage').get(0).id;
         $.each(menuIds, function(menu, ids){
             if($.inArray(id, ids) != -1){
                 $('#' + id + ' .' + menu + '-button').addClass('ui-btn-active');

@@ -432,13 +432,13 @@ return {
      */
     gotoMapPage: function(callback){
         if(config.recordsClickMapPage){
-            $.mobile.changePage(config.recordsClickMapPage);
+            $('body').pagecontainer('change', config.recordsClickMapPage);
         }
         else{
             if(callback){
-                $(document).one('pageshow', '#map-page', callback);
+                $(document).on('pagecontainershow', '#map-page', callback);
             }
-            $.mobile.changePage('map.html');
+            $('body').pagecontainer('change', 'map.html');
         }
     },
 
