@@ -1,14 +1,14 @@
-<div id="saved-records-page" data-role="page" data-theme="a">
+<div id="saved-records-page" data-role="page" data-theme="b">
 
     {{header}}
 
-    <div data-iscroll="" data-role="content">
+    <div data-iscroll="" class="ui-content">
         <div class="non-map-body-white ui-overlay-shadow">
             <div id="saved-records-page-header" class="ui-grid-b ui-header">
                 <div class="ui-block-a">
                     <h2>{{body["view-records"]}}</h2>
                 </div>
-                <div class="ui-block-b" data-role="controlgroup" id="layout-toggle"  data-type="horizontal" >
+                <div class="ui-block-b" data-role="controlgroup" id="layout-toggle" data-type="horizontal">
                     {% if "buttons-toggle" in body%}
                         {% if body["buttons-toggle"]|length > 0 %}
                             {% for key, items in body["buttons-toggle"].iteritems() %}
@@ -17,7 +17,7 @@
                         {% endif %}
                     {% endif %}
                 </div>
-                <div class="ui-block-c ui-header-buttons ui-btn-right"  data-type="horizontal" >
+                <div class="ui-block-c ui-header-buttons ui-btn-right" data-type="horizontal">
                     {% if "buttons-normal" in body%}
                         {% if body["buttons-normal"]|length > 0 %}
                             {% for key, items in body["buttons-normal"].iteritems() %}

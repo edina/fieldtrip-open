@@ -1,7 +1,7 @@
 <div id="annotate-preview-page" data-role="page" data-theme="b">
   {{header}}
 
-  <div data-role="content">
+  <div class="ui-content">
     <div class="non-map-body-white ui-overlay-shadow">
       <h2 class="capitalise"></h2>
       <div id="annotate-preview-detail">
@@ -12,13 +12,13 @@
       <div id="annotate-preview-map"></div>
 
       <div id="annotate-preview-buttons" class="ui-grid-a">
-        <div id="annotate-preview-map-tip" class="ui-block-a" >{{body["drag"]}}</div>
+        <div id="annotate-preview-map-tip" class="ui-block-a">{{body["drag"]}}</div>
         <!-- <div class="ui-block-b" ></div> -->
         <div id="annotate-preview-ok" class="ui-block-a">
-          <input type="submit" data-theme="a" value="{{body["save"]}}">
+          <input type="submit" data-theme="b" value="{{body["save"]}}">
         </div>
         <div class="ui-block-b">
-          <a data-role="button" data-theme="a" data-rel="back">{{body["cancel"]}}</a>
+          <a data-role="button" data-theme="b" data-rel="back">{{body["cancel"]}}</a>
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
-<div id="map-page" data-role="page" data-theme="a">
+<div id="map-page" data-role="page" data-theme="b">
   {{header}}
 
-  <div data-role="content">
-    <div id="map" class="map" ></div>
+  <div class="ui-content">
+    <div id="map" class="map"></div>
 
     <div class="map-zoom-buttons">
       <a data-role="button" class="map-zoom-button-in">+</a>
@@ -11,7 +11,7 @@
 
     <div id="map-records-buttons" class="ui-grid-b">
       <div id="map-records-buttons-list" class="ui-block-a">
-        <a href="saved-records.html"  data-role="button">{{body["list"]}}</a>
+        <a href="saved-records.html" data-role="button">{{body["list"]}}</a>
       </div>
       <div class="ui-block-b"></div>
       <div id="map-records-buttons-ok" class="ui-block-c">
@@ -22,12 +22,7 @@
   </div>
 
   <div id="map-record-popup" data-role="popup">
-    <a href="#"
-       data-role="button"
-       data-theme="a"
-       data-icon="delete"
-       data-iconpos="notext"
-       class="ui-btn-right">
+    <a href="#" data-role="button" data-theme="b" data-icon="delete" data-iconpos="notext" class="ui-btn-right">
     </a>
     <h3></h3>
     <div id="map-record-popup-text"></div>

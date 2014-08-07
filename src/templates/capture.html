@@ -1,10 +1,10 @@
-<div id="capture-page" data-role="page" data-theme="a">
+<div id="capture-page" data-role="page" data-theme="b">
 
   {{header}}
 
-  <div data-role="content" class="non-map-body">
+  <div class="non-map-body ui-content">
     <div class="non-map-body-start"></div>
-    <br/>
+    <br>
     {% for key, sections in body.iteritems() %}
     <h2>{{sections.title}}</h2>
     {% if sections|length > 0 %}
