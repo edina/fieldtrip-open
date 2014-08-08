@@ -160,13 +160,6 @@ var _base = {
     },
 
     /**
-     * Finialise map.
-     */
-    postInit: function(){
-        fetchCapabilities();
-    },
-
-    /**
      *   Publish/Suscribe functions for the map
      */
 
@@ -1119,6 +1112,8 @@ var _openlayers = {
             zoom: this.minLocateZoomTo,
             external: true
         });
+
+        fetchCapabilities();
     },
 
     /**
