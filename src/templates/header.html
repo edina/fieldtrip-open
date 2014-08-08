@@ -1,6 +1,6 @@
-<div data-role="header" data-position="fixed">
+<div data-role="header" data-position="fixed" data-tap-toggle="false">
   <h1>{{data["title"]}}</h1>
-  <div class="ui-header-buttons ui-btn-right" data-type="horizontal">
+  <div class="ui-header-buttons ui-btn-right" data-type="horizontal" >
     {% if "buttons" in data %}
       {% for key, items in data["buttons"].iteritems() %}
         {% if "platforms" in items %}

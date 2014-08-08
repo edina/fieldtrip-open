@@ -116,12 +116,12 @@ a:active, img:active{
 }
 
 #home-exit{
-    height: 80%;
+    height: 90%;
     width: 5em;
 }
 
 #home-settings{
-    height: 80%;
+    height: 90%;
     width: 6em;
 }
 
@@ -355,35 +355,32 @@ body .ui-loader-textonly{
     opacity: 1;
 }
 
-.menu .ui-btn .ui-btn-inner{
-    padding-top: 34px !important;
-    padding-bottom: 5px !important;
-}
+/*.menu .ui-btn{
+    border: none;
+}*/
 
-.menu .ui-btn .ui-icon {
-    width: 30px!important;
-    height: 30px!important;
-    margin-left: -15px !important;
-    box-shadow: none!important;
-    -moz-box-shadow: none!important;
-    -webkit-box-shadow: none!important;
-    -webkit-border-radius: 0 !important;
+.menu .ui-btn.ui-icon-custom:after{
+    background-size: 30px 30px;
     border-radius: 0 !important;
+    width: 30px;
+    height: 30px;
 }
 
-.home-button .ui-icon{
+.menu .ui-btn.ui-btn-icon-top:after{
+    margin-left: -15px;
+    margin-top: -4px;
+}
+
+.home-button:after{
     background: url("../css/images/home.png") 50% 50% no-repeat;
-    background-size: 30px 30px;
 }
 
-.map-button .ui-icon{
+.map-button:after{
     background: url("../css/images/map.png") 50% 50% no-repeat;
-    background-size: 30px 30px;
 }
 
-.capture-button .ui-icon{
+.capture-button:after{
     background: url("../css/images/capture.png") 50% 50% no-repeat;
-    background-size: 30px 30px;
 }
 
 .nav-icons img{
@@ -744,7 +741,7 @@ div.record-extra > div > img {
     border-top: 1px solid #444;
 }
 
-.ui-footer {
+#footer {
     z-index: 10000 !important;
 }
 

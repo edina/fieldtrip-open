@@ -128,16 +128,20 @@ function onDeviceReady(){
             'saved-records-page': ui.savedRecordsPage,
         };
 
-        /* Creating a pageshow event */
+        /* pageshow event is being deprecated in jquery 1.4 but due to the
+           fieldtrip-open architecture, plugins relay in that event in order to
+           initialize its views as pagecreate is deprecated but still present
+           _pageshow is triggered.
+         */
         $(document).on('pagecontainershow', function(){
             var $page = $('body').pagecontainer('getActivePage');
-            $page.trigger('pageshow');
+            ui.pageChange();
+            $page.trigger('_pageshow');
         });
 
         $.each(onShows, function(page, fun){
             var selector = '#' + page;
-            $(document).on('pageshow', selector, function(){
-                ui.pageChange();
+            $(document).on('_pageshow', selector, function(){
                 fun.call(ui);
             });
         });

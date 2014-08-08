@@ -2,19 +2,19 @@
     "home": {
         "name": "Home",
         "href": "index.html",
-        "class": "home-button",
+        "class": "home-button fieldtrip-btn",
         "data-icon": "custom"
     },
     "map": {
         "name": "Map",
         "href": "map.html",
-        "class": "map-button",
+        "class": "map-button fieldtrip-btn",
         "data-icon": "custom"
     },
     "capture": {
         "name": "Capture",
         "href": "capture.html",
-        "class": "capture-button",
+        "class": "capture-button fieldtrip-btn",
         "data-icon": "custom"
     }
 }

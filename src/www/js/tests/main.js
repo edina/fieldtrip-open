@@ -182,5 +182,5 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
         pageId = $(e.target).parent().parent().attr('id');
         $('body').pagecontainer('change', '#test-page');
     });
-    $(document).on('pagecontainershow', '#test-page', testPage);
+    $(document).on('pageshow', '#test-page', testPage);
 });
