@@ -1627,7 +1627,6 @@ var _openlayers = {
             }
         }
         else{
-            console.log(options.autocentre);
             if(options.autocentre === true){
                 this.map.setCenter(lonLat, options.zoom);
             }
