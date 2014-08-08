@@ -745,17 +745,18 @@ var _base = {
      * Start to update the location to the interval set in settings
      */
     startLocationUpdate: function(){
-        var _this = this;
-        var location = utils.getLocationSettings();
-        this.stopLocationUpdate();
+        if(this.getLocateLayer()){
+            var location = utils.getLocationSettings();
+            this.stopLocationUpdate();
 
-        if(location.autoUpdate){
-            _this.geoLocate({
-                        secretly: true,
-                        updateAnnotateLayer: false,
-                        useDefault: false,
-                        watch: true
-            });
+            if(location.autoUpdate){
+                this.geoLocate({
+                    secretly: true,
+                    updateAnnotateLayer: false,
+                    useDefault: false,
+                    watch: true
+                });
+            }
         }
     },
 
