@@ -110,7 +110,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
      * Set map to user's location.
      * @param secrectly If true do not show page loading msg.
      * @param updateAnnotateLayer Should annotate layer be updated after geolocate?
-     * @param if no user location found should default be used?
+     * @param useDefault If no user location found should default be used?
      */
     var geoLocate = function(options){
         if(typeof(options.secretly) === 'undefined'){
@@ -122,7 +122,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
             secretly: options.secretly,
             updateAnnotateLayer: options.updateAnnotateLayer,
             useDefault: options.useDefault,
-            autocenter: options.autocenter
+            autocentre: true
         });
     };
 
@@ -227,8 +227,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
                 watch: false,
                 secretly: false,
                 updateAnnotateLayer: false,
-                useDefault: false,
-                autocenter: true
+                useDefault: false
             });
         }
     );
