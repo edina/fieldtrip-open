@@ -160,7 +160,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
             }
 
             var h = $(window).height() - (header + footer + secondHeader);
-            $('[data-role=content]').css('height', h + 'px');
+            $('.ui-content').css('height', h + 'px');
         }
     };
 

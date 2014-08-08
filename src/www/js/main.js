@@ -104,14 +104,7 @@ function onDeviceReady(){
             ui.toggleActiveInit(ids);
         });
 
-        $(document).on('pagecreate', 'div[data-role="page"]', function(event){
-            // no use for this yet
-        });
-        $(document).on('pagecontainerbeforeshow', 'div[data-role="page"]', function(event){
-            // no use for this yet
-        });
-        $(document).on('pagecontainershow', 'div[data-role="page"]', function(event){
-            ui.pageChange();
+        $(document).on('pagecontainerchange', function(event){
         });
 
         $(document).on('pagecreate', '#map-page', function(){
@@ -119,8 +112,11 @@ function onDeviceReady(){
             ui.mapPageInit();
         });
 
-        $(document).on('pagecontainerremove', '#map-page', function(){
+        $(document).on('pageremove', '#map-page', function(){
             ui.mapPageRemove();
+        });
+
+        $(document).on('pagecontainerbeforeshow', function(event){
         });
 
         var onShows = {
@@ -132,10 +128,18 @@ function onDeviceReady(){
             'saved-records-page': ui.savedRecordsPage,
         };
 
-        $.each(onShows, function(id, func){
-            $(document).on('pagecontainershow',
-                           '#' + id,
-                           $.proxy(func, ui));
+        /* Creating a pageshow event */
+        $(document).on('pagecontainershow', function(){
+            var $page = $('body').pagecontainer('getActivePage');
+            $page.trigger('pageshow');
+        });
+
+        $.each(onShows, function(page, fun){
+            var selector = '#' + page;
+            $(document).on('pageshow', selector, function(){
+                ui.pageChange();
+                fun.call(ui);
+            });
         });
     });
 }

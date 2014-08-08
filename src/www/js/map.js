@@ -405,7 +405,7 @@ var _base = {
                 hideLoadingDialog: true,
                 autocentre: options.autocentre
             });
-            $.mobile.hidePageLoadingMsg();
+            $.mobile.loading('hide');
         }, this);
 
         // problem with geo locate
@@ -545,7 +545,7 @@ var _base = {
         }
 
         if(options.hideLoadingDialog){
-            $.mobile.hidePageLoadingMsg();
+            $.mobile.loading('hide');
         }
     },
 

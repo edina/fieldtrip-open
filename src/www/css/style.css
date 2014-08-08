@@ -46,7 +46,7 @@ a:active, img:active{
     color: red;
 }
 
-[data-role=content]{
+.ui-content{
     padding: 0;
 }
 
@@ -159,7 +159,7 @@ body .ui-loader-textonly{
 /********* map Body *************/
 
 .map{
-    height: 99.8%;
+    height: 100%;
 }
 
 .map-zoom-buttons{

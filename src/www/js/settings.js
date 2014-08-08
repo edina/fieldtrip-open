@@ -129,7 +129,7 @@ define(['config'], function(config){
     }
 
     $(document).on('pagecreate', '#settings-page', settingsPage);
-    $(document).on('pagecontainerremove', '#settings-page', save);
+    $(document).on('pageremove', '#settings-page', save);
 
     /************************** public interface  ******************************/
 

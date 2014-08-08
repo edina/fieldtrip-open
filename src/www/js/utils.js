@@ -436,7 +436,7 @@ return {
         }
         else{
             if(callback){
-                $(document).on('pagecontainershow', '#map-page', callback);
+                $(document).on('pageshow', '#map-page', callback);
             }
             $('body').pagecontainer('change', 'map.html');
         }
