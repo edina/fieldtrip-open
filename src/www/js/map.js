@@ -378,13 +378,16 @@ var _base = {
      * @param timeout miliseconds before throwing a timeoout error
      * @param ttl How many seconds a cached location is valid (this parameter is ignored if watch is true)
      * @param watch if true a watch will be created and any previous watch will be cleared
-     * @param autocenter center the map to the user location?
+     * @param autocentre centre the map to the user location?
      */
     geoLocate: function(options){
-        console.debug("Geolocate user: interval: " + options.interval +
-                      " secretly: " + options.secretly +
-                      " updateAnnotateLayer: " + options.updateAnnotateLayer +
-                      " useDefault " + options.useDefault);
+        console.debug("Geolocate user: secretly: " + options.secretly +
+                      ". updateAnnotateLayer: " + options.updateAnnotateLayer +
+                      ". useDefault: " + options.useDefault +
+                      ". timeout: " + options.timeout +
+                      ". ttl: " + options.ttl +
+                      ". watch: " + options.watch +
+                      ". autocentre: " + options.autocentre);
 
         options.timeout =  options.timeout || this.geolocateTimeout;
         options.ttl =  options.ttl || this.geolocateTTL;
@@ -400,7 +403,7 @@ var _base = {
             _this.onPositionSuccess(position, {
                 updateAnnotateLayer: options.updateAnnotateLayer,
                 hideLoadingDialog: true,
-                autocenter: options.autocenter
+                autocentre: options.autocentre
             });
             $.mobile.hidePageLoadingMsg();
         }, this);
@@ -527,7 +530,7 @@ var _base = {
      * @param options.updateAnnotateLayer Should annotate layer be updated after position
      * success?
      * @param options.hideLoadingDialog Hide loading dialog after success
-     * @param options.autocenter autocenter the map to the user location?
+     * @param options.autocentre autocentre the map to the user location?
      */
     onPositionSuccess: function(position, options){
         this.updateUserPosition(position.coords.longitude,
@@ -535,7 +538,7 @@ var _base = {
         this.userLonLat.gpsPosition = position.coords;
 
         // update user position
-        this.updateLocateLayer({autocenter: options.autocenter});
+        this.updateLocateLayer({autocentre: options.autocentre});
 
         // if necessary update annotate pin
         if(options.updateAnnotateLayer){
@@ -844,7 +847,7 @@ var _base = {
             id: this.USER_POSITION_ATTR,
             zoom: zoom,
             rotate: true,
-            autocenter: options.autocenter
+            autocentre: options.autocentre
         });
     },
 
@@ -1564,14 +1567,14 @@ var _openlayers = {
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
      *   rotate: True or False if the marker should be rotated with the heading direction
-     *   autocenter: True or False if we want to center the map after updating the location, false by default
+     *   autocentre: True or False if we want to centre the map after updating the location, false by default
      */
     updateLayer: function(options){
         var id = options.id;
         var layer = options.layer;
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
         var lonLat = options.lonLat;
-        options.autocenter = options.autocenter || false;
+        options.autocentre = options.autocentre || false;
 
         if(lonLat === undefined || lonLat === null){
             lonLat = this.toInternal(this.userLonLat);
@@ -1624,7 +1627,8 @@ var _openlayers = {
             }
         }
         else{
-            if(options.autocenter === true){
+            console.log(options.autocentre);
+            if(options.autocentre === true){
                 this.map.setCenter(lonLat, options.zoom);
             }
         }
