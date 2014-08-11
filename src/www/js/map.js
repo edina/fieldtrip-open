@@ -160,13 +160,6 @@ var _base = {
     },
 
     /**
-     * Finialise map.
-     */
-    postInit: function(){
-        fetchCapabilities();
-    },
-
-    /**
      *   Publish/Suscribe functions for the map
      */
 
@@ -385,13 +378,16 @@ var _base = {
      * @param timeout miliseconds before throwing a timeoout error
      * @param ttl How many seconds a cached location is valid (this parameter is ignored if watch is true)
      * @param watch if true a watch will be created and any previous watch will be cleared
-     * @param autocenter center the map to the user location?
+     * @param autocentre centre the map to the user location?
      */
     geoLocate: function(options){
-        console.debug("Geolocate user: watch: " + options.watch +
-                      " secretly: " + options.secretly +
-                      " updateAnnotateLayer: " + options.updateAnnotateLayer +
-                      " useDefault " + options.useDefault);
+        console.debug("Geolocate user: secretly: " + options.secretly +
+                      ". updateAnnotateLayer: " + options.updateAnnotateLayer +
+                      ". useDefault: " + options.useDefault +
+                      ". timeout: " + options.timeout +
+                      ". ttl: " + options.ttl +
+                      ". watch: " + options.watch +
+                      ". autocentre: " + options.autocentre);
 
         options.timeout =  options.timeout || this.geolocateTimeout;
         options.ttl =  options.ttl || this.geolocateTTL;
@@ -407,7 +403,7 @@ var _base = {
             _this.onPositionSuccess(position, {
                 updateAnnotateLayer: options.updateAnnotateLayer,
                 hideLoadingDialog: true,
-                autocenter: options.autocenter
+                autocentre: options.autocentre
             });
             $.mobile.hidePageLoadingMsg();
         }, this);
@@ -533,7 +529,7 @@ var _base = {
      * @param options.updateAnnotateLayer Should annotate layer be updated after position
      * success?
      * @param options.hideLoadingDialog Hide loading dialog after success
-     * @param options.autocenter autocenter the map to the user location?
+     * @param options.autocentre autocentre the map to the user location?
      */
     onPositionSuccess: function(position, options){
         this.updateUserPosition(position.coords.longitude,
@@ -541,7 +537,7 @@ var _base = {
         this.userLonLat.gpsPosition = position.coords;
 
         // update user position
-        this.updateLocateLayer({autocenter: options.autocenter});
+        this.updateLocateLayer({autocentre: options.autocentre});
 
         // if necessary update annotate pin
         if(options.updateAnnotateLayer){
@@ -744,17 +740,18 @@ var _base = {
      * Start to update the location
      */
     startLocationUpdate: function(){
-        var _this = this;
-        var location = utils.getLocationSettings();
-        this.stopLocationUpdate();
+        if(this.getLocateLayer()){
+            var location = utils.getLocationSettings();
+            this.stopLocationUpdate();
 
-        if(location.autoUpdate){
-            _this.geoLocate({
-                        secretly: true,
-                        updateAnnotateLayer: false,
-                        useDefault: false,
-                        watch: true
-            });
+            if(location.autoUpdate){
+                this.geoLocate({
+                    secretly: true,
+                    updateAnnotateLayer: false,
+                    useDefault: false,
+                    watch: true
+                });
+            }
         }
     },
 
@@ -850,7 +847,7 @@ var _base = {
             id: this.USER_POSITION_ATTR,
             zoom: zoom,
             rotate: true,
-            autocenter: options.autocenter
+            autocentre: options.autocentre
         });
     },
 
@@ -1118,6 +1115,8 @@ var _openlayers = {
             zoom: this.minLocateZoomTo,
             external: true
         });
+
+        fetchCapabilities();
     },
 
     /**
@@ -1568,14 +1567,14 @@ var _openlayers = {
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
      *   rotate: True or False if the marker should be rotated with the heading direction
-     *   autocenter: True or False if we want to center the map after updating the location, false by default
+     *   autocentre: True or False if we want to centre the map after updating the location, false by default
      */
     updateLayer: function(options){
         var id = options.id;
         var layer = options.layer;
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
         var lonLat = options.lonLat;
-        options.autocenter = options.autocenter || false;
+        options.autocentre = options.autocentre || false;
 
         if(lonLat === undefined || lonLat === null){
             lonLat = this.toInternal(this.userLonLat);
@@ -1621,14 +1620,14 @@ var _openlayers = {
                     var innerGeometry = innerBounds.toGeometry();
                     var delta = point.distanceTo(innerGeometry, {details: true});
                     var center = this.map.getCenter();
-                    //var _center = {};
                     center.lon -= (delta.x1 - delta.x0);
                     center.lat -= (delta.y1 - delta.y0);
                     this.map.panTo(new OpenLayers.LonLat(center.lon, center.lat));
                 }
             }
-        }else{
-            if(options.autocenter === true){
+        }
+        else{
+            if(options.autocentre === true){
                 this.map.setCenter(lonLat, options.zoom);
             }
         }
@@ -2004,6 +2003,13 @@ var _leaflet = {
      */
     getLocateCoords: function(){
 
+    },
+
+    /**
+     * @return Leaflet map.
+     */
+    getMap: function(){
+        return this.map;
     },
 
     /**

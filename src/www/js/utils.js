@@ -170,6 +170,25 @@ return {
     },
 
     /**
+     * Clone javascript object.
+     * @param obj
+     * @return copy of obj.
+     */
+    clone: function(obj){
+        return $.extend(true, {}, obj);
+    },
+
+    /**
+     * Simple compare two objects function.
+     * @param obj1
+     * @param obj2
+     * @return true if objects are the same.
+     */
+    compare: function(obj1, obj2){
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    },
+
+    /**
      * @return The username and password of cloud test user.
      */
     getCloudTestUser: function(){
@@ -375,7 +394,8 @@ return {
         var location = {};
         if(settings.get('location-autoupdate') === 'on'){
             location.autoUpdate = true;
-        }else{
+        }
+        else{
             location.autoUpdate = false;
         }
         return location;

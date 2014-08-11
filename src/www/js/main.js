@@ -72,9 +72,6 @@ function onDeviceReady(){
     require(['ui', 'map', 'tests/main'], function(ui, map, tests) {
         // called when all plugins are finished loading
         var pluginsComplete = function(){
-            // when all plugins are finished loading finialise map
-            map.postInit();
-
             // initialise home page first time
             ui.pageChange();
             ui.homePage();
