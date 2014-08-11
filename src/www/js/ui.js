@@ -523,7 +523,7 @@ var _ui = {
     },
 
     /**
-     * Set up maps page (on pageShow).
+     * Set up maps page (on _pageshow).
      */
     mapPage: function(divId){
         if(typeof(divId) !== 'string'){
@@ -542,7 +542,7 @@ var _ui = {
     },
 
     /**
-     * Map page init (on pageInit).
+     * Map page init (on pagecreate).
      */
     mapPageInit: function(){
         $('#map-records-buttons-ok').click($.proxy(function(event){
