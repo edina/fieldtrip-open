@@ -546,7 +546,7 @@ var _ui = {
      */
     mapPageInit: function(){
         $('#map-records-buttons-ok').click($.proxy(function(event){
-            var label = $('#map-records-buttons-ok .ui-btn-text').text();
+            var label = $('#map-records-buttons-ok a').text().trim();
             if(label === 'Show Records'){
                 this.mapPageRecordCentred();
             }
@@ -580,7 +580,7 @@ var _ui = {
      * Set map page buttons when records are hidden.
      */
     mapPageRecordsHidden: function(){
-        $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
+        $('#map-records-buttons-ok a').text('Show Records');
         $('#map-records-buttons-list a').hide();
     },
 
@@ -588,7 +588,7 @@ var _ui = {
      * Set up buttons when records are visible on map.
      */
     mapPageRecordsVisible: function(){
-        $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
+        $('#map-records-buttons-ok a').text('Hide Records');
         $('#map-records-buttons-list a').show();
     },
 

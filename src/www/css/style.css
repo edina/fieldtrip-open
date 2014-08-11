@@ -170,14 +170,11 @@ body .ui-loader-textonly{
     font-weight: bold;
 }
 
-.map-zoom-buttons .ui-btn-text{
+.map-zoom-buttons .ui-btn{
    font-size: 3em;
-   padding: 0;
-   margin: 0;
-}
-
-.map-zoom-buttons .ui-btn-inner{
-    padding: 0 1em;
+   padding: 0 10px;
+   margin-bottom: 0;
+   border-radius: 12px;
 }
 
 #map-records-buttons{
@@ -355,9 +352,9 @@ body .ui-loader-textonly{
     opacity: 1;
 }
 
-/*.menu .ui-btn{
+.menu .ui-btn{
     border: none;
-}*/
+}
 
 .menu .ui-btn.ui-icon-custom:after{
     background-size: 30px 30px;
@@ -368,7 +365,11 @@ body .ui-loader-textonly{
 
 .menu .ui-btn.ui-btn-icon-top:after{
     margin-left: -15px;
-    margin-top: -4px;
+}
+
+.menu .ui-btn.ui-btn-icon-top{
+    padding-bottom: 2px;
+    padding-top: 40px;
 }
 
 .home-button:after{
