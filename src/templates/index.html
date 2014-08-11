@@ -24,7 +24,7 @@
     <div id="home-page" data-role="page" data-theme="a" class="sync-page">
       {{header}}
 
-      <div id="home-content" class="non-map-body ui-content">
+      <div id="home-content" class="non-map-body ui-content" role="main">
       {% for key, sections in body.iteritems() %}
         <div id="home-page-{{sections.title.replace(' ', '-').lower()}}">
           <h2>{{sections.title}}</h2>
@@ -44,12 +44,9 @@
           {% endif %}
         </div>
         {% endfor %}
+        {{popups}}
       </div>
-
-      {{popups}}
-
       {{footer}}
-
     </div>
 
     <div id="test-page" data-role="page" data-theme="b" data-fullscreen="false">
