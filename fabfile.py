@@ -692,10 +692,9 @@ def install_project(platform='android',
             with settings(warn_only=True):
                 out = local('cordova platform list 2>&1', capture=True)
                 print out
-                install_cordova = False
 
             # If the directory exists but it's not a cordova project give the option to remove it
-            if out.find("not a Cordova-based project") >= 0:
+            if "not a Cordova-based project" in out:
                 # check if they want to delete existing installation
                 msg = 'Directory {0} exists but it\'s not a Cordova Project.\n'
                 msg = msg + 'Do you wish to delete it(y/N)? > '
@@ -704,6 +703,8 @@ def install_project(platform='android',
                     print 'Choosing not continue. Nothing installed.'
                     return
                 local('rm -rf {0}'.format(runtime))
+            else:
+                install_cordova = False
 
     if install_cordova:
         local('cordova create {0} {1} {1}'.format(
@@ -713,19 +714,17 @@ def install_project(platform='android',
 
     # Install platform
     with lcd(runtime):
+        platform_path = os.sep.join((runtime, 'platforms', platform))
 
-        # add platform and cordova plugins
-        with settings(warn_only=True):
-            out = local('cordova platform add {0} 2>&1'.format(platform), capture=True)
-
-        if out.find('Platform {0} already added'.format(platform)) >= 0:
-            msg = '%s\n%s' % (out, 'Do you wish to delete it(y/N)? > ')
-            answer = raw_input(msg).strip()
+        if(os.path.exists(platform_path)):
+            msg = 'Platform {0} exists\nDo you wish to delete it(y/N)? > '
+            answer = raw_input(msg.format(platform)).strip()
             if len(answer) == 0 or answer.lower() != 'y':
                 print 'Choosing not continue. Nothing installed.'
                 return
-            platform_path = os.sep.join((runtime, 'platforms', platform))
             local('rm -rf {0}'.format(platform_path))
+
+        local('cordova platform add {0} 2>&1'.format(platform))
 
         # create sym link to assets
         local('rm -rf www')
