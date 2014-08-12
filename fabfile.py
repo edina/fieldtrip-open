@@ -695,7 +695,7 @@ def install_project(platform='android',
                 install_cordova = False
 
             # If the directory exists but it's not a cordova project give the option to remove it
-            if out.find("not a Cordova-based project") > 0:
+            if out.find("not a Cordova-based project") >= 0:
                 # check if they want to delete existing installation
                 msg = 'Directory {0} exists but it\'s not a Cordova Project.\n'
                 msg = msg + 'Do you wish to delete it(y/N)? > '
@@ -715,7 +715,17 @@ def install_project(platform='android',
     with lcd(runtime):
 
         # add platform and cordova plugins
-        local('cordova platform add {0}'.format(platform))
+        with settings(warn_only=True):
+            out = local('cordova platform add {0} 2>&1'.format(platform), capture=True)
+
+        if out.find('Platform {0} already added'.format(platform)) >= 0:
+            msg = '%s\n%s' % (out, 'Do you wish to delete it(y/N)? > ')
+            answer = raw_input(msg).strip()
+            if len(answer) == 0 or answer.lower() != 'y':
+                print 'Choosing not continue. Nothing installed.'
+                return
+            platform_path = os.sep.join((runtime, 'platforms', platform))
+            local('rm -rf {0}'.format(platform_path))
 
         # create sym link to assets
         local('rm -rf www')
