@@ -17,7 +17,7 @@
     "homepage": "http://fieldtripgb.blogs.edina.ac.uk/",
     "dependencies": {
         "iscroll": "4.2",
-        "jquery": "1.10.2",
+        "jquery": "1.10.0",
         "jquery-mobile-bower": "1.4.2",
         "jquery-mobile-iscrollview-amd": "1.2.9",
         "leaflet": "0.7.3",

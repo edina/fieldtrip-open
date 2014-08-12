@@ -1016,14 +1016,24 @@ def _check_config():
     # pick up any changes from remote config
     location = _config('location')
     print location
-    if location.find('@') != -1:
+    if location[0: 4] == 'git@':
+        # config is in secure git repo
+        with lcd(conf_dir):
+            # work out how deep config file is in directory structure to flatten it
+            parts = location.split(' ')
+            strip_comp = len(parts[len(parts) - 1].split('/')) - 1
+
+            # fetch file from git repo
+            local('git archive --remote={0} | tar -x --strip-components {1}'.format(
+                location, strip_comp))
+    elif location.find('@') != -1:
         port = _config('location_port')
         if port:
             local("rsync -avz -e 'ssh -p {0}' {1} {2}".format(
                 port, location, conf_dir))
         else:
             local('rsync -avz {0} {1}'.format(location, conf_dir))
-        config = None # make sure it is re-read
+    config = None # make sure it is re-read
 
 def _config(key=None, section='install'):
     """
