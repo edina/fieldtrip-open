@@ -202,16 +202,14 @@ def deploy_ios():
     """
     Deploy to ios device connected to machine
     """
-    _check_command('ant')
-    _check_command('adb')
     _check_command('cordova')
 
-    # generate html for android
-    generate_html(platform="ios",cordova=True)
+    # generate html for ios
+    generate_html(platform="ios", cordova=True)
 
     with lcd(_get_runtime()[1]):
         device = None
-        local('cordova build ios')
+        local('cordova run ios')
 
 @task
 def generate_config_js(version=None, fetch_config=True):
@@ -622,7 +620,7 @@ def install_project(platform='android',
     """
     Install Cordova runtime
 
-    platform - android or ios
+    platform - android or ios (android by default)
     dist_dir - directory for unpacking openlayers
     target - runtime root
     project_branch - project branch name
@@ -640,18 +638,8 @@ def install_project(platform='android',
     js_ext_dir = os.sep.join(('www', 'js', 'ext'))
     css_ext_dir = os.sep.join(('www', 'css', 'ext'))
 
-    if os.path.exists(runtime):
-        # check if they want to delete existing installation
-        msg = 'Directory {0} exists.\nDo you wish to delete it(Y/n)? > '.format(runtime)
-        answer = raw_input(msg).strip()
-
-        if len(answer) > 0 and answer.lower() != 'y':
-            print 'Choosing not continue. Nothing installed.'
-            return
-
-        local('rm -rf {0}'.format(runtime))
-    else:
-        os.makedirs(runtime)
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
 
     # create project repo
     if not os.path.exists('project'):
@@ -698,12 +686,32 @@ def install_project(platform='android',
     bower_home = os.sep.join((root, 'bower_components'))
 
     # install cordova
-    with lcd(target_dir):
+    install_cordova = True
+    if os.path.exists(runtime):
+        with lcd(runtime):
+            with settings(warn_only=True):
+                out = local('cordova platform list 2>&1', capture=True)
+                print out
+                install_cordova = False
+
+            # If the directory exists but it's not a cordova project give the option to remove it
+            if out.find("not a Cordova-based project") > 0:
+                # check if they want to delete existing installation
+                msg = 'Directory {0} exists but it\'s not a Cordova Project.\n'
+                msg = msg + 'Do you wish to delete it(y/N)? > '
+                answer = raw_input(msg.format(runtime)).strip()
+                if len(answer) == 0 or answer.lower() != 'y':
+                    print 'Choosing not continue. Nothing installed.'
+                    return
+                local('rm -rf {0}'.format(runtime))
+
+    if install_cordova:
         local('cordova create {0} {1} {1}'.format(
             runtime,
             _config('package', section='app'),
             _config('name')))
 
+    # Install platform
     with lcd(runtime):
 
         # add platform and cordova plugins
@@ -766,7 +774,7 @@ def install_project(platform='android',
         _add_permissions(os.path.join(runtime, 'platforms', platform))
 
     # add project specific files
-    update_app()
+    update_app(platform)
 
     # process tempates
     generate_html(platform='desktop')
@@ -799,6 +807,10 @@ def install_project_ios():
     install_project(platform='ios')
 
 @task
+def install_project_android():
+    install_project(platform='android')
+
+@task
 def release_android(beta='True', overwrite='False', email=False):
     """
     Release android version of fieldtrip app
@@ -812,7 +824,7 @@ def release_android(beta='True', overwrite='False', email=False):
     _check_config()
     runtime = _get_runtime()[1];
 
-    update_app()
+    update_app('android')
 
     # get app version
     theme_src = os.sep.join((proj_home, 'theme'))
@@ -900,19 +912,20 @@ def release_ios():
     print 'Waiting for someone to do this.'
 
 @task
-def update_app():
-    """Update app with latest configuration"""
+def update_app(platform='android'):
+    """Update the platform with latest configuration (android by default)"""
     proj_home = _get_source()[1]
     runtime = _get_runtime()[1]
 
-    platforms = os.sep.join((proj_home, 'platforms'))
+    src = os.sep.join((proj_home, 'platforms', platform))
+    dst = os.sep.join((runtime, 'platforms', platform))
 
-    if os.path.exists(platforms):
-        local('cp -rf {0} {1}'.format(platforms,
-                                      runtime))
-    else:
-        print "\nProject has no platforms directory: {0}".format(platforms)
-        exit(-1)
+    if os.path.exists(src):
+        if os.path.exists(dst):
+            local('cp -rf {0} {1}'.format(src, dst))
+        else:
+            print "\nProject has no platforms directory: {0}".format(platforms)
+            exit(-1)
 
 def _add_permissions(platform):
     manifest = os.path.join(platform, 'AndroidManifest.xml')
