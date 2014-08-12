@@ -722,7 +722,7 @@ def install_project(platform='android',
             if len(answer) == 0 or answer.lower() != 'y':
                 print 'Choosing not continue. Nothing installed.'
                 return
-            local('rm -rf {0}'.format(platform_path))
+            local('cordova platform rm {0}'.format(platform))
 
         local('cordova platform add {0} 2>&1'.format(platform))
 
@@ -931,7 +931,7 @@ def update_app(platform='android'):
 
     if os.path.exists(src):
         if os.path.exists(dst):
-            local('cp -rf {0} {1}'.format(src, dst))
+            local('cp -rf {0}/ {1}/'.format(src, dst))
         else:
             print "\nProject has no platforms directory: {0}".format(platforms)
             exit(-1)
