@@ -35,7 +35,7 @@ In the future, we will need to support other geometries than points. Instead of 
     "type": "Feature", 
     "geometry": { 
         "type": "Point", 
-        "coordinates": [<latitude>, <longitude> ] 
+        "coordinates": [<longitude>, <latitude>, <altitude> ] 
     }, 
     "name": "<record name>", 
     "properties": { 
