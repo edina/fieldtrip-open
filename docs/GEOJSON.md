@@ -61,13 +61,20 @@ the old and the new format.
 #### Potential Solution
 * Basically, we need to support both 1.3 and 1.4 version for some time. 
 * For users that have been upgraded the app the first time they login they
-activate the upgrade script which is part of the PCAPI which converts the old
-format to the new one.
+  activate the upgrade script which is part of the PCAPI which converts the old
+  format to the new one.
 * About users with shared account and multiple versions of the app we need to
     - either do the conversion on the fly which is going to slow things down
     - or somehow warn them that they need to upgrade their app if they want it to
     be functioning.
 * The Authoring Tool needs to check after the user logs in if the records are
-in the new or old format and choose the right version of the PCAPI for handling
-data.
+  in the new or old format and choose the right version of the PCAPI for handling
+  data.
 
+
+#### Extra Requirements
+
+* It has been asked to use a linked-data geojson format. Here's an example of it
+  https://github.com/geojson/geojson-ld
+  That needs to be integrated with the Authoring Tool in order the user to be able
+  to connect the record with linked data.
