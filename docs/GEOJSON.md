@@ -38,12 +38,12 @@
         "editor": "<editor>", 
         "fields": [ 
             { 
-                "id": "fieldcontain-select-1", 
-                "label": "Floodies", 
-                "val": "Lake" 
+                "id": "<id>", 
+                "label": "<label>", 
+                "val": "<value>" 
             }, 
         ], 
-        "timestamp": "2014-05-26T11:40:48.217Z" 
+        "timestamp": "<timestamp>" 
     } 
 }
 ```
