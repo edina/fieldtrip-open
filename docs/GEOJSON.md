@@ -8,10 +8,10 @@
         "fields": [
             {
                 "id": "<id>",
-                        "val": "<value>",
-                        "label": "<label>"
-                  }
-            ],
+                "val": "<value>",
+                "label": "<label>"
+             }
+        ],
         "name": "<record name>",
         "editor": "<editor>",
         "timestamp": "<timestamp>",
