@@ -110,11 +110,12 @@ def check_plugins():
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
 
-
 @task
 def clean_runtime(target='local'):
     """
-        Remove the runtime directory
+    Remove the runtime directory
+
+    return True if directory sucessfully deleted.
     """
     runtime = _get_runtime(target)[1]
     if os.path.exists(runtime):
@@ -122,9 +123,10 @@ def clean_runtime(target='local'):
         answer = raw_input(msg.format(runtime)).strip()
         if len(answer) == 0 or answer.lower() == 'y':
             local('rm -rf {0}'.format(runtime))
+            return True
         else:
             print 'Nothing removed.'
-
+            return False
 
 @task
 def clean():
@@ -707,18 +709,13 @@ def install_project(platform='android',
         with lcd(runtime):
             with settings(warn_only=True):
                 out = local('cordova platform list 2>&1', capture=True)
-                print out
+                installed_version = local('cordova --version 2>&1', capture=True)
 
-            # If the directory exists but it's not a cordova project give the option to remove it
-            if "not a Cordova-based project" in out:
-                # check if they want to delete existing installation
-                msg = 'Directory {0} exists but it\'s not a Cordova Project.\n'
-                msg = msg + 'Do you wish to delete it(y/N)? > '
-                answer = raw_input(msg.format(runtime)).strip()
-                if len(answer) == 0 or answer.lower() != 'y':
-                    print 'Choosing not continue. Nothing installed.'
-                    return
-                local('rm -rf {0}'.format(runtime))
+            if "not a Cordova-based project" in out or installed_version != CORDOVA_VERSION:
+                # If the directory exists but it's not a cordova project or the
+                # cordova version is different from expected, remove runtime
+                if clean_runtime(target) == False:
+                    exit(-1)
             else:
                 install_cordova = False
 
@@ -831,14 +828,13 @@ def install_project(platform='android',
 @task
 def install_project_ios(target='local'):
     """
-        Install the ios project in the cordova runtime
     """
     install_project(platform='ios', target=target)
 
 @task
 def install_project_android(target='local'):
     """
-        Install the ios project in the cordova runtime
+    Install the android project in the cordova runtime
     """
     install_project(platform='android', target=target)
 

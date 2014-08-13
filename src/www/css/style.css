@@ -147,7 +147,7 @@ body .ui-loader{
     height: 100%;
 }
 
-body .ui-loader .ui-icon{
+body .ui-loader .ui-icon-loading{
     margin: 10px auto 0 auto;
 }
 
