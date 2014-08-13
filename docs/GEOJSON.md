@@ -55,7 +55,7 @@
     <strong>Solution</strong>:<br/>
     For users that have upgraded the app, the first time they login they activate an upgrade script, which is part of the PCAPI, which converts the old format to the new one.
 
-* <strong>Mixed Dropbox user</strong>: what happens if there are multiple devices with the same dropbox account and some of the devices have been upgraded to 1.4 and some not?
+* <strong>Mixed Dropbox Users</strong>: what happens if there are multiple devices with the same dropbox account and some of the devices have been upgraded to 1.4 and some not?
  
     <strong>Solution</strong>:<br/>
     - either do the conversion on the fly which is going to slow things down
