@@ -53,7 +53,9 @@
 * <strong>App Migration</strong>: users might have records with the old format that needs to be transformed.
 
     <strong>Solution</strong>:<br/>
-    For users that have upgraded the app, the first time they login they activate an upgrade script, which is part of the PCAPI, which converts the old format to the new one.
+    For users that have upgraded the app:
+    * On first start up local records are converted to the new format.
+    * The first time they login they activate an upgrade script, which is part of the PCAPI, which converts records in dropbox to the new format.
 
 * <strong>Mixed Dropbox Users</strong>: what happens if there are multiple devices with the same dropbox account and some of the devices have been upgraded to 1.4 and some not?
  
