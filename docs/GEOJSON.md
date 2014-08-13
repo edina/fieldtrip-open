@@ -73,7 +73,7 @@
 
 #### Record Storage in App
 
-In FTGB, records are stored in localstorage and the current implementation which has some limitations - filtering, seaching, updating. Some thought has been put into replacing the localstorage solution with a DB solution:
+In FTGB, records are stored in localstorage and the current implementation has some limitations - filtering, seaching, updating. Discussion could be had for replacing the localstorage solution with a DB solution:
 
 * Websql: is deprecated in HTML5, see: http://www.w3.org/TR/webdatabase/
 * IndexedDB: poor support in older version of webkit, see: http://caniuse.com/indexeddb
