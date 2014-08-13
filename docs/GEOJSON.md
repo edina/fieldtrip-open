@@ -1,4 +1,8 @@
-### Fieldtrip Open Record Format Proposal
+### FT-Open Record Format Proposal
+
+#### Introduction
+
+In the future, we will need to support other geometries than points. Instead of trying to figure out our own polyline or polygon format it's better to follow the standards format and convert the internal record format from json to geojson.
 
 #### Existing Record Format
 
@@ -8,10 +12,10 @@
         "fields": [
             {
                 "id": "<id>",
-                        "val": "<value>",
-                        "label": "<label>"
-                  }
-            ],
+                "val": "<value>",
+                "label": "<label>"
+             }
+        ],
         "name": "<record name>",
         "editor": "<editor>",
         "timestamp": "<timestamp>",
@@ -31,7 +35,7 @@
     "type": "Feature", 
     "geometry": { 
         "type": "Point", 
-        "coordinates": [<latitude>, <longitude> ] 
+        "coordinates": [<longitude>, <latitude>, <altitude> ] 
     }, 
     "name": "<record name>", 
     "properties": { 
@@ -61,6 +65,7 @@
  
     <strong>Solution</strong>:<br/>
     - either do the conversion on the fly which is going to slow things down
+        * this assumes we would not have a 1.3 and 1.4 version running parallel
     - or somehow warn them that they need to upgrade their app if they want it to be functioning
 
 * <strong>Authoring Tool legacy support</strong> how is the Authoring Tool going to handle both formats? You might have users with the old and the new format.
