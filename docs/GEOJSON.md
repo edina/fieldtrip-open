@@ -1,4 +1,4 @@
-### FTOPEN GEOJSON FORMAT
+### Fieldtrip Open Record Format Proposal
 
 #### Existing Record Format
 
@@ -12,15 +12,15 @@
                         "label": "<label>"
                   }
             ],
-            "name": "<record name>",
-            "editor": "<editor>",
-            "timestamp": "<timestamp>",
-            "point": {
-                "lat": <latitude>,
-                "alt": <altitude>,
-                "lon": <longitude>
-            }
-       }
+        "name": "<record name>",
+        "editor": "<editor>",
+        "timestamp": "<timestamp>",
+        "point": {
+            "lat": <latitude>,
+            "alt": <altitude>,
+            "lon": <longitude>
+        }
+    }
 }
 ```
 
@@ -51,26 +51,28 @@
 #### Issues
 
 * PCAPI filters the data so needs to know the exact format of the record
+    
+    <strong>Solution<strong>:<br/>
+    Basically, we need to support both 1.3 and 1.4 version for some time.
+  
 * People might have records with the old format that needs to be transformed.
-* What happens if there are multiple devices with the same dropbox account and
-some of the devices have been upgraded to 1.4 and some not?
-* How is the Authoring Tool going to handle both formats? You might have users with
-the old and the new format.
 
+    <strong>Solution<strong>:<br/>
+    For users that have been upgraded the app the first time they login they activate the upgrade script which is part of the PCAPI which converts the old format to the new one.
 
-#### Potential Solution
-* Basically, we need to support both 1.3 and 1.4 version for some time. 
-* For users that have been upgraded the app the first time they login they
-  activate the upgrade script which is part of the PCAPI which converts the old
-  format to the new one.
-* About users with shared account and multiple versions of the app we need to
+* What happens if there are multiple devices with the same dropbox account and some of the devices have been upgraded to 1.4 and some not?
+ 
+    <strong>Solution<strong>:<br/>
+    About users with shared account and multiple versions of the app we need to
     - either do the conversion on the fly which is going to slow things down
     - or somehow warn them that they need to upgrade their app if they want it to
     be functioning.
-* The Authoring Tool needs to check after the user logs in if the records are
-  in the new or old format and choose the right version of the PCAPI for handling
-  data.
 
+* How is the Authoring Tool going to handle both formats? You might have users with
+the old and the new format.
+
+    <strong>Solution<strong>:<br/>
+    The Authoring Tool needs to check after the user logs in if the records are in the new or old format and choose the right version of the PCAPI for handling data.
 
 #### Extra Requirements
 
