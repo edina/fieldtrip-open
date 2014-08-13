@@ -567,7 +567,7 @@ def install_plugins(target='local', cordova="True"):
 
     runtime = _get_runtime(target)[1]
     root, proj_home, src_dir = _get_source()
-    asset_dir =  os.sep.join((src_dir, 'www'))
+    asset_dir = os.sep.join((src_dir, 'www'))
     theme = os.sep.join((asset_dir, 'theme'))
 
     with settings(warn_only=True):
@@ -740,16 +740,14 @@ def install_project(platform='android',
                 return
             local('cordova platform rm {0}'.format(platform))
 
-        local('cordova platform add {0} 2>&1'.format(platform))
-
         # create sym link to assets
         local('rm -rf www')
-        asset_dir =  os.sep.join((src_dir, 'www'))
+        asset_dir = os.sep.join((src_dir, 'www'))
         local('ln -s {0}'.format(asset_dir))
 
         # Replace default config.xml and symlink to our version
         local('rm config.xml')
-        local('ln -s %s' % os.sep.join(('www','config.xml')))
+        local('ln -s %s' % os.sep.join(('www', 'config.xml')))
 
         # link to project theme
         theme = os.sep.join((asset_dir, 'theme'))
@@ -785,6 +783,9 @@ def install_project(platform='android',
                 else:
                     dest = os.sep.join((css_ext_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
+
+        # After prepare the project install the platform
+        local('cordova platform add {0}'.format(platform))
 
     # generate config js
     generate_config_js(version=versions['project'],
