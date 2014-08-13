@@ -1,5 +1,9 @@
 ### FT-Open Record Format Proposal
 
+#### Introduction
+
+In the future, we will need to support other geometries than points. Instead of trying to figure out our own polyline or polygon format it's better to follow the standards format and convert the internal record format from json to geojson.
+
 #### Existing Record Format
 
 ```
