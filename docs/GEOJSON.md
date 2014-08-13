@@ -1,4 +1,4 @@
-### Fieldtrip Open Record Format Proposal
+### FT-Open Record Format Proposal
 
 #### Existing Record Format
 
@@ -61,6 +61,7 @@
  
     <strong>Solution</strong>:<br/>
     - either do the conversion on the fly which is going to slow things down
+        * this assumes we would not have a 1.3 and 1.4 version running parallel
     - or somehow warn them that they need to upgrade their app if they want it to be functioning
 
 * <strong>Authoring Tool legacy support</strong> how is the Authoring Tool going to handle both formats? You might have users with the old and the new format.
