@@ -67,4 +67,7 @@ format to the new one.
     - either do the conversion on the fly which is going to slow things down
     - or somehow warn them that they need to upgrade their app if they want it to
     be functioning.
+* The Authoring Tool needs to check after the user logs in if the records are
+in the new or old format and choose the right version of the PCAPI for handling
+data.
 
