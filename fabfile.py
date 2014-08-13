@@ -110,6 +110,22 @@ def check_plugins():
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
 
+
+@task
+def clean_runtime(target='local'):
+    """
+        Remove the runtime directory
+    """
+    runtime = _get_runtime(target)[1]
+    if os.path.exists(runtime):
+        msg = 'Do you wish to delete {0} (Y/n)? > '.format(runtime)
+        answer = raw_input(msg.format(runtime)).strip()
+        if len(answer) == 0 or answer.lower() == 'y':
+            local('rm -rf {0}'.format(runtime))
+        else:
+            print 'Nothing removed.'
+
+
 @task
 def clean():
     """
@@ -812,12 +828,18 @@ def install_project(platform='android',
             local('./build.py %s %s' % (cfg_file, js_mobile))
 
 @task
-def install_project_ios():
-    install_project(platform='ios')
+def install_project_ios(target='local'):
+    """
+        Install the ios project in the cordova runtime
+    """
+    install_project(platform='ios', target=target)
 
 @task
-def install_project_android():
-    install_project(platform='android')
+def install_project_android(target='local'):
+    """
+        Install the ios project in the cordova runtime
+    """
+    install_project(platform='android', target=target)
 
 @task
 def release_android(beta='True', overwrite='False', email=False):
@@ -920,6 +942,7 @@ def release_ios():
     # TODO
     print 'Waiting for someone to do this.'
 
+
 @task
 def update_app(platform='android'):
     """Update the platform with latest configuration (android by default)"""
@@ -933,8 +956,9 @@ def update_app(platform='android'):
         if os.path.exists(dst):
             local('cp -rf {0}/ {1}/'.format(src, dst))
         else:
-            print "\nProject has no platforms directory: {0}".format(platforms)
+            print "\nPlatform {0} not installed".format(platform)
             exit(-1)
+
 
 def _add_permissions(platform):
     manifest = os.path.join(platform, 'AndroidManifest.xml')
