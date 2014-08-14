@@ -867,11 +867,12 @@ def release_android(beta='True', overwrite='False', email=False):
     with lcd(runtime):
         bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
         apk_name = _config('package', section='app').replace('.', '')
+        proj_name = _config('name').replace(' ', '')
 
         # do the build
         if _str2bool(beta):
             file_name = '{0}-debug.apk'.format(apk_name)
-            new_file_name = '{0}-debug.apk'.format(_config('name').replace(' ', ''))
+            new_file_name = '{0}-debug.apk'.format(proj_name)
             local('cordova build')
         else:
             # check plugin and project versions
@@ -893,7 +894,7 @@ def release_android(beta='True', overwrite='False', email=False):
                     exit(1)
 
             file_name = '{0}.apk'.format(apk_name)
-            new_file_name = '{0}.apk'.format(_config('name').replace(' ', ''))
+            new_file_name = '{0}.apk'.format(proj_name)
             with lcd(os.sep.join((runtime, 'platforms', 'android'))):
                 local('ant clean release')
 
