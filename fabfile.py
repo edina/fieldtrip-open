@@ -812,6 +812,9 @@ def release_android(beta='True', overwrite='False', email=False):
     _check_config()
     runtime = _get_runtime()[1];
 
+    # generate html for android
+    generate_html(cordova=True)
+
     update_app()
 
     # get app version
@@ -828,7 +831,7 @@ def release_android(beta='True', overwrite='False', email=False):
         # do the build
         if _str2bool(beta):
             file_name = '{0}-debug.apk'.format(apk_name)
-            new_file_name = '{0}-debug.apk'.format(_config('name'))
+            new_file_name = '{0}-debug.apk'.format(_config('name').replace(' ', ''))
             local('cordova build')
         else:
             # check plugin and project versions
@@ -850,7 +853,7 @@ def release_android(beta='True', overwrite='False', email=False):
                     exit(1)
 
             file_name = '{0}.apk'.format(apk_name)
-            new_file_name = '{0}.apk'.format(_config('name'))
+            new_file_name = '{0}.apk'.format(_config('name').replace(' ', ''))
             with lcd(os.sep.join((runtime, 'platforms', 'android'))):
                 local('ant clean release')
 
@@ -1048,7 +1051,7 @@ def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     if not exists(target_dir):
         run('mkdir -p {0}'.format(target_dir))
 
-    target_file = os.sep.join((target_dir, file_name))
+    target_file = os.sep.join((target_dir, new_file_name))
     if exists(target_file) and not overwrite:
         print '\nVersion {0} already exists at {1}'.format(version, target_file)
         print '*** Unable to release to {0} ***\n'.format(env.host_string)

@@ -87,7 +87,10 @@ define(['config'], function(config){
             $('#settings-ftgb').text(utils.version);
             $('#settings-jquery').text($().jquery);
             $('#settings-jqm').text(jQuery.mobile.version);
-            $('#settings-ol').text(OpenLayers.VERSION_NUMBER);
+
+            if(typeof(OpenLayers) !== "undefined"){
+                $('#settings-ol').text(OpenLayers.VERSION_NUMBER);
+            }
 
             if(utils.isMobileDevice()){
                 $('#settings-cordova').text(device.cordova);
