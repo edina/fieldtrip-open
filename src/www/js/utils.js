@@ -72,6 +72,14 @@ define(['settings', 'config'], function(settings, config){
         priviligedUsers = config.priviligedUsers.split(',');
     }
 
+    // Read the pcapiproviders and store it as an array in the config
+    if(config.pcapiproviders){
+        var providers = config.pcapiproviders.replace(/,+$/, '').trim();
+        if(providers !== ''){
+            config.pcapiProviders = providers.split(',');
+        }
+    }
+
     var userId = 'none';
     var isMobileApp = typeof(device) !== 'undefined';
     if(isMobileApp){
