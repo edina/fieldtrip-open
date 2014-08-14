@@ -497,6 +497,26 @@ var _base = {
     },
 
     /**
+     * Does this record field define an asset?
+     * @param field Annotation record field.
+     * @param type Optional record type. If undefined it will be determined by the id.
+     */
+    isAsset: function(field, type) {
+        var isAsset = false;
+
+        if(type === undefined){
+            type = this.typeFromId(field.id);
+        }
+
+        // TODO: track is a plugin
+        if(type === 'image' || type === 'audio' || type === 'track'){
+            isAsset = true;
+        }
+
+        return isAsset;
+    },
+
+    /**
      * Process annotation/record from an HTML5 form.
      * @param recordType record/Form type - image, text, audio or custom
      */
