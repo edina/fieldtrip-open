@@ -730,12 +730,13 @@ def install_project(platform='android',
         platform_path = os.sep.join((runtime, 'platforms', platform))
 
         if(os.path.exists(platform_path)):
-            msg = 'Platform {0} exists\nDo you wish to delete it(y/N)? > '
+            msg = 'Platform {0} exists\nDo you wish to delete it(Y/n)? > '
             answer = raw_input(msg.format(platform)).strip()
-            if len(answer) == 0 or answer.lower() != 'y':
+            if len(answer) == 0 or answer.lower() == 'y':
+                local('cordova platform rm {0}'.format(platform))
+            else:
                 print 'Choosing not continue. Nothing installed.'
-                return
-            local('cordova platform rm {0}'.format(platform))
+                exit(-1)
 
         # create sym link to assets
         local('rm -rf www')

@@ -254,13 +254,6 @@ var _ui = {
      * Initialise module.
      */
     init: function(){
-        geoLocate({
-            watch: true,
-            secretly: true,
-            updateAnnotateLayer: false,
-            useDefault: true
-        });
-
         if(utils.showStartPopup()){
             $('#home-show-eula').click(function(){
                 window.open(utils.getServerUrl() + "/end-user-license-agreement",
