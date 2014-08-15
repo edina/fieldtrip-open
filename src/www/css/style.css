@@ -117,6 +117,7 @@ a:active, img:active{
 
 #home-exit{
     height: 90%;
+    line-height: 35px;
     width: 5em;
 }
 
@@ -166,7 +167,7 @@ body .ui-loader-textonly{
     position: absolute;
     top: 10%;
     right: 5%;
-    z-index: 2000;
+    z-index: 1000;
     font-weight: bold;
 }
 
