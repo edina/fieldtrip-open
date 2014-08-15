@@ -410,6 +410,13 @@ return {
     },
 
     /**
+     * @return Version of the pcapi.
+     */
+    getPCAPIVersion: function(){
+        return config.pcapiversion;
+    },
+
+    /**
      * @return The field trip server web server URL.
      */
     getServerUrl: function() {
