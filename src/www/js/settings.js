@@ -79,21 +79,6 @@ define(['config'], function(config){
      */
     var settingsPage = function(){
         require(['utils'], function(utils){
-            $.each(vals, function(name, entry){
-                var id = '#settings-' + name;
-                if(typeof(entry) !== 'undefined'){
-                    if(entry.type === 'select'){
-                        utils.selectVal(id, vals[name].val);
-                    }
-                    else if(entry.type === 'slider'){
-                        utils.sliderVal(id, vals[name].val);
-                    }
-                    else{
-                        $(id).val(vals[name].val);
-                    }
-                }
-            });
-
             $('#settings-clear-local-storage a').click(function(){
                 localStorage.clear();
                 utils.inform('done');
@@ -102,7 +87,10 @@ define(['config'], function(config){
             $('#settings-ftgb').text(utils.version);
             $('#settings-jquery').text($().jquery);
             $('#settings-jqm').text(jQuery.mobile.version);
-            $('#settings-ol').text(OpenLayers.VERSION_NUMBER);
+
+            if(typeof(OpenLayers) !== "undefined"){
+                $('#settings-ol').text(OpenLayers.VERSION_NUMBER);
+            }
 
             if(utils.isMobileDevice()){
                 $('#settings-cordova').text(device.cordova);
@@ -110,6 +98,23 @@ define(['config'], function(config){
             else{
                 $('#settings-cordova').text('n/a');
             }
+
+            $.each(vals, function(name, entry){
+                var id = '#settings-' + name;
+                if(typeof(entry) !== 'undefined'){
+                    if(entry.type === 'select'){
+                        utils.selectVal(id, vals[name].val);
+                        console.debug(id);
+                    }
+                    else if(entry.type === 'slider'){
+                        utils.sliderVal(id, vals[name].val);
+                    }
+                    else{
+                        $(id).val(vals[name].val);
+                    }
+                    $(id).trigger('change');
+                }
+            });
         });
     };
 
@@ -126,7 +131,7 @@ define(['config'], function(config){
         });
     }
 
-    $(document).on('pageinit', '#settings-page', settingsPage);
+    $(document).on('pagecreate', '#settings-page', settingsPage);
     $(document).on('pageremove', '#settings-page', save);
 
     /************************** public interface  ******************************/

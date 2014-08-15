@@ -51,6 +51,18 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
+/*
+    Add formated data method to String
+    Use: "{0} {1}".format('hello', 'world')
+*/
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+        return typeof args[number] != 'undefined' ? args[number] : match;
+        });
+    };
+}
 
 define(['settings', 'config'], function(settings, config){
 
@@ -58,6 +70,14 @@ define(['settings', 'config'], function(settings, config){
     var priviligedUsers = [];
     if(config.priviligedUsers){
         priviligedUsers = config.priviligedUsers.split(',');
+    }
+
+    // Read the pcapiproviders and store it as an array in the config
+    if(config.pcapiproviders){
+        var providers = config.pcapiproviders.replace(/,+$/, '').trim();
+        if(providers !== ''){
+            config.pcapiProviders = providers.split(',');
+        }
     }
 
     var userId = 'none';
@@ -158,6 +178,25 @@ return {
     },
 
     /**
+     * Clone javascript object.
+     * @param obj
+     * @return copy of obj.
+     */
+    clone: function(obj){
+        return $.extend(true, {}, obj);
+    },
+
+    /**
+     * Simple compare two objects function.
+     * @param obj1
+     * @param obj2
+     * @return true if objects are the same.
+     */
+    compare: function(obj1, obj2){
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    },
+
+    /**
      * @return The username and password of cloud test user.
      */
     getCloudTestUser: function(){
@@ -204,6 +243,104 @@ return {
     },
 
     /**
+     * @param annotation Annotation record.
+     * @return The editor id for a given annotation.
+     */
+    getEditorId: function(annotation){
+        var record = annotation.record;
+        return record.editor.substr(0, record.editor.indexOf('.'));
+    },
+
+    /**
+     * @param error The error obj.
+     * @return File error message as a string.
+     */
+    getFileErrorMsg: function(error){
+        var msg;
+        switch(error.code){
+        case FileError.NOT_FOUND_ERR:
+            msg = "Not Found";
+            break;
+        case FileError.SECURITY_ERR:
+            msg = "Security Error";
+            break;
+        case FileError.ABORT_ERR:
+            msg = "Abort Error";
+            break;
+        case FileError.NOT_READABLE_ERR:
+            msg = "Not Readable";
+            break;
+        case FileError.ENCODING_ERR:
+            msg = "Encoding Error";
+            break;
+        case FileError.NO_MODIFICATION_ALLOWED_ERR:
+            msg = "No Modification Allowed";
+            break;
+        case FileError.INVALID_STATE_ERR:
+            msg = "Invalid State";
+            break;
+        case FileError.SYNTAX_ERR:
+            msg = "Syntax Error";
+            break;
+        case FileError.INVALID_MODIFICATION_ERR:
+            msg = "Invalid Modification";
+            break;
+        case FileError.QUOTA_EXCEEDED_ERR:
+            msg = "Quaota Exceeded";
+            break;
+        case FileError.TYPE_MISMATCH_ERR:
+            msg = "Type Mismatch";
+            break;
+        case FileError.PATH_EXISTS_ERR:
+            msg = "Path Exists";
+            break;
+        default:
+            msg = "Unknown Error: " + error.code;
+        }
+
+        return msg;
+    },
+
+    /**
+     * @param dir Directory on the device.
+     * @return The full path of the directory.
+     */
+    getFilePath: function(dir){
+        if(config.noCdvFileProtocol){
+            return dir.toNativeURL();
+        }
+        else {
+            return dir.toURL();
+        }
+    },
+
+    /**
+     * @param error The error obj.
+     * @return File error message as a string.
+     */
+    getFileTransferErrorMsg: function(error){
+        var msg;
+        switch(error.code){
+        case FileTransferError.FILE_NOT_FOUND_ERR:
+            msg = "File Not Found";
+            break;
+        case FileTransferError.INVALID_URL_ERR:
+            msg = "Invalid URL";
+            break;
+        case FileTransferError.CONNECTION_ERR:
+            msg = "Connection Error";
+            break;
+        case FileTransferError.ABORT_ERR:
+            msg = "Abort Error";
+            break;
+        default:
+            msg = "Unknown Error: " + error.code;
+        }
+
+        return msg;
+    },
+
+    /**
      * @param cache Is this a map cache request?
      * @return Standard parameters to map cache.
      */
@@ -211,6 +348,18 @@ return {
         return '?version=' + this.version +
             '&id=' + userId +
             '&app=free&cache=' + cache;
+    },
+
+    /**
+     * @return The map library name (openlayers or leaflet)
+     */
+    getMapLib: function(){
+        var lib = 'openlayers';
+        if(config.maplib){
+            lib = config.maplib;
+        }
+
+        return lib;
     },
 
     /**
@@ -247,6 +396,27 @@ return {
     },
 
     /**
+     * @return A location object with the autoUpdate and interval from the settings
+     */
+    getLocationSettings: function(){
+        var location = {};
+        if(settings.get('location-autoupdate') === 'on'){
+            location.autoUpdate = true;
+        }
+        else{
+            location.autoUpdate = false;
+        }
+        return location;
+    },
+
+    /**
+     * @return Version of the pcapi.
+     */
+    getPCAPIVersion: function(){
+        return config.pcapiversion;
+    },
+
+    /**
      * @return The field trip server web server URL.
      */
     getServerUrl: function() {
@@ -272,14 +442,18 @@ return {
     },
 
     /**
-     * Go to main map page
+     * Go to main map page.
+     * @param callback Optional callback function called on map page pageshow.
      */
-    gotoMapPage: function(){
+    gotoMapPage: function(callback){
         if(config.recordsClickMapPage){
-            $.mobile.changePage(config.recordsClickMapPage);
+            $('body').pagecontainer('change', config.recordsClickMapPage);
         }
         else{
-            $.mobile.changePage('map.html');
+            if(callback){
+                $(document).on('pageshow', '#map-page', callback);
+            }
+            $('body').pagecontainer('change', 'map.html');
         }
     },
 
@@ -387,9 +561,9 @@ return {
         var isPrivileged = false;
         if(isMobileApp){
             if(config.priviligedusers){
-                if ((config.priviligedusers instanceof Array &&
-                     $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)) ||
-                    device.uuid === config.priviligedusers){
+                if((config.priviligedusers.indexOf(',') != -1 &&
+                    $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)) ||
+                   device.uuid === config.priviligedusers){
                     isPrivileged = true;
                 }
             }
@@ -399,7 +573,7 @@ return {
         }
 
         if(!isPrivileged){
-            console.debug(device.uuid + " privileged user is "+isPrivileged);
+            console.debug(device.uuid + " privileged user is " + isPrivileged);
         }
 
         return isPrivileged;

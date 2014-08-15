@@ -1,8 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>{{header_data["title"]}}</title>
 
@@ -25,7 +24,7 @@
     <div id="home-page" data-role="page" data-theme="a" class="sync-page">
       {{header}}
 
-      <div id="home-content" class="non-map-body" data-role="content">
+      <div id="home-content" class="non-map-body ui-content" role="main">
       {% for key, sections in body.iteritems() %}
         <div id="home-page-{{sections.title.replace(' ', '-').lower()}}">
           <h2>{{sections.title}}</h2>
@@ -45,17 +44,14 @@
           {% endif %}
         </div>
         {% endfor %}
+        {{popups}}
       </div>
-
-      {{popups}}
-
       {{footer}}
-
     </div>
 
-    <div id="test-page" data-role="page" data-fullscreen="false">
+    <div id="test-page" data-role="page" data-theme="b" data-fullscreen="false">
       <div id="test-page-sys" class="ui-grid-a">
-        <div  id="test-page-runall" class="ui-block-a">
+        <div id="test-page-runall" class="ui-block-a">
           <a data-role="button">Run All</a>
         </div>
         <div class="ui-block-b">

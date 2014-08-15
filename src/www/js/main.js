@@ -46,39 +46,32 @@ function onDeviceReady(){
     // set up requirejs config
     require.config({
         paths: {
+            "leaflet": "ext/leaflet",
             "plugins": "../plugins",
+            "proj4": "ext/proj4",
             "templates": "../templates",
-            "theme": "../theme",
-            "proj4js": "ext/proj4js",
-            "underscore": "ext/underscore",
             "text": "ext/requirejs-text",
-            'QUnit': 'ext/qunit'
+            "theme": "../theme",
+            'QUnit': 'ext/qunit',
+            "underscore": "ext/underscore"
         },
         shim: {
-            "proj4js":{
-                exports: "Proj4js"
-            },
-            "underscore": {
-                exports: "_"
-            },
             'QUnit': {
                 exports: 'QUnit',
                 init: function() {
                     QUnit.config.autoload = false;
                     QUnit.config.autostart = false;
                 }
+            },
+            "underscore": {
+                exports: "_"
             }
         }
     });
 
     require(['ui', 'map', 'tests/main'], function(ui, map, tests) {
-        map.init();
-
         // called when all plugins are finished loading
         var pluginsComplete = function(){
-            // when all plugins are finished loading finialise map
-            map.postInit();
-
             // initialise home page first time
             ui.pageChange();
             ui.homePage();
@@ -111,19 +104,19 @@ function onDeviceReady(){
             ui.toggleActiveInit(ids);
         });
 
-        $(document).on('pageinit', 'div[data-role="page"]', function(event){
-            // no use for this yet
-        });
-        $(document).on('pagebeforeshow', 'div[data-role="page"]', function(event){
-            // no use for this yet
-        });
-        $(document).on('pageshow', 'div[data-role="page"]', function(event){
-            ui.pageChange();
+        $(document).on('pagecontainerchange', function(event){
         });
 
-        $(document).on('pageinit', '#map-page', function(){
+        $(document).on('pagecreate', '#map-page', function(){
             // map page is special case, need to setup up openlayers before onshow
             ui.mapPageInit();
+        });
+
+        $(document).on('pageremove', '#map-page', function(){
+            ui.mapPageRemove();
+        });
+
+        $(document).on('pagecontainerbeforeshow', function(event){
         });
 
         var onShows = {
@@ -135,10 +128,22 @@ function onDeviceReady(){
             'saved-records-page': ui.savedRecordsPage,
         };
 
-        $.each(onShows, function(id, func){
-            $(document).on('pageshow',
-                           '#' + id,
-                           $.proxy(func, ui));
+        /* pageshow event is being deprecated in jquery 1.4 but due to the
+           fieldtrip-open architecture, plugins relay in that event in order to
+           initialize its views as pagecreate is deprecated but still present
+           _pageshow is triggered.
+         */
+        $(document).on('pagecontainershow', function(){
+            var $page = $('body').pagecontainer('getActivePage');
+            ui.pageChange();
+            $page.trigger('_pageshow');
+        });
+
+        $.each(onShows, function(page, fun){
+            var selector = '#' + page;
+            $(document).on('_pageshow', selector, function(){
+                fun.call(ui);
+            });
         });
     });
 }

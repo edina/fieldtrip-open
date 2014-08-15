@@ -5,17 +5,15 @@
                 "platforms": ["desktop"],
                 "id": "home-settings",
                 "href": "settings.html",
-                "data-role": "button",
                 "data-inline": "true",
                 "data-transition": "none",
+                "class": "ui-btn ui-btn-a ui-corner-all ui-shadow",
                 "value": "Settings"
             },
             "exit": {
                 "platforms": ["android"],
                 "id": "home-exit",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
+                "class": "ui-btn ui-btn-a ui-corner-all ui-shadow",
                 "value": "Exit"
             }
         }

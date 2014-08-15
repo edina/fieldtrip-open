@@ -2,7 +2,7 @@
 
   {{header}}
 
-  <div data-iscroll="" data-role="content">
+  <div data-iscroll="" class="ui-content">
     <div class="non-map-body-white ui-overlay-shadow">
       <div class="ui-header">
         <h2>Settings</h2>
@@ -13,11 +13,18 @@
 
           {{settings}}
 
+          <div class="ui-field-contain">
+            <label for="settings-location-autoupdate">
+              Location automatic update:
+            </label>
+            <select data-role="flipswitch" id="settings-location-autoupdate" name="settings-entry">
+              <option value="off">Off</option>
+              <option value="on" selected>On</option>
+            </select>
+          </div>
           <div id="settings-versions">
             <label for="settings-versions-list">Software Versions:</label>
-            <ul id="settings-versions-list"
-                data-role="listview"
-                data-inset="true">
+            <ul id="settings-versions-list" data-role="listview" data-inset="true">
               <li>FTGB<span id="settings-ftgb" class="ui-li-count"></span></li>
               <li>Cordova<span id="settings-cordova" class="ui-li-count"></span></li>
               <li>JQuery<span id="settings-jquery" class="ui-li-count"></span></li>
@@ -26,7 +33,7 @@
             </ul>
           </div>
 
-          <div id="settings-clear-local-storage" data-role="fieldcontain">
+          <div id="settings-clear-local-storage" class="ui-field-contain">
             <a href="#" data-role="button">Delete Local Storage</a>
           </div>
 

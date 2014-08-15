@@ -168,7 +168,7 @@ var _base = {
      */
     annotate: function(type){
         localStorage.setItem('annotate-form-type', type);
-        $.mobile.changePage('annotate.html', {transition: "fade"});
+        $('body').pagecontainer('change', 'annotate.html', {transition: "fade"});
     },
 
     /**
@@ -221,6 +221,7 @@ var _base = {
 
         if(annotation !== undefined){
             // TODO: what about assets?
+            // TODO what does core know about track?
             if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
                 if(typeof(annotation.file) !== 'undefined'){
                     file.deleteFile(
@@ -496,16 +497,37 @@ var _base = {
     },
 
     /**
-     * Process annotation/record from an HTML5 form.
-     * @param type Form type - image, text, audio or custom
+     * Does this record field define an asset?
+     * @param field Annotation record field.
+     * @param type Optional record type. If undefined it will be determined by the id.
      */
-    processAnnotation: function(type){
+    isAsset: function(field, type) {
+        var isAsset = false;
+
+        if(type === undefined){
+            type = this.typeFromId(field.id);
+        }
+
+        // TODO: track is a plugin
+        if(type === 'image' || type === 'audio' || type === 'track'){
+            isAsset = true;
+        }
+
+        return isAsset;
+    },
+
+    /**
+     * Process annotation/record from an HTML5 form.
+     * @param recordType record/Form type - image, text, audio or custom
+     */
+    processAnnotation: function(recordType){
         var valid = true;
         var annotation = {
             "record": {
-                'editor': type + '.edtr',
+                'editor': recordType + '.edtr',
                 'fields': []
             },
+            "type": recordType,
             "isSynced": false
         };
 
@@ -624,7 +646,7 @@ var _base = {
             // nasty I know: but changing page in a setTimeout allows
             // time for the keyboard to close
             setTimeout(function(){
-                $.mobile.changePage('annotate-preview.html');
+                $('body').pagecontainer('change', 'annotate-preview.html');
             }, 300);
         }
         else{
@@ -732,7 +754,7 @@ var _ios = {
      * Construct the object for the options of the image for IOS.
      */
     getImageOptions: function(sourceType, encodingType){
-        var options = _base.getImageOptions();
+        var options = _base.getImageOptions(sourceType, encodingType);
         options.saveToPhotoAlbum = true;
         return options;
     }

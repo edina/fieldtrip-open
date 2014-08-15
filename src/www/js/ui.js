@@ -100,10 +100,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         $('#home-exit-confirm').on(
             'vmousedown',
             function(){
-                // TODO - the gps track plugin needs to do this
-                // ensure any running track is completed
-                //this.annotations.gpsCaptureComplete();
-
+                map.trigger(map.EVT_BEFORE_EXIT);
                 navigator.app.exitApp();
             }
         );
@@ -113,7 +110,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
      * Set map to user's location.
      * @param secrectly If true do not show page loading msg.
      * @param updateAnnotateLayer Should annotate layer be updated after geolocate?
-     * @param if no user location found should default be used?
+     * @param useDefault If no user location found should default be used?
      */
     var geoLocate = function(options){
         if(typeof(options.secretly) === 'undefined'){
@@ -121,10 +118,11 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         }
 
         map.geoLocate({
-            interval: 0,
+            watch: false,
             secretly: options.secretly,
             updateAnnotateLayer: options.updateAnnotateLayer,
-            useDefault: options.useDefault
+            useDefault: options.useDefault,
+            autocentre: true
         });
     };
 
@@ -134,7 +132,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
     var menuClick = function(){
         menuClicked = true;
         if(searchClicked){
-            $.mobile.changePage('settings.html');
+            $('body').pagecontainer('change', 'settings.html');
         }
 
         setTimeout(function(){
@@ -162,7 +160,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
             }
 
             var h = $(window).height() - (header + footer + secondHeader);
-            $('[data-role=content]').css('height', h + 'px');
+            $('.ui-content').css('height', h + 'px');
         }
     };
 
@@ -205,7 +203,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         searchClicked = true;
 
         if(menuClicked){
-            $.mobile.changePage('settings.html');
+            $('body').pagecontainer('change', 'settings.html');
         }
 
         setTimeout(function(){
@@ -226,6 +224,7 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
         '.user-locate',
         function(){
             geoLocate({
+                watch: false,
                 secretly: false,
                 updateAnnotateLayer: false,
                 useDefault: false
@@ -260,12 +259,6 @@ var _ui = {
      * Initialise module.
      */
     init: function(){
-        geoLocate({
-            secretly: true,
-            updateAnnotateLayer: false,
-            useDefault: true
-        });
-
         if(utils.showStartPopup()){
             $('#home-show-eula').click(function(){
                 window.open(utils.getServerUrl() + "/end-user-license-agreement",
@@ -396,38 +389,38 @@ var _ui = {
             if(this.currentAnnotation !== undefined){
                 $('#' + records.TITLE_ID).val(this.currentAnnotation.record.name);
                 $.each(this.currentAnnotation.record.fields, function(i, entry){
-                    var type = records.typeFromId(entry.id);
-                    if(type === 'text'){
+                    var fieldType = records.typeFromId(entry.id);
+                    if(fieldType === 'text'){
                         $('#' + entry.id + ' input').val(entry.val);
                     }
-                    else if(type === 'textarea'){
+                    else if(fieldType === 'textarea'){
                         $('#' + entry.id + ' textarea').val(entry.val);
                     }
-                    else if(type === 'image'){
+                    else if(fieldType === 'image'){
                         showImage('annotate-image-0', entry.val);
                     }
-                    else if(type === 'audio'){
+                    else if(fieldType === 'audio'){
                         showAudio('annotate-audio-0', entry.val);
                     }
-                    else if(type === 'checkbox'){
+                    else if(fieldType === 'checkbox'){
                         $.each(entry.val.split(','), function(j, name){
                             $('input[value=' + name + ']').prop('checked', true).checkboxradio('refresh');
                         });
                     }
-                    else if(type === 'radio'){
+                    else if(fieldType === 'radio'){
                         $('#' + entry.id + ' input[value=' + entry.val + ']').prop(
                             "checked", true).checkboxradio("refresh");
                     }
-                    else if(type === 'range'){
+                    else if(fieldType === 'range'){
                         $('#' + entry.id + ' input').val(entry.val);
                         $('#' + entry.id + ' input').slider('refresh');
                     }
-                    else if(type === 'select'){
+                    else if(fieldType === 'select'){
                         $('#' + entry.id + ' select').val(entry.val).attr(
                             "selected", true).selectmenu("refresh");
                     }
                     else{
-                        console.warn("Unknown field type: " + type);
+                        console.warn("Unknown field type: " + fieldType);
                     }
                 });
             }
@@ -449,6 +442,7 @@ var _ui = {
         }
         else {
             geoLocate({
+                watch: true,
                 secretly: false,
                 updateAnnotateLayer: true,
                 useDefault: true
@@ -480,9 +474,10 @@ var _ui = {
             // update default location to be last selected location
             map.setDefaultLocation(lonLat);
 
-            map.refreshRecords(this.currentAnnotation);
-            this.currentAnnotation = undefined;
-            utils.gotoMapPage();
+            utils.gotoMapPage($.proxy(function(){
+                this.mapPageRecordCentred(this.currentAnnotation);
+                this.currentAnnotation = undefined;
+            }, this));
         }, this));
 
         utils.touchScroll('#annotate-preview-detail');
@@ -517,7 +512,7 @@ var _ui = {
 
         $('.help-block a').unbind();
         $('.help-block a').on('taphold', function(){
-            $.mobile.changePage('settings.html');
+            $('body').pagecontainer('change', 'settings.html');
         });
 
         // exit button
@@ -526,7 +521,7 @@ var _ui = {
     },
 
     /**
-     * Set up maps page.
+     * Set up maps page (on _pageshow).
      */
     mapPage: function(divId){
         if(typeof(divId) !== 'string'){
@@ -536,55 +531,78 @@ var _ui = {
         // map render must happen in pageshow
         map.display(divId);
 
+        // for leaflet enabling and disabling layers must come after display
+        map.showLocateLayer();
+        map.hideAnnotateLayer();
+
         // force redraw, specifically for closing of record details dialog
         resizePage();
     },
 
     /**
-     * Map page init.
+     * Map page init (on pagecreate).
      */
     mapPageInit: function(){
-        // set up buttons when records are visible on map
-        var recordsVisible = function(){
-            $('#map-records-buttons-ok .ui-btn-text').text('Hide Records');
-            $('#map-records-buttons-list a').show();
-        };
-
-        // set up buttons when records are hidden
-        var recordsHidden = function(){
-            $('#map-records-buttons-ok .ui-btn-text').text('Show Records');
-            $('#map-records-buttons-list a').hide();
-        };
-
         $('#map-records-buttons-ok').click($.proxy(function(event){
-            var label = $('#map-records-buttons-ok .ui-btn-text').text();
+            var label = $('#map-records-buttons-ok a').text().trim();
             if(label === 'Show Records'){
-                map.showRecordsLayer();
-                recordsVisible();
+                this.mapPageRecordCentred();
             }
             else{
                 map.hideRecordsLayer();
-                recordsHidden();
+                this.mapPageRecordsHidden();
             }
         }, this));
 
-        if(map.getRecordsLayer().visibility){
-            recordsVisible();
+        if(map.isRecordsLayerVisible()){
+            this.mapPageRecordsVisible();
         }
         else{
-            recordsHidden();
+            this.mapPageRecordsHidden();
         }
 
-        map.showLocateLayer();
-        map.hideAnnotateLayer();
+        map.startLocationUpdate();
+    },
+
+    /**
+     * Set up map page with record centred.
+     * @param annotation The record/annotation to centre on. Can be left undefined
+     * to leave map centred as is.
+     */
+    mapPageRecordCentred: function(annotation){
+        map.showRecordsLayer(annotation);
+        this.mapPageRecordsVisible();
+    },
+
+    /**
+     * Set map page buttons when records are hidden.
+     */
+    mapPageRecordsHidden: function(){
+        $('#map-records-buttons-ok a').text('Show Records');
+        $('#map-records-buttons-list a').hide();
+    },
+
+    /**
+     * Set up buttons when records are visible on map.
+     */
+    mapPageRecordsVisible: function(){
+        $('#map-records-buttons-ok a').text('Hide Records');
+        $('#map-records-buttons-list a').show();
+    },
+
+    /*
+     * Map page remove
+     */
+    mapPageRemove: function(){
+        map.stopLocationUpdate();
     },
 
     /**
      * Function is called each time a page changes.
      */
     pageChange: function(){
-        $("[data-role=header]").fixedtoolbar({tapToggle: false});
-        $("[data-role=footer]").fixedtoolbar({tapToggle: false});
+        //$("[data-role=header]").fixedtoolbar({tapToggle: false});
+        //$("[data-role=footer]").fixedtoolbar({tapToggle: false});
 
         resizePage();
         this.toggleActive();
@@ -682,7 +700,7 @@ var _ui = {
         $(document).on(
             'click',
             '.saved-records-view',
-            function(event){
+            $.proxy(function(event){
                 if(this.isMobileApp){
                     // this will prevent the event propagating to next screen
                     event.stopImmediatePropagation();
@@ -691,9 +709,9 @@ var _ui = {
                 var id = $(event.target).parents('li').attr('id');
                 var annotation = records.getSavedRecord(id);
 
-                map.showRecordsLayer(annotation);
-                utils.gotoMapPage();
-            }
+                // goto map page and show all records centred on record clicked
+                utils.gotoMapPage($.proxy(this.mapPageRecordCentred, this, annotation));
+            }, this)
         );
     },
 
@@ -702,7 +720,7 @@ var _ui = {
      */
     toggleActive: function(){
         $(".ui-footer .ui-btn").removeClass('ui-btn-active');
-        var id = $.mobile.activePage[0].id;
+        var id = $('body').pagecontainer('getActivePage').get(0).id;
         $.each(menuIds, function(menu, ids){
             if($.inArray(id, ids) != -1){
                 $('#' + id + ' .' + menu + '-button').addClass('ui-btn-active');

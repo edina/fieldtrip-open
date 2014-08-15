@@ -4,26 +4,26 @@
         <a href="#" class="ellipsis"><%= annotation.record.name %></a>
     </div>
     <div class="ui-block-c">
-        <a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="a"></a>
+        <a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="b"></a>
     </div>
 
-    <div class='record-extra'>
+    <div class="record-extra">
 
         <% _.each(fields, function(field) { %>
 
         <%type = records.typeFromId(field.id)%>
 
         <% if (field.label === "Description") { %>
-            <p class='ellipsis'><%=field.val%></p>
+            <p class="ellipsis"><%=field.val%></p>
         <%}%>
 
         <% if (type === "image") { %>
-            <img class="saved-records-view" src="<%=field.val%>" width=100%"/>
+            <img class="saved-records-view" src="<%=field.val%>" width="100%"/">
         <%}%>
 
         <% if (type === "audio") { %>
         <p>Audio Recording</p>
-        <img id="audio-icon" src="css/images/audio.png" width=100%"/>
+        <img id="audio-icon" src="css/images/audio.png" width="100%"/">
         <%}%>
 
         <% }); %>

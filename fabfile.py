@@ -51,30 +51,33 @@ import sys
 import re
 
 
-CORDOVA_VERSION    = '3.5.0-0.2.4'
-OPENLAYERS_VERSION = '2.12'
-PROJ4JS_VERSION    = '1.1.0'
+CORDOVA_VERSION    = '3.5.0-0.2.6'
+OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION        = '1.4.10'
-BOWER_VERSION      = '1.3.5'
+BOWER_VERSION      = '1.3.8'
 JSHINT_VERSION     = '2.5.0'
+PLUGMAN_VERSION    = '0.22.4'
 
 """
 Tools installed via npm.
 The v_search value is the expected output of running the command -v
 """
 npm_commands = {
-    'npm':{
-        'version': NPM_VERSION
+    'bower':{
+        'version': BOWER_VERSION,
     },
     'cordova':{
         'version': CORDOVA_VERSION,
     },
-    'bower':{
-        'version': BOWER_VERSION,
-    },
     'jshint':{
         'version': JSHINT_VERSION,
         'v_search': 'jshint v{0}'.format(JSHINT_VERSION)
+    },
+    'npm':{
+        'version': NPM_VERSION
+    },
+    'plugman':{
+        'version': PLUGMAN_VERSION
     }
 }
 
@@ -106,6 +109,24 @@ def check_plugins():
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
+
+@task
+def clean_runtime(target='local'):
+    """
+    Remove the runtime directory
+
+    return True if directory sucessfully deleted.
+    """
+    runtime = _get_runtime(target)[1]
+    if os.path.exists(runtime):
+        msg = 'Do you wish to delete {0} (Y/n)? > '.format(runtime)
+        answer = raw_input(msg.format(runtime)).strip()
+        if len(answer) == 0 or answer.lower() == 'y':
+            local('rm -rf {0}'.format(runtime))
+            return True
+        else:
+            print 'Nothing removed.'
+            return False
 
 @task
 def clean():
@@ -160,9 +181,11 @@ def clean():
         local('rmdir plugins')
 
 @task
-def deploy_android():
+def deploy_android(uninstall='False'):
     """
     Deploy to android device connected to machine
+
+    uninstall - use this flag to first uninstall app.
     """
 
     _check_commands(['ant', 'adb', 'cordova', 'android'])
@@ -171,7 +194,9 @@ def deploy_android():
     generate_html(cordova=True)
 
     with lcd(_get_runtime()[1]):
-        device = None
+        if _str2bool(uninstall):
+            local('adb uninstall {0}'.format(_config('package', section='app')))
+
         local('cordova build android')
 
         with settings(warn_only=True):
@@ -195,16 +220,14 @@ def deploy_ios():
     """
     Deploy to ios device connected to machine
     """
-    _check_command('ant')
-    _check_command('adb')
     _check_command('cordova')
 
-    # generate html for android
-    generate_html(platform="ios",cordova=True)
+    # generate html for ios
+    generate_html(platform="ios", cordova=True)
 
     with lcd(_get_runtime()[1]):
         device = None
-        local('cordova build ios')
+        local('cordova run ios')
 
 @task
 def generate_config_js(version=None, fetch_config=True):
@@ -411,7 +434,6 @@ def generate_html(platform="android", cordova=False):
         environ_project = Environment(loader=FileSystemLoader(paths["project"]))
         environ.globals["_get_letter"] = _get_letter
         environ_project.globals["_get_letter"] = _get_letter
-        #environ.globals["_sorted"] = _sorted
 
         header_template = environ_core.get_template("header.html")
         footer_template = environ_core.get_template("footer.html")
@@ -470,9 +492,7 @@ def generate_html(platform="android", cordova=False):
                         popups=[]
                         if "popups" in data:
                             for popup in data["popups"]:
-                                #print data["popups"][popup]["template"]
                                 res = _check_for_template(data["popups"][popup]["template"])
-                                #print len(res)
                                 if len(res) == 1:
                                     environ_popup = Environment(loader=FileSystemLoader(res[0]))
                                     popup_template = environ_popup.get_template(data["popups"][popup]["template"])
@@ -519,6 +539,7 @@ def install_cordova_plugin(repo, platform='android', target='local'):
     """
     _check_command('cordova')
 
+    repo = os.path.expanduser(repo)
     if not os.path.exists(repo):
         print "Can't find plugin {0}".format(repo)
         exit(-1)
@@ -548,7 +569,7 @@ def install_plugins(target='local', cordova="True"):
 
     runtime = _get_runtime(target)[1]
     root, proj_home, src_dir = _get_source()
-    asset_dir =  os.sep.join((src_dir, 'www'))
+    asset_dir = os.sep.join((src_dir, 'www'))
     theme = os.sep.join((asset_dir, 'theme'))
 
     with settings(warn_only=True):
@@ -617,7 +638,7 @@ def install_project(platform='android',
     """
     Install Cordova runtime
 
-    platform - android or ios
+    platform - android or ios (android by default)
     dist_dir - directory for unpacking openlayers
     target - runtime root
     project_branch - project branch name
@@ -633,20 +654,10 @@ def install_project(platform='android',
 
     target_dir, runtime = _get_runtime(target)
     js_ext_dir = os.sep.join(('www', 'js', 'ext'))
-    css_dir = os.sep.join(('www', 'css', 'ext'))
+    css_ext_dir = os.sep.join(('www', 'css', 'ext'))
 
-    if os.path.exists(runtime):
-        # check if they want to delete existing installation
-        msg = 'Directory {0} exists.\nDo you wish to delete it(Y/n)? > '.format(runtime)
-        answer = raw_input(msg).strip()
-
-        if len(answer) > 0 and answer.lower() != 'y':
-            print 'Choosing not continue. Nothing installed.'
-            return
-
-        local('rm -rf {0}'.format(runtime))
-    else:
-        os.makedirs(runtime)
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
 
     # create project repo
     if not os.path.exists('project'):
@@ -693,25 +704,48 @@ def install_project(platform='android',
     bower_home = os.sep.join((root, 'bower_components'))
 
     # install cordova
-    with lcd(target_dir):
+    install_cordova = True
+    if os.path.exists(runtime):
+        with lcd(runtime):
+            with settings(warn_only=True):
+                out = local('cordova platform list 2>&1', capture=True)
+                installed_version = local('cordova --version 2>&1', capture=True)
+
+            if "not a Cordova-based project" in out or installed_version != CORDOVA_VERSION:
+                # If the directory exists but it's not a cordova project or the
+                # cordova version is different from expected, remove runtime
+                if clean_runtime(target) == False:
+                    exit(-1)
+            else:
+                install_cordova = False
+
+    if install_cordova:
         local('cordova create {0} {1} {1}'.format(
             runtime,
             _config('package', section='app'),
             _config('name')))
 
+    # Install platform
     with lcd(runtime):
+        platform_path = os.sep.join((runtime, 'platforms', platform))
 
-        # add platform and cordova plugins
-        local('cordova platform add {0}'.format(platform))
+        if(os.path.exists(platform_path)):
+            msg = 'Platform {0} exists\nDo you wish to delete it(Y/n)? > '
+            answer = raw_input(msg.format(platform)).strip()
+            if len(answer) == 0 or answer.lower() == 'y':
+                local('cordova platform rm {0}'.format(platform))
+            else:
+                print 'Choosing not continue. Nothing installed.'
+                exit(-1)
 
         # create sym link to assets
         local('rm -rf www')
-        asset_dir =  os.sep.join((src_dir, 'www'))
+        asset_dir = os.sep.join((src_dir, 'www'))
         local('ln -s {0}'.format(asset_dir))
 
         # Replace default config.xml and symlink to our version
         local('rm config.xml')
-        local('ln -s %s' % os.sep.join(('www','config.xml')))
+        local('ln -s %s' % os.sep.join(('www', 'config.xml')))
 
         # link to project theme
         theme = os.sep.join((asset_dir, 'theme'))
@@ -726,7 +760,7 @@ def install_project(platform='android',
         # clean up old installs
         with settings(warn_only=True):
             local('rm {0}/*'.format(js_ext_dir))
-            local('rm {0}/*.css'.format(css_dir))
+            local('rm {0}/*.css'.format(css_ext_dir))
             local('rm {0}/plugins/*'.format(asset_dir))
 
         # set up bower dependecies
@@ -737,11 +771,19 @@ def install_project(platform='android',
                 f = f.replace('x.x', version)
                 src = os.sep.join((bower_home, dep, f))
                 f_name = dep.replace('-bower', '')
+
+                if (f_name == 'leaflet' or f_name == 'leaflet.marketcluster' or f_name == 'proj4leaflet') and  _config('maplib', section='app') != 'leaflet':
+                    # only install leaflet if required
+                    continue
+
                 if f[len(f) - 2:] == 'js':
                     dest = os.sep.join((js_ext_dir, '{0}.js'.format(f_name)))
                 else:
-                    dest = os.sep.join((css_dir, '{0}.css'.format(f_name)))
+                    dest = os.sep.join((css_ext_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
+
+        # After prepare the project install the platform
+        local('cordova platform add {0}'.format(platform))
 
     # generate config js
     generate_config_js(version=versions['project'],
@@ -756,7 +798,7 @@ def install_project(platform='android',
         _add_permissions(os.path.join(runtime, 'platforms', platform))
 
     # add project specific files
-    update_app()
+    update_app(platform)
 
     # process tempates
     generate_html(platform='desktop')
@@ -766,38 +808,36 @@ def install_project(platform='android',
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
 
-    # install proj4js
-    proj4js_path = os.sep.join((dist_path, 'proj4js'))
-    if not os.path.exists(proj4js_path):
-        with lcd(dist_path):
-            local('wget http://download.osgeo.org/proj4js/proj4js-{0}.zip'.format(PROJ4JS_VERSION))
-            local('unzip proj4js-{0}.zip'.format(PROJ4JS_VERSION))
+    if _config('maplib', section='app') != 'leaflet':
+        # check if openlayers is installed
+        ol_dir = 'OpenLayers-%s' % OPENLAYERS_VERSION
+        ol_path = os.sep.join((dist_path, ol_dir))
 
-    with lcd(runtime):
-        # copy it to ext folder
-        local('cp {0} {1}'.format(os.sep.join((proj4js_path, 'lib', 'proj4js-compressed.js')),
-                                  os.sep.join((js_ext_dir, 'proj4js.js'))))
+        if not os.path.exists(ol_path):
+            # install openlayers
+            with lcd(dist_path):
+                ol_tar_file_name = '%s.tar.gz' % ol_dir
+                ol_tar = 'http://openlayers.org/download/%s' % ol_tar_file_name
+                local('wget %s' % ol_tar)
+                local('tar xvfz %s' % ol_tar_file_name)
 
-    # check if openlayers is installed
-    ol_dir = 'OpenLayers-%s' % OPENLAYERS_VERSION
-    ol_path = os.sep.join((dist_path, ol_dir))
-
-    if not os.path.exists(ol_path):
-        # install openlayers
-        with lcd(dist_path):
-            ol_tar_file_name = '%s.tar.gz' % ol_dir
-            ol_tar = 'http://openlayers.org/download/%s' % ol_tar_file_name
-            local('wget %s' % ol_tar)
-            local('tar xvfz %s' % ol_tar_file_name)
-
-    with lcd(os.sep.join((ol_path, 'build'))):
-        cfg_file = os.sep.join((src_dir, 'etc', 'openlayers-mobile.cfg'))
-        js_mobile = os.sep.join((runtime, js_ext_dir, 'openlayers.js'))
-        local('./build.py %s %s' % (cfg_file, js_mobile))
+        with lcd(os.sep.join((ol_path, 'build'))):
+            cfg_file = os.sep.join((src_dir, 'etc', 'openlayers-mobile.cfg'))
+            js_mobile = os.sep.join((runtime, js_ext_dir, 'openlayers.js'))
+            local('./build.py %s %s' % (cfg_file, js_mobile))
 
 @task
-def install_project_ios():
-    install_project(platform='ios')
+def install_project_ios(target='local'):
+    """
+    """
+    install_project(platform='ios', target=target)
+
+@task
+def install_project_android(target='local'):
+    """
+    Install the android project in the cordova runtime
+    """
+    install_project(platform='android', target=target)
 
 @task
 def release_android(beta='True', overwrite='False', email=False):
@@ -813,7 +853,10 @@ def release_android(beta='True', overwrite='False', email=False):
     _check_config()
     runtime = _get_runtime()[1];
 
-    update_app()
+    # generate html for android
+    generate_html(cordova=True)
+
+    update_app('android')
 
     # get app version
     theme_src = os.sep.join((proj_home, 'theme'))
@@ -825,11 +868,12 @@ def release_android(beta='True', overwrite='False', email=False):
     with lcd(runtime):
         bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
         apk_name = _config('package', section='app').replace('.', '')
+        proj_name = _config('name').replace(' ', '')
 
         # do the build
         if _str2bool(beta):
             file_name = '{0}-debug.apk'.format(apk_name)
-            new_file_name = '{0}-debug.apk'.format(_config('name'))
+            new_file_name = '{0}-debug.apk'.format(proj_name)
             local('cordova build')
         else:
             # check plugin and project versions
@@ -851,7 +895,7 @@ def release_android(beta='True', overwrite='False', email=False):
                     exit(1)
 
             file_name = '{0}.apk'.format(apk_name)
-            new_file_name = '{0}.apk'.format(_config('name'))
+            new_file_name = '{0}.apk'.format(proj_name)
             with lcd(os.sep.join((runtime, 'platforms', 'android'))):
                 local('ant clean release')
 
@@ -900,20 +944,23 @@ def release_ios():
     # TODO
     print 'Waiting for someone to do this.'
 
+
 @task
-def update_app():
-    """Update app with latest configuration"""
+def update_app(platform='android'):
+    """Update the platform with latest configuration (android by default)"""
     proj_home = _get_source()[1]
     runtime = _get_runtime()[1]
 
-    platforms = os.sep.join((proj_home, 'platforms'))
+    src = os.sep.join((proj_home, 'platforms', platform))
+    dst = os.sep.join((runtime, 'platforms', platform))
 
-    if os.path.exists(platforms):
-        local('cp -rf {0} {1}'.format(platforms,
-                                      runtime))
-    else:
-        print "\nProject has no platforms directory: {0}".format(platforms)
-        exit(-1)
+    if os.path.exists(src):
+        if os.path.exists(dst):
+            local('cp -rf {0}/ {1}/'.format(src, dst))
+        else:
+            print "\nPlatform {0} not installed".format(platform)
+            exit(-1)
+
 
 def _add_permissions(platform):
     manifest = os.path.join(platform, 'AndroidManifest.xml')
@@ -994,16 +1041,26 @@ def _check_config():
     # pick up any changes from remote config
     location = _config('location')
     print location
-    if location.find('@') != -1:
+    if location[0: 4] == 'git@':
+        # config is in secure git repo
+        with lcd(conf_dir):
+            # work out how deep config file is in directory structure to flatten it
+            parts = location.split(' ')
+            strip_comp = len(parts[len(parts) - 1].split('/')) - 1
+
+            # fetch file from git repo
+            local('git archive --remote={0} | tar -x --strip-components {1}'.format(
+                location, strip_comp))
+    elif location.find('@') != -1:
         port = _config('location_port')
         if port:
             local("rsync -avz -e 'ssh -p {0}' {1} {2}".format(
                 port, location, conf_dir))
         else:
             local('rsync -avz {0} {1}'.format(location, conf_dir))
-        config = None # make sure it is re-read
+    config = None # make sure it is re-read
 
-def _config(key, section='install'):
+def _config(key=None, section='install'):
     """
     Get config value for key.
 
@@ -1049,7 +1106,7 @@ def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
     if not exists(target_dir):
         run('mkdir -p {0}'.format(target_dir))
 
-    target_file = os.sep.join((target_dir, file_name))
+    target_file = os.sep.join((target_dir, new_file_name))
     if exists(target_file) and not overwrite:
         print '\nVersion {0} already exists at {1}'.format(version, target_file)
         print '*** Unable to release to {0} ***\n'.format(env.host_string)
