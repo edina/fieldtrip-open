@@ -69,9 +69,6 @@ var currentAudio;
 function playAudio(){
     var url = $('.annotate-audio-taken input').attr('value');
 
-    // for android ensure url begins with file:///
-    url = url.replace("file:/m", "file:///m");
-
     if(currentAudio){
         if(currentAudio.src !== url){
             currentAudio.destroy();

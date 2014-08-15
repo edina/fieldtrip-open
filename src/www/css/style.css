@@ -117,6 +117,7 @@ a:active, img:active{
 
 #home-exit{
     height: 90%;
+    line-height: 35px;
     width: 5em;
 }
 
@@ -166,7 +167,7 @@ body .ui-loader-textonly{
     position: absolute;
     top: 10%;
     right: 5%;
-    z-index: 2000;
+    z-index: 1000;
     font-weight: bold;
 }
 
@@ -529,19 +530,19 @@ div.record-extra > div > img {
 }
 
 .annotate-audio-stopped{
-    background-image: url("../css/images/play.png");
+    background-image: url("../css/images/play-audio.png");
     background-repeat: no-repeat;
-    background-position: 1em 1em;
-    height: 4.6em;
-    width: 4.6em;
+    background-position: 50% 50%;
+    height: 3em;
+    width: 3em;
 }
 
 .annotate-audio-started{
-    background-image: url("../css/images/stop.png");
+    background-image: url("../css/images/stop-audio.png");
     background-repeat: no-repeat;
-    background-position: 1em 1em;
-    height: 4.6em;
-    width: 4.6em;
+    background-position: 50% 50%;
+    height: 3em;
+    width: 3em;
 }
 
 #saved-records-list{

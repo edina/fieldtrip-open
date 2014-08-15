@@ -410,6 +410,13 @@ return {
     },
 
     /**
+     * @return Version of the pcapi.
+     */
+    getPCAPIVersion: function(){
+        return config.pcapiversion;
+    },
+
+    /**
      * @return The field trip server web server URL.
      */
     getServerUrl: function() {
@@ -636,9 +643,9 @@ return {
      * @param selector Jquery selector.
      * @param value 'on' or 'off'.
      */
-    sliderVal: function(selector, value){
+    flipswitchVal: function(selector, value){
         $(selector).val(value);
-        $(selector).slider('refresh');
+        $(selector).flipswitch('refresh');
     },
 
     /**
