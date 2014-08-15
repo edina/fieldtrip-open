@@ -643,9 +643,9 @@ return {
      * @param selector Jquery selector.
      * @param value 'on' or 'off'.
      */
-    sliderVal: function(selector, value){
+    flipswitchVal: function(selector, value){
         $(selector).val(value);
-        $(selector).slider('refresh');
+        $(selector).flipswitch('refresh');
     },
 
     /**

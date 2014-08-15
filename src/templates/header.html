@@ -5,10 +5,10 @@
       {% for key, items in data["buttons"].iteritems() %}
         {% if "platforms" in items %}
           {% if platform in items["platforms"] %}
-            <a {% for el, item in items.iteritems() %}{% if el != "value" and el != "platforms" %} {{el}}="{{item}}" {% endif %}{% endfor %}>{{items["value"]}}</a>
+            <button {% for el, item in items.iteritems() %}{% if el != "value" and el != "platforms" %} {{el}}="{{item}}" {% endif %}{% endfor %}>{{items["value"]}}</button>
           {% endif %}
         {% else %}
-          <a {% for el, item in items.iteritems() %} {{el}}="{{item}}" {% endfor %}>{{items["value"]}}</a>
+          <button {% for el, item in items.iteritems() %} {{el}}="{{item}}" {% endfor %}>{{items["value"]}}</button>
         {% endif %}
       {% endfor %}
     {% endif %}

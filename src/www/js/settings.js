@@ -50,10 +50,10 @@ define(['config'], function(config){
 
         if(typeof(control) !== 'undefined'){
             var tag = control.prop('tagName').toLowerCase();
-            if(control.attr('data-role') === 'slider'){
+            if(control.attr('data-role') === 'flipswitch'){
                 // a slider is a select tag but
                 // can be identified by its data-role
-                tag = 'slider';
+                tag = 'flipswitch';
             }
 
             vals[id] = {
@@ -106,8 +106,8 @@ define(['config'], function(config){
                         utils.selectVal(id, vals[name].val);
                         console.debug(id);
                     }
-                    else if(entry.type === 'slider'){
-                        utils.sliderVal(id, vals[name].val);
+                    else if(entry.type === 'flipswitch'){
+                        utils.flipswitchVal(id, vals[name].val);
                     }
                     else{
                         $(id).val(vals[name].val);
