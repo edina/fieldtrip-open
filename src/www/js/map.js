@@ -210,9 +210,7 @@ var _base = {
      * clear watch if already defined
      */
     clearGeoLocateWatch: function(){
-        if(this.geoLocationWatchID){
-            navigator.geolocation.clearWatch(this.geoLocationWatchID);
-        }
+        navigator.geolocation.clearWatch(this.geoLocationWatchID);
     },
 
     /**
