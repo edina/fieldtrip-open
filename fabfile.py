@@ -407,8 +407,8 @@ def generate_html(platform="android", cordova=False):
             environ_settings = Environment(loader=FileSystemLoader(settings_path))
             tmpl = environ_settings.get_template('settings.html')
             data = {}
-            if settings_config != None:
-                if plg in settings_config:
+            if settings_config is not None:
+                if plg in settings_config.keys():
                     value = settings_config[plg]
                     if value.startswith('{'):
                         data = json.loads(value, object_pairs_hook=collections.OrderedDict)
@@ -1076,7 +1076,7 @@ def _config(key=None, section='install'):
 
     if config.has_section(section):
         if key == None:
-            return config._sections[section]
+            return dict(config.items(section))
         else:
             val = None
             try:
