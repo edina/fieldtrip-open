@@ -720,7 +720,7 @@ def install_project(platform='android',
                 install_cordova = False
 
     if install_cordova:
-        local('cordova create {0} {1} {1}'.format(
+        local('cordova create "{0}" "{1}" "{2}"'.format(
             runtime,
             _config('package', section='app'),
             _config('name')))
@@ -851,12 +851,20 @@ def release_android(beta='True', overwrite='False', email=False):
 
     root, proj_home, src_dir = _get_source()
     _check_config()
-    runtime = _get_runtime()[1];
+    runtime = _get_runtime()[1]
 
     # generate html for android
     generate_html(cordova=True)
 
     update_app('android')
+
+    # Read the project name from the ant build file
+    tree = ET.parse(os.sep.join((runtime, 'platforms', 'android', 'build.xml')))
+    root = tree.getroot()
+    if 'name' in root.attrib.keys():
+        file_prefix = root.attrib['name']
+    else:
+        file_prefix = _config('name').replace(' ', '')
 
     # get app version
     theme_src = os.sep.join((proj_home, 'theme'))
@@ -868,13 +876,11 @@ def release_android(beta='True', overwrite='False', email=False):
     with lcd(runtime):
         bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
         apk_name = _config('package', section='app').replace('.', '')
-        proj_name = _config('name').replace(' ', '')
 
         # do the build
         if _str2bool(beta):
-            file_name = '{0}-debug.apk'.format(apk_name)
-            new_file_name = '{0}-debug.apk'.format(proj_name)
-            local('cordova build')
+            file_name = '{0}-debug.apk'.format(file_prefix)
+            local('cordova build android')
         else:
             # check plugin and project versions
             if versions['core'] == 'master':
@@ -894,8 +900,7 @@ def release_android(beta='True', overwrite='False', email=False):
                     print "Must release with versioned fieldtrip plugin: {0}".format(name)
                     exit(1)
 
-            file_name = '{0}.apk'.format(apk_name)
-            new_file_name = '{0}.apk'.format(proj_name)
+            file_name = '{0}.apk'.format(file_prefix)
             with lcd(os.sep.join((runtime, 'platforms', 'android'))):
                 local('ant clean release')
 
@@ -928,12 +933,12 @@ def release_android(beta='True', overwrite='False', email=False):
         execute('_copy_apk_to_servers',
                 version,
                 file_name,
-                new_file_name,
+                file_name,
                 _str2bool(overwrite))
 
     # inform of release
     if email:
-        _email(new_file_name, version, beta)
+        _email(file_prefix, version, beta)
 
 @task
 def release_ios():
