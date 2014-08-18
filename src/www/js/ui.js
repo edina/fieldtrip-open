@@ -557,6 +557,7 @@ var _ui = {
         }
 
         map.startLocationUpdate();
+        map.initCompass();
     },
 
     /**
@@ -590,6 +591,7 @@ var _ui = {
      */
     mapPageRemove: function(){
         map.stopLocationUpdate();
+        map.stopCompass();
     },
 
     /**
