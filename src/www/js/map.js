@@ -667,7 +667,7 @@ var _base = {
                 $('#map-record-popup h3').text(annotation.record.name);
                 $('#map-record-popup-text').text('');
 
-                $.each(annotation.record.fields, function(i, entry){
+                $.each(annotation.record.properties.fields, function(i, entry){
                     var html;
                     var type = records.typeFromId(entry.id);
 
