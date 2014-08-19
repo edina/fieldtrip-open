@@ -511,15 +511,16 @@ var _base = {
       * Start compass and use it to rotate the location marker
       */
     initCompass: function(){
-        var locateLayer = this.getLocateLayer();
+        var self = this;
+        // If the compass is not explicitly enabled in settings don't use it
+        if(!utils.getCompassEnableSetting()){
+            return;
+        }
+
         if(navigator.compass !== undefined){
             var onSuccess = function(heading){
                                 console.debug(JSON.stringify(heading));
-                                if(locateLayer && locateLayer.features.length > 0){
-                                    var feature = locateLayer.features[0];
-                                    feature.style.rotation = heading.magneticHeading;
-                                    locateLayer.drawFeature(feature);
-                                }
+                                self.rotateLocationMarker(heading.magneticHeading);
                             };
             var onError = function(error){
                               console.debug('error: ' + error);
@@ -588,6 +589,19 @@ var _base = {
      */
     removeLayer: function(layer){
         this.map.removeLayer(layer);
+    },
+
+    /**
+     * Rotate the location market to given angle
+     * @param angle
+     */
+    rotateLocationMarker: function(angle){
+        var locateLayer = this.getLocateLayer();
+        if(locateLayer && locateLayer.features.length > 0){
+            var feature = locateLayer.features[0];
+            feature.style.rotation = angle;
+            locateLayer.drawFeature(feature);
+        }
     },
 
     /**
@@ -792,6 +806,7 @@ var _base = {
     stopCompass: function(){
         if(navigator.compass !== undefined){
             navigator.compass.clearWatch(this.compassWatchID);
+            this.rotateLocationMarker(0);
         }
     },
 
