@@ -951,12 +951,12 @@ def update_app(platform='android'):
     proj_home = _get_source()[1]
     runtime = _get_runtime()[1]
 
-    src = os.sep.join((proj_home, 'platforms', platform))
-    dst = os.sep.join((runtime, 'platforms', platform))
+    src = os.path.join(proj_home, 'platforms', platform, '')
+    dst = os.path.join(runtime, 'platforms', platform, '')
 
     if os.path.exists(src):
         if os.path.exists(dst):
-            local('cp -rf {0}/ {1}/'.format(src, dst))
+            local('cp -rf {0}* {1}'.format(src, dst))
         else:
             print "\nPlatform {0} not installed".format(platform)
             exit(-1)
