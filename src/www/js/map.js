@@ -517,6 +517,33 @@ var _base = {
     },
 
     /**
+      * Start compass and use it to rotate the location marker
+      */
+    initCompass: function(){
+        var self = this;
+        // If the compass is not explicitly enabled in settings don't use it
+        if(!utils.getCompassEnableSetting()){
+            return;
+        }
+
+        if(navigator.compass !== undefined){
+            var onSuccess = function(heading){
+                                console.debug(JSON.stringify(heading));
+                                self.rotateLocationMarker(heading.magneticHeading);
+                            };
+            var onError = function(error){
+                              console.debug('error: ' + error);
+                          };
+
+            var options = {frecuency: 500};
+
+            this.compassWatchID = navigator.compass.watchHeading(onSuccess,
+                                                                 onError,
+                                                                 options);
+        }
+    },
+
+    /**
      * @return Is the base layer Open Street Map?
      */
     isOSM: function(){
@@ -564,6 +591,19 @@ var _base = {
      */
     removeLayer: function(layer){
         this.map.removeLayer(layer);
+    },
+
+    /**
+     * Rotate the location market to given angle
+     * @param angle
+     */
+    rotateLocationMarker: function(angle){
+        var locateLayer = this.getLocateLayer();
+        if(locateLayer && locateLayer.features.length > 0){
+            var feature = locateLayer.features[0];
+            feature.style.rotation = angle;
+            locateLayer.drawFeature(feature);
+        }
     },
 
     /**
@@ -760,6 +800,16 @@ var _base = {
      */
     stopLocationUpdate: function(){
         this.clearGeoLocateWatch();
+    },
+
+    /*
+     * Stop the compass
+     */
+    stopCompass: function(){
+        if(navigator.compass !== undefined){
+            navigator.compass.clearWatch(this.compassWatchID);
+            this.rotateLocationMarker(0);
+        }
     },
 
     /**
@@ -1060,7 +1110,7 @@ var _openlayers = {
         locateLayerStyle.graphicWidth = 20;
         locateLayerStyle.graphicHeight = 20;
         locateLayerStyle.graphicOpacity = 1;
-        locateLayerStyle.rotation = "${imageRotation}";
+        locateLayerStyle.rotation = 0;
         var locateLayer = new OpenLayers.Layer.Vector(
             USER_LOCATION,
             {
@@ -1602,6 +1652,7 @@ var _openlayers = {
         if(options.rotate){
             var heading = point.gpsPosition.heading || 0;
             feature.attributes.imageRotation = heading;
+            // TODO: currently using compass heading
         }
 
         var mapBounds = this.map.calculateBounds();
