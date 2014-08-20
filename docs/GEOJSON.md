@@ -82,11 +82,7 @@ In the future, we will need to support other geometries than points. Instead of 
 * <strong>Dichotomous Questions: </strong> There is a strong use case where we might have dichotomous questions which means that a record is connected to multiple forms.
     
     <strong>Solution</strong>:<br/>
-<<<<<<< HEAD
-    I changed the format of editor and fields. Check the proposed format and specifically check data inside the properties field.
-=======
     I changed the format of editor and fields. Check the proposed format and specifically check data inside the properties field. (To be revised, the format didn't change).
->>>>>>> d26a40ca20ced57eb51d8796832b929bf4c9c042
 
 #### Record Storage in App
 
