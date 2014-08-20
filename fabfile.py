@@ -876,6 +876,7 @@ def release_android(beta='True', overwrite='False', email=False):
     with lcd(runtime):
         bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
         apk_name = _config('package', section='app').replace('.', '')
+        proj_name = _config('name').replace(' ', '')
 
         # do the build
         if _str2bool(beta):

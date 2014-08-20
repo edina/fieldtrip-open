@@ -210,7 +210,9 @@ var _base = {
      * clear watch if already defined
      */
     clearGeoLocateWatch: function(){
-        navigator.geolocation.clearWatch(this.geoLocationWatchID);
+        if(this.geoLocationWatchID){
+            navigator.geolocation.clearWatch(this.geoLocationWatchID);
+        }
     },
 
     /**
@@ -508,6 +510,13 @@ var _base = {
     },
 
     /**
+     * @return Is the records layer visible
+     */
+    isRecordsLayerVisible: function(){
+        return this.isLayerVisible(this.getRecordsLayer());
+    },
+
+    /**
       * Start compass and use it to rotate the location marker
       */
     initCompass: function(){
@@ -532,13 +541,6 @@ var _base = {
                                                                  onError,
                                                                  options);
         }
-    },
-
-    /**
-     * @return Is the records layer visible
-     */
-    isRecordsLayerVisible: function(){
-        return this.isLayerVisible(this.getRecordsLayer());
     },
 
     /**
@@ -705,7 +707,7 @@ var _base = {
                 $('#map-record-popup h3').text(annotation.record.name);
                 $('#map-record-popup-text').text('');
 
-                $.each(annotation.record.fields, function(i, entry){
+                $.each(annotation.record.properties.fields, function(i, entry){
                     var html;
                     var type = records.typeFromId(entry.id);
 
@@ -1649,6 +1651,7 @@ var _openlayers = {
         // Rotate the feature
         if(options.rotate){
             var heading = point.gpsPosition.heading || 0;
+            feature.attributes.imageRotation = heading;
             // TODO: currently using compass heading
         }
 

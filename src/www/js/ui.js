@@ -450,7 +450,7 @@ var _ui = {
         };
         $('.non-map-body-white h2').text(this.currentAnnotation.record.name + ' Details');
 
-        $.each(this.currentAnnotation.record.fields, $.proxy(function(i, entry){
+        $.each(this.currentAnnotation.record.properties.fields, $.proxy(function(i, entry){
             if(records.typeFromId(entry.id) === 'image'){
                 $('#annotate-preview-detail-image').append(
                     '<img src="' + entry.val + '"></img>');

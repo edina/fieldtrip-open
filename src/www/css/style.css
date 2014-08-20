@@ -368,6 +368,10 @@ body .ui-loader-textonly{
     margin-left: -15px;
 }
 
+.menu .ui-btn.ui-btn-icon-top:after{
+    margin-left: -15px;
+}
+
 .menu .ui-btn.ui-btn-icon-top{
     padding-bottom: 2px;
     padding-top: 40px;
