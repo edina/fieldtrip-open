@@ -236,6 +236,20 @@ return {
     },
 
     /**
+     * @return if the compass should be enabled
+     */
+    getCompassEnableSetting: function(){
+        var enabled;
+        if(settings.get('compass-enabled') === 'on'){
+            enabled = true;
+        }
+        else{
+            enabled = false;
+        }
+        return enabled;
+    },
+
+    /**
      * @return The document base of the app.
      */
     getDocumentBase: function(){

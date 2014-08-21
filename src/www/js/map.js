@@ -517,6 +517,33 @@ var _base = {
     },
 
     /**
+      * Start compass and use it to rotate the location marker
+      */
+    initCompass: function(){
+        var self = this;
+        // If the compass is not explicitly enabled in settings don't use it
+        if(!utils.getCompassEnableSetting()){
+            return;
+        }
+
+        if(navigator.compass !== undefined){
+            var onSuccess = function(heading){
+                                console.debug(JSON.stringify(heading));
+                                self.rotateLocationMarker(heading.magneticHeading);
+                            };
+            var onError = function(error){
+                              console.debug('error: ' + error);
+                          };
+
+            var options = {frecuency: 500};
+
+            this.compassWatchID = navigator.compass.watchHeading(onSuccess,
+                                                                 onError,
+                                                                 options);
+        }
+    },
+
+    /**
      * @return Is the base layer Open Street Map?
      */
     isOSM: function(){
@@ -564,6 +591,19 @@ var _base = {
      */
     removeLayer: function(layer){
         this.map.removeLayer(layer);
+    },
+
+    /**
+     * Rotate the location market to given angle
+     * @param angle
+     */
+    rotateLocationMarker: function(angle){
+        var locateLayer = this.getLocateLayer();
+        if(locateLayer && locateLayer.features.length > 0){
+            var feature = locateLayer.features[0];
+            feature.style.rotation = angle;
+            locateLayer.drawFeature(feature);
+        }
     },
 
     /**
@@ -667,7 +707,7 @@ var _base = {
                 $('#map-record-popup h3').text(annotation.record.name);
                 $('#map-record-popup-text').text('');
 
-                $.each(annotation.record.fields, function(i, entry){
+                $.each(annotation.record.properties.fields, function(i, entry){
                     var html;
                     var type = records.typeFromId(entry.id);
 
@@ -708,7 +748,7 @@ var _base = {
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
-                if(record.point !== undefined){
+                if(record.geometry.coordinates !== undefined){
                     features.push(
                         this.createMarker(
                             {
@@ -725,8 +765,8 @@ var _base = {
             this.addMarkers(layer, features);
             if(annotation){
                 this.setCentre({
-                    lon: annotation.record.point.lon,
-                    lat: annotation.record.point.lat,
+                    lon: annotation.record.geometry.coordinates[0],
+                    lat: annotation.record.geometry.coordinates[1],
                     zoom: undefined,
                     external: false
                 });
@@ -760,6 +800,16 @@ var _base = {
      */
     stopLocationUpdate: function(){
         this.clearGeoLocateWatch();
+    },
+
+    /*
+     * Stop the compass
+     */
+    stopCompass: function(){
+        if(navigator.compass !== undefined){
+            navigator.compass.clearWatch(this.compassWatchID);
+            this.rotateLocationMarker(0);
+        }
     },
 
     /**
@@ -1060,7 +1110,7 @@ var _openlayers = {
         locateLayerStyle.graphicWidth = 20;
         locateLayerStyle.graphicHeight = 20;
         locateLayerStyle.graphicOpacity = 1;
-        locateLayerStyle.rotation = "${imageRotation}";
+        locateLayerStyle.rotation = 0;
         var locateLayer = new OpenLayers.Layer.Vector(
             USER_LOCATION,
             {
@@ -1273,8 +1323,8 @@ var _openlayers = {
         var annotation = options.annotation;
         return new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Point(
-                annotation.record.point.lon,
-                annotation.record.point.lat),
+                annotation.record.geometry.coordinates[0],
+                annotation.record.geometry.coordinates[1]),
             {
                 'id': options.id,
                 'type': records.getEditorId(annotation)
@@ -1417,11 +1467,8 @@ var _openlayers = {
      * @return A point object reprojected to external projection.
      */
     pointToExternal: function(point){
-        var lonLat = this.toExternal(new OpenLayers.LonLat(point.lon, point.lat));
-        return {
-            'lon': lonLat.lon,
-            'lat': lonLat.lat
-        };
+        var lonLat = this.toExternal(new OpenLayers.LonLat(point[0], point[1]));
+        return [ lonLat.lon, lonLat.lat ];
     },
 
     /**
@@ -1434,22 +1481,14 @@ var _openlayers = {
         var lonLat;
         if(typeof(point.longitude) === 'undefined'){
             lonLat = this.toInternal(
-                new OpenLayers.LonLat(point.lon, point.lat));
-            retValue = {
-                'lon': lonLat.lon,
-                'lat': lonLat.lat
-            };
+                new OpenLayers.LonLat(point[0], point[1]));
+            
         }
         else{
             lonLat = this.toInternal(
-                new OpenLayers.LonLat(point.longitude, point.latitude));
-            retValue = {
-                'longitude': lonLat.lon,
-                'latitude': lonLat.lat
-            };
+                new OpenLayers.LonLat(point[0], point[1]));
         }
-
-        return retValue;
+        return [lonLat.lon, lonLat.lat];
     },
 
     /**
@@ -1602,6 +1641,7 @@ var _openlayers = {
         if(options.rotate){
             var heading = point.gpsPosition.heading || 0;
             feature.attributes.imageRotation = heading;
+            // TODO: currently using compass heading
         }
 
         var mapBounds = this.map.calculateBounds();
