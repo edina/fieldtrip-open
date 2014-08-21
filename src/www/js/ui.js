@@ -610,6 +610,7 @@ var _ui = {
      */
     savedRecordsPage: function(event){
         var annotations = records.getSavedRecords();
+        //utils.printObj(annotations);
 
         /**
          * toggleDisplay
