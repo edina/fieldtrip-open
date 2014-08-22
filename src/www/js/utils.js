@@ -178,6 +178,14 @@ return {
     },
 
     /**
+     * Navigate to HTML page.
+     * @param page
+     */
+    changePage: function(page){
+        $('body').pagecontainer('change', page);
+    },
+
+    /**
      * Clone javascript object.
      * @param obj
      * @return copy of obj.
@@ -204,6 +212,13 @@ return {
             name: config.testclouduser,
             pass: config.testcloudpass
         };
+    },
+
+    /**
+     * @return The fieldtrip config object.
+     */
+    getConfig: function(){
+        return config;
     },
 
     /**
