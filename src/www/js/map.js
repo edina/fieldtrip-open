@@ -511,7 +511,6 @@ var _base = {
       * Start compass and use it to rotate the location marker
       */
     initCompass: function(){
-        var self = this;
         // If the compass is not explicitly enabled in settings don't use it
         if(!utils.getCompassEnableSetting()){
             return;
@@ -520,7 +519,7 @@ var _base = {
         if(navigator.compass !== undefined){
             var onSuccess = function(heading){
                                 console.debug(JSON.stringify(heading));
-                                self.rotateLocationMarker(heading.magneticHeading);
+                                _this.rotateLocationMarker(heading.magneticHeading);
                             };
             var onError = function(error){
                               console.debug('error: ' + error);
@@ -1645,6 +1644,7 @@ var _openlayers = {
         }
 
         var feature = annotationFeature[0];
+        layer.drawFeature(feature);
 
         // Rotate the feature
         if(options.rotate){
