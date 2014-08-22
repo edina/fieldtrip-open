@@ -36,7 +36,7 @@ DAMAGE.
 /**
  * Fieldtrip settings module.
  */
-define(['config'], function(config){
+define(function(){
     var vals;
 
     /**
