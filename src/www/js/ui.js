@@ -219,18 +219,9 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
                    '.map-zoom-button-out',
                    $.proxy(map.zoomOut, map));
 
-    $(document).on(
-        'vmousedown',
-        '.user-locate',
-        function(){
-            geoLocate({
-                watch: false,
-                secretly: false,
-                updateAnnotateLayer: false,
-                useDefault: false
-            });
-        }
-    );
+    $(document).on('tap',
+                   '.user-locate',
+                   $.proxy(map.panToLocationMarker, map));
 
     // only privileged user should see development section
     if(!utils.isPrivilegedUser()){
@@ -556,8 +547,8 @@ var _ui = {
             this.mapPageRecordsHidden();
         }
 
-        map.startLocationUpdate();
-        map.initCompass();
+        map.startLocationUpdate({autopan: 'soft'});
+        map.startCompass();
     },
 
     /**
