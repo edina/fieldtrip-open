@@ -1111,9 +1111,9 @@ var _openlayers = {
 
         // user location layer
         var locateLayerStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-        locateLayerStyle.externalGraphic = "css/images/user.png";
-        locateLayerStyle.graphicWidth = 20;
-        locateLayerStyle.graphicHeight = 20;
+        locateLayerStyle.externalGraphic = "css/images/user-location@2x.png";
+        locateLayerStyle.graphicWidth = 30;
+        locateLayerStyle.graphicHeight = 30;
         locateLayerStyle.graphicOpacity = 1;
         locateLayerStyle.rotation = 0;
         var locateLayer = new OpenLayers.Layer.Vector(
