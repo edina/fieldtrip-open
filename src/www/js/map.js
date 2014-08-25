@@ -778,6 +778,8 @@ var _base = {
      *                        'centre' pan the marker to the center of the screen
      */
     startLocationUpdate: function(options){
+        options = options || {};
+
         if(this.getLocateLayer()){
             var location = utils.getLocationSettings();
             this.stopLocationUpdate();
