@@ -518,12 +518,11 @@ var _base = {
 
         if(navigator.compass !== undefined){
             var onSuccess = function(heading){
-                                console.debug(JSON.stringify(heading));
-                                _this.rotateLocationMarker(heading.magneticHeading);
-                            };
+                _this.rotateLocationMarker(heading.magneticHeading);
+            };
             var onError = function(error){
-                              console.debug('error: ' + error);
-                          };
+                console.debug('error: ' + error);
+            };
 
             var options = {frecuency: 500};
 
@@ -661,7 +660,6 @@ var _base = {
         if(feature){
             var annotation = records.getSavedRecord(feature.attributes.id);
 
-            this.showRecordDetailPopup(annotation);
             // give plugins a change to process the click first
             var showDetails = true;
             if(this.recordClickListeners){
@@ -674,6 +672,7 @@ var _base = {
             }
 
             if(showDetails){
+                this.showRecordDetailPopup(annotation);
                 $('#map-record-popup').popup('open');
             }
         }
@@ -1180,7 +1179,9 @@ var _openlayers = {
                 strategies: [new OpenLayers.Strategy.Fixed()],
                 protocol: new OpenLayers.Protocol.HTTP({
                     url: options.url,
-                    format: new OpenLayers.Format.GPX()
+                    format: new OpenLayers.Format.GPX({
+                        internalProjection: this.internalProjection
+                    })
                 }),
                 style: {
                     strokeColor: options.style.colour,
