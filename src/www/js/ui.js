@@ -547,8 +547,8 @@ var _ui = {
             this.mapPageRecordsHidden();
         }
 
-        map.startLocationUpdate();
-        map.initCompass();
+        map.startLocationUpdate({autopan: 'soft'});
+        map.startCompass();
     },
 
     /**

@@ -401,7 +401,8 @@ var _base = {
             _this.onPositionSuccess(position, {
                 updateAnnotateLayer: options.updateAnnotateLayer,
                 hideLoadingDialog: true,
-                autocentre: options.autocentre
+                autocentre: options.autocentre,
+                autopan: options.autopan
             });
             $.mobile.loading('hide');
         }, this);
@@ -510,22 +511,16 @@ var _base = {
     /**
       * Start compass and use it to rotate the location marker
       */
-    initCompass: function(){
-        // If the compass is not explicitly enabled in settings don't use it
-        if(!utils.getCompassEnableSetting()){
-            return;
-        }
-
+    startCompass: function(){
         if(navigator.compass !== undefined){
             var onSuccess = function(heading){
-                                console.debug(JSON.stringify(heading));
                                 _this.rotateLocationMarker(heading.magneticHeading);
                             };
             var onError = function(error){
                               console.debug('error: ' + error);
                           };
 
-            var options = {frecuency: 500};
+            var options = {frecuency: 1000};
 
             this.compassWatchID = navigator.compass.watchHeading(onSuccess,
                                                                  onError,
@@ -561,7 +556,9 @@ var _base = {
         this.userLonLat.gpsPosition = position.coords;
 
         // update user position
-        this.updateLocateLayer({autocentre: options.autocentre});
+        this.updateLocateLayer({autocentre: options.autocentre,
+                                autopan: options.autopan
+                                });
 
         // if necessary update annotate pin
         if(options.updateAnnotateLayer){
@@ -775,20 +772,21 @@ var _base = {
 
     /**
      * Start to update the location
+     * @param options.autopan 'soft' keep the marker in a centered bounding box
+     *                        'centre' pan the marker to the center of the screen
      */
-    startLocationUpdate: function(){
+    startLocationUpdate: function(options){
         if(this.getLocateLayer()){
             var location = utils.getLocationSettings();
             this.stopLocationUpdate();
 
-            if(location.autoUpdate){
-                this.geoLocate({
-                    secretly: true,
-                    updateAnnotateLayer: false,
-                    useDefault: false,
-                    watch: true
-                });
-            }
+            this.geoLocate({
+                secretly: true,
+                updateAnnotateLayer: false,
+                useDefault: false,
+                watch: true,
+                autopan: options.autopan
+            });
         }
     },
 
@@ -893,7 +891,6 @@ var _base = {
             layer: this.getLocateLayer(),
             id: this.USER_POSITION_ATTR,
             zoom: zoom,
-            rotate: true,
             autocentre: options.autocentre,
             autopan: options.autopan
         });
@@ -1635,7 +1632,6 @@ var _openlayers = {
      *            'centre' pan the marker to the center of the screen
      */
     updateLayer: function(options){
-        console.debug(options);
         var id = options.id;
         var layer = options.layer;
         var annotationFeature = layer.getFeaturesByAttribute('id', id);
@@ -1666,7 +1662,7 @@ var _openlayers = {
         layer.drawFeature(feature);
 
         var mapBounds = this.map.calculateBounds();
-        var innerBounds = mapBounds.clone().scale(0.8);
+        var innerBounds = mapBounds.clone().scale(0.7);
         var featureBounds = feature.geometry.bounds;
 
         if(options.autopan === 'soft'){
