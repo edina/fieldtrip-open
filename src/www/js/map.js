@@ -556,9 +556,11 @@ var _base = {
         this.userLonLat.gpsPosition = position.coords;
 
         // update user position
-        this.updateLocateLayer({autocentre: options.autocentre,
-                                autopan: options.autopan
-                                });
+        this.updateLocateLayer({
+                                 autocentre: options.autocentre,
+                                 autopan: options.autopan,
+                                 zoom: false
+                               });
 
         // if necessary update annotate pin
         if(options.updateAnnotateLayer){
@@ -879,12 +881,18 @@ var _base = {
 
     /**
      * Update locate layer with users geo location.
+     * @param options.autocentre (true|false) Center the map after update
+     * @param options.autopan (soft|centre) Pan the map after update
+     * @param options.zoom (true|false) Zoom the map after update
      */
     updateLocateLayer: function(options){
+        var zoom;
         options = options || {};
-        var zoom = this.getZoom();
-        if(zoom < this.minLocateZoomTo){
-            zoom = this.POST_LOCATE_ZOOM_TO;
+        if(options.zoom){
+            zoom = this.getZoom();
+            if(zoom < this.minLocateZoomTo){
+                zoom = this.POST_LOCATE_ZOOM_TO;
+            }
         }
 
         this.updateLayer({
@@ -1461,13 +1469,17 @@ var _openlayers = {
      */
     panToLocationMarker: function(){
         var layer = this.getLocateLayer();
+        var updateOptions = {
+                              autocentre: true,
+                              zoom: true
+                            };
         if(layer.features && layer.features.length > 0){
-            this.updateLocateLayer({ autocentre: true });
+            this.updateLocateLayer(updateOptions);
         }else{
             this.getLocation(function(position){
                 _this.updateUserPosition(position.coords.longitude,
                                          position.coords.latitude);
-                _this.updateLocateLayer({ autocentre: true });
+                _this.updateLocateLayer(updateOptions);
             });
         }
     },
