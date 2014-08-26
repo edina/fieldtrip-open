@@ -43,6 +43,7 @@ import xml.etree.ElementTree as ET
 import ast
 import codecs
 import collections
+import datetime
 import itertools
 import json
 import os
@@ -941,6 +942,20 @@ def release_android(beta='True', overwrite='False', email=False):
         _email(file_prefix, version, beta)
 
 @task
+def usage_stats():
+    """
+    Print out some usage stats.
+    """
+    host = _config('prime_host', section='common')
+    if host:
+        env.hosts = [host]
+    else:
+        print 'No prime host defined.'
+        exit(0)
+    print env
+    execute('_app_start_stats')
+
+@task
 def release_ios():
     """
     Release ios version of fieldtrip app
@@ -983,6 +998,50 @@ def _add_permissions(platform):
     with open(manifest, 'w') as f:
         f.writelines(new_data)
         f.close()
+
+@task
+def _app_start_stats():
+    """
+    Print out android app start stats by version.
+    """
+    totals = {}
+    def fetch_month(version):
+        months = {}
+
+        for i in range(1, 9):
+            month = {}
+            logname = "access_log.2014-{0}*".format(str(i).zfill(2))
+            awk = "awk '{print $1}'"
+            cmd = 'find /var/log/httpd/ -name {0} | xargs grep "Android {1}" | grep splash | {2}'.format(logname, version, awk)
+            out = run(cmd)
+            lines = out.split('\n')
+            for l in lines:
+                if len(l) == 0:
+                    continue
+                ip = l.split(':')[1].replace('\r', '')
+
+                if ip in month:
+                    month[ip]['count'] = month[ip]['count'] + 1
+                else:
+                    month[ip] = {
+                        'number': len(lines),
+                        'count': 1
+                    }
+            months[i] = month
+        totals[version] = months
+
+    versions = ['2.3', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5']
+    for version in versions:
+        fetch_month(version)
+    for version, months in totals.iteritems():
+        print version,':'
+        print 'Month'.ljust(10), 'Unique'.ljust(10), 'Total'.ljust(10)
+        for i, month in months.iteritems():
+            tcount = 0
+            for ip, vals in month.iteritems():
+                tcount = tcount + vals['count']
+            print datetime.date(2014, i, 1).strftime('%B').ljust(10), str(len(month)).ljust(10), str(tcount).ljust(10)
+        print '\n'
 
 def _check_command(cmd):
     """
