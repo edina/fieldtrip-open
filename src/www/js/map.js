@@ -522,6 +522,7 @@ var _base = {
 
             var options = {frequency: 500};
 
+            this.stopCompass(this.compassWatchID);
             this.compassWatchID = navigator.compass.watchHeading(onSuccess,
                                                                  onError,
                                                                  options);

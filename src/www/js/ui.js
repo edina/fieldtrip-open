@@ -522,7 +522,7 @@ var _ui = {
         map.hideAnnotateLayer();
 
         // force redraw, specifically for closing of record details dialog
-        resizePage();
+        //resizePage();
     },
 
     /**
@@ -546,9 +546,6 @@ var _ui = {
         else{
             this.mapPageRecordsHidden();
         }
-
-        map.startLocationUpdate();
-        map.startCompass();
     },
 
     /**
@@ -583,6 +580,12 @@ var _ui = {
     mapPageRemove: function(){
         map.stopLocationUpdate();
         map.stopCompass();
+    },
+
+    mapPageShow: function(){
+        this.mapPage();
+        map.startLocationUpdate();
+        map.startCompass();
     },
 
     /**
