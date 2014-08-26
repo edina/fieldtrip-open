@@ -520,7 +520,7 @@ var _base = {
                 console.debug('error: ' + error);
             };
 
-            var options = {frecuency: 1000};
+            var options = {frequency: 500};
 
             this.compassWatchID = navigator.compass.watchHeading(onSuccess,
                                                                  onError,

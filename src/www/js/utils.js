@@ -508,8 +508,8 @@ return {
             $('body').pagecontainer('change', config.recordsClickMapPage);
         }
         else{
-            if(callback){
-                $(document).on('pageshow', '#map-page', callback);
+            if(typeof callback == 'function'){
+                $(document).one('_pageshow', '#map-page', callback);
             }
             $('body').pagecontainer('change', 'map.html');
         }
