@@ -878,11 +878,12 @@ def release_android(beta='True', overwrite='False', email=False):
         plugins = pjson["plugins"]
 
     with lcd(runtime):
-        bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
+        android_runtime = os.path.join(runtime, 'platforms', 'android')
 
         # do the build
         if _str2bool(beta):
             file_name = '{0}-debug.apk'.format(file_prefix)
+            apkfile = os.path.join(android_runtime, 'ant-build', file_name)
             local('cordova build android')
         else:
             # check plugin and project versions
@@ -904,11 +905,12 @@ def release_android(beta='True', overwrite='False', email=False):
                     exit(1)
 
             file_name = '{0}.apk'.format(file_prefix)
-            with lcd(os.sep.join((runtime, 'platforms', 'android'))):
+            bin_dir = os.path.join(android_runtime, 'bin')
+            apkfile = os.path.join(bin_dir, file_name)
+            with lcd(android_runtime):
                 local('ant clean release')
 
             # sign the application
-            #apk_name = _config('package', section='app').replace('.', '')
             unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(file_prefix)))
             signed_apkfile = os.sep.join((bin_dir, '{0}-release-signed.apk'.format(file_prefix)))
             local('cp {0} {1}'.format(unsigned_apkfile, signed_apkfile))
@@ -927,7 +929,6 @@ def release_android(beta='True', overwrite='False', email=False):
                 file_prefix))
 
             # align the apk file
-            apkfile = os.sep.join((bin_dir, file_name))
             local('zipalign -v 4 {0} {1}'.format(signed_apkfile, apkfile))
 
     # copy apk to servers, if defined
@@ -936,7 +937,7 @@ def release_android(beta='True', overwrite='False', email=False):
     if len(env.hosts) > 0:
         execute('_copy_apk_to_servers',
                 version,
-                file_name,
+                apkfile,
                 file_name,
                 _str2bool(overwrite))
 
@@ -1155,18 +1156,17 @@ def _config(key=None, section='install'):
         return None
 
 @task
-def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
+def _copy_apk_to_servers(version, apk, new_file_name, overwrite):
     """
     Copy APK file to servers
 
     version - app version
-    file_name - apk file name, as generated from build
+    apk - apk file, as generated from build
     new_file_name - the new, user friendly, name for the apk file
     overwrite - should current apk file be overwitten?
     """
 
     runtime = _get_runtime()[1];
-    apk = os.sep.join((runtime, 'platforms', 'android', 'ant-build', file_name))
 
     # copy to server
     target_dir = '{0}/{1}'.format(_config('dir', section='release'), version)
