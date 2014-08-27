@@ -39,6 +39,7 @@ brew install ant python node wget
 Install some libraries used for the deploy:
 
 ```
+sudo easy_install pip
 sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
 ```
 
