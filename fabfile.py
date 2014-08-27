@@ -173,6 +173,7 @@ def clean():
             print proj_repo
             delete_repo(os.sep.join((root, proj_repo)))
             local('rm project')
+        local('bower cache clean')
 
     plugins = os.sep.join((root, 'plugins'))
     if os.path.exists(plugins):
@@ -850,6 +851,8 @@ def release_android(beta='True', overwrite='False', email=False):
     email - send email to ftgb mailing list?
     """
 
+    _check_commands(['cordova', 'ant', 'zipalign'])
+
     root, proj_home, src_dir = _get_source()
     _check_config()
     runtime = _get_runtime()[1]
@@ -876,7 +879,6 @@ def release_android(beta='True', overwrite='False', email=False):
 
     with lcd(runtime):
         bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
-        apk_name = _config('package', section='app').replace('.', '')
 
         # do the build
         if _str2bool(beta):
@@ -889,8 +891,8 @@ def release_android(beta='True', overwrite='False', email=False):
                     versions['core'])
                 exit(1)
             if not _is_in_branch(proj_home, versions['project']):
-                print "To release the project must be tagged with release version. project: {0}".format(versions['project'])
-
+                print "To release the project must be tagged and checked out with release version. project: {0}".format(versions['project'])
+                exit(1)
             for cplug in plugins['cordova']:
                 if len(cplug.split('@')) != 2:
                     print "Must release with a versioned cordova plugin: {0}".format(cplug)
@@ -906,8 +908,9 @@ def release_android(beta='True', overwrite='False', email=False):
                 local('ant clean release')
 
             # sign the application
-            unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(apk_name)))
-            signed_apkfile = os.sep.join((bin_dir, '{0}-release-signed.apk'.format(apk_name)))
+            #apk_name = _config('package', section='app').replace('.', '')
+            unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(file_prefix)))
+            signed_apkfile = os.sep.join((bin_dir, '{0}-release-signed.apk'.format(file_prefix)))
             local('cp {0} {1}'.format(unsigned_apkfile, signed_apkfile))
             keystore = _config('keystore', section='release')
 
@@ -921,7 +924,7 @@ def release_android(beta='True', overwrite='False', email=False):
             local('jarsigner -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore {0} {1} {2}'.format(
                 keystore,
                 signed_apkfile,
-                _config('name')))
+                file_prefix))
 
             # align the apk file
             apkfile = os.sep.join((bin_dir, file_name))
