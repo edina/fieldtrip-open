@@ -1585,6 +1585,7 @@ var _openlayers = {
         var poi = options.poi;
 
         layer.removeAllFeatures();
+        layer.setVisibility(true);
         var geom = new OpenLayers.Bounds(bounds.left,
                                          bounds.bottom,
                                          bounds.right,
