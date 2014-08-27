@@ -35,6 +35,7 @@ DAMAGE.
 /* global Camera */
 
 define(['utils', 'file'], function(utils, file){
+    var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     var assetsDir;
     var editorsDir;
     var assetTypes = ['image', 'audio'];
@@ -764,7 +765,70 @@ var _ios = {
         var options = _base.getImageOptions(sourceType, encodingType);
         options.saveToPhotoAlbum = true;
         return options;
+    },
+    
+    /**
+     * Invoke the device's audio recorder
+     * ios version copys audio from tmp to permanent storage.
+     * @param callback Function executed after successful recording.
+     */
+     
+     takeAudio: function(callback){
+       
+        if (navigator.device !== undefined){
+            navigator.device.capture.captureAudio(
+                function(mediaFiles){
+                
+                
+                    var fileURI = mediaFiles[0].fullPath;
+                    
+                    //move the file from tmp to assets dir
+                    var copiedFile = function (fileEntry) {
+                        
+                        callback(DOCUMENTS_SCHEME_PREFIX + fileEntry.fullPath);
+                    };
+                    
+                    var gotFileEntry = function(fileEntry) {
+
+                        var gotAsserDir = function(assetDir){
+                            
+                            fileEntry.moveTo( assetDir, fileEntry.name ,copiedFile, captureError);
+                        };
+                        
+                        //move to assets
+                        gotAsserDir(_base.getAssetsDir());
+                        
+                    };
+                    
+                    var imgFileName = fileURI.substr(fileURI.lastIndexOf('/')+1);
+                    
+                    var findFileInTemp = function(fileSystem){
+                        var reader = fileSystem.root.createReader();
+                        reader.readEntries(function(entries) {
+
+                            var i;
+                            for (i = 0; i < entries.length; i++) {
+                        
+                                console.log(entries[i].name);
+                                if(entries[i].name === imgFileName){
+                                
+                                    gotFileEntry(entries[i]);
+                                }
+                            
+                            }
+                        });
+                    };
+                    
+                    
+                    window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, findFileInTemp, captureError);
+                
+                },
+                captureError,
+                {limit: 1}
+            );
+        }
     }
+    
 };
 
 if(utils.isIOSApp()){
