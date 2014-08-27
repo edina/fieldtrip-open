@@ -88,14 +88,14 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
         return changePageCheck(target, cb);
     };
 
-    var clickAndTest = function(options){
+    var triggerAndTest = function(eventName, options){
         var delay = 0; // delay before doing click
         if(typeof(options.delay) !== 'undefined'){
             delay = options.delay;
         }
 
         setTimeout(function(){
-            $(options.id).click();
+            $(options.id).trigger(eventName);
             intervalTest(options);
         }, delay);
     };
@@ -243,7 +243,10 @@ return {
         complete();
     },
     clickAndTest: function(options){
-        clickAndTest(options);
+        triggerAndTest('click', options);
+    },
+    tapAndTest: function(options){
+        triggerAndTest('tap', options);
     },
     changePageByFile: function(page, target, cb){
         changePageByFile(page, target, cb);
