@@ -210,7 +210,9 @@ var _base = {
      * clear watch if already defined
      */
     clearGeoLocateWatch: function(){
-        navigator.geolocation.clearWatch(this.geoLocationWatchID);
+        if(this.geoLocationWatchID){
+            navigator.geolocation.clearWatch(this.geoLocationWatchID);
+        }
     },
 
     /**
@@ -509,6 +511,13 @@ var _base = {
     },
 
     /**
+     * @return Is the records layer visible
+     */
+    isRecordsLayerVisible: function(){
+        return this.isLayerVisible(this.getRecordsLayer());
+    },
+
+    /**
       * Start compass and use it to rotate the location marker
       */
     startCompass: function(){
@@ -527,13 +536,6 @@ var _base = {
                                                                  onError,
                                                                  options);
         }
-    },
-
-    /**
-     * @return Is the records layer visible
-     */
-    isRecordsLayerVisible: function(){
-        return this.isLayerVisible(this.getRecordsLayer());
     },
 
     /**
@@ -704,7 +706,7 @@ var _base = {
                 $('#map-record-popup h3').text(annotation.record.name);
                 $('#map-record-popup-text').text('');
 
-                $.each(annotation.record.fields, function(i, entry){
+                $.each(annotation.record.properties.fields, function(i, entry){
                     var html;
                     var type = records.typeFromId(entry.id);
 
@@ -745,7 +747,7 @@ var _base = {
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
                 var record = annotation.record;
-                if(record.point !== undefined){
+                if(record.geometry.coordinates !== undefined){
                     features.push(
                         this.createMarker(
                             {
@@ -762,8 +764,8 @@ var _base = {
             this.addMarkers(layer, features);
             if(annotation){
                 this.setCentre({
-                    lon: annotation.record.point.lon,
-                    lat: annotation.record.point.lat,
+                    lon: annotation.record.geometry.coordinates[0],
+                    lat: annotation.record.geometry.coordinates[1],
                     zoom: undefined,
                     external: false
                 });
@@ -1331,8 +1333,8 @@ var _openlayers = {
         var annotation = options.annotation;
         return new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Point(
-                annotation.record.point.lon,
-                annotation.record.point.lat),
+                annotation.record.geometry.coordinates[0],
+                annotation.record.geometry.coordinates[1]),
             {
                 'id': options.id,
                 'type': records.getEditorId(annotation)
@@ -1495,11 +1497,8 @@ var _openlayers = {
      * @return A point object reprojected to external projection.
      */
     pointToExternal: function(point){
-        var lonLat = this.toExternal(new OpenLayers.LonLat(point.lon, point.lat));
-        return {
-            'lon': lonLat.lon,
-            'lat': lonLat.lat
-        };
+        var lonLat = this.toExternal(new OpenLayers.LonLat(point[0], point[1]));
+        return [ lonLat.lon, lonLat.lat ];
     },
 
     /**
@@ -1512,22 +1511,14 @@ var _openlayers = {
         var lonLat;
         if(typeof(point.longitude) === 'undefined'){
             lonLat = this.toInternal(
-                new OpenLayers.LonLat(point.lon, point.lat));
-            retValue = {
-                'lon': lonLat.lon,
-                'lat': lonLat.lat
-            };
+                new OpenLayers.LonLat(point[0], point[1]));
+            
         }
         else{
             lonLat = this.toInternal(
-                new OpenLayers.LonLat(point.longitude, point.latitude));
-            retValue = {
-                'longitude': lonLat.lon,
-                'latitude': lonLat.lat
-            };
+                new OpenLayers.LonLat(point[0], point[1]));
         }
-
-        return retValue;
+        return [lonLat.lon, lonLat.lat];
     },
 
     /**

@@ -104,6 +104,7 @@ define(function(){
                 if(typeof(entry) !== 'undefined'){
                     if(entry.type === 'select'){
                         utils.selectVal(id, vals[name].val);
+                        console.debug(id);
                     }
                     else if(entry.type === 'flipswitch'){
                         utils.flipswitchVal(id, vals[name].val);

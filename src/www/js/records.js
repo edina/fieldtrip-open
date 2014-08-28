@@ -300,7 +300,7 @@ var _base = {
     getAnnotationDetails: function(name) {
         var details;
         $.each(this.getSavedRecords(), function(i, annotation){
-            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
+            if(annotation.record.properties.name.toLowerCase() === name.toLowerCase() &&
                annotation.isSynced){
                 details = {
                     'id': i,
@@ -322,7 +322,7 @@ var _base = {
         var id;
         $.each(this.getSavedRecords(), function(i, annotation){
             // note: dropbox is case insensitive so we should be also
-            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
+            if(annotation.record.properties.name.toLowerCase() === name.toLowerCase() &&
                annotation.isSynced){
                 id = i;
                 return false; // breaks loop!
@@ -380,7 +380,7 @@ var _base = {
      */
     getEditorId: function(annotation){
         var record = annotation.record;
-        return record.editor.substr(0, record.editor.indexOf('.'));
+        return record.properties.editor.substr(0, record.properties.editor.indexOf('.'));
     },
 
     /**
@@ -532,8 +532,15 @@ var _base = {
         var valid = true;
         var annotation = {
             "record": {
-                'editor': recordType + '.edtr',
-                'fields': []
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": []
+                },
+                "properties": {
+                    "editor": recordType + ".edtr",
+                    "fields": []
+                }
             },
             "type": recordType,
             "isSynced": false
@@ -615,8 +622,6 @@ var _base = {
                 control = $(entry).find('input');
                 record.val = $(entry).find('.annotate-image img').attr('src');
                 doLabel($(entry).find('input').attr('id'));
-
-
             }
             else if(type === 'audio'){
                 control = $(entry).find('input[capture=microphone]');
@@ -646,7 +651,7 @@ var _base = {
             }
 
             if(typeof(record.val) !== 'undefined' && record.val.length > 0){
-                annotation.record.fields.push(record);
+                annotation.record.properties.fields.push(record);
             }
         }, this));
 
@@ -677,7 +682,7 @@ var _base = {
 
         if(id === undefined){
             var date = new Date();
-            annotation.record.timestamp = date;
+            annotation.record.properties.timestamp = date;
             id = date.getTime().toString();
         }
 
@@ -691,13 +696,13 @@ var _base = {
      * Save annotation with the coords currently selected.
      */
     saveAnnotationWithCoords: function(annotation, coords){
-        annotation.record.point = {
-            'lon': coords.lon,
-            'lat': coords.lat
-        };
+        annotation.record.geometry.coordinates = [
+            coords.lon,
+            coords.lat
+        ];
 
         if(typeof(coords.gpsPosition) !== 'undefined'){
-            annotation.record.point.alt = coords.gpsPosition.altitude;
+            annotation.record.geometry.coordinates[2] = coords.gpsPosition.altitude;
         }
 
         this.saveAnnotation(undefined, annotation);
