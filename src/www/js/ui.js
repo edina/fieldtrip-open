@@ -219,18 +219,9 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
                    '.map-zoom-button-out',
                    $.proxy(map.zoomOut, map));
 
-    $(document).on(
-        'vmousedown',
-        '.user-locate',
-        function(){
-            geoLocate({
-                watch: false,
-                secretly: false,
-                updateAnnotateLayer: false,
-                useDefault: false
-            });
-        }
-    );
+    $(document).on('tap',
+                   '.user-locate',
+                   $.proxy(map.panToLocationMarker, map));
 
     // only privileged user should see development section
     if(!utils.isPrivilegedUser()){
@@ -531,7 +522,7 @@ var _ui = {
         map.hideAnnotateLayer();
 
         // force redraw, specifically for closing of record details dialog
-        resizePage();
+        //resizePage();
     },
 
     /**
@@ -555,9 +546,6 @@ var _ui = {
         else{
             this.mapPageRecordsHidden();
         }
-
-        map.startLocationUpdate();
-        map.initCompass();
     },
 
     /**
@@ -594,6 +582,12 @@ var _ui = {
         map.stopCompass();
     },
 
+    mapPageShow: function(){
+        this.mapPage();
+        map.startLocationUpdate();
+        map.startCompass();
+    },
+
     /**
      * Function is called each time a page changes.
      */
@@ -610,6 +604,7 @@ var _ui = {
      */
     savedRecordsPage: function(event){
         var annotations = records.getSavedRecords();
+        //utils.printObj(annotations);
 
         /**
          * toggleDisplay

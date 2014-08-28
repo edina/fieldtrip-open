@@ -43,6 +43,7 @@ import xml.etree.ElementTree as ET
 import ast
 import codecs
 import collections
+import datetime
 import itertools
 import json
 import os
@@ -172,6 +173,7 @@ def clean():
             print proj_repo
             delete_repo(os.sep.join((root, proj_repo)))
             local('rm project')
+        local('bower cache clean')
 
     plugins = os.sep.join((root, 'plugins'))
     if os.path.exists(plugins):
@@ -849,6 +851,8 @@ def release_android(beta='True', overwrite='False', email=False):
     email - send email to ftgb mailing list?
     """
 
+    _check_commands(['cordova', 'ant', 'zipalign'])
+
     root, proj_home, src_dir = _get_source()
     _check_config()
     runtime = _get_runtime()[1]
@@ -874,13 +878,12 @@ def release_android(beta='True', overwrite='False', email=False):
         plugins = pjson["plugins"]
 
     with lcd(runtime):
-        bin_dir = os.sep.join((runtime, 'platforms', 'android', 'bin'))
-        apk_name = _config('package', section='app').replace('.', '')
-        proj_name = _config('name').replace(' ', '')
+        android_runtime = os.path.join(runtime, 'platforms', 'android')
 
         # do the build
         if _str2bool(beta):
             file_name = '{0}-debug.apk'.format(file_prefix)
+            apkfile = os.path.join(android_runtime, 'ant-build', file_name)
             local('cordova build android')
         else:
             # check plugin and project versions
@@ -889,8 +892,8 @@ def release_android(beta='True', overwrite='False', email=False):
                     versions['core'])
                 exit(1)
             if not _is_in_branch(proj_home, versions['project']):
-                print "To release the project must be tagged with release version. project: {0}".format(versions['project'])
-
+                print "To release the project must be tagged and checked out with release version. project: {0}".format(versions['project'])
+                exit(1)
             for cplug in plugins['cordova']:
                 if len(cplug.split('@')) != 2:
                     print "Must release with a versioned cordova plugin: {0}".format(cplug)
@@ -902,12 +905,14 @@ def release_android(beta='True', overwrite='False', email=False):
                     exit(1)
 
             file_name = '{0}.apk'.format(file_prefix)
-            with lcd(os.sep.join((runtime, 'platforms', 'android'))):
+            bin_dir = os.path.join(android_runtime, 'bin')
+            apkfile = os.path.join(bin_dir, file_name)
+            with lcd(android_runtime):
                 local('ant clean release')
 
             # sign the application
-            unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(apk_name)))
-            signed_apkfile = os.sep.join((bin_dir, '{0}-release-signed.apk'.format(apk_name)))
+            unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(file_prefix)))
+            signed_apkfile = os.sep.join((bin_dir, '{0}-release-signed.apk'.format(file_prefix)))
             local('cp {0} {1}'.format(unsigned_apkfile, signed_apkfile))
             keystore = _config('keystore', section='release')
 
@@ -921,10 +926,9 @@ def release_android(beta='True', overwrite='False', email=False):
             local('jarsigner -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore {0} {1} {2}'.format(
                 keystore,
                 signed_apkfile,
-                _config('name')))
+                file_prefix))
 
             # align the apk file
-            apkfile = os.sep.join((bin_dir, file_name))
             local('zipalign -v 4 {0} {1}'.format(signed_apkfile, apkfile))
 
     # copy apk to servers, if defined
@@ -933,13 +937,27 @@ def release_android(beta='True', overwrite='False', email=False):
     if len(env.hosts) > 0:
         execute('_copy_apk_to_servers',
                 version,
-                file_name,
+                apkfile,
                 file_name,
                 _str2bool(overwrite))
 
     # inform of release
     if email:
         _email(file_prefix, version, beta)
+
+@task
+def usage_stats():
+    """
+    Print out some usage stats.
+    """
+    host = _config('prime_host', section='common')
+    if host:
+        env.hosts = [host]
+    else:
+        print 'No prime host defined.'
+        exit(0)
+    print env
+    execute('_app_start_stats')
 
 @task
 def release_ios():
@@ -984,6 +1002,50 @@ def _add_permissions(platform):
     with open(manifest, 'w') as f:
         f.writelines(new_data)
         f.close()
+
+@task
+def _app_start_stats():
+    """
+    Print out android app start stats by version.
+    """
+    totals = {}
+    def fetch_month(version):
+        months = {}
+
+        for i in range(1, 9):
+            month = {}
+            logname = "access_log.2014-{0}*".format(str(i).zfill(2))
+            awk = "awk '{print $1}'"
+            cmd = 'find /var/log/httpd/ -name {0} | xargs grep "Android {1}" | grep splash | {2}'.format(logname, version, awk)
+            out = run(cmd)
+            lines = out.split('\n')
+            for l in lines:
+                if len(l) == 0:
+                    continue
+                ip = l.split(':')[1].replace('\r', '')
+
+                if ip in month:
+                    month[ip]['count'] = month[ip]['count'] + 1
+                else:
+                    month[ip] = {
+                        'number': len(lines),
+                        'count': 1
+                    }
+            months[i] = month
+        totals[version] = months
+
+    versions = ['2.3', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5']
+    for version in versions:
+        fetch_month(version)
+    for version, months in totals.iteritems():
+        print version,':'
+        print 'Month'.ljust(10), 'Unique'.ljust(10), 'Total'.ljust(10)
+        for i, month in months.iteritems():
+            tcount = 0
+            for ip, vals in month.iteritems():
+                tcount = tcount + vals['count']
+            print datetime.date(2014, i, 1).strftime('%B').ljust(10), str(len(month)).ljust(10), str(tcount).ljust(10)
+        print '\n'
 
 def _check_command(cmd):
     """
@@ -1094,18 +1156,17 @@ def _config(key=None, section='install'):
         return None
 
 @task
-def _copy_apk_to_servers(version, file_name, new_file_name, overwrite):
+def _copy_apk_to_servers(version, apk, new_file_name, overwrite):
     """
     Copy APK file to servers
 
     version - app version
-    file_name - apk file name, as generated from build
+    apk - apk file, as generated from build
     new_file_name - the new, user friendly, name for the apk file
     overwrite - should current apk file be overwitten?
     """
 
     runtime = _get_runtime()[1];
-    apk = os.sep.join((runtime, 'platforms', 'android', 'ant-build', file_name))
 
     # copy to server
     target_dir = '{0}/{1}'.format(_config('dir', section='release'), version)

@@ -121,7 +121,7 @@ function onDeviceReady(){
 
         var onShows = {
             'home-page': ui.homePage,
-            'map-page': ui.mapPage,
+            'map-page': ui.mapPageShow,
             'capture-page': ui.capturePage,
             'annotate-page': ui.annotatePage,
             'annotate-preview-page': ui.annotatePreviewPage,

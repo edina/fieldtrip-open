@@ -403,7 +403,8 @@ var _base = {
             _this.onPositionSuccess(position, {
                 updateAnnotateLayer: options.updateAnnotateLayer,
                 hideLoadingDialog: true,
-                autocentre: options.autocentre
+                autocentre: options.autocentre,
+                autopan: options.autopan
             });
             $.mobile.loading('hide');
         }, this);
@@ -519,24 +520,18 @@ var _base = {
     /**
       * Start compass and use it to rotate the location marker
       */
-    initCompass: function(){
-        var self = this;
-        // If the compass is not explicitly enabled in settings don't use it
-        if(!utils.getCompassEnableSetting()){
-            return;
-        }
-
+    startCompass: function(){
         if(navigator.compass !== undefined){
             var onSuccess = function(heading){
-                                console.debug(JSON.stringify(heading));
-                                self.rotateLocationMarker(heading.magneticHeading);
-                            };
+                _this.rotateLocationMarker(heading.magneticHeading);
+            };
             var onError = function(error){
-                              console.debug('error: ' + error);
-                          };
+                console.debug('error: ' + error);
+            };
 
-            var options = {frecuency: 500};
+            var options = {frequency: 500};
 
+            this.stopCompass(this.compassWatchID);
             this.compassWatchID = navigator.compass.watchHeading(onSuccess,
                                                                  onError,
                                                                  options);
@@ -564,7 +559,11 @@ var _base = {
         this.userLonLat.gpsPosition = position.coords;
 
         // update user position
-        this.updateLocateLayer({autocentre: options.autocentre});
+        this.updateLocateLayer({
+                                 autocentre: options.autocentre,
+                                 autopan: options.autopan,
+                                 zoom: false
+                               });
 
         // if necessary update annotate pin
         if(options.updateAnnotateLayer){
@@ -664,7 +663,6 @@ var _base = {
         if(feature){
             var annotation = records.getSavedRecord(feature.attributes.id);
 
-            this.showRecordDetailPopup(annotation);
             // give plugins a change to process the click first
             var showDetails = true;
             if(this.recordClickListeners){
@@ -677,6 +675,7 @@ var _base = {
             }
 
             if(showDetails){
+                this.showRecordDetailPopup(annotation);
                 $('#map-record-popup').popup('open');
             }
         }
@@ -778,20 +777,23 @@ var _base = {
 
     /**
      * Start to update the location
+     * @param options.autopan 'soft' keep the marker in a centered bounding box
+     *                        'centre' pan the marker to the center of the screen
      */
-    startLocationUpdate: function(){
+    startLocationUpdate: function(options){
+        options = options || {};
+
         if(this.getLocateLayer()){
             var location = utils.getLocationSettings();
             this.stopLocationUpdate();
 
-            if(location.autoUpdate){
-                this.geoLocate({
-                    secretly: true,
-                    updateAnnotateLayer: false,
-                    useDefault: false,
-                    watch: true
-                });
-            }
+            this.geoLocate({
+                secretly: true,
+                updateAnnotateLayer: false,
+                useDefault: false,
+                watch: true,
+                autopan: options.autopan
+            });
         }
     },
 
@@ -884,20 +886,26 @@ var _base = {
 
     /**
      * Update locate layer with users geo location.
+     * @param options.autocentre (true|false) Center the map after update
+     * @param options.autopan (soft|centre) Pan the map after update
+     * @param options.zoom (true|false) Zoom the map after update
      */
     updateLocateLayer: function(options){
+        var zoom;
         options = options || {};
-        var zoom = this.getZoom();
-        if(zoom < this.minLocateZoomTo){
-            zoom = this.POST_LOCATE_ZOOM_TO;
+        if(options.zoom){
+            zoom = this.getZoom();
+            if(zoom < this.minLocateZoomTo){
+                zoom = this.POST_LOCATE_ZOOM_TO;
+            }
         }
 
         this.updateLayer({
             layer: this.getLocateLayer(),
             id: this.USER_POSITION_ATTR,
             zoom: zoom,
-            rotate: true,
-            autocentre: options.autocentre
+            autocentre: options.autocentre,
+            autopan: options.autopan
         });
     },
 
@@ -1106,9 +1114,9 @@ var _openlayers = {
 
         // user location layer
         var locateLayerStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-        locateLayerStyle.externalGraphic = "css/images/user.png";
-        locateLayerStyle.graphicWidth = 20;
-        locateLayerStyle.graphicHeight = 20;
+        locateLayerStyle.externalGraphic = "css/images/user-location@2x.png";
+        locateLayerStyle.graphicWidth = 30;
+        locateLayerStyle.graphicHeight = 30;
         locateLayerStyle.graphicOpacity = 1;
         locateLayerStyle.rotation = 0;
         var locateLayer = new OpenLayers.Layer.Vector(
@@ -1183,7 +1191,9 @@ var _openlayers = {
                 strategies: [new OpenLayers.Strategy.Fixed()],
                 protocol: new OpenLayers.Protocol.HTTP({
                     url: options.url,
-                    format: new OpenLayers.Format.GPX()
+                    format: new OpenLayers.Format.GPX({
+                        internalProjection: this.internalProjection
+                    })
                 }),
                 style: {
                     strokeColor: options.style.colour,
@@ -1462,6 +1472,26 @@ var _openlayers = {
     },
 
     /**
+     * Pan the map to the location marker if none get a location
+     */
+    panToLocationMarker: function(){
+        var layer = this.getLocateLayer();
+        var updateOptions = {
+                              autocentre: true,
+                              zoom: true
+                            };
+        if(layer.features && layer.features.length > 0){
+            this.updateLocateLayer(updateOptions);
+        }else{
+            this.getLocation(function(position){
+                _this.updateUserPosition(position.coords.longitude,
+                                         position.coords.latitude);
+                _this.updateLocateLayer(updateOptions);
+            });
+        }
+    },
+
+    /**
      * Covert a point object to external projection.
      * @param point A point object with internal projection.
      * @return A point object reprojected to external projection.
@@ -1546,6 +1576,7 @@ var _openlayers = {
         var poi = options.poi;
 
         layer.removeAllFeatures();
+        layer.setVisibility(true);
         var geom = new OpenLayers.Bounds(bounds.left,
                                          bounds.bottom,
                                          bounds.right,
@@ -1605,8 +1636,9 @@ var _openlayers = {
      *   id: The id of the user icon feature.
      *   zoom: The map zoom level to zoom to.
      *   lonLat: The current location of the user.
-     *   rotate: True or False if the marker should be rotated with the heading direction
      *   autocentre: True or False if we want to centre the map after updating the location, false by default
+     *   autopan: 'soft' keep the marker in a centered bounding box
+     *            'centre' pan the marker to the center of the screen
      */
     updateLayer: function(options){
         var id = options.id;
@@ -1636,19 +1668,13 @@ var _openlayers = {
         }
 
         var feature = annotationFeature[0];
-
-        // Rotate the feature
-        if(options.rotate){
-            var heading = point.gpsPosition.heading || 0;
-            feature.attributes.imageRotation = heading;
-            // TODO: currently using compass heading
-        }
+        layer.drawFeature(feature);
 
         var mapBounds = this.map.calculateBounds();
-        var innerBounds = mapBounds.clone().scale(0.8);
+        var innerBounds = mapBounds.clone().scale(0.7);
         var featureBounds = feature.geometry.bounds;
 
-        if(options.autopan === true){
+        if(options.autopan === 'soft'){
             // If is not in the viewport center the map
             if(!mapBounds.containsBounds(featureBounds)){
                 this.map.setCenter(lonLat, options.zoom);
@@ -1665,6 +1691,8 @@ var _openlayers = {
                     this.map.panTo(new OpenLayers.LonLat(center.lon, center.lat));
                 }
             }
+        }else if(options.autopan === 'centre'){
+            this.map.panTo(lonLat, options.zoom);
         }
         else{
             if(options.autocentre === true){

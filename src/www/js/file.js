@@ -37,7 +37,7 @@ DAMAGE.
 
 /* global FileError, FileTransferError */
 
-define(['utils', 'config'], function(utils, config){
+define(['utils'], function(utils){
 
     /**
      * Get application root directory.
@@ -192,7 +192,7 @@ var _base =  {
      * @return The full path of the directory.
      */
     getFilePath: function(dir){
-        if(config.noCdvFileProtocol){
+        if(utils.getNoCdvFileProtocol()){
             return dir.toNativeURL();
         }
         else {
@@ -259,7 +259,7 @@ var _base =  {
     },
 
     /**
-    
+
      * @param error The error obj.
      * @return File error message as a string.
      */
@@ -355,7 +355,7 @@ var _android = {
      * when the app is uninstalled.
      */
     getRootDir: function(){
-        return "Android/data/" + config.package;
+        return "Android/data/" + utils.getPackage();
     }
 };
 

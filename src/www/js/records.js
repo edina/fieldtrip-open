@@ -35,8 +35,10 @@ DAMAGE.
 /* global Camera */
 
 define(['utils', 'file'], function(utils, file){
+    var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     var assetsDir;
     var editorsDir;
+    var assetTypes = ['image', 'audio'];
 
     if(utils.isMobileDevice()){
         // create directory structure for annotations
@@ -92,6 +94,11 @@ var _base = {
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
     IMAGE_SIZE_FULL: "imageSizeFull",
     TITLE_ID: 'form-text-1',
+
+    /**
+     * Hide records on map event name.
+     */
+    EVT_DELETE_ANNOTATION: 'evt-delete-annotation',
 
     /**
      * Initialise annotate page.
@@ -163,6 +170,14 @@ var _base = {
     },
 
     /**
+     * Add a new asset type. This allows plugins to define new types of assets.
+     * @param type Asset type.
+     */
+    addAssetType: function(type){
+        assetTypes.push(type);
+    },
+
+    /**
      * Annotate a record.
      * @param type The type of record to annotate.
      */
@@ -220,18 +235,13 @@ var _base = {
         var annotation = annotations[id];
 
         if(annotation !== undefined){
-            // TODO: what about assets?
-            // TODO what does core know about track?
-            if(typeof(annotation.type) !== 'undefined' && annotation.type === 'track'){
-                if(typeof(annotation.file) !== 'undefined'){
-                    file.deleteFile(
-                        annotation.file.substr(annotation.file.lastIndexOf('/') + 1),
-                        assetsDir,
-                        function(){
-                            console.debug("GPX file deleted: " + annotation.file);
-                        });
-                }
-            }
+            // fire delete record event, this allows plugins to clean up
+            $.event.trigger(
+                {
+                    type: this.EVT_DELETE_ANNOTATION,
+                },
+                utils.clone(annotation)
+            );
 
             // remove annotation from hash
             delete annotations[id];
@@ -339,7 +349,6 @@ var _base = {
 
         function success(entries) {
             $.each(entries, function(i, entry){
-                //utils.printObj(entry);
                 editors.push(entry);
             });
 
@@ -501,15 +510,14 @@ var _base = {
      * @param field Annotation record field.
      * @param type Optional record type. If undefined it will be determined by the id.
      */
-    isAsset: function(field, type) {
+    isAsset: function(field, type){
         var isAsset = false;
 
         if(type === undefined){
             type = this.typeFromId(field.id);
         }
 
-        // TODO: track is a plugin
-        if(type === 'image' || type === 'audio' || type === 'track'){
+        if($.inArray(type, assetTypes) != -1){
             isAsset = true;
         }
 
@@ -762,6 +770,67 @@ var _ios = {
         var options = _base.getImageOptions(sourceType, encodingType);
         options.saveToPhotoAlbum = true;
         return options;
+    },
+
+    /**
+     * Invoke the device's audio recorder
+     * ios version copys audio from tmp to permanent storage.
+     * @param callback Function executed after successful recording.
+     */
+     takeAudio: function(callback){
+
+        if (navigator.device !== undefined){
+            navigator.device.capture.captureAudio(
+                function(mediaFiles){
+
+
+                    var fileURI = mediaFiles[0].fullPath;
+
+                    //move the file from tmp to assets dir
+                    var copiedFile = function (fileEntry) {
+
+                        callback(DOCUMENTS_SCHEME_PREFIX + fileEntry.fullPath);
+                    };
+
+                    var gotFileEntry = function(fileEntry) {
+
+                        var gotAsserDir = function(assetDir){
+
+                            fileEntry.moveTo( assetDir, fileEntry.name ,copiedFile, captureError);
+                        };
+
+                        //move to assets
+                        gotAsserDir(_base.getAssetsDir());
+
+                    };
+
+                    var imgFileName = fileURI.substr(fileURI.lastIndexOf('/')+1);
+
+                    var findFileInTemp = function(fileSystem){
+                        var reader = fileSystem.root.createReader();
+                        reader.readEntries(function(entries) {
+
+                            var i;
+                            for (i = 0; i < entries.length; i++) {
+
+                                console.log(entries[i].name);
+                                if(entries[i].name === imgFileName){
+
+                                    gotFileEntry(entries[i]);
+                                }
+
+                            }
+                        });
+                    };
+
+
+                    window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, findFileInTemp, captureError);
+
+                },
+                captureError,
+                {limit: 1}
+            );
+        }
     }
 };
 

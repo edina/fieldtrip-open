@@ -178,6 +178,14 @@ return {
     },
 
     /**
+     * Navigate to HTML page.
+     * @param page
+     */
+    changePage: function(page){
+        $('body').pagecontainer('change', page);
+    },
+
+    /**
      * Clone javascript object.
      * @param obj
      * @return copy of obj.
@@ -204,6 +212,13 @@ return {
             name: config.testclouduser,
             pass: config.testcloudpass
         };
+    },
+
+    /**
+     * @return The fieldtrip config object.
+     */
+    getConfig: function(){
+        return config;
     },
 
     /**
@@ -355,6 +370,20 @@ return {
     },
 
     /**
+     * @return A location object with the autoUpdate and interval from the settings
+     */
+    getLocationSettings: function(){
+        var location = {};
+        if(settings.get('location-autoupdate') === 'on'){
+            location.autoUpdate = true;
+        }
+        else{
+            location.autoUpdate = false;
+        }
+        return location;
+    },
+
+    /**
      * @param cache Is this a map cache request?
      * @return Standard parameters to map cache.
      */
@@ -410,17 +439,32 @@ return {
     },
 
     /**
-     * @return A location object with the autoUpdate and interval from the settings
+     * @return True if the cdvfile protocol should not be used.
      */
-    getLocationSettings: function(){
-        var location = {};
-        if(settings.get('location-autoupdate') === 'on'){
-            location.autoUpdate = true;
-        }
-        else{
-            location.autoUpdate = false;
-        }
-        return location;
+    getNoCdvFileProtocol: function(){
+        return config.noCdvFileProtocol;
+    },
+
+    /**
+     * @return The android/java package name.
+     */
+    getPackage: function(){
+        return config.package;
+    },
+
+
+    /**
+     * @return pcapi providers.
+     */
+    getPCAPIProviders: function(){
+        return config.pcapiproviders;
+    },
+
+    /**
+     * @return URL of the pcapi.
+     */
+    getPCAPIURL: function(){
+        return config.pcapiurl;
     },
 
     /**
@@ -464,8 +508,8 @@ return {
             $('body').pagecontainer('change', config.recordsClickMapPage);
         }
         else{
-            if(callback){
-                $(document).on('pageshow', '#map-page', callback);
+            if(typeof callback == 'function'){
+                $(document).one('_pageshow', '#map-page', callback);
             }
             $('body').pagecontainer('change', 'map.html');
         }
