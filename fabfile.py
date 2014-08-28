@@ -615,7 +615,14 @@ def install_plugins(target='local', cordova="True"):
                 src = os.sep.join((proot, plugin))
                 if not os.path.isdir(src):
                     with lcd(proot):
-                        local('git clone {0} {1}'.format(details, plugin))
+                        if '#' in details:
+                            # a branch is defined clone as single branch
+                            repo = details.split('#')
+                            local('git clone -b {0} --single-branch {1} {2}'.format(
+                                repo[1], repo[0], plugin))
+                        else:
+                            # clone whole repo
+                            local('git clone {0} {1}'.format(details, plugin))
                         with lcd(plugin):
                             local('ln -s {0} {1}'.format(
                                 os.path.join(root, 'scripts', 'pre-commit.sh'),
