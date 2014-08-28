@@ -205,6 +205,16 @@ return {
     },
 
     /**
+     * Helper function that sets the value of a JQM slider on/off element.
+     * @param selector Jquery selector.
+     * @param value 'on' or 'off'.
+     */
+    flipswitchVal: function(selector, value){
+        $(selector).val(value);
+        $(selector).flipswitch('refresh');
+    },
+
+    /**
      * @return The username and password of cloud test user.
      */
     getCloudTestUser: function(){
@@ -694,16 +704,6 @@ return {
         else{
             return false;
         }
-    },
-
-    /**
-     * Helper function that sets the value of a JQM slider on/off element.
-     * @param selector Jquery selector.
-     * @param value 'on' or 'off'.
-     */
-    flipswitchVal: function(selector, value){
-        $(selector).val(value);
-        $(selector).flipswitch('refresh');
     },
 
     /**

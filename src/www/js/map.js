@@ -318,13 +318,6 @@ var _base = {
     },
 
     /**
-     * @return Base stack type.
-     */
-    getStackType: function(){
-        return this.getTileMapCapabilities().stack;
-    },
-
-    /**
      * @return The tile file type of the base layer.
      */
     getTileFileType: function(){
