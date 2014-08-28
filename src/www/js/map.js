@@ -775,7 +775,6 @@ var _base = {
         options = options || {};
 
         if(this.getLocateLayer()){
-            var location = utils.getLocationSettings();
             this.stopLocationUpdate();
 
             this.geoLocate({
