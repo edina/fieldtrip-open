@@ -1512,13 +1512,17 @@ var _openlayers = {
         if(typeof(point.longitude) === 'undefined'){
             lonLat = this.toInternal(
                 new OpenLayers.LonLat(point[0], point[1]));
-            
+            retValue = [lonLat.lon, lonLat.lat];
         }
         else{
             lonLat = this.toInternal(
                 new OpenLayers.LonLat(point[0], point[1]));
+            retValue = {
+                'longitude': lonLat.lon,
+                'latitude': lonLat.lat
+            };
         }
-        return [lonLat.lon, lonLat.lat];
+        return retValue;
     },
 
     /**
