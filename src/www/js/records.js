@@ -215,6 +215,30 @@ var _base = {
     },
 
     /**
+     * create record
+     * @param recordType
+     * @returns record
+     */
+    createRecord: function(recordType){
+        var annotation = {
+            "record": {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": []
+                },
+                "properties": {
+                    "editor": recordType + ".edtr",
+                    "fields": []
+                }
+            },
+            "type": recordType,
+            "isSynced": false
+        };
+        return annotation;
+    },
+
+    /**
      * Delete all editor forms.
      * @param callback Function executed when delete is complete.
      */
@@ -530,21 +554,7 @@ var _base = {
      */
     processAnnotation: function(recordType){
         var valid = true;
-        var annotation = {
-            "record": {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": []
-                },
-                "properties": {
-                    "editor": recordType + ".edtr",
-                    "fields": []
-                }
-            },
-            "type": recordType,
-            "isSynced": false
-        };
+        var annotation = this.createRecord(recordType);
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
             var divId = $(entry).attr('id');
@@ -553,14 +563,14 @@ var _base = {
             var type = divId.substr(start, end - start);
             var control;
 
-            var record = {
+            var field = {
                 'id': divId
             };
 
             var setInputValue = function(control){
                 var val = control.val();
                 if(val){
-                    record.val = val.trim();
+                    field.val = val.trim();
                 }
             };
 
@@ -570,11 +580,11 @@ var _base = {
             };
 
             var doLabel = function(id){
-                record.label = $(entry).find('label[for="' + id + '"]').text();
+                field.label = $(entry).find('label[for="' + id + '"]').text();
             };
 
             var doLegend = function(){
-                record.label = $(entry).find('legend').text();
+                field.label = $(entry).find('legend').text();
             };
 
             var doTextField = function(controlType){
@@ -588,7 +598,7 @@ var _base = {
                     if(control.val()){
                         annotation.record.name = control.val();
                     }
-                    record.val = '';
+                    field.val = '';
                 }
             }
             else if(type === 'textarea'){
@@ -597,17 +607,17 @@ var _base = {
             else if(type === 'checkbox'){
                 doLegend();
                 $.each($(entry).find('input:checked'), function(j, checkbox){
-                    if(typeof(record.val) === 'undefined'){
-                        record.val = $(checkbox).val();
+                    if(typeof(field.val) === 'undefined'){
+                        field.val = $(checkbox).val();
                     }
                     else{
-                        record.val += ',' + $(checkbox).val();
+                        field.val += ',' + $(checkbox).val();
                     }
                 });
             }
             else if(type === 'radio'){
                 var radioControl = $(entry).find('input:checked');
-                record.label = $(entry).find('div[role=heading]').text();
+                field.label = $(entry).find('div[role=heading]').text();
                 setInputValue(radioControl);
             }
             else if(type === 'select'){
@@ -620,12 +630,12 @@ var _base = {
             }
             else if(type === 'image'){
                 control = $(entry).find('input');
-                record.val = $(entry).find('.annotate-image img').attr('src');
+                field.val = $(entry).find('.annotate-image img').attr('src');
                 doLabel($(entry).find('input').attr('id'));
             }
             else if(type === 'audio'){
                 control = $(entry).find('input[capture=microphone]');
-                record.val = $(entry).find('.annotate-audio-taken input').attr('value');
+                field.val = $(entry).find('.annotate-audio-taken input').attr('value');
                 doLabel($(control).attr('id'));
             }
             else{
@@ -634,7 +644,7 @@ var _base = {
 
             // do some validation
             if($(control).attr('required') === 'true' || $(control).attr('required') === 'required'){
-                if(typeof(record.val) === 'undefined' || record.val.length === 0) {
+                if(typeof(field.val) === 'undefined' || field.val.length === 0) {
                     if($(control).attr('id') === this.TITLE_ID){
                         if(typeof(annotation.record.name) === 'undefined'){
                             $(entry).find('#' + this.TITLE_ID).addClass('ui-focus');
@@ -650,8 +660,8 @@ var _base = {
                 }
             }
 
-            if(typeof(record.val) !== 'undefined' && record.val.length > 0){
-                annotation.record.properties.fields.push(record);
+            if(typeof(field.val) !== 'undefined' && field.val.length > 0){
+                annotation.record.properties.fields.push(field);
             }
         }, this));
 
