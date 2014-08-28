@@ -251,20 +251,6 @@ return {
     },
 
     /**
-     * @return if the compass should be enabled
-     */
-    getCompassEnableSetting: function(){
-        var enabled;
-        if(settings.get('compass-enabled') === 'on'){
-            enabled = true;
-        }
-        else{
-            enabled = false;
-        }
-        return enabled;
-    },
-
-    /**
      * @return The document base of the app.
      */
     getDocumentBase: function(){
@@ -367,20 +353,6 @@ return {
         }
 
         return msg;
-    },
-
-    /**
-     * @return A location object with the autoUpdate and interval from the settings
-     */
-    getLocationSettings: function(){
-        var location = {};
-        if(settings.get('location-autoupdate') === 'on'){
-            location.autoUpdate = true;
-        }
-        else{
-            location.autoUpdate = false;
-        }
-        return location;
     },
 
     /**
