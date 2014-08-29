@@ -38,11 +38,11 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
 
     var init = function(){
         $('#qunit-testrunner-toolbar').hide();
-        if($('link[href="../css/ext/qunit.css"]').length === 0){
+        if($('link[href="css/ext/qunit.css"]').length === 0){
             $("<link/>", {
                 rel: "stylesheet",
                 type: "text/css",
-                href: "../css/ext/qunit.css"
+                href: "css/ext/qunit.css"
             }).appendTo("head");
 
             QUnit.load();

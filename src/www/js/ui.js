@@ -599,11 +599,26 @@ var _ui = {
         this.toggleActive();
     },
 
+
+    addAnnotation: function(id, annotation){
+        var template = _.template(recrowtemplate);
+
+        $('#saved-records-list-list').append(
+            template({
+                "id": id,
+                "annotation": annotation,
+                "fields": annotation.record.fields,
+                "records": records
+            })
+        ).trigger('create');
+    },
+
     /**
      * Show Saved Records.
      */
     savedRecordsPage: function(event){
         var annotations = records.getSavedRecords();
+        var that = this;
         //utils.printObj(annotations);
 
         /**
@@ -630,22 +645,9 @@ var _ui = {
             $('.record-extra').toggle(isGrid);
         }
 
-        var addAnnotation = function(id, annotation){
-            var template = _.template(recrowtemplate);
-
-            $('#saved-records-list-list').append(
-                template({
-                    "id": id,
-                    "annotation": annotation,
-                    "fields": annotation.record.fields,
-                    "records": records
-                })
-            ).trigger('create');
-        };
-
         $.each(annotations, function(id, annotation){
             if(annotation){
-                addAnnotation(id, annotation);
+                that.addAnnotation(id, annotation);
             }
             else{
                 // empty entry, just delete it
