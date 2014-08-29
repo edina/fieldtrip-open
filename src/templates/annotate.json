@@ -1,4 +1,14 @@
 {
     "body": {
+    },
+    "popups": {
+        "popup1":{
+            "template": "annotate-audiorecorder-error-popup.html",
+            "data": {
+                "baseurl": "market://details?id=",
+                "recorder": "com.thinkleft.soundrecorder",
+                "name": "Sound Recorder"
+            }
+        }
     }
 }
