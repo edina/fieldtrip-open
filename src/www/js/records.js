@@ -774,6 +774,53 @@ var _this = {};
 var _ios = {
 
     /**
+     *  @param fileURI is the location of the file in temp directory
+     *  @param callback returns the file location after move
+     */
+    moveFileToPersistentStorage: function (fileURI ,callback){
+
+        //move the file from tmp to assets dir
+        var copiedFile = function (fileEntry) {
+            
+            callback(DOCUMENTS_SCHEME_PREFIX + fileEntry.fullPath);
+        };
+        
+        var gotFileEntry = function(fileEntry) {
+
+            var gotAsserDir = function(assetDir){
+                
+                fileEntry.moveTo( assetDir, fileEntry.name ,copiedFile, captureError);
+            };
+            
+            //move to assets
+            gotAsserDir(_base.getAssetsDir());
+            
+        };
+        
+        var tempFileName = fileURI.substr(fileURI.lastIndexOf('/')+1);
+        
+        var findFileInTemp = function(fileSystem){
+            var reader = fileSystem.root.createReader();
+            reader.readEntries(function(entries) {
+
+                var i;
+                for (i = 0; i < entries.length; i++) {
+            
+                    if(entries[i].name === tempFileName){
+                    
+                        gotFileEntry(entries[i]);
+                    }
+                
+                }
+            });
+        };
+        
+        
+        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, findFileInTemp, captureError);
+    
+    },
+
+    /**
      * Construct the object for the options of the image for IOS.
      */
     getImageOptions: function(sourceType, encodingType){
@@ -788,6 +835,7 @@ var _ios = {
      * @param callback Function executed after successful recording.
      */
      takeAudio: function(callback){
+        var that = this;
 
         if (navigator.device !== undefined){
             navigator.device.capture.captureAudio(
@@ -795,50 +843,47 @@ var _ios = {
 
 
                     var fileURI = mediaFiles[0].fullPath;
-
-                    //move the file from tmp to assets dir
-                    var copiedFile = function (fileEntry) {
-
-                        callback(DOCUMENTS_SCHEME_PREFIX + fileEntry.fullPath);
-                    };
-
-                    var gotFileEntry = function(fileEntry) {
-
-                        var gotAsserDir = function(assetDir){
-
-                            fileEntry.moveTo( assetDir, fileEntry.name ,copiedFile, captureError);
-                        };
-
-                        //move to assets
-                        gotAsserDir(_base.getAssetsDir());
-
-                    };
-
-                    var imgFileName = fileURI.substr(fileURI.lastIndexOf('/')+1);
-
-                    var findFileInTemp = function(fileSystem){
-                        var reader = fileSystem.root.createReader();
-                        reader.readEntries(function(entries) {
-
-                            var i;
-                            for (i = 0; i < entries.length; i++) {
-
-                                console.log(entries[i].name);
-                                if(entries[i].name === imgFileName){
-
-                                    gotFileEntry(entries[i]);
-                                }
-
-                            }
-                        });
-                    };
-
-
-                    window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, findFileInTemp, captureError);
-
+                    
+                    that.moveFileToPersistentStorage(fileURI, callback);
+                    
                 },
                 captureError,
                 {limit: 1}
+            );
+        }
+    },
+    /**
+     * get photo from local filesystem ie the gallery on ios
+     */
+    getPhoto: function(callback) {
+        var that = this;
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    that.moveFileToPersistentStorage(fileURI, callback);
+                },
+                captureError,
+                this.getImageOptions(
+                    navigator.camera.PictureSourceType.SAVEDPHOTOALBUM,
+                    navigator.camera.MediaType.PICTURE)
+            );
+        }
+    },
+    
+    /**
+     * take photo action
+     */
+    takePhoto: function(callback){
+        var that = this;
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    that.moveFileToPersistentStorage(fileURI, callback);
+                },
+                captureError,
+                this.getImageOptions(
+                    Camera.PictureSourceType.CAMERA,
+                    Camera.EncodingType.JPEG)
             );
         }
     }

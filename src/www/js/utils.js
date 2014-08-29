@@ -205,6 +205,16 @@ return {
     },
 
     /**
+     * Helper function that sets the value of a JQM slider on/off element.
+     * @param selector Jquery selector.
+     * @param value 'on' or 'off'.
+     */
+    flipswitchVal: function(selector, value){
+        $(selector).val(value);
+        $(selector).flipswitch('refresh');
+    },
+
+    /**
      * @return The username and password of cloud test user.
      */
     getCloudTestUser: function(){
@@ -248,20 +258,6 @@ return {
         }
 
         return current;
-    },
-
-    /**
-     * @return if the compass should be enabled
-     */
-    getCompassEnableSetting: function(){
-        var enabled;
-        if(settings.get('compass-enabled') === 'on'){
-            enabled = true;
-        }
-        else{
-            enabled = false;
-        }
-        return enabled;
     },
 
     /**
@@ -367,20 +363,6 @@ return {
         }
 
         return msg;
-    },
-
-    /**
-     * @return A location object with the autoUpdate and interval from the settings
-     */
-    getLocationSettings: function(){
-        var location = {};
-        if(settings.get('location-autoupdate') === 'on'){
-            location.autoUpdate = true;
-        }
-        else{
-            location.autoUpdate = false;
-        }
-        return location;
     },
 
     /**
@@ -694,16 +676,6 @@ return {
         else{
             return false;
         }
-    },
-
-    /**
-     * Helper function that sets the value of a JQM slider on/off element.
-     * @param selector Jquery selector.
-     * @param value 'on' or 'off'.
-     */
-    flipswitchVal: function(selector, value){
-        $(selector).val(value);
-        $(selector).flipswitch('refresh');
     },
 
     /**

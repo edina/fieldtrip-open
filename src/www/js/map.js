@@ -320,13 +320,6 @@ var _base = {
     },
 
     /**
-     * @return Base stack type.
-     */
-    getStackType: function(){
-        return this.getTileMapCapabilities().stack;
-    },
-
-    /**
      * @return The tile file type of the base layer.
      */
     getTileFileType: function(){
@@ -784,7 +777,6 @@ var _base = {
         options = options || {};
 
         if(this.getLocateLayer()){
-            var location = utils.getLocationSettings();
             this.stopLocationUpdate();
 
             this.geoLocate({
