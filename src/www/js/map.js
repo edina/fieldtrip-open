@@ -505,9 +505,15 @@ var _base = {
       * Start compass and use it to rotate the location marker
       */
     startCompass: function(){
+        var self = this;
         if(navigator.compass !== undefined){
             var onSuccess = function(heading){
-                _this.rotateLocationMarker(heading.magneticHeading);
+                // Make sure that there is a running compass watch
+                if(self.compassWatchID === null){
+                    console.debug('Ignoring compass update with null watch');
+                }else{
+                    _this.rotateLocationMarker(heading.magneticHeading);
+                }
             };
             var onError = function(error){
                 console.debug('error: ' + error);
@@ -800,6 +806,7 @@ var _base = {
     stopCompass: function(){
         if(navigator.compass !== undefined){
             navigator.compass.clearWatch(this.compassWatchID);
+            this.compassWatchID = null;
             this.rotateLocationMarker(0);
         }
     },
