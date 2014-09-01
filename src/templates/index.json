@@ -9,16 +9,8 @@
                 "data-inline": "true",
                 "data-transition": "none",
                 "value": "Settings"
-            },
-            "exit": {
-                "platforms": ["android"],
-                "id": "home-exit",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
-                "value": "Exit"
             }
-        }
+       }
     },
     "body": {
         "section1": {
