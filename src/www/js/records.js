@@ -178,6 +178,18 @@ var _base = {
     },
 
     /**
+     * function for adding extra properties to record
+     * @param record
+     * @param prop is the key for the properties
+     * @param value is the value for the key in properties
+     * @returns record
+     */
+    addRecordProperty: function(record, prop, value){
+        record.properties.prop = value;
+        return record;
+    },
+
+    /**
      * Annotate a record.
      * @param type The type of record to annotate.
      */
