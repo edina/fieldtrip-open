@@ -732,14 +732,34 @@ var _base = {
      * @param callback Function executed after successful recording.
      */
     takeAudio: function(callback){
-        if (navigator.device !== undefined){
-            navigator.device.capture.captureAudio(
-                function(mediaFiles){
-                    callback(mediaFiles[0].localURL);
-                },
-                captureError,
-                {limit: 1}
-            );
+        var invokeRecorder = function(){
+            if (navigator.device !== undefined){
+                navigator.device.capture.captureAudio(
+                    function(mediaFiles){
+                        callback(mediaFiles[0].localURL);
+                    },
+                    captureError,
+                    {limit: 1}
+                );
+            }
+        };
+
+        // if it's possible check if the intent has an activity associated
+        if(cordova && cordova.plugins && cordova.plugins.ActivitiesList){ // jshint ignore:line
+            cordova.plugins                                               // jshint ignore:line
+                .ActivitiesList.byIntent('android.provider.MediaStore.RECORD_SOUND',
+                    function(activities){
+                        if(activities.length > 0){
+                            invokeRecorder();
+                        }else{
+                            $('#audiorecorder-error-popup').popup('open');
+                        }
+                    },function(error){
+                        console.error(error);
+                    });
+
+        }else{
+            invokeRecorder();
         }
     },
 
@@ -781,43 +801,43 @@ var _ios = {
 
         //move the file from tmp to assets dir
         var copiedFile = function (fileEntry) {
-            
+
             callback(DOCUMENTS_SCHEME_PREFIX + fileEntry.fullPath);
         };
-        
+
         var gotFileEntry = function(fileEntry) {
 
             var gotAsserDir = function(assetDir){
-                
+
                 fileEntry.moveTo( assetDir, fileEntry.name ,copiedFile, captureError);
             };
-            
+
             //move to assets
             gotAsserDir(_base.getAssetsDir());
-            
+
         };
-        
+
         var tempFileName = fileURI.substr(fileURI.lastIndexOf('/')+1);
-        
+
         var findFileInTemp = function(fileSystem){
             var reader = fileSystem.root.createReader();
             reader.readEntries(function(entries) {
 
                 var i;
                 for (i = 0; i < entries.length; i++) {
-            
+
                     if(entries[i].name === tempFileName){
-                    
+
                         gotFileEntry(entries[i]);
                     }
-                
+
                 }
             });
         };
-        
-        
+
+
         window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, findFileInTemp, captureError);
-    
+
     },
 
     /**
@@ -843,9 +863,8 @@ var _ios = {
 
 
                     var fileURI = mediaFiles[0].fullPath;
-                    
+
                     that.moveFileToPersistentStorage(fileURI, callback);
-                    
                 },
                 captureError,
                 {limit: 1}
@@ -869,7 +888,7 @@ var _ios = {
             );
         }
     },
-    
+
     /**
      * take photo action
      */

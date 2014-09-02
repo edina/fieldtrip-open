@@ -126,7 +126,7 @@ define(function(){
         vals = {};
 
         // initialise based on default values
-        $.get('../settings.html', function(data){
+        $.get('settings.html', function(data){
             $.each($(data).find('[name=settings-entry]'), getControlValue);
         });
     }

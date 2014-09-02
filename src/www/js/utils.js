@@ -68,8 +68,8 @@ define(['settings', 'config'], function(settings, config){
 
     // list of UUID of devices used internally
     var priviligedUsers = [];
-    if(config.priviligedUsers){
-        priviligedUsers = config.priviligedUsers.split(',');
+    if(config.priviligedusers){
+        priviligedUsers = config.priviligedusers.split(',');
     }
 
     // Read the pcapiproviders and store it as an array in the config
@@ -461,7 +461,7 @@ return {
      */
     getServerUrl: function() {
         if(isMobileApp){
-            return config.webUrl;
+            return config.weburl;
         }
         else{
             return 'http://' + location.hostname + '/ftgb';
@@ -598,22 +598,12 @@ return {
      user is always a privileged user.
      */
     isPrivilegedUser: function(){
-        var isPrivileged = false;
+        var isPrivileged = true;
         if(isMobileApp){
-            if(config.priviligedusers){
-                if((config.priviligedusers.indexOf(',') != -1 &&
-                    $.inArray(device.uuid, config.priviligedusers.split(',') !== -1)) ||
-                   device.uuid === config.priviligedusers){
-                    isPrivileged = true;
-                }
+            if(priviligedUsers.indexOf(device.uuid) === -1){
+                isPrivileged = false;
+                console.debug(device.uuid + " privileged user is " + isPrivileged);
             }
-        }
-        else{
-            isPrivileged = true;
-        }
-
-        if(!isPrivileged){
-            console.debug(device.uuid + " privileged user is " + isPrivileged);
         }
 
         return isPrivileged;
@@ -670,7 +660,7 @@ return {
      * @return Should end user license / splash be shown?
      */
     showStartPopup: function(){
-        if(config.endUserLicence && !this.isPrivilegedUser()){
+        if(config.enduserlicence && !this.isPrivilegedUser()){
             return true;
         }
         else{
