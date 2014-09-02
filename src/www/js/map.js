@@ -1401,7 +1401,7 @@ var _this = {
             locationText = locations[tileStr];
 
             if($('#map-location-text').length === 0){
-                $('#gpscapture-page').append('<div ><p aria-live="assertive" id="map-location-text"><p></div>');
+                $("#gpscapture-map").append('<div ><p class="offscreen" tabindex="-1"  aria-live="assertive" id="map-location-text"><p></div>');
             }
             $('#map-location-text').text(locationText);
         }
