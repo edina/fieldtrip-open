@@ -205,6 +205,15 @@ return {
     },
 
     /**
+     * Math.random should be unique because of its seeding algorithm.
+     * Convert it to base 36 (numbers + letters), and grab the first 9 characters
+     * after the decimal.
+     */
+    createUUID: function(){
+        return '_' + Math.random().toString(36).substr(2, 9);
+    },
+
+    /**
      * Helper function that sets the value of a JQM slider on/off element.
      * @param selector Jquery selector.
      * @param value 'on' or 'off'.
