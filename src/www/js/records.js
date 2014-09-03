@@ -101,6 +101,11 @@ var _base = {
     EVT_DELETE_ANNOTATION: 'evt-delete-annotation',
 
     /**
+     * Edit record format.
+     */
+    EVT_EDIT_ANNOTATION: 'evt-edit-annotation',
+
+    /**
      * Initialise annotate page.
      * @param form Form name.
      * @param callback Function to be invoked when editor has been loaded.
@@ -185,7 +190,7 @@ var _base = {
      * @returns record
      */
     addRecordProperty: function(record, prop, value){
-        record.properties.prop = value;
+        record.properties[prop] = value;
         return record;
     },
 
@@ -232,7 +237,7 @@ var _base = {
      * @returns record
      */
     createRecord: function(recordType){
-        var annotation = {
+        return {
             "record": {
                 "type": "Feature",
                 "geometry": {
@@ -247,7 +252,6 @@ var _base = {
             "type": recordType,
             "isSynced": false
         };
-        return annotation;
     },
 
     /**
@@ -687,6 +691,14 @@ var _base = {
         else{
             utils.inform('Required field not populated');
         }
+
+        // fire edit record event, this allows plugins to edit record
+        $.event.trigger(
+            {
+                type: this.EVT_EDIT_ANNOTATION,
+            },
+            annotation
+        );
 
         return annotation;
     },
