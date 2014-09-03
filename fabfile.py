@@ -59,6 +59,10 @@ BOWER_VERSION      = '1.3.8'
 JSHINT_VERSION     = '2.5.0'
 PLUGMAN_VERSION    = '0.22.4'
 
+# lowest supported android sdk version
+# could move to config if projects diverge
+TARGET_SDK_VERSION = 24 # 4.0
+
 """
 Tools installed via npm.
 The v_search value is the expected output of running the command -v
@@ -801,11 +805,6 @@ def install_project(platform='android',
     # set up cordova/fieldtrip plugins
     install_plugins(target)
 
-    #add permissions for html5 geolocation, it might be not needed with the
-    #next upgrade of cordova
-    if platform == 'android':
-        _add_permissions(os.path.join(runtime, 'platforms', platform))
-
     # add project specific files
     update_app(platform)
 
@@ -978,7 +977,10 @@ def release_ios():
 
 @task
 def update_app(platform='android'):
-    """Update the platform with latest configuration (android by default)"""
+    """
+    Update the platform with latest configuration (android by default)
+    """
+
     proj_home = _get_source()[1]
     runtime = _get_runtime()[1]
 
@@ -992,23 +994,11 @@ def update_app(platform='android'):
             print "\nPlatform {0} not installed".format(platform)
             exit(-1)
 
+    if platform == 'android':
+        # current version of cordova does not allow access to all settings,
+        # see https://cordova.apache.org/docs/en/3.5.0/guide_platforms_android_config.md.html#Android%20Configuration
+        _update_android_manifest(os.path.join(runtime, 'platforms', platform))
 
-def _add_permissions(platform):
-    manifest = os.path.join(platform, 'AndroidManifest.xml')
-    with open(manifest, 'r') as f:
-        data = f.readlines()
-        f.close()
-    new_data = []
-    i=0
-    for l in data:
-        new_data.append(l)
-        if "uses-sdk android:minSdkVersion=" in l and i==0:
-            new_data.append('\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />')
-            new_data.append('\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n')
-            i=i+1
-    with open(manifest, 'w') as f:
-        f.writelines(new_data)
-        f.close()
 
 @task
 def _app_start_stats():
@@ -1262,8 +1252,11 @@ def _get_runtime(target='local'):
     """
 
     runtime_dir = _config('runtime_dir')
-    target_dir = os.sep.join((os.environ['HOME'], target))
-    return target_dir, os.sep.join((target_dir, runtime_dir))
+    if runtime_dir == None:
+        print 'No runtime found'
+        exit(-1)
+    target_dir = os.path.join(os.environ['HOME'], target)
+    return target_dir, os.path.join(target_dir, runtime_dir)
 
 def _get_source(app='android'):
     """
@@ -1383,6 +1376,44 @@ def _str2bool(v):
     """
     return v.lower() in ("yes", "true", "t", "1")
 
+def _update_android_manifest(path):
+    """
+    Update android manifest
+    """
+
+    # using lxml to get namespace support
+    from lxml import etree
+
+    manifest = os.path.join(path, 'AndroidManifest.xml')
+
+    ANS = 'http://schemas.android.com/apk/res/android'
+    NS = {
+        'android': ANS
+    }
+    root = etree.parse(manifest)
+
+    def has_permission(name):
+        exp = "uses-permission[@android:name='android.permission.{0}']".format(name)
+        return len(root.xpath(exp, namespaces=NS)) > 0
+
+    def add_permission(name):
+        attr = '{{{0}}}permission'.format(ANS)
+        val = 'android.permission.{0}'.format(name)
+        up = etree.Element('uses-permission', attrib={attr: val})
+        root.xpath('/manifest')[0].append(up)
+
+    # ensure the following permissions are set
+    permissions = ['ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION']
+    for permission in permissions:
+        if not has_permission(permission):
+            add_permission(permission)
+
+    # update target sdk verison
+    us = root.xpath('/manifest/uses-sdk[@android:targetSdkVersion]', namespaces=NS)[0]
+    us.set('{{{0}}}targetSdkVersion'.format(ANS), str(TARGET_SDK_VERSION))
+
+    with open(manifest, 'w') as f:
+        f.write(etree.tostring(root, pretty_print=True))
 
 def _write_data(fil, filedata):
     """ TODO """
