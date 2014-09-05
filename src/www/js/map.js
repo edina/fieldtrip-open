@@ -445,7 +445,7 @@ var _this = {
             }
         }));
 
-        this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic: true}));
+        // this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic: true}));
 
         // create default user position
         this.userLonLat = new OpenLayers.LonLat(
