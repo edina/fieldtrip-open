@@ -524,6 +524,7 @@ var _base = {
       
         $('.ui-loader').attr('alt', "Alert" + message) ;
         $('.ui-loader').attr('aria-live', 'polite') ;
+        $('.ui-loader').attr('tabindex', '-1') ;
         $('.ui-loader').attr('aria-label', "Alert " + message) ;
         if($('.ui-loader').is(":visible")){
             if(typeof(error) !== 'undefined' && error){

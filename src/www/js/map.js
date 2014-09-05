@@ -264,15 +264,17 @@ define(['ext/openlayers', 'records', 'utils', 'proj4js'], function(ol, records, 
                    {
 
                       featureMarkerElement.setAttribute("alt", altText);
-                      featureMarkerElement.setAttribute("aria-label", altText);
+                      // featureMarkerElement.setAttribute("aria-label", altText);
+                      featureMarkerElement.setAttribute("aria-hidden", "true");
+                      featureMarkerElement.setAttribute("tabindex", "-1");
                       featureMarkerElement.setAttribute("role", "button");
-                      if (feature.attributes.type === "track") {
-                          featureMarkerElement.setAttribute("tabindex", 1);
-                      }
-                      else
-                      {
-                          featureMarkerElement.setAttribute("tabindex", index + 2);
-                      }
+                   //    if (feature.attributes.type === "track") {
+                   //        featureMarkerElement.setAttribute("tabindex", 1);
+                   //    }
+                   //    else
+                   //    {
+                   //        featureMarkerElement.setAttribute("tabindex", index + 2);
+                   //    }
                    }
 
                  }
