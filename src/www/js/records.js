@@ -58,28 +58,29 @@ define(['utils', 'file'], function(utils, file){
         /* global CaptureError */
 
         if(error !== undefined && error.code !== undefined){
-            var msg = "Problem with capture: " + error.code + " : ";
+            var debugMsg = "Problem with capture: " + error.code + " : ";
+            var msg;
             switch(error.code){
             case CaptureError.CAPTURE_INTERNAL_ERR:
-                msg += " Interval Error.";
+                msg = "Internal Error.";
                 break;
             case CaptureError.CAPTURE_APPLICATION_BUSY:
-                msg += " Application busy.";
+                msg = "Application busy.";
                 break;
             case CaptureError.CAPTURE_INVALID_ARGUMENT:
-                msg += " Invalid Argument.";
+                msg = "Invalid Argument.";
                 break;
             case CaptureError.CAPTURE_NO_MEDIA_FILES:
-                msg += " No media files.";
+                msg = "No media captured";
                 break;
             case CaptureError.CAPTURE_NOT_SUPPORTED:
-                msg += " Not supported.";
+                msg = "Not supported.";
                 break;
             default:
-                msg += " Unknown Error.";
+                msg = "Unknown Error.";
             }
-            console.debug(msg);
-            navigator.notification.alert(msg);
+            console.debug(debugMsg + msg);
+            utils.inform(msg);
         }
         else{
             console.debug("Capture error is undefined. Assume user cancelled.");
