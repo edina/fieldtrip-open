@@ -428,7 +428,6 @@ var _ui = {
         }
         else {
             geoLocate({
-                watch: true,
                 secretly: false,
                 updateAnnotateLayer: true,
                 useDefault: true

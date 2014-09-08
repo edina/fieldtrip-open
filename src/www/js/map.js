@@ -384,7 +384,10 @@ var _base = {
         options.ttl =  options.ttl || this.geolocateTTL;
 
         if(!options.secretly){
-            utils.inform('Waiting for GPS fix', 10000);
+            $.mobile.loading('show', {
+                text: 'Waiting for GPS fix',
+                textonly: true,
+            });
         }
 
         // found user location
