@@ -303,12 +303,12 @@ var _ui = {
             };
 
             // replace audio form element with audio control
-            var showAudio = $.proxy(function(id, url){
+            var showAudio = $.proxy(function(id, url, label){
                 var parent = $('#' + id).parent();
                 $('#' + id).hide();
 
                 require(['audio'], function(audio){
-                    parent.append(audio.getNode(url)).trigger('create');
+                    parent.append(audio.getNode(url, label)).trigger('create');
                 });
             }, this);
 
@@ -331,8 +331,8 @@ var _ui = {
             // listen for audio click
             $('.annotate-audio').click($.proxy(function(event){
                 id = $(event.target).parents('div').attr('id');
-                records.takeAudio(function(media){
-                    showAudio(id, media);
+                records.takeAudio(function(media, name){
+                    showAudio(id, media, name);
                 });
             }, this));
 

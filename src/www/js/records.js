@@ -721,7 +721,7 @@ var _base = {
             if (navigator.device !== undefined){
                 navigator.device.capture.captureAudio(
                     function(mediaFiles){
-                        callback(mediaFiles[0].localURL);
+                        callback(mediaFiles[0].localURL, mediaFiles[0].name);
                     },
                     captureError,
                     {limit: 1}
