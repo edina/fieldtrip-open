@@ -622,7 +622,7 @@ def install_plugins(target='local', cordova="True"):
                         if '#' in details:
                             # a branch is defined clone as single branch
                             repo = details.split('#')
-                            local('git clone -b {0} --single-branch {1} {2}'.format(
+                            local('git clone -b {0} {1} {2}'.format(
                                 repo[1], repo[0], plugin))
                         else:
                             # clone whole repo
