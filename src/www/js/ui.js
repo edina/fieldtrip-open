@@ -148,18 +148,25 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
             var header = 0;
             var secondHeader = 0;
             var footer = 0;
+            var footerBottom = 0;
+            var headerTop = 0;
 
             if($('.ui-page-active .ui-header').css('display') !== 'none'){
-                header = $('.ui-page-active .ui-header').first().height();
+                var $header = $('.ui-page-active .ui-header').first();
+                header = $header.outerHeight();
+                headerTop = parseInt($header.css('top'));
             }
             if($('.ui-page-active .second-header').css('display') !== 'none'){
-                secondHeader = $('.ui-page-active .second-header').first().height();
+                secondHeader = $('.ui-page-active .second-header').first().outerHeight();
             }
             if($('.ui-page-active .ui-footer').css('display') !== 'none'){
-                footer = $('.ui-page-active .ui-footer').first().height();
+                var $footer = $('.ui-page-active .ui-footer').first();
+                footer = $footer.outerHeight();
+                footerBottom = parseInt($footer.css('bottom'));
             }
 
-            var h = $(window).height() - (header + footer + secondHeader);
+            var h = $(window).height() -
+                        (header + footer + secondHeader + footerBottom + headerTop);
             $('.ui-content').css('height', h + 'px');
         }
     };
