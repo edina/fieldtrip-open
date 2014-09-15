@@ -692,11 +692,13 @@ var _base = {
         var lon = point.lon;
         var lat = point.lat;
 
-        var popup = $('#map-record-popup');
+        var $popup = $('#map-record-popup');
 
-        popup.off('popupbeforeposition');
-        popup.off('vclick');
-        popup.on({
+        $('#map-record-popup a.close').one('vclick', function(event){
+            $popup.popup('close');
+        });
+
+        $popup.one({
             popupbeforeposition: function() {
                 var showRecord = function(html){
                     var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
@@ -726,10 +728,6 @@ var _base = {
                         showRecord(html);
                     }
                 });
-            },
-            vclick: function(){
-                // Close popup on click
-                popup.popup('close');
             }
         });
     },
