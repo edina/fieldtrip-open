@@ -35,6 +35,13 @@ DAMAGE.
 /* global Media */
 
 define(function(){
+
+  // Attach the play function to the audio button
+  $(document).off('vclick');
+  $(document).on('vclick', '#annotate-audio-button', function(event) {
+    playAudio();
+  });
+
 return{
 
     /**
@@ -49,7 +56,7 @@ return{
 
         var html = '<div class="annotate-audio-taken">' + label + '\
                       <input type="hidden" value="' + url + '"/>\
-                      <a id="annotate-audio-button" class="annotate-audio-stopped" onclick="playAudio();" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
+                      <a id="annotate-audio-button" class="annotate-audio-stopped" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
                       <p id="annotate-audio-position"></p>\
                     </div>';
         return html;
@@ -94,6 +101,7 @@ function playAudio(){
  */
 function Audio(src){
     // Create Media object from src
+    this.src = src;
     this.media = new Media(src,
                            $.proxy(this.onSuccess, this),
                            $.proxy(this.onError, this),
