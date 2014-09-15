@@ -148,18 +148,25 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
             var header = 0;
             var secondHeader = 0;
             var footer = 0;
+            var footerBottom = 0;
+            var headerTop = 0;
 
             if($('.ui-page-active .ui-header').css('display') !== 'none'){
-                header = $('.ui-page-active .ui-header').first().height();
+                var $header = $('.ui-page-active .ui-header').first();
+                header = $header.outerHeight();
+                headerTop = parseInt($header.css('top'));
             }
             if($('.ui-page-active .second-header').css('display') !== 'none'){
-                secondHeader = $('.ui-page-active .second-header').first().height();
+                secondHeader = $('.ui-page-active .second-header').first().outerHeight();
             }
             if($('.ui-page-active .ui-footer').css('display') !== 'none'){
-                footer = $('.ui-page-active .ui-footer').first().height();
+                var $footer = $('.ui-page-active .ui-footer').first();
+                footer = $footer.outerHeight();
+                footerBottom = parseInt($footer.css('bottom'));
             }
 
-            var h = $(window).height() - (header + footer + secondHeader);
+            var h = $(window).height() -
+                        (header + footer + secondHeader + footerBottom + headerTop);
             $('.ui-content').css('height', h + 'px');
         }
     };
@@ -303,12 +310,12 @@ var _ui = {
             };
 
             // replace audio form element with audio control
-            var showAudio = $.proxy(function(id, url){
+            var showAudio = $.proxy(function(id, url, label){
                 var parent = $('#' + id).parent();
                 $('#' + id).hide();
 
                 require(['audio'], function(audio){
-                    parent.append(audio.getNode(url)).trigger('create');
+                    parent.append(audio.getNode(url, label)).trigger('create');
                 });
             }, this);
 
@@ -331,8 +338,8 @@ var _ui = {
             // listen for audio click
             $('.annotate-audio').click($.proxy(function(event){
                 id = $(event.target).parents('div').attr('id');
-                records.takeAudio(function(media){
-                    showAudio(id, media);
+                records.takeAudio(function(media, name){
+                    showAudio(id, media, name);
                 });
             }, this));
 
@@ -428,7 +435,6 @@ var _ui = {
         }
         else {
             geoLocate({
-                watch: true,
                 secretly: false,
                 updateAnnotateLayer: true,
                 useDefault: true

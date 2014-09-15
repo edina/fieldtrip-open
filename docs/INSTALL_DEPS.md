@@ -34,13 +34,13 @@ brew install ant python node wget
 
 [nodejs install](https://github.com/joyent/node/wiki/installation)
 
-### Fabric
+### Python modules
 
 Install some libraries used for the deploy:
 
 ```
 sudo easy_install pip
-sudo pip install beautifulsoup4 configparser fabric html5lib jinja2
+sudo pip install beautifulsoup4 configparser fabric html5lib jinja2 lxml
 ```
 
 ## Target Platforms

@@ -89,6 +89,8 @@ define(['settings', 'config'], function(settings, config){
     var documentBase = window.location.pathname;
     documentBase = documentBase.replace("index.html", "");
 
+    var informTimer;
+
     // setup default saved records view
     if(localStorage.getItem('records-layout') === undefined){
         if(config.savedRecordsRecordsId){
@@ -531,6 +533,8 @@ return {
      * secs.
      */
     inform: function(message, duration, error){
+        duration = duration || 2000;
+
         if($('.ui-loader').is(":visible")){
             if(typeof(error) !== 'undefined' && error){
                 $('.ui-loader').addClass('error');
@@ -538,13 +542,6 @@ return {
             else{
                 $('.ui-loader').removeClass('error');
             }
-
-            $('.ui-loader h1').html(message);
-            return;
-        }
-
-        if(duration === undefined){
-            duration = 2000;
         }
 
         $.mobile.loading('show', {
@@ -552,7 +549,8 @@ return {
             textonly: true,
         });
 
-        setTimeout(function(){
+        clearTimeout(informTimer);
+        informTimer = setTimeout(function(){
             $.mobile.loading('hide');
         }, duration);
     },

@@ -35,6 +35,13 @@ DAMAGE.
 /* global Media */
 
 define(function(){
+
+  // Attach the play function to the audio button
+  $(document).off('vclick');
+  $(document).on('vclick', '#annotate-audio-button', function(event) {
+    playAudio();
+  });
+
 return{
 
     /**
@@ -48,10 +55,10 @@ return{
         }
 
         var html = '<div class="annotate-audio-taken">' + label + '\
-<input type="hidden" value="' + url + '"/>\
-<p id="annotate-audio-position">0.0 sec</p>\
-<a id="annotate-audio-button" class="annotate-audio-stopped" onclick="playAudio();" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
-</div>';
+                      <input type="hidden" value="' + url + '"/>\
+                      <a id="annotate-audio-button" class="annotate-audio-stopped" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
+                      <p id="annotate-audio-position"></p>\
+                    </div>';
         return html;
     },
 };
@@ -94,6 +101,7 @@ function playAudio(){
  */
 function Audio(src){
     // Create Media object from src
+    this.src = src;
     this.media = new Media(src,
                            $.proxy(this.onSuccess, this),
                            $.proxy(this.onError, this),
@@ -113,22 +121,20 @@ Audio.prototype.play = function() {
     $('#annotate-audio-button').removeClass('annotate-audio-stopped');
     $('#annotate-audio-button').addClass('annotate-audio-started');
 
-    // update media position every second
-    if(this.mediaTimer === null) {
-        this.mediaTimer = setInterval($.proxy(function(){
-            this.media.getCurrentPosition(
-                $.proxy(function(position) {
-                    if (position > -1) {
-                        $('#annotate-audio-position').text((position.toFixed(1)) + ' sec');
-                    }
-                }, this),
-                // error callback
-                function(e) {
-                    console.error("Error getting pos=" + e);
+
+    this.mediaTimer = setInterval($.proxy(function(){
+        this.media.getCurrentPosition(
+            $.proxy(function(position) {
+                if (position > -1) {
+                    $('#annotate-audio-position').text((position.toFixed(1)) + ' sec');
                 }
-            );
-        }, this), 1000);
-    }
+            }, this),
+            // error callback
+            function(e) {
+                console.error("Error getting pos=" + e);
+            }
+        );
+    }, this), 100);
 };
 
 /**
@@ -167,7 +173,7 @@ Audio.prototype.clear = function(){
     clearInterval(this.mediaTimer);
     this.mediaTimer = null;
 
-    $('#annotate-audio-position').text('0.0 sec');
+    $('#annotate-audio-position').text('');
 
     $('#annotate-audio-button').addClass('annotate-audio-stopped');
     $('#annotate-audio-button').removeClass('annotate-audio-started');
