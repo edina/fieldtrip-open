@@ -37,7 +37,7 @@ DAMAGE.
 define(function(){
 
   // Attach the play function to the audio button
-  $(document).off('vclick');
+  $(document).off('vclick', '#annotate-audio-button');
   $(document).on('vclick', '#annotate-audio-button', function(event) {
     playAudio();
   });
