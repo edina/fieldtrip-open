@@ -52,7 +52,7 @@ import sys
 import re
 
 
-CORDOVA_VERSION    = '3.5.0-0.2.6'
+CORDOVA_VERSION    = '3.6.3-0.2.12'
 OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION        = '1.4.10'
 BOWER_VERSION      = '1.3.8'
@@ -1136,7 +1136,7 @@ def _config(key=None, section='install'):
     global config
     if config == None:
         config = ConfigParser(interpolation=ExtendedInterpolation())
-        conf_file = os.sep.join((_get_source()[0], 'etc', 'config.ini'))
+        conf_file = os.path.join(_get_source()[0], 'etc', 'config.ini')
         config.read(conf_file)
 
     if config.has_section(section):
@@ -1253,7 +1253,7 @@ def _get_runtime(target='local'):
 
     runtime_dir = _config('runtime_dir')
     if runtime_dir == None:
-        print 'No runtime found'
+        print "No runtime found: 'runtime_dir' needs to be defined."
         exit(-1)
     target_dir = os.path.join(os.environ['HOME'], target)
     return target_dir, os.path.join(target_dir, runtime_dir)
