@@ -854,9 +854,9 @@ var _ios = {
 
                     var fileURI = mediaFiles[0].fullPath;
 
-                    that.moveFileToPersistentStorage(fileURI, function(){
+                    that.moveFileToPersistentStorage(fileURI, function(url){
                         callback({
-                            url: mediaFiles[0].localURL,
+                            url: url,
                             label: mediaFiles[0].name,
                             duration: mediaFiles[0].duration
                         });
