@@ -310,12 +310,12 @@ var _ui = {
             };
 
             // replace audio form element with audio control
-            var showAudio = $.proxy(function(id, url, label){
+            var showAudio = $.proxy(function(id, url, options){
                 var parent = $('#' + id).parent();
                 $('#' + id).hide();
 
                 require(['audio'], function(audio){
-                    parent.append(audio.getNode(url, label)).trigger('create');
+                    parent.append(audio.getNode(url, options)).trigger('create');
                 });
             }, this);
 
@@ -338,8 +338,8 @@ var _ui = {
             // listen for audio click
             $('.annotate-audio').click($.proxy(function(event){
                 id = $(event.target).parents('div').attr('id');
-                records.takeAudio(function(media, name){
-                    showAudio(id, media, name);
+                records.takeAudio(function(media){
+                    showAudio(id, media.url, media);
                 });
             }, this));
 
@@ -393,7 +393,7 @@ var _ui = {
                         showImage('annotate-image-0', entry.val);
                     }
                     else if(fieldType === 'audio'){
-                        showAudio('annotate-audio-0', entry.val);
+                        showAudio('annotate-audio-0',{label: entry.val});
                     }
                     else if(fieldType === 'checkbox'){
                         $.each(entry.val.split(','), function(j, name){

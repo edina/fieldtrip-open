@@ -49,16 +49,22 @@ return{
      * @param url Audio file URL.
      * @param label Optional text label.
      */
-    getNode: function(url, label){
-        if(label === undefined){
-            label = '';
-        }
+    getNode: function(url, options){
+        var label = options.label || '';
+        var durationms = options.duration || 0;
+        var duration = durationms / 1000;
 
-        var html = '<div class="annotate-audio-taken">' + label + '\
-                      <input type="hidden" value="' + url + '"/>\
-                      <a id="annotate-audio-button" class="annotate-audio-stopped" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a>\
-                      <p id="annotate-audio-position"></p>\
-                    </div>';
+
+        var html = '<div class="annotate-audio-taken">';
+        html += '<span>' + label + '</span>';
+        html += '<input type="hidden" value="' + url + '"/>';
+        html += '<a id="annotate-audio-button" class="annotate-audio-stopped" data-theme="a" data-iconpos="notext" href="#" data-role="button" ></a><br />';
+        html += '<span id="annotate-audio-position">0.0</span>';
+        if(duration){
+          html += '<span>/' + duration + '</span>';
+        }
+        html += '<span>&nbsp;seconds</span>';
+        html += '</div>';
         return html;
     },
 };
@@ -126,7 +132,7 @@ Audio.prototype.play = function() {
         this.media.getCurrentPosition(
             $.proxy(function(position) {
                 if (position > -1) {
-                    $('#annotate-audio-position').text((position.toFixed(1)) + ' sec');
+                    $('#annotate-audio-position').text(position.toFixed(1));
                 }
             }, this),
             // error callback
@@ -173,7 +179,7 @@ Audio.prototype.clear = function(){
     clearInterval(this.mediaTimer);
     this.mediaTimer = null;
 
-    $('#annotate-audio-position').text('');
+    $('#annotate-audio-position').text('0.0');
 
     $('#annotate-audio-button').addClass('annotate-audio-stopped');
     $('#annotate-audio-button').removeClass('annotate-audio-started');

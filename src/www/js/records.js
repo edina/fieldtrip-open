@@ -722,7 +722,11 @@ var _base = {
             if (navigator.device !== undefined){
                 navigator.device.capture.captureAudio(
                     function(mediaFiles){
-                        callback(mediaFiles[0].localURL, mediaFiles[0].name);
+                        callback({
+                            url: mediaFiles[0].localURL,
+                            label: mediaFiles[0].name,
+                            duration: mediaFiles[0].duration
+                        });
                     },
                     captureError,
                     {limit: 1}
@@ -850,7 +854,13 @@ var _ios = {
 
                     var fileURI = mediaFiles[0].fullPath;
 
-                    that.moveFileToPersistentStorage(fileURI, callback);
+                    that.moveFileToPersistentStorage(fileURI, function(){
+                        callback({
+                            url: mediaFiles[0].localURL,
+                            label: mediaFiles[0].name,
+                            duration: mediaFiles[0].duration
+                        });
+                    });
 
 
                 },
