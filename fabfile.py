@@ -901,7 +901,7 @@ def release_android(beta='True', overwrite='False', email=False):
                 print "To release the project must be tagged and checked out with release version. project: {0}".format(versions['project'])
                 exit(1)
             for cplug in plugins['cordova']:
-                if len(cplug.split('@')) != 2:
+                if len(cplug.split('@')) != 2 and len(cplug.split('#')) != 2:
                     print "Must release with a versioned cordova plugin: {0}".format(cplug)
                     exit(1)
             for name, version in plugins['fieldtrip'].items():
