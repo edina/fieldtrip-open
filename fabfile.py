@@ -61,7 +61,8 @@ PLUGMAN_VERSION    = '0.22.4'
 
 # lowest supported android sdk version
 # could move to config if projects diverge
-TARGET_SDK_VERSION = 24 # 4.0
+MIN_SDK_VERSION = 14 # 4.0 Ice cream sandwich
+TARGET_SDK_VERSION = 19 # 4.4 Kitkat
 
 """
 Tools installed via npm.
@@ -1407,6 +1408,10 @@ def _update_android_manifest(path):
     for permission in permissions:
         if not has_permission(permission):
             add_permission(permission)
+
+    # update min sdk verison
+    us = root.xpath('/manifest/uses-sdk[@android:minSdkVersion]', namespaces=NS)[0]
+    us.set('{{{0}}}minSdkVersion'.format(ANS), str(MIN_SDK_VERSION))
 
     # update target sdk verison
     us = root.xpath('/manifest/uses-sdk[@android:targetSdkVersion]', namespaces=NS)[0]
