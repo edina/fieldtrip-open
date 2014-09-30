@@ -46,11 +46,18 @@ define(function(){
      */
     var getControlValue = function(i, div){
         var id = $(div).attr('id').split('settings-')[1];
-        var control = $(div);
+        var $control = $(div);
 
-        if(typeof(control) !== 'undefined'){
-            var tag = control.prop('tagName').toLowerCase();
-            if(control.attr('data-role') === 'flipswitch'){
+        if(typeof($control) !== 'undefined'){
+            var tag = $control.prop('tagName').toLowerCase();
+            var values = [];
+            if(tag === 'select'){
+                $.each($control.find('option'), function(i, el){
+                    values.push(el.value);
+                });
+            }
+
+            if($control.attr('data-role') === 'flipswitch'){
                 // a slider is a select tag but
                 // can be identified by its data-role
                 tag = 'flipswitch';
@@ -58,7 +65,8 @@ define(function(){
 
             vals[id] = {
                 'type': tag,
-                'val': $(control).val()
+                'values': values,
+                'val': $control.val()
             };
         }
         else{
@@ -117,18 +125,33 @@ define(function(){
         });
     };
 
-    var stored = localStorage.getItem('settings');
-    if(stored){
-        vals = JSON.parse(stored);
-    }
-    else{
-        vals = {};
+    vals = {};
+    $.get('settings.html', function(data){
+        // Load the actual values into vals
+        $.each($(data).find('[name=settings-entry]'), getControlValue);
 
-        // initialise based on default values
-        $.get('settings.html', function(data){
-            $.each($(data).find('[name=settings-entry]'), getControlValue);
-        });
-    }
+        // Get the stored settings string
+        var storedStr = localStorage.getItem('settings');
+        if(storedStr){
+            var stored = JSON.parse(storedStr);
+
+            for(var key in stored){
+                var value = vals[key];
+                // if the value exist in the setting values check for its validity
+                if(value !== undefined){
+                    var valids = vals[key].values;
+
+                    // Use the value if it's valid
+                    if(valids && valids.indexOf(stored[key].val) >= 0){
+                        vals[key].val = stored[key].val;
+                    }
+                }
+            }
+        }
+
+        // Store the settings
+        localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
+    });
 
     $(document).on('pagecreate', '#settings-page', settingsPage);
     $(document).on('pageremove', '#settings-page', save);
