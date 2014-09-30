@@ -415,6 +415,9 @@ def generate_html(platform="android", cordova=False):
             tmpl = environ_settings.get_template('settings.html')
             data = {}
             if settings_config is not None:
+                #this is needed for when the plugins come through bower
+                if "fieldtrip-" in plg:
+                    plg = plg.replace("fieldtrip-", "")
                 if plg in settings_config.keys():
                     value = settings_config[plg]
                     if value.startswith('{'):
