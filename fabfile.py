@@ -52,12 +52,12 @@ import sys
 import re
 
 
-CORDOVA_VERSION    = '3.6.3-0.2.12'
+CORDOVA_VERSION    = '3.6.3-0.2.13'
 OPENLAYERS_VERSION = '2.13.1'
-NPM_VERSION        = '1.4.10'
-BOWER_VERSION      = '1.3.8'
-JSHINT_VERSION     = '2.5.0'
-PLUGMAN_VERSION    = '0.22.4'
+NPM_VERSION        = '2.1.2'
+BOWER_VERSION      = '1.3.12'
+JSHINT_VERSION     = '2.5.6'
+PLUGMAN_VERSION    = '0.22.10'
 
 # lowest supported android sdk version
 # could move to config if projects diverge
