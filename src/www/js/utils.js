@@ -432,13 +432,6 @@ return {
     },
 
     /**
-     * @return True if the cdvfile protocol should not be used.
-     */
-    getNoCdvFileProtocol: function(){
-        return config.noCdvFileProtocol;
-    },
-
-    /**
      * @return The android/java package name.
      */
     getPackage: function(){

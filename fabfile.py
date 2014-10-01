@@ -61,7 +61,8 @@ PLUGMAN_VERSION    = '0.22.10'
 
 # lowest supported android sdk version
 # could move to config if projects diverge
-TARGET_SDK_VERSION = 24 # 4.0
+MIN_SDK_VERSION = 14 # 4.0 Ice cream sandwich
+TARGET_SDK_VERSION = 19 # 4.4 Kitkat
 
 """
 Tools installed via npm.
@@ -414,6 +415,9 @@ def generate_html(platform="android", cordova=False):
             tmpl = environ_settings.get_template('settings.html')
             data = {}
             if settings_config is not None:
+                #this is needed for when the plugins come through bower
+                if "fieldtrip-" in plg:
+                    plg = plg.replace("fieldtrip-", "")
                 if plg in settings_config.keys():
                     value = settings_config[plg]
                     if value.startswith('{'):
@@ -901,7 +905,7 @@ def release_android(beta='True', overwrite='False', email=False):
                 print "To release the project must be tagged and checked out with release version. project: {0}".format(versions['project'])
                 exit(1)
             for cplug in plugins['cordova']:
-                if len(cplug.split('@')) != 2:
+                if len(cplug.split('@')) != 2 and len(cplug.split('#')) != 2:
                     print "Must release with a versioned cordova plugin: {0}".format(cplug)
                     exit(1)
             for name, version in plugins['fieldtrip'].items():
@@ -1407,6 +1411,10 @@ def _update_android_manifest(path):
     for permission in permissions:
         if not has_permission(permission):
             add_permission(permission)
+
+    # update min sdk verison
+    us = root.xpath('/manifest/uses-sdk[@android:minSdkVersion]', namespaces=NS)[0]
+    us.set('{{{0}}}minSdkVersion'.format(ANS), str(MIN_SDK_VERSION))
 
     # update target sdk verison
     us = root.xpath('/manifest/uses-sdk[@android:targetSdkVersion]', namespaces=NS)[0]
