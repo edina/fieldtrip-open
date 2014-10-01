@@ -231,8 +231,12 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
                    $.proxy(map.panToLocationMarker, map));
 
     // only privileged user should see development section
-    if(!utils.isPrivilegedUser()){
-        $('#home-page-development').hide();
+    if(utils.isMobileDevice()){
+        var isPrivileged = utils.isPrivilegedUser();
+        console.log(device.uuid + " isPrivileged: " + isPrivileged);
+        if(!isPrivileged){
+            $('#home-page-development').hide();
+        }
     }
 
     // listen for windows resizes
@@ -701,7 +705,7 @@ var _ui = {
             'click',
             '.saved-records-view',
             $.proxy(function(event){
-                if(this.isMobileApp){
+                if(this.isMobileDevice()){
                     // this will prevent the event propagating to next screen
                     event.stopImmediatePropagation();
                 }

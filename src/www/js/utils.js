@@ -609,7 +609,6 @@ return {
         if(isMobileApp){
             if(priviligedUsers.indexOf(device.uuid) === -1){
                 isPrivileged = false;
-                console.debug(device.uuid + " privileged user is " + isPrivileged);
             }
         }
 
