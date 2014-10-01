@@ -73,8 +73,7 @@ function onDeviceReady(){
         // called when all plugins are finished loading
         var pluginsComplete = function(){
             // initialise home page first time
-            ui.pageChange();
-            ui.homePage();
+            ui.init();
         };
 
         // set up fieldtrip plugins

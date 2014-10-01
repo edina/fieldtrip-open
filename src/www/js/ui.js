@@ -288,7 +288,6 @@ var _ui = {
             if(localStorage.getItem('eula-accepted') === null){
                 $('#home-eula-popup').popup({dismissible: false});
                 $('#home-eula-popup').popup('open');
-                $('.ui-footer').hide();
             }
             else {
                 // show normal popup
@@ -296,6 +295,9 @@ var _ui = {
                 $('#home-splash-popup').popup('open');
             }
         }
+
+        this.pageChange();
+        this.homePage();
     },
 
     /**
