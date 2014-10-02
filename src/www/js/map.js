@@ -1148,7 +1148,11 @@ var _openlayers = {
             }
         }));
 
-        this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic: true}));
+        var geodesic = false; // recommended for EPSG:4326
+        if(this.externalProjectionText === 'EPSG:900913'){
+            geodesic = true;
+        }
+        this.map.addControl(new OpenLayers.Control.ScaleLine({geodesic: geodesic}));
 
         // create default user position
         this.userLonLat = new OpenLayers.LonLat(
