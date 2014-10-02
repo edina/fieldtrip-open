@@ -86,39 +86,42 @@ var _base =  {
     },
 
     /**
-    * Delete a file from file system.
-    * @param fileName The name of the file to delete.
-    * @param dir The directory the file belongs to.
-    * @param callback Function will be called when file is successfully deleted.
-    */
-   deleteFile: function(fileName, dir, callback){
-       if(dir === undefined){
-           console.warn("Target directory not defined: " + dir);
-       }
-       else{
-           dir.getFile(
-               fileName,
-               {create: true, exclusive: false},
-               function(fileEntry){
-                   fileEntry.remove(
-                       function(entry){
-                           console.debug("File deleted: " + fileName);
-                           if(callback){
-                               callback();
-                           }
-                       },
-                       function(error){
-                           console.error("Failed to delete file:" + fileName +
-                                         ". errcode = " + error.code);
-                       });
-               },
-               function(error){
-                   console.error("Failed to delete file: " + fileName +
-                                 ". errcode = " + error.code);
-               }
-           );
-       }
-   },
+     * Delete a file from file system.
+     * @param fileName The name of the file to delete.
+     * @param dir The directory the file belongs to.
+     * @param callback Function will be called when file is successfully deleted.
+     */
+    deleteFile: function(fileName, dir, callback){
+        if(dir === undefined){
+            console.warn("Target directory not defined: " + dir);
+        }
+        else{
+            dir.getFile(
+                fileName,
+                {create: false, exclusive: false},
+                function(fileEntry){
+                    fileEntry.remove(
+                        function(entry){
+                            console.debug("File deleted: " + fileName);
+                            if(callback){
+                                callback();
+                            }
+                        },
+                        function(error){
+                            console.error("Failed to delete file: " + fileName +
+                                          ". errcode = " + error.code +
+                                          ". error = " + this.getFileErrorMsg(error.code));
+                        }
+                    );
+                },
+                function(error){
+                    console.error("Failed to get file: " + fileName +
+                                  ". errcode = " + error.code +
+                                  ". error = " + this.getFileErrorMsg(error.code));
+                }
+            );
+        }
+    },
 
     /**
     * Delete all files from a dir
