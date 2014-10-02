@@ -92,7 +92,7 @@ define(function(){
                 utils.inform('done');
             });
 
-            $('#settings-ftgb').text(utils.version);
+            $('#settings-project').text(utils.version);
             $('#settings-jquery').text($().jquery);
             $('#settings-jqm').text(jQuery.mobile.version);
 
