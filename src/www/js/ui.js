@@ -707,9 +707,9 @@ var _ui = {
             'click',
             '.saved-records-view',
             $.proxy(function(event){
-                if(this.isMobileDevice()){
+                if(utils.isMobileDevice()){
                     // this will prevent the event propagating to next screen
-                    event.stopImmediatePropagation();
+                    event.preventDefault();
                 }
 
                 var id = $(event.target).parents('li').attr('id');
