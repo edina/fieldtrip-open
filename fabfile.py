@@ -430,7 +430,7 @@ def generate_html(platform="android", cordova=False):
         footer_template = environ.get_template("footer.html")
         template  = environ.get_template('settings.html')
         output = template.render(settings="\n".join(settings),
-                            project = _config('name'),
+                            config = _config(),
                             header=header_template.render(
                                 data=header_data,
                                 platform=platform),
