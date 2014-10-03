@@ -792,8 +792,7 @@ var _ios = {
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
                 s4() + '-' + s4() + s4() + s4();
         };
-    })()
-    ,
+    })(),
 
     /**
      *  @param fileURI is the location of the file in temp directory
