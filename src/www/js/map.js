@@ -210,7 +210,7 @@ var _base = {
      * clear watch if already defined
      */
     clearGeoLocateWatch: function(){
-        if(this.geoLocationWatchID){
+        if(this.geoLocationWatchID !== undefined){
             navigator.geolocation.clearWatch(this.geoLocationWatchID);
         }
     },
@@ -820,11 +820,26 @@ var _base = {
      */
     switchBaseLayer: function(layer){
         if(this.map.baseLayer !== null){
-            if(layer.options.url === this.map.baseLayer.url){
+            var current, next;
+            if(typeof(layer.url) == 'string'){
+                current = this.map.baseLayer.url;
+                next = layer.url;
+            }
+            else{
+                // OSM has multiple urls defined, just check first one
+                current = this.map.baseLayer.url[0];
+                next = layer.url[0];
+            }
+
+            if(current === next){
                 return;
             }
 
+            // remove old base layer
             this.map.removeLayer(this.map.baseLayer);
+
+            // clear all layers
+            this.clearAllLayers();
         }
 
         console.debug("switch base layer to " + layer.url);
@@ -1311,6 +1326,15 @@ var _openlayers = {
         // See: http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection
 
         this.map.addLayer(mbtilesLayer);
+    },
+
+    /**
+     * Remove all features from all layers in the map.
+     */
+    clearAllLayers: function(){
+        $.each(this.map.layers, function(i, layer){
+            layer.removeAllFeatures();
+        });
     },
 
     /**

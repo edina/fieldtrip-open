@@ -74,24 +74,43 @@ define(function(){
         }
     };
 
-    /**
-     * Save current settings to localstorage.
-     */
-    var save = function(){
-        $.each($('[name=settings-entry]'), getControlValue);
+    vals = {};
+    $.get('settings.html', function(data){
+        // Load the actual values into vals
+        $.each($(data).find('[name=settings-entry]'), getControlValue);
+
+        // Get the stored settings string
+        var storedStr = localStorage.getItem('settings');
+        if(storedStr){
+            var stored = JSON.parse(storedStr);
+
+            for(var key in stored){
+                var value = vals[key];
+                // if the value exist in the setting values check for its validity
+                if(value !== undefined){
+                    var valids = vals[key].values;
+
+                    // Use the value if it's valid
+                    if(valids && valids.indexOf(stored[key].val) >= 0){
+                        vals[key].val = stored[key].val;
+                    }
+                }
+            }
+        }
+
+        // Store the settings
         localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
-    };
+    });
+
+    /************************** public interface  ******************************/
+
+return{
 
     /**
-     * Open settings page.
+     * Initialise settings page.
      */
-    var settingsPage = function(){
+    init: function(name){
         require(['utils'], function(utils){
-            $('#settings-clear-local-storage a').click(function(){
-                localStorage.clear();
-                utils.inform('done');
-            });
-
             $('#settings-project').text(utils.version);
             $('#settings-jquery').text($().jquery);
             $('#settings-jqm').text(jQuery.mobile.version);
@@ -124,42 +143,7 @@ define(function(){
                 }
             });
         });
-    };
-
-    vals = {};
-    $.get('settings.html', function(data){
-        // Load the actual values into vals
-        $.each($(data).find('[name=settings-entry]'), getControlValue);
-
-        // Get the stored settings string
-        var storedStr = localStorage.getItem('settings');
-        if(storedStr){
-            var stored = JSON.parse(storedStr);
-
-            for(var key in stored){
-                var value = vals[key];
-                // if the value exist in the setting values check for its validity
-                if(value !== undefined){
-                    var valids = vals[key].values;
-
-                    // Use the value if it's valid
-                    if(valids && valids.indexOf(stored[key].val) >= 0){
-                        vals[key].val = stored[key].val;
-                    }
-                }
-            }
-        }
-
-        // Store the settings
-        localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
-    });
-
-    $(document).on('pagecreate', '#settings-page', settingsPage);
-    $(document).on('pageremove', '#settings-page', save);
-
-    /************************** public interface  ******************************/
-
-return{
+    },
 
     /**
      * Get setting for named value.
@@ -171,6 +155,14 @@ return{
             val = vals[name].val;
         }
         return val;
+    },
+
+    /**
+     * Save current settings to localstorage.
+     */
+    save: function(){
+        $.each($('[name=settings-entry]'), getControlValue);
+        localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
     }
 };
 

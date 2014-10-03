@@ -533,14 +533,20 @@ var _ui = {
         map.showLocateLayer();
         map.hideAnnotateLayer();
 
-        // force redraw, specifically for closing of record details dialog
-        //resizePage();
+        map.startLocationUpdate();
+        map.startCompass();
     },
 
     /**
      * Map page init (on pagecreate).
      */
     mapPageInit: function(){
+        // Set map page buttons when records are hidden.
+        var mapPageRecordsHidden = function(){
+            $('#map-records-buttons-ok a').text('Show Records');
+            $('#map-records-buttons-list a').hide();
+        };
+
         $('#map-records-buttons-ok').click($.proxy(function(event){
             var label = $('#map-records-buttons-ok a').text().trim();
             if(label === 'Show Records'){
@@ -548,7 +554,7 @@ var _ui = {
             }
             else{
                 map.hideRecordsLayer();
-                this.mapPageRecordsHidden();
+                mapPageRecordsHidden();
             }
         }, this));
 
@@ -556,7 +562,7 @@ var _ui = {
             this.mapPageRecordsVisible();
         }
         else{
-            this.mapPageRecordsHidden();
+            mapPageRecordsHidden();
         }
     },
 
@@ -568,14 +574,6 @@ var _ui = {
     mapPageRecordCentred: function(annotation){
         map.showRecordsLayer(annotation);
         this.mapPageRecordsVisible();
-    },
-
-    /**
-     * Set map page buttons when records are hidden.
-     */
-    mapPageRecordsHidden: function(){
-        $('#map-records-buttons-ok a').text('Show Records');
-        $('#map-records-buttons-list a').hide();
     },
 
     /**
@@ -592,12 +590,6 @@ var _ui = {
     mapPageRemove: function(){
         map.stopLocationUpdate();
         map.stopCompass();
-    },
-
-    mapPageShow: function(){
-        this.mapPage();
-        map.startLocationUpdate();
-        map.startCompass();
     },
 
     /**
@@ -719,6 +711,25 @@ var _ui = {
                 utils.gotoMapPage($.proxy(this.mapPageRecordCentred, this, annotation));
             }, this)
         );
+    },
+
+    /**
+     * Initialise settings page.
+     */
+    settingsPage: function(){
+        $('#settings-clear-local-storage a').click(function(){
+            localStorage.clear();
+            utils.inform('done');
+        });
+
+        settings.init();
+    },
+
+    /**
+     * Setting page has closed, save state.
+     */
+    settingsPageRemove: function(){
+        settings.save();
     },
 
     /**
