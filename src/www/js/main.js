@@ -103,28 +103,20 @@ function onDeviceReady(){
             ui.toggleActiveInit(ids);
         });
 
-        $(document).on('pagecontainerchange', function(event){
-        });
-
         $(document).on('pagecreate', '#map-page', function(){
             // map page is special case, need to setup up openlayers before onshow
             ui.mapPageInit();
         });
 
-        $(document).on('pageremove', '#map-page', function(){
-            ui.mapPageRemove();
-        });
-
-        $(document).on('pagecontainerbeforeshow', function(event){
-        });
-
+        // set up onshow listeners
         var onShows = {
-            'home-page': ui.homePage,
-            'map-page': ui.mapPageShow,
-            'capture-page': ui.capturePage,
             'annotate-page': ui.annotatePage,
             'annotate-preview-page': ui.annotatePreviewPage,
+            'capture-page': ui.capturePage,
+            'home-page': ui.homePage,
+            'map-page': ui.mapPage,
             'saved-records-page': ui.savedRecordsPage,
+            'settings-page': ui.settingsPage
         };
 
         /* pageshow event is being deprecated in jquery 1.4 but due to the
@@ -143,6 +135,18 @@ function onDeviceReady(){
             $(document).on('_pageshow', selector, function(){
                 fun.call(ui);
             });
+        });
+
+        // set up onremove listeners
+        var onRemoves = {
+            'map-page': ui.mapPageRemove,
+            'settings-page': ui.settingsPageRemove
+        };
+
+        $.each(onRemoves, function(id, func){
+            $(document).on('pageremove',
+                           '#' + id,
+                           $.proxy(func, ui));
         });
     });
 }
