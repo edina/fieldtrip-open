@@ -34,7 +34,8 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Camera */
 
-define(['utils', 'file'], function(utils, file){
+define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html'], function(// jshint ignore:line
+    utils, file, _, recrowtemplate){
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     var assetsDir;
     var editorsDir;
@@ -173,6 +174,24 @@ var _base = {
                 navigator.notification.alert(msg);
             },
         });
+    },
+
+    /**
+     * Add an annotation to 'live' saved records page.
+     * @param id annotation id.
+     * @param annotation
+     */
+    addAnnotationToSavedRecords: function(id, annotation){
+        var template = _.template(recrowtemplate);
+
+        $('#saved-records-list-list').append(
+            template({
+                "id": id,
+                "annotation": annotation,
+                "fields": annotation.record.fields,
+                "records": this
+            })
+        ).trigger('create');
     },
 
     /**

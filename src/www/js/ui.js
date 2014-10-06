@@ -36,8 +36,8 @@ DAMAGE.
 /**
  * Main fieldtrip open UI interface.
  */
-define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html'], function(// jshint ignore:line
-    map, records, utils, settings, _, recrowtemplate){
+define(['map', 'records', 'utils', 'settings'], function(// jshint ignore:line
+    map, records, utils, settings){
     var portraitScreenHeight;
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
@@ -596,25 +596,8 @@ var _ui = {
      * Function is called each time a page changes.
      */
     pageChange: function(){
-        //$("[data-role=header]").fixedtoolbar({tapToggle: false});
-        //$("[data-role=footer]").fixedtoolbar({tapToggle: false});
-
         resizePage();
         this.toggleActive();
-    },
-
-
-    addAnnotation: function(id, annotation){
-        var template = _.template(recrowtemplate);
-
-        $('#saved-records-list-list').append(
-            template({
-                "id": id,
-                "annotation": annotation,
-                "fields": annotation.record.fields,
-                "records": records
-            })
-        ).trigger('create');
     },
 
     /**
@@ -622,7 +605,6 @@ var _ui = {
      */
     savedRecordsPage: function(event){
         var annotations = records.getSavedRecords();
-        var that = this;
         //utils.printObj(annotations);
 
         /**
@@ -651,7 +633,7 @@ var _ui = {
 
         $.each(annotations, function(id, annotation){
             if(annotation){
-                that.addAnnotation(id, annotation);
+                records.addAnnotationToSavedRecords(id, annotation);
             }
             else{
                 // empty entry, just delete it
