@@ -16,33 +16,25 @@
     "license": "BSD",
     "homepage": "http://fieldtripgb.blogs.edina.ac.uk/",
     "dependencies": {
-        "iscroll": "4.2",
-        "jquery": "1.10.0",
-        "jquery-mobile-bower": "1.4.2",
-        "jquery-mobile-iscrollview-amd": "1.2.9",
+        "jquery": "1.11.1",
+        "jquery-mobile": "http://jquerymobile.com/resources/download/jquery.mobile-1.4.4.zip",
         "leaflet": "0.7.3",
         "leaflet.markercluster": "0.4.0",
-        "proj4": "2.2.1",
+        "proj4": "2.2.2",
         "proj4leaflet": "0.7.0",
-        "qunit": "1.14.0",
-        "requirejs": "2.1.9",
-        "requirejs-text": "2.0.10",
-        "spectrum": "1.1.0",
-        "underscore": "1.5.2"
+        "qunit": "1.15.0",
+        "requirejs": "2.1.15",
+        "requirejs-text": "2.0.12",
+        "spectrum": "1.5.1",
+        "underscore": "1.7.0"
     },
     "dependency_locations": {
-        "iscroll": [
-            "src/iscroll-lite.js"
-        ],
         "jquery": [
-            "jquery.min.js"
+            "dist/jquery.min.js"
         ],
-        "jquery-mobile-bower": [
-            "js/jquery.mobile-x.x.min.js",
-            "css/jquery.mobile-x.x.min.css"
-        ],
-        "jquery-mobile-iscrollview-amd": [
-            "lib/jquery.mobile.iscrollview-closure-min.js"
+        "jquery-mobile": [
+            "jquery.mobile-x.x.min.js",
+            "jquery.mobile-x.x.min.css"
         ],
         "leaflet": [
             "dist/leaflet.js",

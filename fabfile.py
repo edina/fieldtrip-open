@@ -786,6 +786,9 @@ def install_project(platform='android',
             files = bower['dependency_locations'][dep]
             version = bower['dependencies'][dep]
             for f in files:
+                if version[:4] == 'http':
+                    # if a url has been given get the version from it
+                    version = re.search('((\d\.){2}\d)', version).group(0)
                 f = f.replace('x.x', version)
                 src = os.sep.join((bower_home, dep, f))
                 f_name = dep.replace('-bower', '')
