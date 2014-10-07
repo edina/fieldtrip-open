@@ -32,7 +32,7 @@ DAMAGE.
 "use strict";
 
 /* jshint multistr: true */
-/* global Camera */
+/* global Camera, cordova */
 
 define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html'], function(// jshint ignore:line
     utils, file, _, recrowtemplate){
@@ -793,20 +793,24 @@ var _base = {
         };
 
         // if it's possible check if the intent has an activity associated
-        if(cordova && cordova.plugins && cordova.plugins.ActivitiesList){ // jshint ignore:line
-            cordova.plugins                                               // jshint ignore:line
-                .ActivitiesList.byIntent('android.provider.MediaStore.RECORD_SOUND',
-                    function(activities){
-                        if(activities.length > 0){
-                            invokeRecorder();
-                        }else{
-                            $('#audiorecorder-error-popup').popup('open');
-                        }
-                    },function(error){
-                        console.error(error);
-                    });
+        if(cordova && cordova.plugins && cordova.plugins.ActivitiesList){
+            cordova.plugins.ActivitiesList.byIntent(
+                'android.provider.MediaStore.RECORD_SOUND',
+                function(activities){
+                    if(activities.length > 0){
+                        invokeRecorder();
+                    }
+                    else{
+                        $('#audiorecorder-error-popup').popup('open');
+                    }
+                },
+                function(error){
+                    console.error(error);
+                }
+            );
 
-        }else{
+        }
+        else{
             invokeRecorder();
         }
     },
