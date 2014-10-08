@@ -143,11 +143,6 @@ var _base = {
     GPS_ACCURACY_FLAG: true,
 
     /**
-     * Resolution level to zoom to after user locate.
-     */
-    POST_LOCATE_ZOOM_TO: resolutions.length - 1,
-
-    /**
      * Use position attribute name.
      */
     USER_POSITION_ATTR: 'user_pos',
@@ -847,10 +842,10 @@ var _base = {
         this.map.addLayer(layer);
         this.map.setBaseLayer(layer);
 
-        // make sure switching to closed doesn't leave
+        // make sure switching doesn't leave
         // the user at a zoom level that is not available
-        if(this.getZoom() > this.POST_LOCATE_ZOOM_TO){
-            this.map.setCenter(this.userLonLat, this.POST_LOCATE_ZOOM_TO);
+        if(this.getZoom() < this.minLocateZoomTo){
+            this.map.setCenter(this.userLonLat, this.minLocateZoomTo);
         }
     },
 
@@ -911,7 +906,7 @@ var _base = {
         if(options.zoom){
             zoom = this.getZoom();
             if(zoom < this.minLocateZoomTo){
-                zoom = this.POST_LOCATE_ZOOM_TO;
+                zoom = this.minLocateZoomTo;
             }
         }
 
@@ -968,8 +963,6 @@ var _openlayers = {
             defs: proj4.defs,
             transform: proj4
         };
-
-        this.minLocateZoomTo = resolutions.length - 3;
 
         var bounds;
         if(this.isOSM()){
@@ -1182,6 +1175,7 @@ var _openlayers = {
         this.map.addControl(drag);
         drag.activate();
 
+        this.minLocateZoomTo = this.map.getNumZoomLevels() - 3;
         this.setCentre({
             lon: defaultUserLon,
             lat: defaultUserLat,
