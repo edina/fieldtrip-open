@@ -32,6 +32,8 @@ DAMAGE.
 from bs4 import BeautifulSoup
 from copy import copy, deepcopy
 from configparser import ConfigParser, ExtendedInterpolation, NoOptionError
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings, task
 from fabric.contrib.files import exists
@@ -856,19 +858,24 @@ def install_project_android(target='local'):
     install_project(platform='android', target=target)
 
 @task
-def release_android(beta='True', overwrite='False', email=False):
+def release_android(
+        beta='True',
+        overwrite='False',
+        email=False,
+        fetch_remote='True'):
     """
     Release android version of fieldtrip app
 
     beta - BETA release or LIVE?
     overwrite - should current apk file be overwitten?
     email - send email to ftgb mailing list?
+    fetch_remote - should remote config be fetched?
     """
 
     _check_commands(['cordova', 'ant', 'zipalign'])
 
     root, proj_home, src_dir = _get_source()
-    _check_config()
+    _check_config(_str2bool(fetch_remote))
     runtime = _get_runtime()[1]
 
     # generate html for android
@@ -957,7 +964,7 @@ def release_android(beta='True', overwrite='False', email=False):
 
     # inform of release
     if email:
-        _email(file_prefix, version, beta)
+        _email(file_name, version, beta)
 
 @task
 def usage_stats():
@@ -1085,9 +1092,11 @@ def _check_commands(cmds):
     for command in cmds:
         _check_command(command)
 
-def _check_config():
+def _check_config(fetch_remote=True):
     """
     If config.ini exists update from remote location, otherwise prompt user for location
+
+    fetch_remote - should the remote config file be fetched
     """
     global config
 
@@ -1110,6 +1119,9 @@ def _check_config():
                     local('scp -P {0} {1} {2}'.format(port, answer, conf_dir))
                 else:
                     local('scp {0} {1}'.format(answer, conf_dir))
+
+    if not fetch_remote:
+        return
 
     # pick up any changes from remote config
     location = _config('location')
@@ -1190,10 +1202,18 @@ def _email(file_name,
            beta='True',
            platform='Android'):
     """
-    TODO
+    Email release details to team.
+
+    file_name - apk file name
+    version - app version
+    beta - is this a beta or official release
+    platform - android or ios
     """
 
-    url = _config('url', section='release')
+    url = '{0}/{1}/{2}'.format(
+        _config('url', section='release'),
+        version,
+        file_name)
 
     title = '{0} {1}'.format(platform, _config('name'))
     if _str2bool(beta):
@@ -1203,13 +1223,23 @@ def _email(file_name,
         title = '{0} release'.format(title)
         to = _config('email_official', section='release')
 
-    msg = MIMEText('{0}/{1}/{2}'.format(url, version, file_name))
+    html = '<html><head></head><body><a href="{0}">{0}</a></p></body></html>'.format(url)
     title = '{0} {1}'.format(title, version)
     sender = _config('sender', section='release')
 
+    msg = MIMEMultipart()
     msg['Subject'] = title
     msg['From'] = sender
     msg['To'] = to
+    msg.attach(MIMEText(html, 'html'))
+
+    attachment = 'qrcode.png'
+    local('qrencode -o {0} {1}'.format(attachment, url))
+    fp = open(attachment, 'rb')
+    img = MIMEImage(fp.read())
+    fp.close()
+    img.add_header('Content-ID', '<image1>')
+    msg.attach(img)
 
     s = smtplib.SMTP(_config('smtp', section='release'))
     s.sendmail(sender, [to], msg.as_string())
