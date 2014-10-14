@@ -36,8 +36,8 @@ DAMAGE.
 /**
  * Main fieldtrip open UI interface.
  */
-define(['map', 'records', 'utils', 'settings'], function(// jshint ignore:line
-    map, records, utils, settings){
+define(['map', 'records', 'audio', 'utils', 'settings'], function(// jshint ignore:line
+    map, records, audio, utils, settings){
     var portraitScreenHeight;
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
@@ -229,6 +229,11 @@ define(['map', 'records', 'utils', 'settings'], function(// jshint ignore:line
     $(document).on('tap',
                    '.user-locate',
                    $.proxy(map.panToLocationMarker, map));
+
+    // attach the play function to the audio button
+    $(document).on('vclick', '#annotate-audio-button', function(event) {
+        audio.playAudio();
+    });
 
     // only privileged user should see development section
     if(utils.isMobileDevice()){

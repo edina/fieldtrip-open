@@ -174,7 +174,7 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
                 map.updateLayer({
                     layer: map.getLocateLayer(),
                     id: map.USER_POSITION_ATTR,
-                    zoom: map.POST_LOCATE_ZOOM_TO,
+                    zoom: map.minLocateZoomTo,
                     lonLat: ng
                 });
                 equal(Math.round(map.getLocateCoords().lon), lonlat.lon, 'Locate lon position reset');

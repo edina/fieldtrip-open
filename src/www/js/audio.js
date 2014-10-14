@@ -34,15 +34,112 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Media */
 
+
+/**
+ * Fieldtrip js audio player module.
+ */
 define(function(){
 
-  // Attach the play function to the audio button
-  $(document).off('vclick', '#annotate-audio-button');
-  $(document).on('vclick', '#annotate-audio-button', function(event) {
-    playAudio();
-  });
+    // current/last played audio
+    var currentAudio;
 
-return{
+    /**
+     * Audio media class.
+     * @param src The media file.
+     */
+    var init = function(src){
+        // Create Media object from src
+        _this.audio = new Media(
+            src,
+            onSuccess,
+            onError
+        );
+
+        _this.audio.status = Media.MEDIA_NONE;
+    };
+
+    /**
+     * Clear audio track.
+     */
+    var clear = function(){
+        clearInterval(_this.audioTimer);
+        _this.audioTimer = null;
+
+        $('#annotate-audio-position').text('0.0');
+
+        $('#annotate-audio-button').addClass('annotate-audio-stopped');
+        $('#annotate-audio-button').removeClass('annotate-audio-started');
+    };
+
+    /**
+     * Release audio resources.
+     */
+    var destroy = function(){
+        if(_this.audio){
+            _this.audio.release();
+        }
+    };
+
+    /**
+     * Error playing audio track.
+     */
+    var onError = function(error){
+        navigator.notification.alert('code: '    + error.code    + '\n' +
+                                     'message: ' + error.message + '\n');
+    };
+
+    /**
+     * Audio track has successfully played.
+     */
+    var onSuccess = function(success){
+        clear();
+    };
+
+    /**
+     * Pause audio track.
+     */
+    var pause = function(){
+        if(_this.audio){
+            _this.audio.pause();
+        }
+    };
+
+    /**
+     * Play audio track.
+     */
+    var play = function() {
+        _this.audio.play();
+
+        $('#annotate-audio-button').removeClass('annotate-audio-stopped');
+        $('#annotate-audio-button').addClass('annotate-audio-started');
+
+        _this.audioTimer = setInterval(function(){
+            _this.audio.getCurrentPosition(
+                function(position) {
+                    if(position > -1) {
+                        $('#annotate-audio-position').text(position.toFixed(1));
+                    }
+                },
+                // error callback
+                function(e) {
+                    console.error("Error getting pos=" + e);
+                }
+            );
+        }, 100);
+    };
+
+    /**
+     * Stop audio track.
+     */
+    var stop = function(){
+        if(_this.audio){
+            _this.audio.stop();
+        }
+
+        clear();
+    };
+
+var _this = {
 
     /**
      * Generate play audio node.
@@ -53,7 +150,6 @@ return{
         var label = options.label || '';
         var durationms = options.duration || 0;
         var duration = durationms / 1000;
-
 
         var html = '<div class="annotate-audio-taken">';
         html += '<span>' + label + '</span>';
@@ -67,135 +163,33 @@ return{
         html += '</div>';
         return html;
     },
-};
 
-});
+    /**
+     * Play audio track.
+     */
+    playAudio: function(){
+        var url = $('.annotate-audio-taken input').attr('value');
 
-// TODO migrate below to requirejs syntax
+        if(this.audio){
+            if(this.audio.src !== url){
+                destroy();
+                init(url);
+            }
+        }
+        else{
+            init(url);
+        }
 
-// current/last played audio
-var currentAudio;
-
-/**
- * Play audio track.
- */
-function playAudio(){
-    var url = $('.annotate-audio-taken input').attr('value');
-
-    if(currentAudio){
-        if(currentAudio.src !== url){
-            currentAudio.destroy();
-            currentAudio = new Audio(url);
+        if(this.audio.status === Media.MEDIA_RUNNING ||
+           this.audio.status === Media.MEDIA_STARTING){
+            stop();
+        }
+        else{
+            play();
         }
     }
-    else{
-        currentAudio = new Audio(url);
-    }
-
-    if(currentAudio.status === Media.MEDIA_RUNNING ||
-       currentAudio.status === Media.MEDIA_STARTING){
-        currentAudio.stop();
-    }
-    else{
-        currentAudio.play();
-    }
-}
-
-/**
- * Audio media class.
- * @param src The media file.
- */
-function Audio(src){
-    // Create Media object from src
-    this.src = src;
-    this.media = new Media(src,
-                           $.proxy(this.onSuccess, this),
-                           $.proxy(this.onError, this),
-                           $.proxy(function(status) {
-                               this.status = status;
-                           }, this));
-
-    this.status = Media.MEDIA_NONE;
-}
-
-/**
- * Play audio track.
- */
-Audio.prototype.play = function() {
-    this.media.play();
-
-    $('#annotate-audio-button').removeClass('annotate-audio-stopped');
-    $('#annotate-audio-button').addClass('annotate-audio-started');
-
-
-    this.mediaTimer = setInterval($.proxy(function(){
-        this.media.getCurrentPosition(
-            $.proxy(function(position) {
-                if (position > -1) {
-                    $('#annotate-audio-position').text(position.toFixed(1));
-                }
-            }, this),
-            // error callback
-            function(e) {
-                console.error("Error getting pos=" + e);
-            }
-        );
-    }, this), 100);
 };
 
-/**
- * Release audio resources.
- */
-Audio.prototype.destroy = function(){
-    if(this.media){
-        this.media.release();
-    }
-};
+return _this;
 
-/**
- * Pause audio track.
- */
-Audio.prototype.pause = function(){
-    if (this.media){
-        this.media.pause();
-    }
-};
-
-/**
- * Stop audio track.
- */
-Audio.prototype.stop = function(){
-    if (this.media){
-        this.media.stop();
-    }
-
-    this.clear();
-};
-
-/**
- * Clear audio track.
- */
-Audio.prototype.clear = function(){
-    clearInterval(this.mediaTimer);
-    this.mediaTimer = null;
-
-    $('#annotate-audio-position').text('0.0');
-
-    $('#annotate-audio-button').addClass('annotate-audio-stopped');
-    $('#annotate-audio-button').removeClass('annotate-audio-started');
-};
-
-/**
- * Audio track has successfully played.
- */
-Audio.prototype.onSuccess = function(position){
-    this.clear();
-};
-
-/**
- * Error playing audio track.
- */
-Audio.prototype.onError = function(error){
-    navigator.notification.alert('code: '    + error.code    + '\n' +
-          'message: ' + error.message + '\n');
-};
+});
