@@ -862,20 +862,21 @@ def release_android(
         beta='True',
         overwrite='False',
         email=False,
-        fetch_remote='True'):
+        fetch_config='True'):
     """
     Release android version of fieldtrip app
 
     beta - BETA release or LIVE?
     overwrite - should current apk file be overwitten?
     email - send email to ftgb mailing list?
-    fetch_remote - should remote config be fetched?
+    fetch_config - should remote config be fetched?
     """
 
     _check_commands(['cordova', 'ant', 'zipalign'])
 
     root, proj_home, src_dir = _get_source()
-    _check_config(_str2bool(fetch_remote))
+    if _str2bool(fetch_config):
+        _check_config()
     runtime = _get_runtime()[1]
 
     # generate html for android
@@ -1092,11 +1093,9 @@ def _check_commands(cmds):
     for command in cmds:
         _check_command(command)
 
-def _check_config(fetch_remote=True):
+def _check_config():
     """
     If config.ini exists update from remote location, otherwise prompt user for location
-
-    fetch_remote - should the remote config file be fetched
     """
     global config
 
@@ -1119,9 +1118,6 @@ def _check_config(fetch_remote=True):
                     local('scp -P {0} {1} {2}'.format(port, answer, conf_dir))
                 else:
                     local('scp {0} {1}'.format(answer, conf_dir))
-
-    if not fetch_remote:
-        return
 
     # pick up any changes from remote config
     location = _config('location')
@@ -1209,6 +1205,8 @@ def _email(file_name,
     beta - is this a beta or official release
     platform - android or ios
     """
+
+    _check_command('qrencode')
 
     url = '{0}/{1}/{2}'.format(
         _config('url', section='release'),
