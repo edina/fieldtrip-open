@@ -144,4 +144,5 @@ fab generate_html
 * [Botani Tours](https://github.com/edina/botanitours)
 * [COBWEB](https://github.com/cobweb-eu/fieldtrip-cobweb)
 * [Fieldtrip GB](https://github.com/edina/fieldtrip-gb)
+* [Fieldtrip OSM](https://github.com/edina/fieldtrip-osm)
 * [Spatial Memories](https://github.com/edina/spatial-memories)
