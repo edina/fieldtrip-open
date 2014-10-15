@@ -39,6 +39,7 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     var assetsDir;
     var editorsDir;
+    var publicEditorsDir;
     var assetTypes = ['image', 'audio'];
 
     if(utils.isMobileDevice()){
@@ -48,6 +49,11 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
         });
         file.createDir('editors', function(dir){
             editorsDir = dir;
+        });
+        file.createDir('public', function(dir){
+            file.createDir('public/editors', function(dir){
+                publicEditorsDir = dir;
+            });
         });
     }
 
@@ -404,7 +410,7 @@ var _base = {
      * @param callback Funtion will be invoked when editors have been retrieved
      * contaioning a list of cordova file objects.
      */
-    getEditors: function(callback){
+    getEditors: function(type, callback){
         var editors = [];
 
         function success(entries) {
@@ -420,10 +426,19 @@ var _base = {
             callback(editors);
         }
 
+        var directory;
+        if(type === 'public'){
+            directory = publicEditorsDir;
+        }else{
+            directory = editorsDir;
+        }
+
         // Get a directory reader
-        if(editorsDir !== undefined){
-            var directoryReader = editorsDir.createReader();
+        if(directory !== undefined){
+            var directoryReader = directory.createReader();
             directoryReader.readEntries(success, fail);
+        }else{
+            callback(editors);
         }
     },
 
@@ -502,6 +517,13 @@ var _base = {
                     navigator.camera.MediaType.PICTURE)
             );
         }
+    },
+
+    /**
+     * @return Public directory directory object.
+     */
+    getPublicEditorsDir: function(){
+        return publicEditorsDir;
     },
 
     /**

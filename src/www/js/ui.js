@@ -494,11 +494,23 @@ var _ui = {
      */
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
-        records.getEditors(function(editors){
+        records.getEditors('default', function(editors){
             $.each(editors, function(i, editor){
                 var name = editor.name.substr(0, editor.name.indexOf('.'));
                 var html = '<div class="ui-block-' + blocks[i % 5] + '"><a id="annotate-custom-form-' + name + '" class="annotate-custom-form" href="#"><img src="css/images/custom.png"></a><p>' + name + '</p></div>';
                 $('#capture-section2').append(html);
+            });
+
+            capturePageListeners();
+        });
+
+
+       //var blocks = ['a', 'b', 'c', 'd', 'e'];
+        records.getEditors('public', function(editors){
+            $.each(editors, function(i, editor){
+                var name = editor.name.substr(0, editor.name.indexOf('.'));
+                var html = '<div class="ui-block-' + blocks[i % 5] + '"><a id="annotate-custom-form-' + name + '" class="annotate-custom-form" href="#"><img src="css/images/custom.png"></a><p>' + name + '</p></div>';
+                $('#capture-section3').append(html);
             });
 
             capturePageListeners();
