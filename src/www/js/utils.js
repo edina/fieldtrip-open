@@ -219,7 +219,7 @@ return {
      * @param func the function to be called
      * @param args the arguments to pass to the callback function
      */
-    docallback: function(func){
+    doCallback: function(func){
         var args = Array.prototype.slice.call(arguments);
         if(typeof(func) === 'function'){
             func.apply(null, args.slice(1));
