@@ -407,6 +407,7 @@ var _base = {
 
     /**
      * Get list of local custom editors.
+     * @param type 'public' for the anonymous user, 'default' authenticated user
      * @param callback Funtion will be invoked when editors have been retrieved
      * contaioning a list of cordova file objects.
      */
