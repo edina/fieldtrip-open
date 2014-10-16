@@ -741,8 +741,10 @@ var _base = {
         else{
             var features = [];
             $.each(records.getSavedRecords(), $.proxy(function(id, annotation){
-                var record = annotation.record;
-                if(record.geometry.coordinates !== undefined){
+                var record = annotation.record || {};
+                if( typeof(record.geometry) === 'object' &&
+                    record.geometry.coordinates !== undefined){
+
                     features.push(
                         this.createMarker(
                             {
