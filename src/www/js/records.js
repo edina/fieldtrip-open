@@ -37,10 +37,16 @@ DAMAGE.
 define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html'], function(// jshint ignore:line
     utils, file, _, recrowtemplate){
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
+    var EDITOR_GROUP = {
+        DEFAULT: 'default', // Embedded editor in the app
+        PUBLIC:  'public',   // Public editors
+        PRIVATE: 'private'  // Editors of an authenticated user
+    };
     var assetsDir;
-    var editorsDir;
-    var publicEditorsDir;
+    var editorsDir = {};
     var assetTypes = ['image', 'audio'];
+
+    editorsDir[EDITOR_GROUP.DEFAULT] = 'editors/';
 
     if(utils.isMobileDevice()){
         // create directory structure for annotations
@@ -48,11 +54,11 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
             assetsDir = dir;
         });
         file.createDir('editors', function(dir){
-            editorsDir = dir;
-        });
-        file.createDir('public', function(dir){
-            file.createDir('public/editors', function(dir){
-                publicEditorsDir = dir;
+            file.createDir('editors/private', function(dir){
+                editorsDir[EDITOR_GROUP.PRIVATE] = dir;
+            });
+            file.createDir('editors/public', function(dir){
+                editorsDir[EDITOR_GROUP.PUBLIC] = dir;
             });
         });
     }
@@ -102,6 +108,7 @@ var _base = {
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
     IMAGE_SIZE_FULL: "imageSizeFull",
     TITLE_ID: 'form-text-1',
+    EDITOR_GROUP: EDITOR_GROUP,
 
     /**
      * Hide records on map event name.
@@ -115,18 +122,20 @@ var _base = {
 
     /**
      * Initialise annotate page.
-     * @param form Form name.
+     * @param group group that owns the editor (default: EDITOR_GROUP.DEFAULT)
+     * @param type editor type
      * @param callback Function to be invoked when editor has been loaded.
      */
-    initPage: function(form, callback) {
+    initPage: function(group, type, callback) {
+        group = group || EDITOR_GROUP.DEFAULT;
+
         var url;
         var that = this;
 
-        if(form === 'image' || form === 'audio' || form === 'text'){
-            url = 'editors/' + form + '.edtr';
-        }
-        else{
-            url =  file.getFilePath(editorsDir) + '/' + form + '.edtr';
+        if(group ===  EDITOR_GROUP.DEFAULT){
+            url = 'editors/' + type + '.edtr';
+        }else{
+            url = file.getFilePath(editorsDir[group]) + '/' + type + '.edtr';
         }
 
         $.ajax({
@@ -222,9 +231,15 @@ var _base = {
 
     /**
      * Annotate a record.
-     * @param type The type of record to annotate.
+     * @param group Group that owns the editor
+     * @param type The type of editor to annotate.
      */
-    annotate: function(type){
+    annotate: function(group, type){
+        // note: obscure bug with dynamic loading of editors where the last form
+        // control was grabbing focus.  This was 'fixed' by specifying a 'fade'
+        // transition. see: http://devel.edina.ac.uk:7775/issues/4919
+
+        localStorage.setItem('annotate-form-group', group);
         localStorage.setItem('annotate-form-type', type);
         $('body').pagecontainer('change', 'annotate.html', {transition: "fade"});
     },
@@ -233,21 +248,21 @@ var _base = {
      * Annotate an image record.
      */
     annotateImage: function(){
-        this.annotate('image');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'image');
     },
 
     /**
      * Annotate an audio record.
      */
     annotateAudio: function(){
-        this.annotate('audio');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'audio');
     },
 
     /**
      * Annotate a text record.
      */
     annotateText: function(){
-        this.annotate('text');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'text');
     },
 
     /**
@@ -262,7 +277,7 @@ var _base = {
      * @param recordType
      * @returns record
      */
-    createRecord: function(recordType){
+    createRecord: function(group, recordType){
         return {
             "record": {
                 "type": "Feature",
@@ -276,7 +291,8 @@ var _base = {
                 }
             },
             "type": recordType,
-            "isSynced": false
+            "isSynced": false,
+            "editorGroup": group
         };
     },
 
@@ -286,8 +302,8 @@ var _base = {
      */
     deleteAllEditors: function(callback){
         // easiest way to do this is to delete the directory and recreate it
-        file.deleteAllFilesFromDir(editorsDir, 'editors', function(dir){
-            editorsDir = dir;
+        file.deleteAllFilesFromDir(editorsDir[EDITOR_GROUP.PRIVATE], 'editors', function(dir){
+            editorsDir[EDITOR_GROUP.PRIVATE] = dir;
             callback();
         });
     },
@@ -342,7 +358,7 @@ var _base = {
      * @param callback Function will be called when editor is successfully deleted.
      */
     deleteEditor: function(fileName, callback){
-        this.deleteFile(fileName, editorsDir, callback);
+        this.deleteFile(fileName, editorsDir[EDITOR_GROUP.PRIVATE], callback);
     },
 
     /**
@@ -407,11 +423,13 @@ var _base = {
 
     /**
      * Get list of local custom editors.
-     * @param type 'public' for the anonymous user, 'default' authenticated user
+     * @param group that owns the editor (default: EDITOR_GROUP.PRIVATE)
      * @param callback Funtion will be invoked when editors have been retrieved
      * contaioning a list of cordova file objects.
      */
-    getEditors: function(type, callback){
+    getEditors: function(group, callback){
+        group = group || EDITOR_GROUP.PRIVATE;
+
         var editors = [];
 
         function success(entries) {
@@ -427,13 +445,7 @@ var _base = {
             callback(editors);
         }
 
-        var directory;
-        if(type === 'public'){
-            directory = publicEditorsDir;
-        }else{
-            directory = editorsDir;
-        }
-
+        var directory = editorsDir[group];
         // Get a directory reader
         if(directory !== undefined){
             var directoryReader = directory.createReader();
@@ -444,10 +456,13 @@ var _base = {
     },
 
     /**
+     * @param type optional type of editor (default: EDITOR_GROUP.PRIVATE)
      * @return Editor forms directory object.
      */
-    getEditorsDir: function(){
-        return editorsDir;
+    getEditorsDir: function(group){
+        // Default is private
+        group = group || EDITOR_GROUP.PRIVATE;
+        return editorsDir[group];
     },
 
     /**
@@ -518,13 +533,6 @@ var _base = {
                     navigator.camera.MediaType.PICTURE)
             );
         }
-    },
-
-    /**
-     * @return Public directory directory object.
-     */
-    getPublicEditorsDir: function(){
-        return publicEditorsDir;
     },
 
     /**
@@ -611,7 +619,7 @@ var _base = {
      * Process annotation/record from an HTML5 form.
      * @param recordType record/Form type - image, text, audio or custom
      */
-    processAnnotation: function(recordType){
+    processAnnotation: function(group, recordType){
         var valid = true;
         var annotation = this.createRecord(recordType);
 

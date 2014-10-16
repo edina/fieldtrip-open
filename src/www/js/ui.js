@@ -62,31 +62,32 @@ define(['map', 'records', 'audio', 'utils', 'settings'], function(// jshint igno
      * bind annotation form listeners.
      */
     var capturePageListeners = function(){
-        // note: obscure bug with dynamic loading of editors where the last form
-        // control was grabbing focus.  This was 'fixed' by specifying a 'fade'
-        // transition. see: http://devel.edina.ac.uk:7775/issues/4919
-
         // unbind is required as this is used in the home page
         $('.annotate-image-form').unbind();
-        $('.annotate-image-form').on('vmousedown', function(){
+        $('.annotate-image-form').on('vclick', function(){
             records.annotateImage();
         });
 
         $('.annotate-audio-form').unbind();
-        $('.annotate-audio-form').on('vmousedown', function(){
+        $('.annotate-audio-form').on('vclick', function(){
             records.annotateAudio();
         });
 
         $('.annotate-text-form').unbind();
-        $('.annotate-text-form').on('vmousedown', function(){
+        $('.annotate-text-form').on('vclick', function(){
             records.annotateText();
         });
 
         $('.annotate-custom-form').unbind();
-        $('.annotate-custom-form').on('vmousedown', function(event){
+        $('.annotate-custom-form').on('vclick', function(event){
             // get the custom form type from the element id
-            var id = $(event.target).parent().attr('id');
-            records.annotate(id.substr(id.lastIndexOf('-') + 1));
+            //var id = $(event.target).parent().attr('id');
+            //records.annotate(id.substr(id.lastIndexOf('-') + 1));
+            var $editor = $(event.currentTarget);
+
+            var group = $editor.attr('editor-group');
+            var type = $editor.attr('editor-type');
+            records.annotate(group, type);
         });
     };
 
@@ -309,9 +310,11 @@ var _ui = {
      * Go to annotate screen.
      */
     annotatePage: function(){
+        var group = localStorage.getItem('annotate-form-group');
         var type = localStorage.getItem('annotate-form-type');
+
         var id;
-        records.initPage(type, $.proxy(function(){
+        records.initPage(group, type, $.proxy(function(){
             // replace photo form element with image
             var showImage = function(id, url){
                 var parent = $('#' + id).parent();
@@ -386,7 +389,7 @@ var _ui = {
                 utils.hideKeyboard();
 
                 // process the form
-                this.currentAnnotation = records.processAnnotation(type);
+                this.currentAnnotation = records.processAnnotation(group, type);
             }, this));
 
             // if annotation in progress repopulate fields
@@ -494,7 +497,7 @@ var _ui = {
      */
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
-        records.getEditors('default', function(editors){
+        records.getEditors(records.EDITOR_GROUP.PRIVATE, function(editors){
             $.each(editors, function(i, editor){
                 var name = editor.name.substr(0, editor.name.indexOf('.'));
                 var html = '<div class="ui-block-' + blocks[i % 5] + '"><a id="annotate-custom-form-' + name + '" class="annotate-custom-form" href="#"><img src="css/images/custom.png"></a><p>' + name + '</p></div>';
@@ -506,10 +509,19 @@ var _ui = {
 
 
        //var blocks = ['a', 'b', 'c', 'd', 'e'];
-        records.getEditors('public', function(editors){
+        records.getEditors(records.EDITOR_GROUP.PUBLIC, function(editors){
             $.each(editors, function(i, editor){
                 var name = editor.name.substr(0, editor.name.indexOf('.'));
-                var html = '<div class="ui-block-' + blocks[i % 5] + '"><a id="annotate-custom-form-' + name + '" class="annotate-custom-form" href="#"><img src="css/images/custom.png"></a><p>' + name + '</p></div>';
+                var html = '<div class="ui-block-' + blocks[i % 5] + '">\
+                              <a id="annotate-custom-form-' + name + '"\
+                                class="annotate-custom-form" \
+                                editor-type="' + name +'"\
+                                editor-group="'+ records.EDITOR_GROUP.PUBLIC +'"\
+                                href="#">\
+                                  <img src="css/images/custom.png"> \
+                              </a>\
+                              <p>' + name + '</p>\
+                            </div>';
                 $('#capture-section3').append(html);
             });
 
