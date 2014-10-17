@@ -274,10 +274,11 @@ var _base = {
 
     /**
      * create record
-     * @param recordType
+     * @param group group that owns the editor
+     * @param type of the editor
      * @returns record
      */
-    createRecord: function(group, recordType){
+    createRecord: function(group, type){
         return {
             "record": {
                 "type": "Feature",
@@ -286,11 +287,11 @@ var _base = {
                     "coordinates": []
                 },
                 "properties": {
-                    "editor": recordType + ".edtr",
+                    "editor": type + ".edtr",
                     "fields": []
                 }
             },
-            "type": recordType,
+            "type": type,
             "isSynced": false,
             "editorGroup": group
         };
@@ -621,7 +622,7 @@ var _base = {
      */
     processAnnotation: function(group, recordType){
         var valid = true;
-        var annotation = this.createRecord(recordType);
+        var annotation = this.createRecord(group, recordType);
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
             var divId = $(entry).attr('id');
