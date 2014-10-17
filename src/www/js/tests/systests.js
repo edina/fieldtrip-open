@@ -165,7 +165,20 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
     };
 
     var tests = {
+        /*
+            Feature: Geolocation
+                In order to find the actual location
+                as a user
+                I want to clik a button and my location displayed in a map
+
+            Scenario:
+                Given that the user is in map page
+                When the user clicks the locate button
+                Then the user location is fetched from the device
+                Then the map is centered in that location
+        */
         'Geo Locate': function(){
+            // Go to the map page
             goToMap(function(){
                 var LON = 0;
                 var LAT = 0;
@@ -180,12 +193,14 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
                 equal(Math.round(map.getLocateCoords().lon), lonlat.lon, 'Locate lon position reset');
                 equal(Math.round(map.getLocateCoords().lat), lonlat.lat, 'Locate lat position reset');
 
-                // click on locate and test if position changes
                 map.geolocateTimeout = 2000;
+
+                // Click the locate button
                 $('.user-locate').click();
                 var timer = setInterval(function() {
                     lonlat = map.getLocateCoords();
                     if(lonlat.lon !== LON && lonlat.lat !== LAT){
+                        // Assert that the location was updated
                         ok(true, 'Geo Position located');
                         clearInterval(timer);
                         complete();
@@ -193,6 +208,8 @@ define(['QUnit', 'map', 'records'], function(QUnit, map, records){
                 }, INTERVAL_POLL);
             });
         },
+
+        // Test text record creation
         'Save Text Record': function(){
             var count = records.getSavedRecordsCount();
             addRecord('test text annotation description', function(){
