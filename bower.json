@@ -30,7 +30,7 @@
     },
     "dependency_locations": {
         "jquery": [
-            "dist/jquery.min.js"
+            "jquery.min.js"
         ],
         "jquery-mobile": [
             "jquery.mobile-x.x.min.js",
