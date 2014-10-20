@@ -34,6 +34,7 @@
         }
     },
     "templates": {
-        "saved-records-list-template": "saved-records-list-template.html"
+        "saved-records-list-template": "saved-records-list-template.html",
+        "camera-capture-template": "camera-capture-template.html"
     }
 }
