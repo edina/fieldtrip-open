@@ -497,34 +497,35 @@ var _ui = {
      */
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
+        var editorToHTML = function(index, name, group){
+            var html = '<div class="ui-block-' + blocks[index % 5] + '">\
+                          <a id="annotate-custom-form-' + name + '"\
+                            class="annotate-custom-form" \
+                            editor-type="' + name +'"\
+                            editor-group="'+ group +'"\
+                            href="#">\
+                              <img src="css/images/custom.png"> \
+                          </a>\
+                          <p>' + name + '</p>\
+                        </div>';
+            return html;
+        };
+
         records.getEditors(records.EDITOR_GROUP.PRIVATE, function(editors){
             $.each(editors, function(i, editor){
                 var name = editor.name.substr(0, editor.name.indexOf('.'));
-                var html = '<div class="ui-block-' + blocks[i % 5] + '"><a id="annotate-custom-form-' + name + '" class="annotate-custom-form" href="#"><img src="css/images/custom.png"></a><p>' + name + '</p></div>';
+                var html = editorToHTML(i, name, records.EDITOR_GROUP.PRIVATE);
                 $('#capture-section2').append(html);
             });
-
             capturePageListeners();
         });
 
-
-       //var blocks = ['a', 'b', 'c', 'd', 'e'];
         records.getEditors(records.EDITOR_GROUP.PUBLIC, function(editors){
             $.each(editors, function(i, editor){
                 var name = editor.name.substr(0, editor.name.indexOf('.'));
-                var html = '<div class="ui-block-' + blocks[i % 5] + '">\
-                              <a id="annotate-custom-form-' + name + '"\
-                                class="annotate-custom-form" \
-                                editor-type="' + name +'"\
-                                editor-group="'+ records.EDITOR_GROUP.PUBLIC +'"\
-                                href="#">\
-                                  <img src="css/images/custom.png"> \
-                              </a>\
-                              <p>' + name + '</p>\
-                            </div>';
+                var html = editorToHTML(i, name, records.EDITOR_GROUP.PUBLIC);
                 $('#capture-section3').append(html);
             });
-
             capturePageListeners();
         });
     },
