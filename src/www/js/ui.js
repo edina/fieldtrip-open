@@ -497,10 +497,27 @@ var _ui = {
      */
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
-        var editorToHTML = function(index, name, group){
+
+        var appendEditorButtons = function(dir, editors, section){
+            $.each(editors, function(i, editor){
+                if(editor.name.indexOf(".edtr") > -1){
+                    var name = editor.name.substr(0, editor.name.indexOf('.'));
+                    var html;
+                    if(name+".json" in editors){
+                        html = editorToHTML(i, 'annotate-custom-form', name, dir);
+                    }
+                    else{
+                        html = editorToHTML(i, 'annotate-custom-dtree-form', name, dir);
+                    }
+                    $('#'+section).append(html);
+                }
+            });
+        };
+
+        var editorToHTML = function(index, cl, name, group){
             var html = '<div class="ui-block-' + blocks[index % 5] + '">\
                           <a id="annotate-custom-form-' + name + '"\
-                            class="annotate-custom-form" \
+                            class="' + cl + '" \
                             editor-type="' + name +'"\
                             editor-group="'+ group +'"\
                             href="#">\
@@ -512,22 +529,13 @@ var _ui = {
         };
 
         records.getEditors(records.EDITOR_GROUP.PRIVATE, function(editors){
-            $.each(editors, function(i, editor){
-                var name = editor.name.substr(0, editor.name.indexOf('.'));
-                var html = editorToHTML(i, name, records.EDITOR_GROUP.PRIVATE);
-                $('#capture-section2').append(html);
-            });
-            capturePageListeners();
+            appendEditorButtons(records.EDITOR_GROUP.PRIVATE, editors, 'capture-section2');
         });
 
         records.getEditors(records.EDITOR_GROUP.PUBLIC, function(editors){
-            $.each(editors, function(i, editor){
-                var name = editor.name.substr(0, editor.name.indexOf('.'));
-                var html = editorToHTML(i, name, records.EDITOR_GROUP.PUBLIC);
-                $('#capture-section3').append(html);
-            });
-            capturePageListeners();
+            appendEditorButtons(records.EDITOR_GROUP.PUBLIC, editors, 'capture-section3');
         });
+        capturePageListeners();
     },
 
     /**
