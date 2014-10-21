@@ -497,10 +497,11 @@ var _ui = {
      */
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
-        var editorToHTML = function(index, name, group){
+
+        var editorToHTML = function(index, cssClass, name, group){
             var html = '<div class="ui-block-' + blocks[index % 5] + '">\
                           <a id="annotate-custom-form-' + name + '"\
-                            class="annotate-custom-form" \
+                            class="' + cssClass + '" \
                             editor-type="' + name +'"\
                             editor-group="'+ group +'"\
                             href="#">\
@@ -511,15 +512,24 @@ var _ui = {
             return html;
         };
 
-        // Returns a promise that is resolved when the section is populated
-        var populateSection = function(group, container){
+        var appendEditorButtons = function(group, section){
             var deferred = new $.Deferred();
 
             records.getEditors(group, function(editors){
                 $.each(editors, function(i, editor){
-                    var name = editor.name.substr(0, editor.name.indexOf('.'));
-                    var html = editorToHTML(i, name, group);
-                    $(container).append(html);
+                    if(editor.name.indexOf(".edtr") > -1){
+                        var name = editor.name.substr(0, editor.name.indexOf('.'));
+                        var html;
+
+                        // If there is a json associated must be a dtree-form
+                        if(name + ".json" in editors){
+                            html = editorToHTML(i, 'annotate-custom-dtree-form', name, group);
+                        }
+                        else{
+                            html = editorToHTML(i, 'annotate-custom-form', name, group);
+                        }
+                        $(section).append(html);
+                    }
                 });
                 deferred.resolve();
             });
@@ -530,17 +540,17 @@ var _ui = {
         var promises = [];
         var promise;
 
-        promise = populateSection(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
+        promise = appendEditorButtons(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
         promises.push(promise);
 
         if(utils.getAnonymousUser()){
-            promise = populateSection(records.EDITOR_GROUP.PUBLIC, '#capture-section3');
+            promise = appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section3');
             promises.push(promise);
         }
 
         // After populating the section(s) add the listeners
         $.when.apply(null, promises)
-            .always(function(){
+            .done(function(){
                 capturePageListeners();
             });
     },

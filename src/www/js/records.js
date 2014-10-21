@@ -34,8 +34,10 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Camera, cordova */
 
-define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html'], function(// jshint ignore:line
-    utils, file, _, recrowtemplate){
+define(['utils', 'file', 'underscore',
+        'text!templates/saved-records-list-template.html',
+        'text!templates/camera-capture-template.html'], function(// jshint ignore:line
+    utils, file, _, recrowtemplate, cameraTemplate){
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     var EDITOR_GROUP = {
         DEFAULT: 'default', // Embedded editor in the app
@@ -144,17 +146,7 @@ var _base = {
             success: function(data){
                 var form = $('#annotate-form').append(data);
                 $.each($('input[capture=camera]'), function(index, input){
-                    var btn = '<div id="annotate-image-' + index + '" class="image-chooser ui-grid-a">\
-<div class="ui-block-a">\
-<a class="annotate-image-take" href="#">\
-<img src="css/images/images.png" alt="Take Photo"></a><p>Camera</p>\
-</div>\
-<div class="ui-block-b">\
-<a class="annotate-image-get" href="#">\
-<img src="css/images/gallery.png" alt="Choose Photo"></a><p>Gallery</p>\
-</div></div>';
-
-                    $(input).parent().append(btn + that.getImageSizeControl());
+                    $(input).parent().append(that.renderCameraExtras(index));
                 });
                 $.each($('input[capture=microphone]'), function(index, input){
                     var btn = '<div id="annotate-audio-' + index + '">\
@@ -476,33 +468,6 @@ var _base = {
     },
 
     /**
-     * @return Camera resize HTML.
-     */
-    getImageSizeControl: function(){
-        var fullSelected = '', normalSelected = '', CHECKED = 'checked';
-
-        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
-            fullSelected = CHECKED;
-        }
-        else{
-            normalSelected = CHECKED;
-        }
-
-
-        var html = '<div class="ui-grid-solo"> \
-                  <div class="ui-block-a"> \
-                    <fieldset data-role="controlgroup" data-type="horizontal"> \
-                      <input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected + ' /> \
-                      <label for="radio-view-a">Normal</label> \
-                      <input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
-                      <label for="radio-view-b">Full</label>\
-                    </fieldset><p>Image Size</p>\
-                  </div>\
-                </div>';
-        return html;
-    },
-
-    /**
      * Construct the object for the options of the image.
      */
     getImageOptions: function(sourceType, encodingType){
@@ -753,6 +718,24 @@ var _base = {
         );
 
         return annotation;
+    },
+
+    /**
+     * function for rendering the extra options for camera on the form
+     * @param index which is the id
+     * @returns html rendered
+     */
+    renderCameraExtras: function(index){
+        var fullSelected = '', normalSelected = '', CHECKED = 'checked';
+
+        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
+            fullSelected = CHECKED;
+        }
+        else{
+            normalSelected = CHECKED;
+        }
+        var template =  _.template(cameraTemplate);
+        return template({"index": index, "fullSelected": fullSelected, "normalSelected": normalSelected});
     },
 
     /**
