@@ -468,33 +468,6 @@ var _base = {
     },
 
     /**
-     * @return Camera resize HTML.
-     */
-    getImageSizeControl: function(){
-        var fullSelected = '', normalSelected = '', CHECKED = 'checked';
-
-        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
-            fullSelected = CHECKED;
-        }
-        else{
-            normalSelected = CHECKED;
-        }
-
-
-        var html = '<div class="ui-grid-solo"> \
-                  <div class="ui-block-a"> \
-                    <fieldset data-role="controlgroup" data-type="horizontal"> \
-                      <input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected + ' /> \
-                      <label for="radio-view-a">Normal</label> \
-                      <input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
-                      <label for="radio-view-b">Full</label>\
-                    </fieldset><p>Image Size</p>\
-                  </div>\
-                </div>';
-        return html;
-    },
-
-    /**
      * Construct the object for the options of the image.
      */
     getImageOptions: function(sourceType, encodingType){
