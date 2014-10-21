@@ -511,23 +511,38 @@ var _ui = {
             return html;
         };
 
-        records.getEditors(records.EDITOR_GROUP.PRIVATE, function(editors){
-            $.each(editors, function(i, editor){
-                var name = editor.name.substr(0, editor.name.indexOf('.'));
-                var html = editorToHTML(i, name, records.EDITOR_GROUP.PRIVATE);
-                $('#capture-section2').append(html);
-            });
-            capturePageListeners();
-        });
+        // Returns a promise that is resolved when the section is populated
+        var populateSection = function(group, container){
+            var deferred = new $.Deferred();
 
-        records.getEditors(records.EDITOR_GROUP.PUBLIC, function(editors){
-            $.each(editors, function(i, editor){
-                var name = editor.name.substr(0, editor.name.indexOf('.'));
-                var html = editorToHTML(i, name, records.EDITOR_GROUP.PUBLIC);
-                $('#capture-section3').append(html);
+            records.getEditors(group, function(editors){
+                $.each(editors, function(i, editor){
+                    var name = editor.name.substr(0, editor.name.indexOf('.'));
+                    var html = editorToHTML(i, name, group);
+                    $(container).append(html);
+                });
+                deferred.resolve();
             });
-            capturePageListeners();
-        });
+
+            return deferred.promise();
+        };
+
+        var promises = [];
+        var promise;
+
+        promise = populateSection(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
+        promises.push(promise);
+
+        if(utils.getAnonymousUser()){
+            promise = populateSection(records.EDITOR_GROUP.PUBLIC, '#capture-section3');
+            promises.push(promise);
+        }
+
+        // After populating the section(s) add the listeners
+        $.when.apply(null, promises)
+            .always(function(){
+                capturePageListeners();
+            });
     },
 
     /**
