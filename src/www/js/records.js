@@ -602,9 +602,7 @@ var _base = {
 
             var setInputValue = function(control){
                 var val = control.val();
-                if(val){
-                    field.val = val.trim();
-                }
+                field.val = val.trim();
             };
 
             var doInput = function(controlType){
@@ -693,7 +691,10 @@ var _base = {
                 }
             }
 
-            if(typeof(field.val) !== 'undefined' && field.val.length > 0){
+            if(typeof(field.val) !== 'undefined'){
+                annotation.record.properties.fields.push(field);
+            }else{
+                field.val = null;
                 annotation.record.properties.fields.push(field);
             }
         }, this));
