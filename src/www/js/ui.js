@@ -508,8 +508,15 @@ var _ui = {
 
                         //get the object from localstorage where classNames for
                         //editors have been stored
-                        var classes = JSON.parse(localStorage.getItem("editorsClasses"));
-                        var html = editorToHTML(i, classes[editor.name], name, group);
+                        var items = localStorage.getItem("editorsClasses");
+                        var className = "annotation-custom-form";
+                        if(items !== null){
+                            var jsonObj = JSON.parse(items);
+                            if(editor.name in jsonObj){
+                                className = jsonObj[editor.name];
+                            }
+                        }
+                        var html = editorToHTML(i, className, name, group);
                         $(section).append(html);
                     }
                 });
