@@ -669,6 +669,10 @@ var _base = {
                 field.val = $(entry).find('.annotate-audio-taken input').attr('value');
                 doLabel($(control).attr('id'));
             }
+            else if(type === 'warning'){
+                // Ignore this type of field
+                field = undefined;
+            }
             else{
                 console.warn("No such control type: " + type + ". div id = " + divId);
             }
@@ -691,11 +695,13 @@ var _base = {
                 }
             }
 
-            if(typeof(field.val) !== 'undefined'){
-                annotation.record.properties.fields.push(field);
-            }else{
-                field.val = null;
-                annotation.record.properties.fields.push(field);
+            if(typeof(field) === 'object'){
+                if(typeof(field.val) !== 'undefined'){
+                    annotation.record.properties.fields.push(field);
+                }else{
+                    field.val = null;
+                    annotation.record.properties.fields.push(field);
+                }
             }
         }, this));
 
