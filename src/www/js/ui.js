@@ -498,6 +498,27 @@ var _ui = {
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
 
+        var appendEditorButtons = function(group, section){
+            var deferred = new $.Deferred();
+
+            records.getEditors(group, function(editors){
+                $.each(editors, function(i, editor){
+                    if(editor.name.indexOf(".edtr") > -1){
+                        var name = editor.name.substr(0, editor.name.indexOf('.'));
+
+                        //get the object from localstorage where classNames for
+                        //editors have been stored
+                        var classes = JSON.parse(localStorage.getItem("editorsClasses"));
+                        var html = editorToHTML(i, classes[editor.name], name, group);
+                        $(section).append(html);
+                    }
+                });
+                deferred.resolve();
+            });
+
+            return deferred.promise();
+        };
+
         var editorToHTML = function(index, cssClass, name, group){
             var html = '<div class="ui-block-' + blocks[index % 5] + '">\
                           <a id="annotate-custom-form-' + name + '"\
@@ -510,31 +531,6 @@ var _ui = {
                           <p>' + name + '</p>\
                         </div>';
             return html;
-        };
-
-        var appendEditorButtons = function(group, section){
-            var deferred = new $.Deferred();
-
-            records.getEditors(group, function(editors){
-                $.each(editors, function(i, editor){
-                    if(editor.name.indexOf(".edtr") > -1){
-                        var name = editor.name.substr(0, editor.name.indexOf('.'));
-                        var html;
-
-                        // If there is a json associated must be a dtree-form
-                        if(name + ".json" in editors){
-                            html = editorToHTML(i, 'annotate-custom-dtree-form', name, group);
-                        }
-                        else{
-                            html = editorToHTML(i, 'annotate-custom-form', name, group);
-                        }
-                        $(section).append(html);
-                    }
-                });
-                deferred.resolve();
-            });
-
-            return deferred.promise();
         };
 
         var promises = [];
