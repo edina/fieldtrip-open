@@ -85,8 +85,8 @@ define(['map', 'records', 'audio', 'utils', 'settings'], function(// jshint igno
             //records.annotate(id.substr(id.lastIndexOf('-') + 1));
             var $editor = $(event.currentTarget);
 
-            var group = $editor.attr('editor-group');
-            var type = $editor.attr('editor-type');
+            var group = $editor.attr('data-editor-group');
+            var type = $editor.attr('data-editor-type');
             records.annotate(group, type);
         });
     };
@@ -498,6 +498,20 @@ var _ui = {
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
 
+        var editorToHTML = function(index, cssClass, name, group){
+            var html = '<div class="ui-block-' + blocks[index % 5] + '">\
+                          <a id="annotate-custom-form-' + name + '"\
+                            class="' + cssClass + '" \
+                            data-editor-type="' + name +'"\
+                            data-editor-group="'+ group +'"\
+                            href="#">\
+                              <img src="css/images/custom.png"> \
+                          </a>\
+                          <p>' + name + '</p>\
+                        </div>';
+            return html;
+        };
+
         var appendEditorButtons = function(group, section){
             var deferred = new $.Deferred();
 
@@ -524,20 +538,6 @@ var _ui = {
             });
 
             return deferred.promise();
-        };
-
-        var editorToHTML = function(index, cssClass, name, group){
-            var html = '<div class="ui-block-' + blocks[index % 5] + '">\
-                          <a id="annotate-custom-form-' + name + '"\
-                            class="' + cssClass + '" \
-                            editor-type="' + name +'"\
-                            editor-group="'+ group +'"\
-                            href="#">\
-                              <img src="css/images/custom.png"> \
-                          </a>\
-                          <p>' + name + '</p>\
-                        </div>';
-            return html;
         };
 
         var promises = [];
