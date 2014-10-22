@@ -165,12 +165,26 @@ var _base = {
                     $(input).parent().append(btn);
                 });
 
+                // Create a popup and hide the original warning
+                $.each($('div[id^=fieldcontain-warning-]'), function(index, item){
+                    var $item = $(item);
+                    var popup = '<div data-role="popup" class="warning-popup">\
+                                   <h1>'+$item.find('label').text()+'</h1>\
+                                   <span>'+$item.find('textarea').attr('placeholder')+'</span>\
+                                </div>';
+
+                    $('#annotate-form').append(popup);
+                }).hide();
+
                 utils.appendDateTimeToInput("#form-text-1");
 
                 form.trigger('create');
 
                 // hide original input elements
                 $('input[capture]').parent().hide();
+
+                // TODO: chain multiple popups
+                $('.warning-popup').popup('open');
 
                 callback();
             },
