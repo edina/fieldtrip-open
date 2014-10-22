@@ -546,7 +546,7 @@ var _ui = {
 
         // After populating the section(s) add the listeners
         $.when.apply(null, promises)
-            .done(function(){
+            .always(function(){
                 capturePageListeners();
             });
     },
