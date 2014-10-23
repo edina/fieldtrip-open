@@ -1465,8 +1465,10 @@ def _write_data(fil, filedata):
 root = _get_source()[0]
 proj_dir = _get_source()[1]
 ptasks = [proj_dir]
-for plugin in os.listdir(os.path.join(root, 'plugins')):
-    ptasks.append(os.path.join(root, 'plugins', plugin))
+plugins = os.path.join(root, 'plugins')
+if os.path.exists(plugins):
+    for plugin in os.listdir(plugins):
+        ptasks.append(os.path.join(root, 'plugins', plugin))
 for ptask in ptasks:
     if os.path.exists(os.path.join(ptask, 'fabtasks.py')):
         sys.path.append(ptask)
