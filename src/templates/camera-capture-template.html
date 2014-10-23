@@ -1,0 +1,23 @@
+<div id="annotate-image-<%= index %>" class="image-chooser ui-grid-a">
+  <div class="ui-block-a">
+    <a class="annotate-image-take" href="#">
+      <img src="css/images/images.png" alt="Take Photo"></a><p>Camera</p>
+  </div>
+  <div class="ui-block-b">
+    <a class="annotate-image-get" href="#">
+      <img src="css/images/gallery.png" alt="Choose Photo">
+    </a>
+    <p>Gallery</p>
+  </div>
+</div>
+<div class="ui-grid-solo">
+  <div class="ui-block-a">
+    <fieldset data-role="controlgroup" data-type="horizontal">
+      <input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" <%= normalSelected%> />
+      <label for="radio-view-a">Normal</label>
+      <input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" <%=fullSelected%> />
+      <label for="radio-view-b">Full</label>
+    </fieldset>
+    <p>Image Size</p>
+  </div>
+</div>

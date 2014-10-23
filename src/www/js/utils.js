@@ -216,6 +216,17 @@ return {
     },
 
     /**
+     * @param func the function to be called
+     * @param args the arguments to pass to the callback function
+     */
+    doCallback: function(func){
+        var args = Array.prototype.slice.call(arguments);
+        if(typeof(func) === 'function'){
+            func.apply(null, args.slice(1));
+        }
+    },
+
+    /**
      * Helper function that sets the value of a JQM slider on/off element.
      * @param selector Jquery selector.
      * @param value 'on' or 'off'.
@@ -223,6 +234,13 @@ return {
     flipswitchVal: function(selector, value){
         $(selector).val(value);
         $(selector).flipswitch('refresh');
+    },
+
+    /**
+     * @return Anonymous user or null if it's not set
+     **/
+    getAnonymousUser: function(){
+        return config.pcapianonymous || null;
     },
 
     /**

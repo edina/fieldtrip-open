@@ -19,7 +19,8 @@
         "require": false,
         "webdb": false
     },
+    "multistr": true,
     "indent": "4",
     "jquery": true,
-    "maxparams": "3"
+    "maxparams": "4"
 }

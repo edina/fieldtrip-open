@@ -176,7 +176,7 @@ var _base =  {
             target,
             $.proxy(function(entry) {
                 console.debug("download complete: ");
-                callback(true);
+                callback(true, entry);
             }, this),
             $.proxy(function(error) {
                 // if this fails first check whitelist in cordova.xml

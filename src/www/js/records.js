@@ -34,12 +34,22 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Camera, cordova */
 
-define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html'], function(// jshint ignore:line
-    utils, file, _, recrowtemplate){
+define(['utils', 'file', 'underscore',
+        'text!templates/saved-records-list-template.html',
+        'text!templates/camera-capture-template.html'], function(// jshint ignore:line
+    utils, file, _, recrowtemplate, cameraTemplate){
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
+    var EDITOR_GROUP = {
+        DEFAULT: 'default', // Embedded editor in the app
+        PUBLIC:  'public',   // Public editors
+        PRIVATE: 'private'  // Editors of an authenticated user
+    };
     var assetsDir;
-    var editorsDir;
+    var editorsDir = {};
     var assetTypes = ['image', 'audio'];
+    var EDITOR_CLASS = 'editor-class';
+
+    editorsDir[EDITOR_GROUP.DEFAULT] = 'editors/';
 
     if(utils.isMobileDevice()){
         // create directory structure for annotations
@@ -47,7 +57,12 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
             assetsDir = dir;
         });
         file.createDir('editors', function(dir){
-            editorsDir = dir;
+            file.createDir('editors/private', function(dir){
+                editorsDir[EDITOR_GROUP.PRIVATE] = dir;
+            });
+            file.createDir('editors/public', function(dir){
+                editorsDir[EDITOR_GROUP.PUBLIC] = dir;
+            });
         });
     }
 
@@ -96,6 +111,7 @@ var _base = {
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
     IMAGE_SIZE_FULL: "imageSizeFull",
     TITLE_ID: 'form-text-1',
+    EDITOR_GROUP: EDITOR_GROUP,
 
     /**
      * Hide records on map event name.
@@ -109,18 +125,20 @@ var _base = {
 
     /**
      * Initialise annotate page.
-     * @param form Form name.
+     * @param group group that owns the editor (default: EDITOR_GROUP.DEFAULT)
+     * @param type editor type
      * @param callback Function to be invoked when editor has been loaded.
      */
-    initPage: function(form, callback) {
+    initPage: function(group, type, callback) {
+        group = group || EDITOR_GROUP.DEFAULT;
+
         var url;
         var that = this;
 
-        if(form === 'image' || form === 'audio' || form === 'text'){
-            url = 'editors/' + form + '.edtr';
-        }
-        else{
-            url =  file.getFilePath(editorsDir) + '/' + form + '.edtr';
+        if(group ===  EDITOR_GROUP.DEFAULT){
+            url = 'editors/' + type + '.edtr';
+        }else{
+            url = file.getFilePath(editorsDir[group]) + '/' + type + '.edtr';
         }
 
         $.ajax({
@@ -129,17 +147,7 @@ var _base = {
             success: function(data){
                 var form = $('#annotate-form').append(data);
                 $.each($('input[capture=camera]'), function(index, input){
-                    var btn = '<div id="annotate-image-' + index + '" class="image-chooser ui-grid-a">\
-<div class="ui-block-a">\
-<a class="annotate-image-take" href="#">\
-<img src="css/images/images.png" alt="Take Photo"></a><p>Camera</p>\
-</div>\
-<div class="ui-block-b">\
-<a class="annotate-image-get" href="#">\
-<img src="css/images/gallery.png" alt="Choose Photo"></a><p>Gallery</p>\
-</div></div>';
-
-                    $(input).parent().append(btn + that.getImageSizeControl());
+                    $(input).parent().append(that.renderCameraExtras(index));
                 });
                 $.each($('input[capture=microphone]'), function(index, input){
                     var btn = '<div id="annotate-audio-' + index + '">\
@@ -158,12 +166,26 @@ var _base = {
                     $(input).parent().append(btn);
                 });
 
+                // Create a popup and hide the original warning
+                $.each($('div[id^=fieldcontain-warning-]'), function(index, item){
+                    var $item = $(item);
+                    var popup = '<div data-role="popup" class="warning-popup">\
+                                   <h1>'+$item.find('label').text()+'</h1>\
+                                   <span>'+$item.find('textarea').attr('placeholder')+'</span>\
+                                </div>';
+
+                    $('#annotate-form').append(popup);
+                }).hide();
+
                 utils.appendDateTimeToInput("#form-text-1");
 
                 form.trigger('create');
 
                 // hide original input elements
                 $('input[capture]').parent().hide();
+
+                // TODO: chain multiple popups
+                $('.warning-popup').popup('open');
 
                 callback();
             },
@@ -216,9 +238,15 @@ var _base = {
 
     /**
      * Annotate a record.
-     * @param type The type of record to annotate.
+     * @param group Group that owns the editor
+     * @param type The type of editor to annotate.
      */
-    annotate: function(type){
+    annotate: function(group, type){
+        // note: obscure bug with dynamic loading of editors where the last form
+        // control was grabbing focus.  This was 'fixed' by specifying a 'fade'
+        // transition. see: http://devel.edina.ac.uk:7775/issues/4919
+
+        localStorage.setItem('annotate-form-group', group);
         localStorage.setItem('annotate-form-type', type);
         $('body').pagecontainer('change', 'annotate.html', {transition: "fade"});
     },
@@ -227,21 +255,21 @@ var _base = {
      * Annotate an image record.
      */
     annotateImage: function(){
-        this.annotate('image');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'image');
     },
 
     /**
      * Annotate an audio record.
      */
     annotateAudio: function(){
-        this.annotate('audio');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'audio');
     },
 
     /**
      * Annotate a text record.
      */
     annotateText: function(){
-        this.annotate('text');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'text');
     },
 
     /**
@@ -253,10 +281,11 @@ var _base = {
 
     /**
      * create record
-     * @param recordType
+     * @param group group that owns the editor
+     * @param type of the editor
      * @returns record
      */
-    createRecord: function(recordType){
+    createRecord: function(group, type){
         return {
             "record": {
                 "type": "Feature",
@@ -265,12 +294,13 @@ var _base = {
                     "coordinates": []
                 },
                 "properties": {
-                    "editor": recordType + ".edtr",
+                    "editor": type + ".edtr",
                     "fields": []
                 }
             },
-            "type": recordType,
-            "isSynced": false
+            "type": type,
+            "isSynced": false,
+            "editorGroup": group
         };
     },
 
@@ -280,8 +310,8 @@ var _base = {
      */
     deleteAllEditors: function(callback){
         // easiest way to do this is to delete the directory and recreate it
-        file.deleteAllFilesFromDir(editorsDir, 'editors', function(dir){
-            editorsDir = dir;
+        file.deleteAllFilesFromDir(editorsDir[EDITOR_GROUP.PRIVATE], 'editors', function(dir){
+            editorsDir[EDITOR_GROUP.PRIVATE] = dir;
             callback();
         });
     },
@@ -336,7 +366,7 @@ var _base = {
      * @param callback Function will be called when editor is successfully deleted.
      */
     deleteEditor: function(fileName, callback){
-        this.deleteFile(fileName, editorsDir, callback);
+        this.deleteFile(fileName, editorsDir[EDITOR_GROUP.PRIVATE], callback);
     },
 
     /**
@@ -400,11 +430,31 @@ var _base = {
     },
 
     /**
+     * get className from localstorage
+     * @param editorName
+     * @return className
+     */
+    getEditorClass: function(editorName){
+        var items = localStorage.getItem(EDITOR_CLASS);
+        var className = "annotate-custom-form";
+        if(items !== null){
+            var jsonObj = JSON.parse(items);
+            if(editorName in jsonObj){
+                className = jsonObj[editorName];
+            }
+        }
+        return className;
+    },
+
+    /**
      * Get list of local custom editors.
+     * @param group that owns the editor (default: EDITOR_GROUP.PRIVATE)
      * @param callback Funtion will be invoked when editors have been retrieved
      * contaioning a list of cordova file objects.
      */
-    getEditors: function(callback){
+    getEditors: function(group, callback){
+        group = group || EDITOR_GROUP.PRIVATE;
+
         var editors = [];
 
         function success(entries) {
@@ -420,18 +470,24 @@ var _base = {
             callback(editors);
         }
 
+        var directory = editorsDir[group];
         // Get a directory reader
-        if(editorsDir !== undefined){
-            var directoryReader = editorsDir.createReader();
+        if(directory !== undefined){
+            var directoryReader = directory.createReader();
             directoryReader.readEntries(success, fail);
+        }else{
+            callback(editors);
         }
     },
 
     /**
+     * @param type optional type of editor (default: EDITOR_GROUP.PRIVATE)
      * @return Editor forms directory object.
      */
-    getEditorsDir: function(){
-        return editorsDir;
+    getEditorsDir: function(group){
+        // Default is private
+        group = group || EDITOR_GROUP.PRIVATE;
+        return editorsDir[group];
     },
 
     /**
@@ -441,33 +497,6 @@ var _base = {
     getEditorId: function(annotation){
         var record = annotation.record;
         return record.properties.editor.substr(0, record.properties.editor.indexOf('.'));
-    },
-
-    /**
-     * @return Camera resize HTML.
-     */
-    getImageSizeControl: function(){
-        var fullSelected = '', normalSelected = '', CHECKED = 'checked';
-
-        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
-            fullSelected = CHECKED;
-        }
-        else{
-            normalSelected = CHECKED;
-        }
-
-
-        var html = '<div class="ui-grid-solo"> \
-                  <div class="ui-block-a"> \
-                    <fieldset data-role="controlgroup" data-type="horizontal"> \
-                      <input type="radio" name="radio-image-size" id="radio-view-a" value="imageSizeNormal" ' + normalSelected + ' /> \
-                      <label for="radio-view-a">Normal</label> \
-                      <input type="radio" name="radio-image-size" id="radio-view-b" value="imageSizeFull" ' + fullSelected + ' /> \
-                      <label for="radio-view-b">Full</label>\
-                    </fieldset><p>Image Size</p>\
-                  </div>\
-                </div>';
-        return html;
     },
 
     /**
@@ -588,9 +617,9 @@ var _base = {
      * Process annotation/record from an HTML5 form.
      * @param recordType record/Form type - image, text, audio or custom
      */
-    processAnnotation: function(recordType){
+    processAnnotation: function(group, recordType){
         var valid = true;
-        var annotation = this.createRecord(recordType);
+        var annotation = this.createRecord(group, recordType);
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
             var divId = $(entry).attr('id');
@@ -605,9 +634,7 @@ var _base = {
 
             var setInputValue = function(control){
                 var val = control.val();
-                if(val){
-                    field.val = val.trim();
-                }
+                field.val = val.trim();
             };
 
             var doInput = function(controlType){
@@ -674,6 +701,10 @@ var _base = {
                 field.val = $(entry).find('.annotate-audio-taken input').attr('value');
                 doLabel($(control).attr('id'));
             }
+            else if(type === 'warning'){
+                // Ignore this type of field
+                field = undefined;
+            }
             else{
                 console.warn("No such control type: " + type + ". div id = " + divId);
             }
@@ -696,8 +727,13 @@ var _base = {
                 }
             }
 
-            if(typeof(field.val) !== 'undefined' && field.val.length > 0){
-                annotation.record.properties.fields.push(field);
+            if(typeof(field) === 'object'){
+                if(typeof(field.val) !== 'undefined'){
+                    annotation.record.properties.fields.push(field);
+                }else{
+                    field.val = null;
+                    annotation.record.properties.fields.push(field);
+                }
             }
         }, this));
 
@@ -721,6 +757,24 @@ var _base = {
         );
 
         return annotation;
+    },
+
+    /**
+     * function for rendering the extra options for camera on the form
+     * @param index which is the id
+     * @returns html rendered
+     */
+    renderCameraExtras: function(index){
+        var fullSelected = '', normalSelected = '', CHECKED = 'checked';
+
+        if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
+            fullSelected = CHECKED;
+        }
+        else{
+            normalSelected = CHECKED;
+        }
+        var template =  _.template(cameraTemplate);
+        return template({"index": index, "fullSelected": fullSelected, "normalSelected": normalSelected});
     },
 
     /**
@@ -760,6 +814,20 @@ var _base = {
         }
 
         this.saveAnnotation(undefined, annotation);
+    },
+
+    /**
+     * function for setting the editor class
+     * @param editorName name of the editor
+     * @param html, html content
+     * @param object that has the name of the editor as key and the class as value
+     */
+    setEditorClass: function(editorName, html, editorClassObj){
+        var result = $('#dtree-class-name', $(html)).text();
+        if(result !== ""){
+            editorClassObj[editorName] = result;
+            localStorage.setItem(EDITOR_CLASS, JSON.stringify(editorClassObj));
+        }
     },
 
     /**
