@@ -633,8 +633,10 @@ var _base = {
             var type = divId.substr(start, end - start);
             var control;
 
+            var ignoreField = false;
             var field = {
-                'id': divId
+                id: divId,
+                val: null
             };
 
             var setInputValue = function(control){
@@ -662,14 +664,6 @@ var _base = {
 
             if(type === 'text'){
                 doTextField('input');
-                // If the control is used to anotate the title
-                if(control.attr('id') === this.TITLE_ID){
-                    if(control.val()){
-                        annotation.record.name = control.val();
-                    }
-                    // Don't include it in the fields
-                    field = undefined;
-                }
             }
             else if(type === 'textarea'){
                 doTextField(type);
@@ -677,7 +671,7 @@ var _base = {
             else if(type === 'checkbox'){
                 doLegend();
                 $.each($(entry).find('input:checked'), function(j, checkbox){
-                    if(typeof(field.val) === 'undefined'){
+                    if(field.val === null){
                         field.val = $(checkbox).val();
                     }
                     else{
@@ -710,7 +704,7 @@ var _base = {
             }
             else if(type === 'warning'){
                 // Ignore this type of field
-                field = undefined;
+                ignoreField = true;
             }
             else{
                 console.warn("No such control type: " + type + ". div id = " + divId);
@@ -720,27 +714,27 @@ var _base = {
             if($(control).attr('required') === 'true' || $(control).attr('required') === 'required'){
                 // Validate the record name
                 if($(control).attr('id') === this.TITLE_ID){
-                    if(typeof(annotation.record.name) === 'undefined'){
-                        $(entry).find('#' + this.TITLE_ID).addClass('ui-focus');
+                    if(control.val()){
+                        // Use this control value as a record name
+                        annotation.record.name = control.val();
+                        // But don't include it as a record field
+                        ignoreField = true;
+                    }else{
+                        $(control).addClass('ui-focus');
                         valid = false;
                         return false;
                     }
                 }
                 // Validate the fields
-                else if(typeof(field.val) === 'undefined' || field.val.length === 0) {
+                else if(field.val === null || field.val.length === 0) {
                     $(control).addClass('ui-focus');
                     valid = false;
                     return false;
                 }
             }
 
-            if(typeof(field) === 'object'){
-                if(typeof(field.val) !== 'undefined'){
-                    annotation.record.properties.fields.push(field);
-                }else{
-                    field.val = null;
-                    annotation.record.properties.fields.push(field);
-                }
+            if(ignoreField === false){
+                annotation.record.properties.fields.push(field);
             }
         }, this));
 
