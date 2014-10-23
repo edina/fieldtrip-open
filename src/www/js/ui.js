@@ -519,17 +519,7 @@ var _ui = {
                 $.each(editors, function(i, editor){
                     if(editor.name.indexOf(".edtr") > -1){
                         var name = editor.name.substr(0, editor.name.indexOf('.'));
-
-                        //get the object from localstorage where classNames for
-                        //editors have been stored
-                        var items = localStorage.getItem("editorsClasses");
-                        var className = "annotation-custom-form";
-                        if(items !== null){
-                            var jsonObj = JSON.parse(items);
-                            if(editor.name in jsonObj){
-                                className = jsonObj[editor.name];
-                            }
-                        }
+                        var className = records.getEditorClass(editor.name);
                         var html = editorToHTML(i, className, name, group);
                         $(section).append(html);
                     }

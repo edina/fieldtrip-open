@@ -47,6 +47,7 @@ define(['utils', 'file', 'underscore',
     var assetsDir;
     var editorsDir = {};
     var assetTypes = ['image', 'audio'];
+    var EDITOR_CLASS = 'editor-class';
 
     editorsDir[EDITOR_GROUP.DEFAULT] = 'editors/';
 
@@ -429,6 +430,23 @@ var _base = {
     },
 
     /**
+     * function get className from localstorage
+     * @param editor name
+     * @return className
+     */
+    getEditorClass: function(editor){
+        var items = localStorage.getItem(EDITOR_CLASS);
+        var className = "annotation-custom-form";
+        if(items !== null){
+            var jsonObj = JSON.parse(items);
+            if(editor in jsonObj){
+                className = jsonObj[editor];
+            }
+        }
+        return className;
+    },
+
+    /**
      * Get list of local custom editors.
      * @param group that owns the editor (default: EDITOR_GROUP.PRIVATE)
      * @param callback Funtion will be invoked when editors have been retrieved
@@ -796,6 +814,20 @@ var _base = {
         }
 
         this.saveAnnotation(undefined, annotation);
+    },
+
+    /**
+     * function for setting the editor class
+     * @param editorName name of the editor
+     * @param html, html content
+     * @param object that has the name of the editor as key and the class as value
+     */
+    setEditorClass: function(editorName, html, editorClassObj){
+        var result = $('#dtree-class-name', $(html)).text();
+        if(result !== ""){
+            editorClassObj[editorName] = result;
+            localStorage.setItem(EDITOR_CLASS, JSON.stringify(editorClassObj));
+        }
     },
 
     /**
