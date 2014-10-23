@@ -519,7 +519,7 @@ var _ui = {
                 $.each(editors, function(i, editor){
                     if(editor.name.indexOf(".edtr") > -1){
                         var name = editor.name.substr(0, editor.name.indexOf('.'));
-                        var className = records.getEditorClass(editor.name);
+                        var className = records.getEditorClass(editor.name, group);
                         var html = editorToHTML(i, className, name, group);
                         $(section).append(html);
                     }

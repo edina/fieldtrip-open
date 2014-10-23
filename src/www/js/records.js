@@ -445,14 +445,15 @@ var _base = {
     /**
      * get className from localstorage
      * @param editorName
+     * @param group name
      * @return className
      */
-    getEditorClass: function(editorName){
+    getEditorClass: function(editorName, group){
         var items = localStorage.getItem(EDITOR_CLASS);
         var className = "annotate-custom-form";
         if(items !== null){
             var jsonObj = JSON.parse(items);
-            if(editorName in jsonObj){
+            if(editorName in jsonObj[group]){
                 className = jsonObj[editorName];
             }
         }
