@@ -435,6 +435,14 @@ var _base = {
     },
 
     /**
+     * get obj with class names from localstorage
+     * @return Object with classnames
+     */
+    getEditorClasses: function(){
+        return localStorage.getItem(EDITOR_CLASS);
+    },
+
+    /**
      * get className from localstorage
      * @param editorName
      * @return className
@@ -821,12 +829,18 @@ var _base = {
      * function for setting the editor class
      * @param editorName name of the editor
      * @param html, html content
-     * @param object that has the name of the editor as key and the class as value
+     * @param group public/private
      */
-    setEditorClass: function(editorName, html, editorClassObj){
+    setEditorClass: function(editorName, html, group){
         var result = $('#dtree-class-name', $(html)).text();
+        var editorClassObj = JSON.parse(this.getEditorClasses());
+        if(editorClassObj === null){
+            editorClassObj = {};
+            editorClassObj[EDITOR_GROUP.PUBLIC] = {};
+            editorClassObj[EDITOR_GROUP.PRIVATE] = {};
+        }
         if(result !== ""){
-            editorClassObj[editorName] = result;
+            editorClassObj[group][editorName] = result;
             localStorage.setItem(EDITOR_CLASS, JSON.stringify(editorClassObj));
         }
     },
