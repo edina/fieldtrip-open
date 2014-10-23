@@ -329,6 +329,20 @@ body .ui-loader-textonly{
     padding: 0.2em;
 }
 
+/********* Warning popup *************/
+.warning-popup{
+    padding: 0 24px 24px 24px;
+}
+.warning-popup > div{
+    min-height: 50px;
+}
+
+.warning-popup .warning-icon{
+    float: left;
+    width: 50px;
+    height: 46px;
+    padding-right: 5px;
+}
 
 /********* EULA/splash *************/
 

@@ -171,7 +171,12 @@ var _base = {
                     var $item = $(item);
                     var popup = '<div data-role="popup" class="warning-popup">\
                                    <h1>'+$item.find('label').text()+'</h1>\
-                                   <span>'+$item.find('textarea').attr('placeholder')+'</span>\
+                                   <div>\
+                                     <img class="warning-icon" src="css/images/warning-icon@2x.png"/>\
+                                     <span>'+$item.find('textarea').attr('placeholder')+'</span>\
+                                   </div>\
+                                   <br />\
+                                   <a href="#" data-rel="back" data-role="button">Accept</a>\
                                 </div>';
 
                     $('#annotate-form').append(popup);
