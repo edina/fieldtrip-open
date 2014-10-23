@@ -662,11 +662,13 @@ var _base = {
 
             if(type === 'text'){
                 doTextField('input');
+                // If the control is used to anotate the title
                 if(control.attr('id') === this.TITLE_ID){
                     if(control.val()){
                         annotation.record.name = control.val();
                     }
-                    field.val = '';
+                    // Don't include it in the fields
+                    field = undefined;
                 }
             }
             else if(type === 'textarea'){
@@ -716,19 +718,19 @@ var _base = {
 
             // do some validation
             if($(control).attr('required') === 'true' || $(control).attr('required') === 'required'){
-                if(typeof(field.val) === 'undefined' || field.val.length === 0) {
-                    if($(control).attr('id') === this.TITLE_ID){
-                        if(typeof(annotation.record.name) === 'undefined'){
-                            $(entry).find('#' + this.TITLE_ID).addClass('ui-focus');
-                            valid = false;
-                            return false;
-                        }
-                    }
-                    else{
-                        $(control).addClass('ui-focus');
+                // Validate the record name
+                if($(control).attr('id') === this.TITLE_ID){
+                    if(typeof(annotation.record.name) === 'undefined'){
+                        $(entry).find('#' + this.TITLE_ID).addClass('ui-focus');
                         valid = false;
                         return false;
                     }
+                }
+                // Validate the fields
+                else if(typeof(field.val) === 'undefined' || field.val.length === 0) {
+                    $(control).addClass('ui-focus');
+                    valid = false;
+                    return false;
                 }
             }
 
