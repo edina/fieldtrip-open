@@ -420,6 +420,27 @@ return {
     },
 
     /**
+     * @return Does the device have a network connection? No mobile devices are
+     * always true.
+     */
+    hasNetworkConnection: function(){
+        var isConnected = true;
+
+        if(this.isMobileDevice()){
+            isConnected = false;
+            var status = this.getConnectionStatus().val;
+            if(status === Connection.WIFI ||
+               status === Connection.ETHERNET ||
+               status === Connection.CELL_4G ||
+               status === Connection.CELL_3G){
+                isConnected = true;
+            }
+        }
+
+        return isConnected;
+    },
+
+    /**
      * Force hide keyboard.
      */
     hideKeyboard: function(){
@@ -559,7 +580,7 @@ return {
     },
 
     /**
-     * Loading dialog with different text.
+     * loading dialog with different text.
      * @param message The text to display.
      */
     showPageLoadingMsg: function(message){

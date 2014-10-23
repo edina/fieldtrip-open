@@ -1458,11 +1458,16 @@ def _update_android_manifest(path):
 def _write_data(fil, filedata):
     """ TODO """
     f = open(fil, 'w')
-    f.write(filedata)
+    f.write(filedata.encode('utf-8'))
     f.close()
 
-# import any project tasks
+# import any project/plugin tasks
+root = _get_source()[0]
 proj_dir = _get_source()[1]
-if os.path.exists(os.path.join(proj_dir, 'fabtasks.py')):
-    sys.path.append(proj_dir)
-    import fabtasks as ptasks
+ptasks = [proj_dir]
+for plugin in os.listdir(os.path.join(root, 'plugins')):
+    ptasks.append(os.path.join(root, 'plugins', plugin))
+for ptask in ptasks:
+    if os.path.exists(os.path.join(ptask, 'fabtasks.py')):
+        sys.path.append(ptask)
+        import fabtasks
