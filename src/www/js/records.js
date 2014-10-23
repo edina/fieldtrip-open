@@ -726,7 +726,7 @@ var _base = {
                     }
                 }
                 // Validate the fields
-                else if(field.val === null || field.val.length === 0) {
+                else if(field.val === null || (typeof(field.val) === 'string' && field.val.length === 0)) {
                     $(control).addClass('ui-focus');
                     valid = false;
                     return false;
