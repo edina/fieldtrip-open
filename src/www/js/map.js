@@ -318,7 +318,7 @@ var _base = {
      * @return The tile file type of the base layer.
      */
     getTileFileType: function(){
-        return this.getBaseLayer().type;
+        return this.getBaseLayer().type || 'png';
     },
 
     /**

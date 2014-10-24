@@ -471,7 +471,7 @@ var _base = {
         if(items !== null){
             var jsonObj = JSON.parse(items);
             if(editorName in jsonObj[group]){
-                className = jsonObj[editorName];
+                className = jsonObj[group][editorName];
             }
         }
         return className;
