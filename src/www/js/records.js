@@ -395,7 +395,7 @@ var _base = {
     getAnnotationDetails: function(name) {
         var details;
         $.each(this.getSavedRecords(), function(i, annotation){
-            if(annotation.record.properties.name.toLowerCase() === name.toLowerCase() &&
+            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
                annotation.isSynced){
                 details = {
                     'id': i,
@@ -417,7 +417,7 @@ var _base = {
         var id;
         $.each(this.getSavedRecords(), function(i, annotation){
             // note: dropbox is case insensitive so we should be also
-            if(annotation.record.properties.name.toLowerCase() === name.toLowerCase() &&
+            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
                annotation.isSynced){
                 id = i;
                 return false; // breaks loop!
