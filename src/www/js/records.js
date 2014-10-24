@@ -434,6 +434,23 @@ var _base = {
         return assetsDir;
     },
 
+
+    /**
+     * @param group a record.EDITOR_GROUP
+     * @return promise that resolves in a list of active editors for given group
+     */
+    getActiveEditors: function(group){
+        var deferred = new $.Deferred();
+        this.getEditors(group, function(files){
+            var editors = [];
+            for(var i = 0; i<files.length; i++){
+                editors.push(files[i].name);
+            }
+            deferred.resolve(editors);
+        });
+        return deferred.promise();
+    },
+
     /**
      * get obj with class names from localstorage
      * @return Object with classnames
