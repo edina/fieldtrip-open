@@ -198,6 +198,14 @@ var _base =  {
         return dir.toURL().replace("file://", "");
     },
 
+    /**
+     * @param dir Directory on the device.
+     * @return The full path of the directory.
+     */
+    getFilePathWithoutStart: function(dir){
+        return dir.toURL().replace("file://", "");
+    },
+
    /**
     * @param error The error obj.
     * @return File error message as a string.
