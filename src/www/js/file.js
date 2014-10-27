@@ -125,32 +125,39 @@ var _base =  {
 
     /**
     * Delete all files from a dir
-    * @param localDir that items will be removed from
-    * @param dirName The directory that needs to be empty.
-    * @param callback Function will return a dir value if file is successfully deleted
-    * otherwise undefined.
+    * @param localDir a DirectoryEntry to be cleared
+    * @param success called after the recreation of the directory is finished
+    * @param error called in case of error
     */
-    deleteAllFilesFromDir: function(localDir, dirName, callback){
+    deleteAllFilesFromDir: function(localDir, success, error){
         // easiest way to do this is to delete the directory and recreate it
         localDir.removeRecursively(
             $.proxy(function(){
+                var getRelativePath = this.getRelativePath;
                 this.getPersistentRoot(function(root){
+                    var relPath = getRelativePath(root.fullPath, localDir.fullPath);
+
+                    if(relPath === null){
+                        utils.doCallback(error);
+                        return;
+                    }
+
                     root.getDirectory(
-                        dirName,
+                        relPath,
                         {create: true, exclusive: false},
                         function(dir){
-                            callback(dir);
+                            utils.doCallback(success, dir);
                         },
-                        function(error){
-                            utils.inform('Failed finding editors directory. Custom forms will be disabled: ' + error);
-                            callback();
+                        function(err){
+                            console.error("Problem recreating the directory");
+                            utils.doCallback(error);
                         }
                     );
                 });
             }, this),
-            function(error){
+            function(err){
                 console.error("Problem deleting directory");
-                callback();
+                utils.doCallback(error);
             }
         );
     },
@@ -296,6 +303,37 @@ var _base =  {
      */
     getRootDir: function(){
         return "edina";
+    },
+
+    /**
+     * Get the relative path from one directory against its parent
+     * @param parent directory
+     * @param child directory it should be contained for the parent
+     *
+     * @return string with the relative path or null if the directories are not related
+     */
+    getRelativePath: function(parent, child){
+        var nonBlank = function(el){
+            return el !== "";
+        };
+        var parentParts = parent.split('/').filter(nonBlank);
+        var childParts = child.split('/').filter(nonBlank);
+
+        var relPath = [];
+        for(var i=0; i<childParts.length; i++){
+            if(i < parentParts.length){
+                if(parentParts[i] !== childParts[i]){
+                    console.error("Can't get relative path if parent doesn't contain child");
+                    console.debug(parent);
+                    console.debug(child);
+                    return null;
+                }
+            }else{
+                relPath.push(childParts[i]);
+            }
+        }
+
+        return relPath.join('/');
     },
 
     /**
