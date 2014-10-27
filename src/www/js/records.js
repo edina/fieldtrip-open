@@ -315,7 +315,7 @@ var _base = {
      */
     deleteAllEditors: function(callback){
         // easiest way to do this is to delete the directory and recreate it
-        file.deleteAllFilesFromDir(editorsDir[EDITOR_GROUP.PRIVATE], 'editors', function(dir){
+        file.deleteAllFilesFromDir(editorsDir[EDITOR_GROUP.PRIVATE], function(dir){
             editorsDir[EDITOR_GROUP.PRIVATE] = dir;
             callback();
         });
