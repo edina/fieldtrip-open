@@ -348,7 +348,7 @@ var _base = {
      */
     deleteAllEditors: function(callback){
         // easiest way to do this is to delete the directory and recreate it
-        file.deleteAllFilesFromDir(editorDirectories[EDITOR_GROUP.PRIVATE], 'editors', function(dir){
+        file.deleteAllFilesFromDir(editorDirectories[EDITOR_GROUP.PRIVATE], function(dir){
             editorDirectories[EDITOR_GROUP.PRIVATE] = dir;
             callback();
         });
@@ -428,7 +428,7 @@ var _base = {
     getAnnotationDetails: function(name) {
         var details;
         $.each(this.getSavedRecords(), function(i, annotation){
-            if(annotation.record.properties.name.toLowerCase() === name.toLowerCase() &&
+            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
                annotation.isSynced){
                 details = {
                     'id': i,
@@ -450,7 +450,7 @@ var _base = {
         var id;
         $.each(this.getSavedRecords(), function(i, annotation){
             // note: dropbox is case insensitive so we should be also
-            if(annotation.record.properties.name.toLowerCase() === name.toLowerCase() &&
+            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
                annotation.isSynced){
                 id = i;
                 return false; // breaks loop!
@@ -472,6 +472,23 @@ var _base = {
         else{
             return assetsDir;
         }
+    },
+
+
+    /**
+     * @param group a record.EDITOR_GROUP
+     * @return promise that resolves in a list of active editors for given group
+     */
+    getActiveEditors: function(group){
+        var deferred = new $.Deferred();
+        this.getEditors(group, function(files){
+            var editors = [];
+            for(var i = 0; i<files.length; i++){
+                editors.push(files[i].name);
+            }
+            deferred.resolve(editors);
+        });
+        return deferred.promise();
     },
 
     /**
