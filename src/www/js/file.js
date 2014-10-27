@@ -66,23 +66,40 @@ define(['utils'], function(utils){
     };
 
 var _base =  {
+
     /**
-    * create Directory
-    * @param dirName directory name that needs to be created
-    * @param callback Function will be called when dir is successfully created.
-    */
-    createDir: function(dirName, callback){
-        this.getPersistentRoot(function(root){
-            root.getDirectory(
-                dirName,
+     * Create Directory.
+     * @param options:
+     *   parent DirectoryEntry object. If not defined directory will be created
+     *          relative to edina root.
+     *   name directory name that needs to be created
+     *   success Function will be called when dir is successfully created.
+     *   error Function will be called when an error occurs.
+     */
+    createDir: function(options){
+        if(options.error === undefined){
+            options.error = function(error){
+                utils.inform('Problem creating directory: ' + error);
+            };
+        }
+
+        var create = function(entry){
+            entry.getDirectory(
+                options.name,
                 {create: true, exclusive: false},
-                function(dir){
-                    callback(dir);
-                },
-                function(error){
-                    utils.inform('Failed finding assets directory. Saving will be disabled: ' + error);
-                });
-        });
+                options.success,
+                options.error
+            );
+        };
+
+        if(options.parent){
+            create(options.parent);
+        }
+        else{
+            this.getPersistentRoot(function(root){
+                create(root);
+            });
+        }
     },
 
     /**
@@ -306,6 +323,37 @@ var _base =  {
      */
     getTemporaryRoot: function(callback){
         return getFileSystemRoot(callback, LocalFileSystem.TEMPORARY);
+    },
+
+    /**
+     * Move a file to an new locaction.
+     * @param options
+     *   path - the full path to the original file.
+     *   to - the target directory
+     *   success - success function, see FileEntry.moveTo
+     *   error - optional error function
+     */
+    moveTo: function(options){
+        if(options.error === undefined){
+            options.error = function(error){
+                var msg = 'Problem moving file: ' + error;
+                console.error(msg);
+                utils.inform(msg);
+            };
+        }
+
+        window.resolveLocalFileSystemURL(
+            options.path,
+            function(fileEntry){
+                fileEntry.moveTo(
+                    options.to,
+                    undefined,
+                    options.success,
+                    options.error
+                );
+            },
+            options.error
+        );
     },
 
     /**
