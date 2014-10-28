@@ -335,7 +335,7 @@ var _base = {
      * @return The coordinates of the user, based on the last geolocate.
      * ({<OpenLayers.LonLat>})
      */
-    getUserCoords: function(external){
+    getUserCoords: function(){
         return this.toInternal(this.userLonLat);
     },
 
@@ -344,7 +344,7 @@ var _base = {
      * external projection.
      * ({<OpenLayers.LonLat>})
      */
-    getUserCoordsExternal: function(external){
+    getUserCoordsExternal: function(){
         return this.userLonLat;
     },
 
@@ -684,11 +684,6 @@ var _base = {
      * @param annotation
      */
     showRecordDetailPopup: function(annotation) {
-        // Get point and convert
-        var point =  this.toExternal(this.getCentre());
-        var lon = point.lon;
-        var lat = point.lat;
-
         var $popup = $('#map-record-popup');
 
         $('#map-record-popup a.close').one('vclick', function(event){
@@ -696,19 +691,19 @@ var _base = {
         });
 
         $popup.one({
-            popupbeforeposition: function() {
+            popupbeforeposition: $.proxy(function() {
+                var record = annotation.record;
                 var showRecord = function(html){
-                    var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
-                    $('#map-record-popup-text').append(html).append(coords).trigger('create');
+                    $('#map-record-popup-text').append(html).trigger('create');
                 };
 
-                $('#map-record-popup h3').text(annotation.record.name);
+                $('#map-record-popup h3').text(record.name);
                 $('#map-record-popup-text').text('');
 
-                $.each(annotation.record.properties.fields, function(i, entry){
+                $.each(record.properties.fields, function(i, entry){
                     var html;
                     var type = records.typeFromId(entry.id);
-
+                    console.log(type);
                     if(type === 'image'){
                         html = '<img src="' + entry.val + '" width=100%"/>';
                         showRecord(html);
@@ -725,7 +720,13 @@ var _base = {
                         showRecord(html);
                     }
                 });
-            }
+
+                // append coords
+                var point = this.pointToExternal(record.geometry.coordinates);
+                var coords = '<p id="coords"><span> Coordinates</span>: (' +
+                    point.lon + ', '+ point.lat +')</p>';
+                $('#map-record-popup-text').append(coords).trigger('create');
+            }, this)
         });
     },
 
@@ -1518,7 +1519,10 @@ var _openlayers = {
      */
     pointToExternal: function(point){
         var lonLat = this.toExternal(new OpenLayers.LonLat(point[0], point[1]));
-        return [ lonLat.lon, lonLat.lat ];
+        return {
+            'lon': lonLat.lon,
+            'lat': lonLat.lat
+        };
     },
 
     /**
@@ -1532,7 +1536,10 @@ var _openlayers = {
         if(typeof(point.longitude) === 'undefined'){
             lonLat = this.toInternal(
                 new OpenLayers.LonLat(point[0], point[1]));
-            retValue = [lonLat.lon, lonLat.lat];
+            retValue = {
+                'lon': lonLat.lon,
+                'lat': lonLat.lat
+            };
         }
         else{
             lonLat = this.toInternal(
@@ -1542,6 +1549,7 @@ var _openlayers = {
                 'latitude': lonLat.lat
             };
         }
+
         return retValue;
     },
 
