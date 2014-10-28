@@ -34,35 +34,58 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Camera, cordova */
 
-define(['utils', 'file', 'underscore',
-        'text!templates/saved-records-list-template.html',
-        'text!templates/camera-capture-template.html'], function(// jshint ignore:line
+define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html', 'text!templates/camera-capture-template.html'], function(// jshint ignore:line
     utils, file, _, recrowtemplate, cameraTemplate){
+
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
+    var EDITOR_CLASS = 'editor-class';
     var EDITOR_GROUP = {
         DEFAULT: 'default', // Embedded editor in the app
         PUBLIC:  'public',   // Public editors
         PRIVATE: 'private'  // Editors of an authenticated user
     };
-    var assetsDir;
-    var editorsDir = {};
-    var assetTypes = ['image', 'audio'];
-    var EDITOR_CLASS = 'editor-class';
+    var IMAGE_TYPE_NAME = 'image';
+    var AUDIO_TYPE_NAME = 'audio';
 
-    editorsDir[EDITOR_GROUP.DEFAULT] = 'editors/';
+    var assetsDir;
+
+    var editorDirectories = {};
+    editorDirectories[EDITOR_GROUP.DEFAULT] = 'editors/';
+
+    var assetDirectories = {};
+    var assetTypes = [];
 
     if(utils.isMobileDevice()){
-        // create directory structure for annotations
-        file.createDir('assets', function(dir){
-            assetsDir = dir;
+        // create directory structure for annotation assets
+        file.createDir({
+            'name': 'assets',
+            'success': function(dir){
+                assetsDir = dir;
+
+                _this.addAssetType(IMAGE_TYPE_NAME);
+                _this.addAssetType(AUDIO_TYPE_NAME);
+            }
         });
-        file.createDir('editors', function(dir){
-            file.createDir('editors/private', function(dir){
-                editorsDir[EDITOR_GROUP.PRIVATE] = dir;
-            });
-            file.createDir('editors/public', function(dir){
-                editorsDir[EDITOR_GROUP.PUBLIC] = dir;
-            });
+
+        // create directory structure for editors
+        file.createDir({
+            'name': 'editors',
+            'success': function(dir){
+                file.createDir({
+                    'parent': dir,
+                    'name' : 'private',
+                    'success': function(privateDir){
+                        editorDirectories[EDITOR_GROUP.PRIVATE] = privateDir;
+                    }
+                });
+                file.createDir({
+                    'parent': dir,
+                    'name' : 'public',
+                    'success': function(publicDir){
+                        editorDirectories[EDITOR_GROUP.PUBLIC] = publicDir;
+                    }
+                });
+            }
         });
     }
 
@@ -138,7 +161,7 @@ var _base = {
         if(group ===  EDITOR_GROUP.DEFAULT){
             url = 'editors/' + type + '.edtr';
         }else{
-            url = file.getFilePath(editorsDir[group]) + '/' + type + '.edtr';
+            url = file.getFilePath(editorDirectories[group]) + '/' + type + '.edtr';
         }
 
         $.ajax({
@@ -227,6 +250,16 @@ var _base = {
      */
     addAssetType: function(type){
         assetTypes.push(type);
+
+        if(assetsDir){
+            file.createDir({
+                'parent': assetsDir,
+                'name': type,
+                'success': function(assetDir){
+                    assetDirectories[type] = assetDir;
+                }
+            });
+        }
     },
 
     /**
@@ -315,8 +348,8 @@ var _base = {
      */
     deleteAllEditors: function(callback){
         // easiest way to do this is to delete the directory and recreate it
-        file.deleteAllFilesFromDir(editorsDir[EDITOR_GROUP.PRIVATE], function(dir){
-            editorsDir[EDITOR_GROUP.PRIVATE] = dir;
+        file.deleteAllFilesFromDir(editorDirectories[EDITOR_GROUP.PRIVATE], function(dir){
+            editorDirectories[EDITOR_GROUP.PRIVATE] = dir;
             callback();
         });
     },
@@ -371,7 +404,7 @@ var _base = {
      * @param callback Function will be called when editor is successfully deleted.
      */
     deleteEditor: function(fileName, callback){
-        this.deleteFile(fileName, editorsDir[EDITOR_GROUP.PRIVATE], callback);
+        this.deleteFile(fileName, editorDirectories[EDITOR_GROUP.PRIVATE], callback);
     },
 
     /**
@@ -428,10 +461,17 @@ var _base = {
     },
 
     /**
+     * Get assets directory.
+     * @param type Asset type.  If undefined will return assets root.
      * @return Assets directory object.
      */
-    getAssetsDir: function(){
-        return assetsDir;
+    getAssetsDir: function(type){
+        if(type){
+            return assetDirectories[type];
+        }
+        else{
+            return assetsDir;
+        }
     },
 
 
@@ -501,7 +541,7 @@ var _base = {
             callback(editors);
         }
 
-        var directory = editorsDir[group];
+        var directory = editorDirectories[group];
         // Get a directory reader
         if(directory !== undefined){
             var directoryReader = directory.createReader();
@@ -518,7 +558,7 @@ var _base = {
     getEditorsDir: function(group){
         // Default is private
         group = group || EDITOR_GROUP.PRIVATE;
-        return editorsDir[group];
+        return editorDirectories[group];
     },
 
     /**
@@ -879,14 +919,23 @@ var _base = {
      * @param callback Function executed after successful recording.
      */
     takeAudio: function(callback){
+        var that = this;
         var invokeRecorder = function(){
             if (navigator.device !== undefined){
                 navigator.device.capture.captureAudio(
                     function(mediaFiles){
-                        callback({
-                            url: mediaFiles[0].localURL,
-                            label: mediaFiles[0].name,
-                            duration: mediaFiles[0].duration
+                        // move file to audio assets directory
+                        var media = mediaFiles[0];
+                        file.moveTo({
+                            'path': media.fullPath,
+                            'to': that.getAssetsDir(AUDIO_TYPE_NAME),
+                            'success': function(newEntry){
+                                callback({
+                                    url: newEntry.toURL(),
+                                    label: media.name,
+                                    duration: media.duration
+                                });
+                            }
                         });
                     },
                     captureError,
@@ -924,9 +973,16 @@ var _base = {
     takePhoto: function(callback){
         if (navigator.camera !== undefined){
             navigator.camera.getPicture(
-                function(fileURI){
-                    callback(fileURI);
-                },
+                $.proxy(function(fileURI){
+                    // move file to image assets directory
+                    file.moveTo({
+                        'path': fileURI,
+                        'to': this.getAssetsDir(IMAGE_TYPE_NAME),
+                        'success': function(newEntry){
+                            callback(newEntry.toURL());
+                        }
+                    });
+                }, this),
                 captureError,
                 this.getImageOptions(
                     Camera.PictureSourceType.CAMERA,

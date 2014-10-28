@@ -335,7 +335,7 @@ var _ui = {
 
             // listen for take photo click
             $('.annotate-image-take').click($.proxy(function(event){
-                id = $(event.target).parents('.ui-grid-a').attr('id');
+                id = $(event.target).parents('.image-chooser').attr('id');
                 records.takePhoto(function(media){
                     showImage(id, media);
                 });
@@ -343,7 +343,7 @@ var _ui = {
 
             // listen for image gallery click
             $('.annotate-image-get').click($.proxy(function(event){
-                id = $(event.target).parents('.ui-grid-a').attr('id');
+                id = $(event.target).parents('.image-chooser').attr('id');
                 records.getPhoto(function(media){
                     showImage(id, media);
                 });
