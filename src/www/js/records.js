@@ -238,7 +238,7 @@ var _base = {
             template({
                 "id": id,
                 "annotation": annotation,
-                "fields": annotation.record.fields,
+                "fields": annotation.record.properties.fields,
                 "records": this
             })
         ).trigger('create');
@@ -792,7 +792,9 @@ var _base = {
                     }
                 }
                 // Validate the fields
-                else if(field.val === null || (typeof(field.val) === 'string' && field.val.length === 0)) {
+                else if(field.val === null ||
+                        field.val === undefined ||
+                        field.val === "") {
                     $(control).addClass('ui-focus');
                     valid = false;
                     return false;

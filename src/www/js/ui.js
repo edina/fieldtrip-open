@@ -395,7 +395,7 @@ var _ui = {
             // if annotation in progress repopulate fields
             if(this.currentAnnotation !== undefined){
                 $('#' + records.TITLE_ID).val(this.currentAnnotation.record.name);
-                $.each(this.currentAnnotation.record.fields, function(i, entry){
+                $.each(this.currentAnnotation.record.properties.fields, function(i, entry){
                     var fieldType = records.typeFromId(entry.id);
                     if(fieldType === 'text'){
                         $('#' + entry.id + ' input').val(entry.val);
