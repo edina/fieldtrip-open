@@ -703,7 +703,7 @@ var _base = {
                 $.each(record.properties.fields, function(i, entry){
                     var html;
                     var type = records.typeFromId(entry.id);
-                    console.log(type);
+
                     if(type === 'image'){
                         html = '<img src="' + entry.val + '" width=100%"/>';
                         showRecord(html);
