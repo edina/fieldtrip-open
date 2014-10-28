@@ -752,7 +752,9 @@ var _base = {
                     }
                 }
                 // Validate the fields
-                else if(field.val === null || field.val === "") {
+                else if(field.val === null ||
+                        field.val === undefined ||
+                        field.val === "") {
                     $(control).addClass('ui-focus');
                     valid = false;
                     return false;
