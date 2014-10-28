@@ -972,7 +972,6 @@ var _base = {
         if (navigator.camera !== undefined){
             navigator.camera.getPicture(
                 $.proxy(function(fileURI){
-                    //callback(fileURI);
                     // move file to image assets directory
                     file.moveTo({
                         'path': fileURI,
