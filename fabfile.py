@@ -605,9 +605,9 @@ def install_plugins(target='local', cordova="True"):
                     local('cordova plugin add {0}'.format(name))
 
         # do fieldtrip plugins
-        proot = os.sep.join((root, 'plugins'))
+        proot = os.path.join(root, 'plugins')
         for plugin, details in pobj['fieldtrip'].iteritems():
-            dest = os.sep.join((asset_dir, 'plugins', plugin))
+            dest = os.path.join(asset_dir, 'plugins', plugin)
 
             if details[0:14] == 'https://github':
                 # if repository given in https:// format convert to git@
@@ -619,12 +619,12 @@ def install_plugins(target='local', cordova="True"):
                 name = 'fieldtrip-{0}'.format(plugin)
                 local('bower install {0}#{1}'.format(name, details))
                 local('mkdir {0}'.format(dest))
-                src = os.sep.join((root, 'bower_components', name, 'src', 'www'))
+                src = os.path.join(root, 'bower_components', name, 'src', 'www')
                 local('cp -r {0}/* {1}'.format(src, dest))
             else:
                 # git repository
-                src = os.sep.join((proot, plugin))
-                if not os.path.isdir(src):
+                plugin_src = os.path.join(proot, plugin)
+                if not os.path.isdir(plugin_src):
                     with lcd(proot):
                         if '#' in details:
                             # a branch is defined clone as single branch
@@ -639,10 +639,21 @@ def install_plugins(target='local', cordova="True"):
                                 os.path.join(root, 'scripts', 'pre-commit.sh'),
                                 os.path.join('.git', 'hooks', 'pre-commit')))
 
-                www = os.sep.join((proot, plugin, 'src', 'www'))
+                www = os.path.join(plugin_src, 'src', 'www')
                 if os.path.exists(www):
                     # create sym link to repos www dir
                     local('ln -s {0} {1}'.format(www, dest))
+
+                    with lcd(plugin_src):
+                        # install any bower dependencies in plugin
+                        local('bower install')
+                        bower_comps = os.path.join(plugin_src, 'bower_components')
+                        if os.path.exists(bower_comps):
+                            js_ext = os.path.join(www, 'js', 'ext', '')
+                            for dep in os.listdir(bower_comps):
+                                local('cp {0}* {1}'.format(
+                                    os.path.join(bower_comps, dep, 'js', ''),
+                                    js_ext))
                 else:
                     print 'Plugin has no www dir: {0}'.format(www)
                     exit(-1)
