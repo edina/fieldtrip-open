@@ -180,37 +180,40 @@ var _base =  {
     },
 
     /**
-    * fileTransfer, function for transferring file to the app
-    * @param source the url of the file in the cloud
-    * @param the local file that is saved to
-    */
-    fileTransfer: function(source, target, callback){
-
+     * Download file by file transfer.
+     * @param source - the url of the file in the cloud
+     * @param target - full path to the local file that transfer is saved to
+     * @param success - function executed after success transfer. The FileEntry
+     *                  is passed as an argument.
+     * @param error - Optional function executed in the event of an error.
+     */
+    ftDownload: function(source, target, success, error){
         console.debug("download: " + source + " to " + target);
+
+        if(error === undefined){
+            error = $.proxy(function(error){
+                utils.informError("Problem with file tranfer: " + error);
+                console.error("Problem downloading file: " + source +
+                              " to: " + target +
+                              " error: " + this.getFileTransferErrorMsg(error) +
+                              "http status: " + error.http_status);// jshint ignore:line
+            }, this);
+        }
+
         var ft = new FileTransfer();
 
-        ft.onprogress = $.proxy(function(progressEvent) {
-            if (progressEvent.lengthComputable) {
+        // follow percent progress with popup
+        ft.onprogress = function(progressEvent){
+            if(progressEvent.lengthComputable){
                 utils.inform(Math.round((progressEvent.loaded / progressEvent.total)*100) + "%");
             }
-        }, this);
+        };
 
         ft.download(
             encodeURI(source),
             target,
-            $.proxy(function(entry) {
-                console.debug("download complete: ");
-                callback(true, entry);
-            }, this),
-            $.proxy(function(error) {
-                // if this fails first check whitelist in cordova.xml
-                utils.informError("Problem syncing " + name);
-                console.error("Problem downloading asset: " + error.source +
-                    " to: " + error.target +
-                    " error: " + this.getFileTransferErrorMsg(error) +
-                    "http status: " + error.http_status);// jshint ignore:line
-                callback(false);
-            }, this)
+            success,
+            error
         );
     },
 
