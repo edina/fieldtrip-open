@@ -219,17 +219,17 @@ var _base =  {
 
     /**
      * @param dir Directory on the device.
-     * @return The full path of the directory iOS format
+     * @return The full path of the directory.
      */
     getFilePath: function(dir){
-        return dir.toURL().replace("file://", "");
+        return dir.toURL();
     },
 
     /**
      * @param dir Directory on the device.
-     * @return The full path of the directory.
+     * @return The full path of the directory without 'file://'.
      */
-    getFilePathWithoutStart: function(dir){
+    getFilePathWithoutProtocol: function(dir){
         return dir.toURL().replace("file://", "");
     },
 
@@ -438,14 +438,6 @@ var _base =  {
 var _this = {};
 var _android = {
     /**
-     * @param dir Directory on the device.
-     * @return The full path of the directory Android format
-     */
-    getFilePath: function(dir){
-        return dir.toURL();
-    },
-
-    /**
      * @return Get app root name. For android make sure the directory is deleted
      * when the app is uninstalled.
      */
@@ -454,8 +446,18 @@ var _android = {
     },
 };
 
+var _ios = {
+    /**
+     * @param dir Directory on the device.
+     * @return The full path of the directory for iOS.
+     */
+    getFilePath: function(dir){
+        return this.getFilePathWithoutProtocol(dir);
+    },
+};
+
 if(utils.isIOSApp()){
-    _this = _base;
+    $.extend(_this, _base, _ios);
 }
 else{
     $.extend(_this, _base, _android);
