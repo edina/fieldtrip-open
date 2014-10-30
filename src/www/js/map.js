@@ -1221,6 +1221,31 @@ var _openlayers = {
     },
 
     /**
+     * Add a KML layer to the map.
+     * @param options
+     *   id - layer id
+     *   url - location of the KML file.
+     */
+    addKMLLayer: function(options){
+        var layer = new OpenLayers.Layer.Vector(
+            options.id,
+            {
+                strategies: [new OpenLayers.Strategy.Fixed()],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    url: options.url,
+                    format: new OpenLayers.Format.KML({
+                        internalProjection: this.internalProjection
+                    })
+                }),
+                projection: this.externalProjection
+            }
+        );
+
+        this.map.addLayer(layer);
+        return layer;
+    },
+
+    /**
      * Add a new layer to the map.
      * @param options
      *   id - layer id

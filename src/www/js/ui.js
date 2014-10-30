@@ -701,10 +701,9 @@ var _ui = {
             '.saved-records-delete',
             $.proxy(function(event){
                 this.toBeDeleted = $(event.target).parents('li');
-
                 // open dialog for confirmation
-                $('#saved-records-delete-popup-name').text(
-                    "'" + this.toBeDeleted.find('.saved-record-view a').text() + "'");
+                $('#saved-record-delete-popup-name').text(
+                    "'" + this.toBeDeleted.find('.saved-records-view a').text() + "'");
                 $('#saved-records-delete-popup').popup('open');
             }, this)
         );

@@ -51,6 +51,10 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
+String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
 /*
     Add formated data method to String
     Use: "{0} {1}".format('hello', 'world')
