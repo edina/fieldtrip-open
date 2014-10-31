@@ -58,6 +58,8 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
     // Array of functions that'll process the editor
     var processEditorPipeline = [];
 
+    var EDITORS_METADATA = 'editors-metadata';
+
     if(utils.isMobileDevice()){
         // create directory structure for annotation assets
         file.createDir({
@@ -228,6 +230,41 @@ var _base = {
             },
         });
     },
+
+    /**
+     * Initialize the editors metadata in local storage
+     */
+    initEditorsMetadata: function(){
+        var obj = {};
+        obj[EDITOR_GROUP.PUBLIC] = {};
+        obj[EDITOR_GROUP.PRIVATE] = {};
+        this.saveEditorsMetadata(obj);
+        return obj;
+    },
+
+    /**
+     * Load the editors metadata from local storage
+     * @return an object with the metadata
+     */
+    loadEditorsMetadata: function(){
+        var str = localStorage.getItem(EDITORS_METADATA);
+        if(str === null){
+            return this.initEditorsMetadata();
+        }
+
+        return JSON.parse(str);
+    },
+
+    /**
+     * Serialize the editors metadata into local storage as string
+     * @param obj the object representing the editor metadata
+     */
+    saveEditorsMetadata: function(obj){
+        console.debug(obj);
+        var str = JSON.stringify(obj);
+        localStorage.setItem(EDITORS_METADATA, str);
+    },
+
 
     /**
      * Add an annotation to 'live' saved records page.
