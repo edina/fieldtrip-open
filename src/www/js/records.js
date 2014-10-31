@@ -248,11 +248,18 @@ var _base = {
      */
     loadEditorsMetadata: function(){
         var str = localStorage.getItem(EDITORS_METADATA);
+        var obj;
         if(str === null){
             return this.initEditorsMetadata();
         }
+        try{
+            obj = JSON.parse(str);
+        }catch(e){
+            console.warn('Invalid editors metadata reinitializing it');
+            return this.initEditorsMetadata();
+        }
 
-        return JSON.parse(str);
+        return obj;
     },
 
     /**
@@ -260,7 +267,6 @@ var _base = {
      * @param obj the object representing the editor metadata
      */
     saveEditorsMetadata: function(obj){
-        console.debug(obj);
         var str = JSON.stringify(obj);
         localStorage.setItem(EDITORS_METADATA, str);
     },
@@ -894,6 +900,36 @@ var _base = {
         }
     },
 
+
+    /**
+     * function for processing the editor
+     * @param editorName name of the editor
+     * @param html, html content
+     * @param group public/private
+     */
+    processEditorMetadata: function(editorName, html, group){
+        var $html = $(html);
+        var updated = false;
+        var editorsObj = _this.loadEditorsMetadata();
+        editorsObj[group][editorName] = {};
+
+        var editorClass = $('#dtree-class-name', $html).text();
+        if(editorClass !== ""){
+            editorsObj[group][editorName]['class'] = editorClass;
+            updated = true;
+        }
+
+        var title = $html.attr('data-title');
+        if(title !== undefined){
+            editorsObj[group][editorName].title = title;
+        }else{
+            editorsObj[group][editorName].title = editorName;
+        }
+
+        _this.saveEditorsMetadata(editorsObj);
+    },
+
+
     /**
      * function for rendering the extra options for camera on the form
      * @param index which is the id
@@ -952,6 +988,8 @@ var _base = {
     },
 
     /**
+     * TODO: make the changes in the tree for using the EDITORS-METADATA
+     *       and remove this @rgamez
      * function for setting the editor class
      * @param editorName name of the editor
      * @param html, html content
@@ -1199,6 +1237,7 @@ else{
 
 // Initialize the editor processing
 _this.addProcessEditor(_this.setEditorClass);
+_this.addProcessEditor(_this.processEditorMetadata);
 
 return _this;
 
