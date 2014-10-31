@@ -68,6 +68,21 @@ define(['utils'], function(utils){
 var _base =  {
 
     /**
+     * Append a file string to a directory entry.
+     * @param dir DirectoryEntry.
+     * @param file File name.
+     * @return The full path of the directory.
+     */
+    appendFile: function(dir, file){
+        var path = this.getFilePath(dir);
+        if(!path.endsWith("/")){
+            path += "/";
+        }
+
+        return path + file;
+    },
+
+    /**
      * Create Directory.
      * @param options:
      *   parent DirectoryEntry object. If not defined directory will be created
