@@ -55,6 +55,9 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
     var assetDirectories = {};
     var assetTypes = [];
 
+    // Array of functions that'll process the editor
+    var processEditorPipeline = [];
+
     if(utils.isMobileDevice()){
         // create directory structure for annotation assets
         file.createDir({
@@ -259,6 +262,17 @@ var _base = {
                     assetDirectories[type] = assetDir;
                 }
             });
+        }
+    },
+
+    /**
+     * Add a function to the editor process pipelina
+     * @param function name
+     */
+    addProcessEditor: function(funcName){
+        // TODO: add priority
+        if(typeof(funcName) === 'function'){
+            processEditorPipeline.push(funcName);
         }
     },
 
@@ -829,6 +843,21 @@ var _base = {
     },
 
     /**
+     * function for processing the editor
+     * @param editorName name of the editor
+     * @param html, html content
+     * @param group public/private
+     */
+    processEditor: function(editorName, html, group){
+        for(var i =0; i<processEditorPipeline.length; i++){
+           var process = processEditorPipeline[i];
+           if(typeof(process) === 'function'){
+               process.apply(null, arguments);
+           }
+        }
+    },
+
+    /**
      * function for rendering the extra options for camera on the form
      * @param index which is the id
      * @returns html rendered
@@ -893,7 +922,7 @@ var _base = {
      */
     setEditorClass: function(editorName, html, group){
         var result = $('#dtree-class-name', $(html)).text();
-        var editorClassObj = JSON.parse(this.getEditorClasses());
+        var editorClassObj = JSON.parse(_this.getEditorClasses());
         if(editorClassObj === null){
             editorClassObj = {};
             editorClassObj[EDITOR_GROUP.PUBLIC] = {};
@@ -1130,6 +1159,9 @@ if(utils.isIOSApp()){
 else{
     _this = _base;
 }
+
+// Initialize the editor processing
+_this.addProcessEditor(_this.setEditorClass);
 
 return _this;
 
