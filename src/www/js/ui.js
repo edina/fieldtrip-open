@@ -536,7 +536,7 @@ var _ui = {
         promise = appendEditorButtons(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
         promises.push(promise);
 
-        if(utils.getAnonymousUser()){
+        if(utils.getAnonymousUserId()){
             promise = appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section3');
             promises.push(promise);
         }

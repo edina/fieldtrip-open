@@ -243,7 +243,7 @@ return {
     /**
      * @return Anonymous user or null if it's not set
      */
-    getAnonymousUser: function(){
+    getAnonymousUserId: function(){
         return config.pcapianonymous || null;
     },
 
