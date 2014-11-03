@@ -1360,15 +1360,6 @@ var _openlayers = {
     },
 
     /**
-     * Does the layer exists on map?
-     * @param name of the layer
-     * @return true, false
-     */
-    checkIfLayerExists: function(name){
-        return (this.map.getLayersByName(name).length > 0);
-    },
-
-    /**
      * Create a marker for a given FT annotation.
      * @param options
      *   id - Annotation id
@@ -1515,6 +1506,15 @@ var _openlayers = {
      */
     isLayerVisible: function(layer){
         return layer.visibility;
+    },
+
+    /**
+     * Does the layer exists on map?
+     * @param name of the layer
+     * @return true, false
+     */
+    layerExists: function(name){
+        return (this.map.getLayersByName(name).length > 0);
     },
 
     /**
