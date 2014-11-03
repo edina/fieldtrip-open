@@ -412,6 +412,28 @@ var _base =  {
         );
     },
 
+    /*
+     * Read the content of a file entry as a text
+     * @param fileEntry
+     * @return Returns a promise that resolves to the content of a text file
+     */
+    readTextFile: function(fileEntry){
+        var deferred = new $.Deferred();
+        fileEntry.file(function(file) {
+            var reader = new FileReader();
+
+            reader.onloadend = function(e) {
+                deferred.resolve(this.result);
+            };
+
+            reader.readAsText(file);
+        }, function(err){
+            deferred.reject(err);
+        });
+
+        return deferred.promise();
+    },
+
     /**
      * Write string to file
      * @param fileName The new file name.

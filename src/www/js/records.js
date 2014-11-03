@@ -55,6 +55,11 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
     var assetDirectories = {};
     var assetTypes = [];
 
+    // Array of functions that'll process the editor
+    var processEditorPipeline = [];
+
+    var EDITORS_METADATA = 'editors-metadata';
+
     if(utils.isMobileDevice()){
         // create directory structure for annotation assets
         file.createDir({
@@ -227,6 +232,47 @@ var _base = {
     },
 
     /**
+     * Initialize the editors metadata in local storage
+     */
+    initEditorsMetadata: function(){
+        var obj = {};
+        obj[EDITOR_GROUP.PUBLIC] = {};
+        obj[EDITOR_GROUP.PRIVATE] = {};
+        this.saveEditorsMetadata(obj);
+        return obj;
+    },
+
+    /**
+     * Load the editors metadata from local storage
+     * @return an object with the metadata
+     */
+    loadEditorsMetadata: function(){
+        var str = localStorage.getItem(EDITORS_METADATA);
+        var obj;
+        if(str === null){
+            return this.initEditorsMetadata();
+        }
+        try{
+            obj = JSON.parse(str);
+        }catch(e){
+            console.warn('Invalid editors metadata reinitializing it');
+            return this.initEditorsMetadata();
+        }
+
+        return obj;
+    },
+
+    /**
+     * Serialize the editors metadata into local storage as string
+     * @param obj the object representing the editor metadata
+     */
+    saveEditorsMetadata: function(obj){
+        var str = JSON.stringify(obj);
+        localStorage.setItem(EDITORS_METADATA, str);
+    },
+
+
+    /**
      * Add an annotation to 'live' saved records page.
      * @param id annotation id.
      * @param annotation
@@ -259,6 +305,17 @@ var _base = {
                     assetDirectories[type] = assetDir;
                 }
             });
+        }
+    },
+
+    /**
+     * Add a function to the editor process pipelina
+     * @param function name
+     */
+    addProcessEditor: function(funcName){
+        // TODO: add priority
+        if(typeof(funcName) === 'function'){
+            processEditorPipeline.push(funcName);
         }
     },
 
@@ -829,6 +886,51 @@ var _base = {
     },
 
     /**
+     * function for processing the editor
+     * @param editorName name of the editor
+     * @param html, html content
+     * @param group public/private
+     */
+    processEditor: function(editorName, html, group){
+        for(var i =0; i<processEditorPipeline.length; i++){
+           var process = processEditorPipeline[i];
+           if(typeof(process) === 'function'){
+               process.apply(null, arguments);
+           }
+        }
+    },
+
+
+    /**
+     * function for processing the editor
+     * @param editorName name of the editor
+     * @param html, html content
+     * @param group public/private
+     */
+    processEditorMetadata: function(editorName, html, group){
+        var $html = $(html);
+        var updated = false;
+        var editorsObj = _this.loadEditorsMetadata();
+        editorsObj[group][editorName] = {};
+
+        var editorClass = $('#dtree-class-name', $html).text();
+        if(editorClass !== ""){
+            editorsObj[group][editorName]['class'] = editorClass;
+            updated = true;
+        }
+
+        var title = $html.attr('data-title');
+        if(title !== undefined){
+            editorsObj[group][editorName].title = title;
+        }else{
+            editorsObj[group][editorName].title = editorName;
+        }
+
+        _this.saveEditorsMetadata(editorsObj);
+    },
+
+
+    /**
      * function for rendering the extra options for camera on the form
      * @param index which is the id
      * @returns html rendered
@@ -886,6 +988,8 @@ var _base = {
     },
 
     /**
+     * TODO: make the changes in the tree for using the EDITORS-METADATA
+     *       and remove this @rgamez
      * function for setting the editor class
      * @param editorName name of the editor
      * @param html, html content
@@ -893,7 +997,7 @@ var _base = {
      */
     setEditorClass: function(editorName, html, group){
         var result = $('#dtree-class-name', $(html)).text();
-        var editorClassObj = JSON.parse(this.getEditorClasses());
+        var editorClassObj = JSON.parse(_this.getEditorClasses());
         if(editorClassObj === null){
             editorClassObj = {};
             editorClassObj[EDITOR_GROUP.PUBLIC] = {};
@@ -1130,6 +1234,10 @@ if(utils.isIOSApp()){
 else{
     _this = _base;
 }
+
+// Initialize the editor processing
+_this.addProcessEditor(_this.setEditorClass);
+_this.addProcessEditor(_this.processEditorMetadata);
 
 return _this;
 
