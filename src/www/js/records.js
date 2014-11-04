@@ -404,6 +404,7 @@ var _base = {
      * @param callback Function executed when delete is complete.
      */
     deleteAllEditors: function(callback){
+        this.initEditorsMetadata();
         // easiest way to do this is to delete the directory and recreate it
         file.deleteAllFilesFromDir(editorDirectories[EDITOR_GROUP.PRIVATE], function(dir){
             editorDirectories[EDITOR_GROUP.PRIVATE] = dir;
