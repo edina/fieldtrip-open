@@ -549,66 +549,6 @@ var _base = {
     },
 
     /**
-     * get obj with class names from localstorage
-     * @return Object with classnames
-     */
-    getEditorClasses: function(){
-        return localStorage.getItem(EDITOR_CLASS);
-    },
-
-    /**
-     * get className from localstorage
-     * @param editorName
-     * @param group name
-     * @return className
-     */
-    getEditorClass: function(editorName, group){
-        var items = localStorage.getItem(EDITOR_CLASS);
-        var className = "annotate-custom-form";
-        if(items !== null){
-            var jsonObj = JSON.parse(items);
-            if(editorName in jsonObj[group]){
-                className = jsonObj[group][editorName];
-            }
-        }
-        return className;
-    },
-
-    /**
-     * Get list of local custom editors.
-     * @param group that owns the editor (default: EDITOR_GROUP.PRIVATE)
-     * @param callback Funtion will be invoked when editors have been retrieved
-     * contaioning a list of cordova file objects.
-     */
-    _getEditors: function(group, callback){
-        group = group || EDITOR_GROUP.PRIVATE;
-
-        var editors = [];
-
-        function success(entries) {
-            $.each(entries, function(i, entry){
-                editors.push(entry);
-            });
-
-            callback(editors);
-        }
-
-        function fail(error) {
-            console.error("Failed to list editor directory contents: " + error.code);
-            callback(editors);
-        }
-
-        var directory = editorDirectories[group];
-        // Get a directory reader
-        if(directory !== undefined){
-            var directoryReader = directory.createReader();
-            directoryReader.readEntries(success, fail);
-        }else{
-            callback(editors);
-        }
-    },
-
-    /**
       * Get the list of editors from localstorage
       * @return an object with the editors
       */
@@ -1018,28 +958,6 @@ var _base = {
     },
 
     /**
-     * TODO: make the changes in the tree for using the EDITORS-METADATA
-     *       and remove this @rgamez
-     * function for setting the editor class
-     * @param editorName name of the editor
-     * @param html, html content
-     * @param group public/private
-     */
-    setEditorClass: function(editorName, html, group){
-        var result = $('#dtree-class-name', $(html)).text();
-        var editorClassObj = JSON.parse(_this.getEditorClasses());
-        if(editorClassObj === null){
-            editorClassObj = {};
-            editorClassObj[EDITOR_GROUP.PUBLIC] = {};
-            editorClassObj[EDITOR_GROUP.PRIVATE] = {};
-        }
-        if(result !== ""){
-            editorClassObj[group][editorName] = result;
-            localStorage.setItem(EDITOR_CLASS, JSON.stringify(editorClassObj));
-        }
-    },
-
-    /**
      * Save annotations to local storage.
      * @annotations Hash of local records.
      */
@@ -1266,7 +1184,6 @@ else{
 }
 
 // Initialize the editor processing
-_this.addProcessEditor(_this.setEditorClass);
 _this.addProcessEditor(_this.processEditorMetadata);
 
 return _this;
