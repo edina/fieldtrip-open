@@ -904,22 +904,22 @@ var _base = {
     /**
      * function for processing the editor
      * @param editorName name of the editor
-     * @param html, html content
+     * @param html html content of the editor
      * @param group public/private
      */
     processEditorMetadata: function(editorName, html, group){
-        var $html = $(html);
+        var $form = $(html);
         var updated = false;
         var editorsObj = _this.loadEditorsMetadata();
         editorsObj[group][editorName] = {};
 
-        var editorClass = $('#dtree-class-name', $html).text();
+        var editorClass = $('#dtree-class-name', $form).text();
         if(editorClass !== ""){
             editorsObj[group][editorName]['class'] = editorClass;
             updated = true;
         }
 
-        var title = $html.attr('data-title');
+        var title = $form.data('title');
         if(title !== undefined){
             editorsObj[group][editorName].title = title;
         }else{
