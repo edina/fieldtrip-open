@@ -164,9 +164,9 @@ var _base = {
         var that = this;
 
         if(group ===  EDITOR_GROUP.DEFAULT){
-            url = 'editors/' + type + '.edtr';
+            url = 'editors/' + type;
         }else{
-            url = file.getFilePath(editorDirectories[group]) + '/' + type + '.edtr';
+            url = file.getFilePath(editorDirectories[group]) + '/' + type;
         }
 
         $.ajax({
@@ -350,21 +350,21 @@ var _base = {
      * Annotate an image record.
      */
     annotateImage: function(){
-        this.annotate(EDITOR_GROUP.DEFAULT, 'image');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'image.edtr');
     },
 
     /**
      * Annotate an audio record.
      */
     annotateAudio: function(){
-        this.annotate(EDITOR_GROUP.DEFAULT, 'audio');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'audio.edtr');
     },
 
     /**
      * Annotate a text record.
      */
     annotateText: function(){
-        this.annotate(EDITOR_GROUP.DEFAULT, 'text');
+        this.annotate(EDITOR_GROUP.DEFAULT, 'text.edtr');
     },
 
     /**
@@ -389,7 +389,7 @@ var _base = {
                     "coordinates": []
                 },
                 "properties": {
-                    "editor": type + ".edtr",
+                    "editor": type,
                     "fields": []
                 }
             },
@@ -580,7 +580,7 @@ var _base = {
      * @param callback Funtion will be invoked when editors have been retrieved
      * contaioning a list of cordova file objects.
      */
-    getEditors: function(group, callback){
+    _getEditors: function(group, callback){
         group = group || EDITOR_GROUP.PRIVATE;
 
         var editors = [];
@@ -606,6 +606,23 @@ var _base = {
         }else{
             callback(editors);
         }
+    },
+
+    /**
+      * Get the list of editors from localstorage
+      * @return an object with the editors
+      */
+    getEditors: function(){
+        return this.loadEditorsMetadata();
+    },
+
+    /**
+      * Get the list of editors filtered by group from localstorage
+      * @param group editors group
+      * @return an object with the editors
+     */
+    getEditorsByGroup: function(group){
+        return this.getEditors()[group] || {};
     },
 
     /**
@@ -909,21 +926,34 @@ var _base = {
      */
     processEditorMetadata: function(editorName, html, group){
         var $form = $(html);
-        var updated = false;
         var editorsObj = _this.loadEditorsMetadata();
         editorsObj[group][editorName] = {};
 
+        // Add the dom class that will be used in the buttons
         var editorClass = $('#dtree-class-name', $form).text();
         if(editorClass !== ""){
             editorsObj[group][editorName]['class'] = editorClass;
-            updated = true;
+        }else{
+            editorsObj[group][editorName]['class'] = 'annotate-custom-form';
         }
 
+        // Add the group to the editor
+        editorsObj[group][editorName].group = group;
+
+        // Add the type of the editor
+        editorsObj[group][editorName].type = editorName;
+
+        // Add the title wich will be displayed
         var title = $form.data('title');
         if(title !== undefined){
             editorsObj[group][editorName].title = title;
         }else{
-            editorsObj[group][editorName].title = editorName;
+            var matches = editorName.match(/(.*).edtr$/);
+            if(matches && matches.length > 1){
+                editorsObj[group][editorName].title = matches[1];
+            }else{
+                editorsObj[group][editorName].title = editorName;
+            }
         }
 
         _this.saveEditorsMetadata(editorsObj);

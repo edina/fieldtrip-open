@@ -498,54 +498,37 @@ var _ui = {
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
 
-        var editorToHTML = function(index, cssClass, name, group){
+        var editorToHTML = function(index, editor){
             var html = '<div class="ui-block-' + blocks[index % 5] + '">\
-                          <a id="annotate-custom-form-' + name + '"\
-                            class="' + cssClass + '" \
-                            data-editor-type="' + name +'"\
-                            data-editor-group="'+ group +'"\
+                          <a \
+                            class="' + editor['class'] + '" \
+                            data-editor-type="' + editor.type +'"\
+                            data-editor-group="'+ editor.group +'"\
                             href="#">\
                               <img src="css/images/custom.png"> \
                           </a>\
-                          <p>' + name + '</p>\
+                          <p>' + editor.title + '</p>\
                         </div>';
             return html;
         };
 
         var appendEditorButtons = function(group, section){
-            var deferred = new $.Deferred();
-
-            records.getEditors(group, function(editors){
-                $.each(editors, function(i, editor){
-                    if(editor.name.indexOf(".edtr") > -1){
-                        var name = editor.name.substr(0, editor.name.indexOf('.'));
-                        var className = records.getEditorClass(editor.name, group);
-                        var html = editorToHTML(i, className, name, group);
-                        $(section).append(html);
-                    }
-                });
-                deferred.resolve();
-            });
-
-            return deferred.promise();
+            var editors = records.getEditorsByGroup(group);
+            var i = 0;
+            for(var key in editors){
+                if(editors.hasOwnProperty(key)){
+                    var editor = editors[key];
+                    var html = editorToHTML(i, editor);
+                    $(section).append(html);
+                    i++;
+                }
+            }
         };
 
-        var promises = [];
-        var promise;
+        appendEditorButtons(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
+        appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section3');
 
-        promise = appendEditorButtons(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
-        promises.push(promise);
-
-        if(utils.getAnonymousUserId()){
-            promise = appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section3');
-            promises.push(promise);
-        }
-
-        // After populating the section(s) add the listeners
-        $.when.apply(null, promises)
-            .always(function(){
-                capturePageListeners();
-            });
+        capturePageListeners();
     },
 
     /**
