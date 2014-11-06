@@ -953,7 +953,10 @@ var _base = {
 
         if(typeof(coords.gpsPosition) !== 'undefined'){
             annotation.record.geometry.coordinates[2] = coords.gpsPosition.altitude;
-            annotation.record.properties.pos_acc = coords.gpsPosition.accuracy; // jshint ignore:line
+
+            if(typeof(annotation.record.properties.pos_acc) !== 'undefined'){ // jshint ignore:line
+                annotation.record.properties.pos_acc = coords.gpsPosition.accuracy; // jshint ignore:line
+            }
         }
 
         this.saveAnnotation(undefined, annotation);
