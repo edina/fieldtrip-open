@@ -132,6 +132,7 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
     };
 
     /************************** public interface  ******************************/
+var _this = {};
 
 var _base = {
     SAVED_RECORDS_KEY: 'saved-annotations',
@@ -461,8 +462,11 @@ var _base = {
      * @param fileName The name of the file to delete.
      * @param callback Function will be called when editor is successfully deleted.
      */
-    deleteEditor: function(fileName, callback){
-        this.deleteFile(fileName, editorDirectories[EDITOR_GROUP.PRIVATE], callback);
+    deleteEditor: function(group, editorName, callback){
+        this.deleteFile(editorName, editorDirectories[group], function(){
+            _this.removeEditorsMetadata(group, editorName);
+            callback();
+        });
     },
 
     /**
@@ -901,6 +905,12 @@ var _base = {
     },
 
 
+    removeEditorsMetadata: function(group, editorName){
+        var editorsObj = _this.loadEditorsMetadata();
+        delete editorsObj[group][editorName];
+        _this.saveEditorsMetadata(editorsObj);
+    },
+
     /**
      * function for rendering the extra options for camera on the form
      * @param index which is the id
@@ -1058,7 +1068,6 @@ var _base = {
     }
 };
 
-var _this = {};
 var _ios = {
 
     /**
