@@ -464,7 +464,7 @@ var _base = {
      */
     deleteEditor: function(group, editorName, callback){
         this.deleteFile(editorName, editorDirectories[group], function(){
-            _this.removeEditorsMetadata(group, editorName);
+            _this.removeEditorMetadata(group, editorName);
             callback();
         });
     },
@@ -904,8 +904,12 @@ var _base = {
         _this.saveEditorsMetadata(editorsObj);
     },
 
-
-    removeEditorsMetadata: function(group, editorName){
+    /**
+     * function for removing the metadata associated to an editor
+     * @param group Record name
+     * @param editorName Editor name
+     */
+    removeEditorMetadata: function(group, editorName){
         var editorsObj = _this.loadEditorsMetadata();
         delete editorsObj[group][editorName];
         _this.saveEditorsMetadata(editorsObj);
