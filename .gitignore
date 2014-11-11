@@ -4,6 +4,7 @@
 *.keystore
 botanitours
 bower_components
+env-sys
 fieldtrip-*
 node_modules
 plugins
