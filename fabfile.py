@@ -243,7 +243,7 @@ def generate_config_js(version=None, fetch_config=True):
     """ generate config.js """
     root, proj_home, src_dir = _get_source()
 
-    if fetch_config:
+    if _str2bool(fetch_config):
         _check_config()
 
     if version == None:
@@ -1417,11 +1417,20 @@ def _sorted(dic):
     dic = collections.OrderedDict(sorted(dic.items(), key=lambda t: t[0]))
     return dic
 
-def _str2bool(v):
+def _str2bool(val):
+    """Convert a string representation of truth to true (1) or false (0).
+
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
     """
-    Convert v into boolean.
-    """
-    return v.lower() in ("yes", "true", "t", "1")
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    else:
+        raise ValueError("invalid truth value %r" % (val,))
 
 def _update_android_manifest(path):
     """
