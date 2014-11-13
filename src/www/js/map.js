@@ -829,10 +829,6 @@ var _base = {
                 next = layer.url[0];
             }
 
-            if(current === next){
-                return;
-            }
-
             // remove old base layer
             this.map.removeLayer(this.map.baseLayer);
 
