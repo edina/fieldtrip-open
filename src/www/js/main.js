@@ -69,11 +69,12 @@ function onDeviceReady(){
         }
     });
 
-    require(['ui', 'map', 'tests/main'], function(ui, map, tests) {
+    require(['ui', 'map', 'records', 'tests/main'], function(ui, map, records, tests) {
         // called when all plugins are finished loading
         var pluginsComplete = function(){
             // initialise home page first time
             ui.init();
+            records.loadEditorsFromFS();
         };
 
         // set up fieldtrip plugins

@@ -704,6 +704,38 @@ var _base = {
     },
 
     /**
+     * Read the editors from the filesystema and process them
+     */
+    loadEditorsFromFS: function(){
+        var groups = [EDITOR_GROUP.PUBLIC, EDITOR_GROUP.PRIVATE];
+        var group;
+
+        function success(entries) {
+            $.each(entries, function(i, entry){
+                file.readTextFile(entry)
+                    .done(function(html){
+                        _this.processEditor(entry.name, html, group);
+                    });
+            });
+        }
+
+        function fail(error) {
+            console.error("Failed to list editor directory contents: " + error.code);
+        }
+
+        for(var key in groups){
+            if(groups.hasOwnProperty(key)){
+                group = groups[key];
+                var directory = editorDirectories[group];
+                if(directory !== undefined){
+                    var directoryReader = directory.createReader();
+                    directoryReader.readEntries(success, fail);
+                }
+            }
+        }
+    },
+
+    /**
      * Process annotation/record from an HTML5 form.
      * @param recordType record/Form type - image, text, audio or custom
      */
