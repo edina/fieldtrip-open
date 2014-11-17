@@ -914,13 +914,9 @@ var _base = {
     processEditorMetadata: function(editorName, html, group){
         var $form = $(html);
         var editorsObj = _this.loadEditorsMetadata();
-        editorsObj[group][editorName] = {};
+        editorsObj[group][editorName] = editorsObj[group][editorName] || {};
 
-        // Add the dom class that will be used in the buttons
-        var editorClass = $('#dtree-class-name', $form).text();
-        if(editorClass !== ""){
-            editorsObj[group][editorName]['class'] = editorClass;
-        }else{
+        if(editorsObj[group][editorName]['class'] === undefined){
             editorsObj[group][editorName]['class'] = 'annotate-custom-form';
         }
 
