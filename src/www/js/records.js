@@ -316,7 +316,7 @@ var _base = {
      * @param group of the editor records.EDITOR_GROUP
      */
     addEditor: function(fileEntry, group){
-        console.debug('addEditor: ' + fileEntry.name);
+        console.debug('addEditor: ' + fileEntry.name + ' ' + group);
         var promise = file.readTextFile(fileEntry);
 
         promise.done(function(data){
@@ -727,28 +727,22 @@ var _base = {
      */
     loadEditorsFromFS: function(){
         var groups = [EDITOR_GROUP.PUBLIC, EDITOR_GROUP.PRIVATE];
-        var group;
 
-        function success(entries) {
-            $.each(entries, function(i, entry){
-                _this.addEditor(entry, group);
-            });
-        }
-
-        function fail(error) {
-            console.error("Failed to list editor directory contents: " + error.code);
-        }
-
-        for(var key in groups){
-            if(groups.hasOwnProperty(key)){
-                group = groups[key];
-                var directory = editorDirectories[group];
-                if(directory !== undefined){
-                    var directoryReader = directory.createReader();
-                    directoryReader.readEntries(success, fail);
-                }
+        $.each(groups, function(i, group){
+            var directory = editorDirectories[group];
+            if(directory !== undefined){
+                var directoryReader = directory.createReader();
+                directoryReader.readEntries(
+                    function success(entries) {
+                        $.each(entries, function(i, entry){
+                            _this.addEditor(entry, group);
+                        });
+                    },
+                    function fail(error) {
+                        console.error("Failed to list editor directory contents: " + error.code);
+                    });
             }
-        }
+        });
     },
 
     /**
