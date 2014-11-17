@@ -314,13 +314,20 @@ var _base = {
      * Read the cointent from a file entry and trigger the editor processing.
      * @param fileEntry a fileentry to be read
      * @param group of the editor records.EDITOR_GROUP
+     * @param online optional parameter if the process is online of offline
+     *               i.e. from the file system
      */
-    addEditor: function(fileEntry, group){
+    addEditor: function(fileEntry, group, online){
+        // Set the default value
+        if(online === undefined){
+            online = true;
+        }
+
         console.debug('addEditor: ' + fileEntry.name + ' ' + group);
         var promise = file.readTextFile(fileEntry);
 
         promise.done(function(data){
-            _this.processEditor(fileEntry.name, data, group);
+            _this.processEditor(fileEntry.name, data, group, online);
         });
 
         promise.fail(function(err){
@@ -735,7 +742,7 @@ var _base = {
                 directoryReader.readEntries(
                     function success(entries) {
                         $.each(entries, function(i, entry){
-                            _this.addEditor(entry, group);
+                            _this.addEditor(entry, group, false);
                         });
                     },
                     function fail(error) {
@@ -890,12 +897,13 @@ var _base = {
     },
 
     /**
-     * function for processing the editor
+     * Interface for processing the editor
      * @param editorName name of the editor
      * @param html, html content
-     * @param group public/private
+     * @param group from records.EDITOR_GROUP
+     * @param online if the process is being held online or offline
      */
-    processEditor: function(editorName, html, group){
+    processEditor: function(editorName, html, group, online){
         for(var i =0; i<processEditorPipeline.length; i++){
            var process = processEditorPipeline[i];
            if(typeof(process) === 'function'){
@@ -906,12 +914,13 @@ var _base = {
 
 
     /**
-     * function for processing the editor
+     * Implements the records.processEditor interface
      * @param editorName name of the editor
      * @param html html content of the editor
-     * @param group public/private
+     * @param group from records.EDITOR_GROUP
+     * @param online boolean value if the processing is held online
      */
-    processEditorMetadata: function(editorName, html, group){
+    extractEditorMetadata: function(editorName, html, group, online){
         var $form = $(html);
         var editorsObj = _this.loadEditorsMetadata();
         editorsObj[group][editorName] = editorsObj[group][editorName] || {};
@@ -1241,7 +1250,7 @@ else{
 }
 
 // Initialize the editor processing
-_this.addProcessEditor(_this.processEditorMetadata);
+_this.addProcessEditor(_this.extractEditorMetadata);
 
 return _this;
 
