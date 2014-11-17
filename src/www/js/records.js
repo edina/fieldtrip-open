@@ -310,6 +310,25 @@ var _base = {
     },
 
     /**
+     * Add an editor
+     * Read the cointent from a file entry and trigger the editor processing.
+     * @param fileEntry a fileentry to be read
+     * @param group of the editor records.EDITOR_GROUP
+     */
+    addEditor: function(fileEntry, group){
+        console.debug('addEditor: ' + fileEntry.name);
+        var promise = file.readTextFile(fileEntry);
+
+        promise.done(function(data){
+            _this.processEditor(fileEntry.name, data, group);
+        });
+
+        promise.fail(function(err){
+            console.error(err);
+        });
+    },
+
+    /**
      * Add a function to the editor process pipelina
      * @param function name
      */
@@ -712,10 +731,7 @@ var _base = {
 
         function success(entries) {
             $.each(entries, function(i, entry){
-                file.readTextFile(entry)
-                    .done(function(html){
-                        _this.processEditor(entry.name, html, group);
-                    });
+                _this.addEditor(entry, group);
             });
         }
 
