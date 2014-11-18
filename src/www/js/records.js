@@ -451,7 +451,7 @@ var _base = {
     deleteEditor: function(group, editorName, callback){
         this.deleteFile(editorName, editorDirectories[group], function(){
             _this.removeEditorMetadata(group, editorName);
-            callback();
+            utils.doCallback(callback);
         });
     },
 
