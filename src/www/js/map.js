@@ -818,17 +818,6 @@ var _base = {
      */
     switchBaseLayer: function(layer){
         if(this.map.baseLayer !== null){
-            var current, next;
-            if(typeof(layer.url) == 'string'){
-                current = this.map.baseLayer.url;
-                next = layer.url;
-            }
-            else{
-                // OSM has multiple urls defined, just check first one
-                current = this.map.baseLayer.url[0];
-                next = layer.url[0];
-            }
-
             // remove old base layer
             this.map.removeLayer(this.map.baseLayer);
 

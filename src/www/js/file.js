@@ -436,13 +436,14 @@ var _base =  {
 
     /**
      * Write string to file
-     * @param fileName The new file name.
-     * @param data The new file content.
-     * @param dir Optional directory object.
-     * @param callback The function that is executed when file has finished writing.
+     * @param options
+     *   fileName - The new file name.
+     *   data - The new file content.
+     *   dir - Create file in this directory.
      */
-    writeToFile: function(options, dir, callback){
-        dir.getFile(
+    writeToFile: function(options){
+        var deferred = new $.Deferred();
+        options.dir.getFile(
             options.fileName,
             {create: true, exclusive: false},
             function(fileEntry){
@@ -450,16 +451,15 @@ var _base =  {
                     function(writer){
                         writer.onwrite = function(evt) {
                             console.debug('File ' + options.fileName +
-                                          ' written to ' + dir.fullPath);
-                            if(callback){
-                                callback();
-                            }
+                                          ' written to ' + options.dir.fullPath);
+                            deferred.resolve();
                         };
                         writer.write(options.data);
                     },
                     function(error){
                         console.error("Failed to write to file:" + options.fileName +
                                       ". errcode = " + error.code);
+                        deferred.reject(error);
                     }
                 );
             },
@@ -467,8 +467,11 @@ var _base =  {
                 console.error(error + " : " + error.code);
                 console.error("Failed to create file: " + options.fileName +
                               ". " + _this.getFileErrorMsg(error));
+                deferred.reject(error);
             }
         );
+
+        return deferred.promise();
     }
 };
 

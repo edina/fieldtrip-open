@@ -80,13 +80,15 @@ define(['map', 'records', 'audio', 'utils', 'settings'], function(// jshint igno
 
         $('.annotate-custom-form').unbind();
         $('.annotate-custom-form').on('vclick', function(event){
-            // get the custom form type from the element id
-            //var id = $(event.target).parent().attr('id');
-            //records.annotate(id.substr(id.lastIndexOf('-') + 1));
             var $editor = $(event.currentTarget);
 
             var group = $editor.attr('data-editor-group');
             var type = $editor.attr('data-editor-type');
+
+            if(group === undefined){
+                group = records.EDITOR_GROUP.PRIVATE;
+            }
+
             records.annotate(group, type);
         });
     };

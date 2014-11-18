@@ -166,8 +166,9 @@ var _base = {
 
         if(group ===  EDITOR_GROUP.DEFAULT){
             url = 'editors/' + type;
-        }else{
-            url = file.getFilePath(editorDirectories[group]) + '/' + type;
+        }
+        else{
+            url = file.appendFile(editorDirectories[group], type);
         }
 
         $.ajax({
@@ -227,51 +228,10 @@ var _base = {
                 var msg = "Problem with " + url + " : status=" +
                     status + " : " + error;
                 console.error(msg);
-                navigator.notification.alert(msg);
+                utils.inform("Couldn't find the form " + type);
             },
         });
     },
-
-    /**
-     * Initialize the editors metadata in local storage
-     */
-    initEditorsMetadata: function(){
-        var obj = {};
-        obj[EDITOR_GROUP.PUBLIC] = {};
-        obj[EDITOR_GROUP.PRIVATE] = {};
-        this.saveEditorsMetadata(obj);
-        return obj;
-    },
-
-    /**
-     * Load the editors metadata from local storage
-     * @return an object with the metadata
-     */
-    loadEditorsMetadata: function(){
-        var str = localStorage.getItem(EDITORS_METADATA);
-        var obj;
-        if(str === null){
-            return this.initEditorsMetadata();
-        }
-        try{
-            obj = JSON.parse(str);
-        }catch(e){
-            console.warn('Invalid editors metadata reinitializing it');
-            return this.initEditorsMetadata();
-        }
-
-        return obj;
-    },
-
-    /**
-     * Serialize the editors metadata into local storage as string
-     * @param obj the object representing the editor metadata
-     */
-    saveEditorsMetadata: function(obj){
-        var str = JSON.stringify(obj);
-        localStorage.setItem(EDITORS_METADATA, str);
-    },
-
 
     /**
      * Add an annotation to 'live' saved records page.
@@ -711,6 +671,17 @@ var _base = {
     },
 
     /**
+     * Initialize the editors metadata in local storage
+     */
+    initEditorsMetadata: function(){
+        var obj = {};
+        obj[EDITOR_GROUP.PUBLIC] = {};
+        obj[EDITOR_GROUP.PRIVATE] = {};
+        this.saveEditorsMetadata(obj);
+        return obj;
+    },
+
+    /**
      * Does this record field define an asset?
      * @param field Annotation record field.
      * @param type Optional record type. If undefined it will be determined by the id.
@@ -730,26 +701,68 @@ var _base = {
     },
 
     /**
-     * Read the editors from the filesystema and process them
+     * Read the editors from the filesystem and process them
      */
     loadEditorsFromFS: function(){
-        var groups = [EDITOR_GROUP.PUBLIC, EDITOR_GROUP.PRIVATE];
+        var loadEditors = function(){
+            var groups = [EDITOR_GROUP.PUBLIC, EDITOR_GROUP.PRIVATE];
+            $.each(groups, function(i, group){
+                var directory = editorDirectories[group];
+                if(directory !== undefined){
+                    var directoryReader = directory.createReader();
+                    directoryReader.readEntries(
+                        function success(entries) {
+                            $.each(entries, function(i, entry){
+                                _this.addEditor(entry, group, false);
+                            });
+                        },
+                        function fail(error) {
+                            console.error("Failed to list editor directory contents: " + error.code);
+                        }
+                    );
+                }
+            });
+        };
 
-        $.each(groups, function(i, group){
-            var directory = editorDirectories[group];
-            if(directory !== undefined){
-                var directoryReader = directory.createReader();
-                directoryReader.readEntries(
-                    function success(entries) {
-                        $.each(entries, function(i, entry){
-                            _this.addEditor(entry, group, false);
-                        });
-                    },
-                    function fail(error) {
-                        console.error("Failed to list editor directory contents: " + error.code);
+        if(utils.isMobileDevice()){
+            // copy project defined form to editors directory
+            var form = utils.getConfig().projectform;
+            if(form && !localStorage.getItem('project-form-loaded')){
+                $.get('../forms/' + form, $.proxy(function(data){
+                    var promise = file.writeToFile({
+                        'fileName': form,
+                        'dir': this.getAssetsDir(),
+                        'data': data
                     });
+
+                    promise.done(function(){
+                        localStorage.setItem('project-form-loaded', true);
+                        loadEditors();
+                    });
+
+                }, this));
             }
-        });
+        }
+    },
+
+    /**
+     * Load the editors metadata from local storage
+     * @return an object with the metadata
+     */
+    loadEditorsMetadata: function(){
+        var str = localStorage.getItem(EDITORS_METADATA);
+        var obj;
+        if(str === null){
+            return this.initEditorsMetadata();
+        }
+        try{
+            obj = JSON.parse(str);
+        }catch(e){
+            console.warn('Invalid editors metadata reinitializing it');
+            return this.initEditorsMetadata();
+        }
+
+        return obj;
     },
 
     /**
@@ -1022,6 +1035,15 @@ var _base = {
         }
 
         this.saveAnnotation(undefined, annotation);
+    },
+
+    /**
+     * Serialize the editors metadata into local storage as string
+     * @param obj the object representing the editor metadata
+     */
+    saveEditorsMetadata: function(obj){
+        var str = JSON.stringify(obj);
+        localStorage.setItem(EDITORS_METADATA, str);
     },
 
     /**
