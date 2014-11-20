@@ -846,7 +846,7 @@ def install_project(platform='android',
             # install openlayers
             with lcd(dist_path):
                 ol_tar_file_name = '%s.tar.gz' % ol_dir
-                ol_tar = 'http://openlayers.org/download/%s' % ol_tar_file_name
+                ol_tar = 'http://github.com/openlayers/openlayers/releases/download/release-{0}/{1}'.format(OPENLAYERS_VERSION, ol_tar_file_name) 
                 local('wget %s' % ol_tar)
                 local('tar xvfz %s' % ol_tar_file_name)
 
