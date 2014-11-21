@@ -88,7 +88,8 @@ define(["records", "map", "file", "utils"], function(// jshint ignore:line
             });
             records.saveAnnotationWithCoords(
                 annotation,
-                new OpenLayers.LonLat(-2.421976, 53.825564));
+                map.toInternal(new OpenLayers.LonLat(-2.421976, 53.825564))
+            );
             ++created;
 
             if(created === number){

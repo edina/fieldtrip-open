@@ -192,5 +192,5 @@ define(['QUnit', 'file', 'utils', 'tests/systests', 'tests/load'], function(// j
     });
     $(document).on('pageshow', '#test-page', testPage);
 
-    $(document).on('vclick', '#test-create-records-but', load.createRecords);
+    $(document).on('click', '#test-create-records-but', load.createRecords);
 });
