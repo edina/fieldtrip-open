@@ -1143,6 +1143,17 @@ var _base = {
 };
 
 var _ios = {
+     guid : (function() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+               .toString(16)
+               .substring(1);
+        }
+        return function() {
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        };
+    })(),
 
     /**
      *  @param fileURI is the location of the file in temp directory
@@ -1159,8 +1170,11 @@ var _ios = {
         var gotFileEntry = function(fileEntry) {
 
             var gotAsserDir = function(assetDir){
+       
+                var ext = "." + fileEntry.name.split('.').pop();
+       
 
-                fileEntry.moveTo( assetDir, fileEntry.name ,copiedFile, captureError);
+                fileEntry.moveTo( assetDir, _ios.guid() + ext,copiedFile, captureError);
             };
 
             //move to assets

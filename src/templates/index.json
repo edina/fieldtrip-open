@@ -103,11 +103,24 @@
                     },
                     "img": {
                         "src": "css/images/settings.png",
-                        "alt": "Tests"
+                        "alt": "System Tests"
                     },
                     "title": "System Tests"
+                },
+                "item4": {
+                    "div": {
+                        "class": "ui-block-d"
+                    },
+                    "a": {
+                        "id": "test-create-records-but",
+                        "href": "#"
+                    },
+                    "img": {
+                        "src": "css/images/settings.png",
+                        "alt": "Misc Test"
+                    },
+                    "title": "Create Records"
                 }
-
             }
         }
     },
@@ -126,6 +139,10 @@
         },
         "popup3":{
             "template": "index-splash-popup.html",
+            "data": {}
+        },
+        "popup10":{
+            "template": "index-test-create-records.html",
             "data": {}
         }
     }

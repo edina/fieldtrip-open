@@ -1,3 +1,4 @@
+
 /*
 Copyright (c) 2014, EDINA.
 All rights reserved.
@@ -31,7 +32,8 @@ DAMAGE.
 
 "use strict";
 
-define(['QUnit', 'tests/systests'], function(QUnit, systests){
+define(['QUnit', 'file', 'utils', 'tests/systests', 'tests/load'], function(// jshint ignore:line
+    QUnit, file, utils, systests, load){
     var pageId;
     var testsPreviouslyRun = true;
     var sysTestsRunning = false;
@@ -178,9 +180,17 @@ define(['QUnit', 'tests/systests'], function(QUnit, systests){
         }
     });
 
+    if(utils.isMobileDevice()){
+        file.createDir("test", function(testDir){
+            load.init(testDir);
+        });
+    }
+
     $(document).on('vclick', '.test-page-but', function(e){
         pageId = $(e.target).parent().parent().attr('id');
         $('body').pagecontainer('change', '#test-page');
     });
     $(document).on('pageshow', '#test-page', testPage);
+
+    $(document).on('click', '#test-create-records-but', load.createRecords);
 });
