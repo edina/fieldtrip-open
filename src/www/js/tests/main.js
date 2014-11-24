@@ -181,8 +181,11 @@ define(['QUnit', 'file', 'utils', 'tests/systests', 'tests/load'], function(// j
     });
 
     if(utils.isMobileDevice()){
-        file.createDir("test", function(testDir){
-            load.init(testDir);
+        file.createDir({
+            'name': 'test',
+            'success': function(dir){
+                load.init(dir);
+            }
         });
     }
 

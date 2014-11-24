@@ -363,11 +363,15 @@ var _base = {
 
     /**
      * create record
-     * @param group group that owns the editor
      * @param type of the editor
+     * @param group group that owns the editor
      * @returns record
      */
-    createRecord: function(group, type){
+    createRecord: function(type, group){
+        if(!group){
+            group = EDITOR_GROUP.PRIVATE;
+        }
+
         return {
             "record": {
                 "type": "Feature",
@@ -771,7 +775,7 @@ var _base = {
      */
     processAnnotation: function(group, recordType){
         var valid = true;
-        var annotation = this.createRecord(group, recordType);
+        var annotation = this.createRecord(recordType, group);
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
             var divId = $(entry).attr('id');
@@ -1170,9 +1174,9 @@ var _ios = {
         var gotFileEntry = function(fileEntry) {
 
             var gotAsserDir = function(assetDir){
-       
+
                 var ext = "." + fileEntry.name.split('.').pop();
-       
+
 
                 fileEntry.moveTo( assetDir, _ios.guid() + ext,copiedFile, captureError);
             };

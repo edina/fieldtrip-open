@@ -70,19 +70,13 @@ define(["records", "map", "file", "utils"], function(// jshint ignore:line
                 name = name + "-" + fileName;
             }
             console.debug("Create record " + name + " with image id: " + fileName);
-            var annotation = {
-                "record": {
-                    'editor': 'image.edtr',
-                    'name': name,
-                    'fields': []
-                },
-                "type": "image",
-                "isSynced": false
-            };
+
+            var annotation = records.createRecord('image');
+            annotation.record.name = name;
 
             utils.inform("Create " + name);
 
-            annotation.record.fields.push({
+            annotation.record.properties.fields.push({
                 "id": "fieldcontain-image-1",
                 "val": file.getFilePath(newEntry)
             });
@@ -127,7 +121,7 @@ define(["records", "map", "file", "utils"], function(// jshint ignore:line
             },
             function(){
                 // test not found download it
-                file.fileTransfer(
+                file.ftDownload(
                     'http://devel.edina.ac.uk:3333/test/' + fileName,
                     _this.testDir.toURL() + fileName,
                     function(success){
