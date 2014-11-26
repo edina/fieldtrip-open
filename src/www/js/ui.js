@@ -500,14 +500,14 @@ var _ui = {
     capturePage: function(){
         var blocks = ['a', 'b', 'c', 'd', 'e'];
 
-        var editorToHTML = function(index, editor){
+        var editorToHTML = function(index, group, editor){
             var html = '<div class="ui-block-' + blocks[index % 5] + '">\
                           <a \
                             class="' + editor['class'] + '" \
                             data-editor-type="' + editor.type +'"\
                             data-editor-group="'+ editor.group +'"\
                             href="#">\
-                              <img src="css/images/custom.png"> \
+                              <img src="css/images/custom-'+group+'.png"> \
                           </a>\
                           <p>' + editor.title + '</p>\
                         </div>';
@@ -520,7 +520,7 @@ var _ui = {
             for(var key in editors){
                 if(editors.hasOwnProperty(key)){
                     var editor = editors[key];
-                    var html = editorToHTML(i, editor);
+                    var html = editorToHTML(i, group, editor);
                     $(section).append(html);
                     i++;
                 }
@@ -528,7 +528,7 @@ var _ui = {
         };
 
         appendEditorButtons(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
-        appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section3');
+        appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section2');
 
         capturePageListeners();
     },

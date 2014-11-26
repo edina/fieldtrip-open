@@ -3,9 +3,11 @@
   <div data-role="navbar">
     <ul>
       {% for key, items in data.iteritems() %}
-        <li>
-          <a {% for i, item in items.iteritems()%}{%if i != "platforms" and i != "name" %}{{i}}="{{item}}"{% endif %}{% endfor %}>{{items["name"]}}</a>
-        </li>
+        {%if items|length > 0 %}
+          <li>
+            <a {% for i, item in items.iteritems()%}{%if i != "platforms" and i != "name" %}{{i}}="{{item}}"{% endif %}{% endfor %}>{{items["name"]}}</a>
+          </li>
+        {% endif %}
       {% endfor %}
     </ul>
   </div>

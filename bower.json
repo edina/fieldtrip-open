@@ -17,7 +17,7 @@
     "homepage": "http://fieldtripgb.blogs.edina.ac.uk/",
     "dependencies": {
         "jquery": "1.11.1",
-        "jquery-mobile": "http://jquerymobile.com/resources/download/jquery.mobile-1.4.4.zip",
+        "jquery-mobile": "http://jquerymobile.com/resources/download/jquery.mobile-1.4.5.zip",
         "leaflet": "0.7.3",
         "leaflet.markercluster": "0.4.0",
         "proj4": "2.2.2",
