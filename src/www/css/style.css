@@ -42,6 +42,8 @@ a:active, img:active{
     box-shadow: 0px 0px 12px #ff0000 !important;
 }
 
+#home-page .menu a:active, img:active{  box-shadow: 0px 0px 0px !important;}
+
 .error{
     color: red;
 }
