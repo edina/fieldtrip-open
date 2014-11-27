@@ -12,6 +12,6 @@
     },
     "body": {
         "list": "List Records",
-        "show" : "Show Records"
+        "items" : "Records"
     }
 }
