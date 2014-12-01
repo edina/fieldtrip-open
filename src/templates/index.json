@@ -135,11 +135,17 @@
         },
         "popup2":{
             "template": "index-eula-popup.html",
-            "data": {}
+            "data": {
+                "lincense": "",
+                "text": "",
+                "logo1": "<img src=\"css/images/edina-logo-sm.png\" alt=\"EDINA logo\"><img src=\"css/images/jisc-logo-sm.png\" alt=\"JISC logo\">"
+            }
         },
         "popup3":{
             "template": "index-splash-popup.html",
-            "data": {}
+            "data": {
+                "logo1": "<img src=\"css/images/edina-logo-sm.png\" alt=\"EDINA logo\"><img src=\"css/images/jisc-logo-sm.png\" alt=\"JISC logo\">"
+            }
         },
         "popup10":{
             "template": "index-test-create-records.html",

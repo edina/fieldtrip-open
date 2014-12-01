@@ -3,18 +3,15 @@
     <strong>End User License Agreement</strong>
     <p>
       <a id="home-show-eula" href="#">
-        http://fieldtripgb.blogs.edina.ac.uk/end-user-licence-agreement/
+        {{data["license"]}}
       </a>
     </p>
 
     <strong>Warning:</strong>
-    <p>Fieldtrip GB is designed for purpose of field data capture.
-      We DO NOT recommend FieldtripGB for navigation or way finding due
-      to possible inaccuracies and limited battery life.</p>
+    <p>{{data["text"]}}</p>
 
     <div>
-      <img src="css/images/edina-logo-sm.png" alt="EDINA logo">
-      <img src="css/images/jisc-logo-sm.png" alt="JISC logo">
+      {{data["logo1"]}}
     </div>
 
     <a id="home-accept-eula" href="#" data-rel="back" data-role="button">Accept EULA</a>
