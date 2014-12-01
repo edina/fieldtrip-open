@@ -619,6 +619,38 @@ var _ui = {
         ).trigger('create');
     },
 
+    /*
+     * Create the list view with the annotations
+     */
+    addAnnotations: function(annotations){
+        var html = '';
+        var template = _.template(recrowtemplate);
+        var update = false;
+        for(var key in annotations){
+            if(annotations.hasOwnProperty(key)){
+                var annotation = annotations[key];
+                if(annotation){
+                    html += template({
+                        "id": key,
+                        "annotation": annotation,
+                        "fields": annotation.record.fields,
+                        "records": records
+                    });
+                }else{
+                    delete annotations[key];
+                    update = true;
+                }
+            }
+        }
+
+        if(update){
+            records.setSavedRecords(annotations);
+        }
+
+        $('#saved-records-list-list').append(html);
+        $('#saved-records-list-list').trigger('create');
+    },
+
     /**
      * Show Saved Records.
      */
@@ -651,16 +683,7 @@ var _ui = {
             $('.record-extra').toggle(isGrid);
         }
 
-        $.each(annotations, function(id, annotation){
-            if(annotation){
-                that.addAnnotation(id, annotation);
-            }
-            else{
-                // empty entry, just delete it
-                delete annotations[id];
-                records.setSavedAnnotations(annotations);
-            }
-        });
+        this.addAnnotations(annotations);
 
         // Annotations loaded at this point so we can setup layout
         // Check if preference previously set
