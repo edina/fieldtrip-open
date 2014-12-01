@@ -7,6 +7,7 @@
         <a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="b"></a>
     </div>
 
+    <% if (layout === 'records-grid') { %>
     <div class="record-extra">
 
         <% _.each(fields, function(field) { %>
@@ -18,19 +19,19 @@
         <%}%>
 
         <% if (type === "image") { %>
-            <img class="saved-records-view" src="<%=field.val%>" width="100%"/">
+            <img class="saved-records-view" src="<%=field.val%>" width="100%">
         <%}%>
 
         <% if (type === "audio") { %>
         <p>Audio Recording</p>
-        <img id="audio-icon" src="css/images/audio.png" width="100%"/">
+        <img id="audio-icon" src="css/images/audio.png" width="100%">
         <%}%>
 
         <% }); %>
 
 
     </div>
-
+    <%}%>
 
 </div>
 </li>

@@ -608,13 +608,15 @@ var _ui = {
 
     addAnnotation: function(id, annotation){
         var template = _.template(recrowtemplate);
+        var layout = localStorage.getItem('records-layout');
 
         $('#saved-records-list-list').append(
             template({
                 "id": id,
                 "annotation": annotation,
                 "fields": annotation.record.fields,
-                "records": records
+                "records": records,
+                "layout": layout
             })
         ).trigger('create');
     },
@@ -626,6 +628,8 @@ var _ui = {
         var html = '';
         var template = _.template(recrowtemplate);
         var update = false;
+        var layout = localStorage.getItem('records-layout');
+
         for(var key in annotations){
             if(annotations.hasOwnProperty(key)){
                 var annotation = annotations[key];
@@ -634,7 +638,8 @@ var _ui = {
                         "id": key,
                         "annotation": annotation,
                         "fields": annotation.record.fields,
-                        "records": records
+                        "records": records,
+                        "layout": layout
                     });
                 }else{
                     delete annotations[key];
