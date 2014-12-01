@@ -16,10 +16,8 @@
     "license": "BSD",
     "homepage": "http://fieldtripgb.blogs.edina.ac.uk/",
     "dependencies": {
-        "iscroll": "4.2",
         "jquery": "1.10.0",
         "jquery-mobile-bower": "1.4.2",
-        "jquery-mobile-iscrollview-amd": "1.2.9",
         "leaflet": "0.7.3",
         "leaflet.markercluster": "0.4.0",
         "proj4": "2.2.1",
@@ -31,18 +29,12 @@
         "underscore": "1.5.2"
     },
     "dependency_locations": {
-        "iscroll": [
-            "src/iscroll-lite.js"
-        ],
         "jquery": [
             "jquery.min.js"
         ],
         "jquery-mobile-bower": [
             "js/jquery.mobile-x.x.min.js",
             "css/jquery.mobile-x.x.min.css"
-        ],
-        "jquery-mobile-iscrollview-amd": [
-            "lib/jquery.mobile.iscrollview-closure-min.js"
         ],
         "leaflet": [
             "dist/leaflet.js",
