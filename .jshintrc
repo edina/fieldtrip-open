@@ -17,7 +17,8 @@
         "OpenLayers": false,
         "plugins": false,
         "require": false,
-        "webdb": false
+        "webdb": false,
+        "FileTransferError": false
     },
     "indent": "4",
     "jquery": true,
