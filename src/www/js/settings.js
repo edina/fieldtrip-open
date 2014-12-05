@@ -86,6 +86,7 @@ define(function(){
      * Open settings page.
      */
     var settingsPage = function(){
+        var devClickCount = 0;
         require(['utils'], function(utils){
             $('#settings-clear-local-storage a').click(function(){
                 localStorage.clear();
@@ -106,6 +107,19 @@ define(function(){
             else{
                 $('#settings-cordova').text('n/a');
             }
+
+            $('#settings-ftgb').on('vclick', function(){
+                if(++devClickCount >= 10){
+                    var devMode = ! JSON.parse(localStorage.getItem('devMode'));
+                    if(devMode){
+                        console.debug('Developer mode activated');
+                    }else{
+                        console.debug('Developer mode deactivated');
+                    }
+                    localStorage.setItem('devMode', devMode);
+                    devClickCount = 0;
+                }
+            });
 
             $.each(vals, function(name, entry){
                 var id = '#settings-' + name;

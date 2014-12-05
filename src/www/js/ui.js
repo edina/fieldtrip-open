@@ -230,11 +230,6 @@ define(['map', 'records', 'utils', 'settings', 'underscore', 'text!templates/sav
                    '.user-locate',
                    $.proxy(map.panToLocationMarker, map));
 
-    // only privileged user should see development section
-    if(!utils.isPrivilegedUser()){
-        $('#home-page-development').hide();
-    }
-
     // listen for windows resizes
     $(window).bind('resize', $.proxy(resizeWindow, _ui));
 
@@ -510,6 +505,13 @@ var _ui = {
         // exit button
         $('#home-exit').unbind();
         $('#home-exit').on('click', exitApp);
+
+        // only privileged user should see development section
+        if(utils.isPrivilegedUser() || utils.isDeveloper()){
+            $('#home-page-development').show();
+        }else{
+            $('#home-page-development').hide();
+        }
     },
 
     /**
