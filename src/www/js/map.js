@@ -701,8 +701,7 @@ var _base = {
         $popup.one({
             popupbeforeposition: function() {
                 var showRecord = function(html){
-                    var coords = '<p id="coords"><span> Coordinates</span>: (' + lon + ', '+ lat +')</p>';
-                    $('#map-record-popup-text').append(html).append(coords).trigger('create');
+                    $('#map-record-popup-text').append(html).trigger('create');
                 };
 
                 $('#map-record-popup h3').text(annotation.record.name);
@@ -728,6 +727,10 @@ var _base = {
                         showRecord(html);
                     }
                 });
+
+                var coords = '<p id="coords"><span> Coordinates</span>: (' +
+                                                      lon + ', '+ lat +')</p>';
+                showRecord(coords);
             }
         });
     },
