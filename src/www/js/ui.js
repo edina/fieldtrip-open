@@ -262,6 +262,8 @@ var _ui = {
 
             $('#home-splash-popup').on('vclick', function(){
                 $('#home-splash-popup').popup('close');
+                //stop propagation
+                return false;
             });
 
             $.ajax({
