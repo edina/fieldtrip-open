@@ -128,6 +128,9 @@ a:active, img:active{
     width: 6em;
 }
 
+#home-page-development{
+    display: none;
+}
 
 /********* Body *************/
 
