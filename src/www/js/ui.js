@@ -248,8 +248,10 @@ var _ui = {
      */
     init: function(){
         if(utils.showStartPopup()){
-            $('#home-show-eula').click(function(){
-                window.open(utils.getServerUrl() + "/end-user-license-agreement",
+            $('a.external-link').on('vclick', function(evt){
+                evt.preventDefault();
+
+                window.open(evt.currentTarget.href,
                             '_blank',
                             'location=yes');
             });

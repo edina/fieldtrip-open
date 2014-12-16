@@ -135,7 +135,10 @@
         },
         "popup2":{
             "template": "index-eula-popup.html",
-            "data": {}
+            "data": {
+                "eula_url": "http://fieldtripgb.blogs.edina.ac.uk/end-user-licence-agreement/",
+                "eula_caption": "http://fieldtripgb.blogs.edina.ac.uk/end-user-licence-agreement/"
+            }
         },
         "popup3":{
             "template": "index-splash-popup.html",
