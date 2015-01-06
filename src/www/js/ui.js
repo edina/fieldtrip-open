@@ -36,8 +36,8 @@ DAMAGE.
 /**
  * Main fieldtrip open UI interface.
  */
-define(['map', 'records', 'audio', 'utils', 'settings'], function(// jshint ignore:line
-    map, records, audio, utils, settings){
+define(['map', 'records', 'audio', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html',], function(// jshint ignore:line
+    map, records, audio, utils, settings, _, recrowtemplate){
     var portraitScreenHeight;
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
@@ -238,15 +238,6 @@ define(['map', 'records', 'audio', 'utils', 'settings'], function(// jshint igno
         audio.playAudio();
     });
 
-    // only privileged user should see development section
-    if(utils.isMobileDevice()){
-        var isPrivileged = utils.isPrivilegedUser();
-        console.log(device.uuid + " isPrivileged: " + isPrivileged);
-        if(!isPrivileged){
-            $('#home-page-development').hide();
-        }
-    }
-
     // listen for windows resizes
     $(window).bind('resize', $.proxy(resizeWindow, _ui));
 
@@ -265,8 +256,10 @@ var _ui = {
      */
     init: function(){
         if(utils.showStartPopup()){
-            $('#home-show-eula').click(function(){
-                window.open(utils.getServerUrl() + "/end-user-license-agreement",
+            $('a.external-link').on('vclick', function(evt){
+                evt.preventDefault();
+
+                window.open(evt.currentTarget.href,
                             '_blank',
                             'location=yes');
             });
@@ -279,6 +272,8 @@ var _ui = {
 
             $('#home-splash-popup').on('vclick', function(){
                 $('#home-splash-popup').popup('close');
+                //stop propagation
+                return false;
             });
 
             $.ajax({
@@ -549,6 +544,13 @@ var _ui = {
         // exit button
         $('#home-exit').unbind();
         $('#home-exit').on('click', exitApp);
+
+        // only privileged user should see development section
+        if(utils.isPrivilegedUser() || utils.isDeveloper()){
+            $('#home-page-development').show();
+        }else{
+            $('#home-page-development').hide();
+        }
     },
 
     /**
@@ -633,6 +635,56 @@ var _ui = {
         this.toggleActive();
     },
 
+    addAnnotation: function(id, annotation){
+        var template = _.template(recrowtemplate);
+        var layout = localStorage.getItem('records-layout');
+
+        $('#saved-records-list-list').append(
+            template({
+                "id": id,
+                "annotation": annotation,
+                "fields": annotation.record.fields,
+                "records": records,
+                "layout": layout
+            })
+        ).trigger('create');
+    },
+
+    /*
+     * Create the list view with the annotations
+     */
+    addAnnotations: function(annotations){
+        var html = '';
+        var template = _.template(recrowtemplate);
+        var update = false;
+        var layout = localStorage.getItem('records-layout');
+
+        for(var key in annotations){
+            if(annotations.hasOwnProperty(key)){
+                var annotation = annotations[key];
+                if(annotation){
+                    html += template({
+                        "id": key,
+                        "annotation": annotation,
+                        "fields": annotation.record.fields,
+                        "records": records,
+                        "layout": layout
+                    });
+                }else{
+                    delete annotations[key];
+                    update = true;
+                }
+            }
+        }
+
+        if(update){
+            records.setSavedRecords(annotations);
+        }
+
+        $('#saved-records-list-list').append(html);
+        $('#saved-records-list-list').trigger('create');
+    },
+
     /**
      * Show Saved Records.
      */
@@ -664,16 +716,7 @@ var _ui = {
             $('.record-extra').toggle(isGrid);
         }
 
-        $.each(annotations, function(id, annotation){
-            if(annotation){
-                records.addAnnotationToSavedRecords(id, annotation);
-            }
-            else{
-                // empty entry, just delete it
-                delete annotations[id];
-                records.setSavedAnnotations(annotations);
-            }
-        });
+        this.addAnnotations(annotations);
 
         // Annotations loaded at this point so we can setup layout
         // Check if preference previously set

@@ -109,7 +109,8 @@ return{
     /**
      * Initialise settings page.
      */
-    init: function(name){
+    init: function(){
+        var devClickCount = 0;
         require(['utils'], function(utils){
             $('#settings-project').text(utils.version);
             $('#settings-jquery').text($().jquery);
@@ -125,6 +126,19 @@ return{
             else{
                 $('#settings-cordova').text('n/a');
             }
+
+            $('#settings-ftgb').on('vclick', function(){
+                if(++devClickCount >= 10){
+                    var devMode = ! JSON.parse(localStorage.getItem('devMode'));
+                    if(devMode){
+                        console.debug('Developer mode activated');
+                    }else{
+                        console.debug('Developer mode deactivated');
+                    }
+                    localStorage.setItem('devMode', devMode);
+                    devClickCount = 0;
+                }
+            });
 
             $.each(vals, function(name, entry){
                 var id = '#settings-' + name;

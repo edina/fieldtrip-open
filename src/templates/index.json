@@ -136,14 +136,16 @@
         "popup2":{
             "template": "index-eula-popup.html",
             "data": {
-                "lincense": "",
-                "text": "",
+                "license": "http://fieldtripgb.blogs.edina.ac.uk/end-user-licence-agreement/",
+                "text": "Fieldtrip Open is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life.",
                 "logo1": "<img src=\"css/images/edina-logo-sm.png\" alt=\"EDINA logo\"><img src=\"css/images/jisc-logo-sm.png\" alt=\"JISC logo\">"
             }
         },
         "popup3":{
             "template": "index-splash-popup.html",
             "data": {
+                "license": "http://fieldtripgb.blogs.edina.ac.uk/end-user-licence-agreement/",
+                "text": "Fieldtrip Open is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life.",
                 "logo1": "<img src=\"css/images/edina-logo-sm.png\" alt=\"EDINA logo\"><img src=\"css/images/jisc-logo-sm.png\" alt=\"JISC logo\">"
             }
         },

@@ -725,7 +725,7 @@ var _base = {
                 var point = this.pointToExternal(record.geometry.coordinates);
                 var coords = '<p id="coords"><span> Coordinates</span>: (' +
                     point.lon + ', '+ point.lat +')</p>';
-                $('#map-record-popup-text').append(coords).trigger('create');
+                showRecord(coords);
             }, this)
         });
     },

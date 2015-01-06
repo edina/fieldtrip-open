@@ -17,7 +17,8 @@
         "OpenLayers": false,
         "plugins": false,
         "require": false,
-        "webdb": false
+        "webdb": false,
+        "FileTransferError": false
     },
     "multistr": true,
     "indent": "4",

@@ -512,6 +512,13 @@ return {
     },
 
     /**
+     * @return Is the app is in developer mode
+     */
+    isDeveloper: function(){
+        return JSON.parse(localStorage.getItem('devMode'));
+    },
+
+    /**
      * @return Is the browser chrome?
      */
     isChrome: function(){
