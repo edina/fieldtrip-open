@@ -530,6 +530,7 @@ var _base = {
      * @param recordType record/Form type - image, text, audio or custom
      */
     processAnnotation: function(recordType){
+        var lastError;
         var valid = true;
         var annotation = {
             "record": {
@@ -635,12 +636,18 @@ var _base = {
                         if(typeof(annotation.record.name) === 'undefined'){
                             $(entry).find('#' + this.TITLE_ID).addClass('ui-focus');
                             valid = false;
+                            lastError = 'Required field not populated';
+                            return false;
+                        }else if(annotation.record.name.indexOf('/') > 0){
+                            valid = false;
+                            lastError = 'Title cannot contain slashes (/)';
                             return false;
                         }
                     }
                     else{
                         $(control).addClass('ui-focus');
                         valid = false;
+                        lastError = 'Required field not populated';
                         return false;
                     }
                 }
@@ -659,7 +666,7 @@ var _base = {
             }, 300);
         }
         else{
-            utils.inform('Required field not populated');
+            utils.inform(lastError);
         }
 
         return annotation;
@@ -809,9 +816,9 @@ var _ios = {
         var gotFileEntry = function(fileEntry) {
 
             var gotAsserDir = function(assetDir){
-       
+
                 var ext = "." + fileEntry.name.split('.').pop();
-       
+
 
                 fileEntry.moveTo( assetDir, _ios.guid() + ext,copiedFile, captureError);
             };
