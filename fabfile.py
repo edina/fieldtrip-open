@@ -307,7 +307,7 @@ def generate_html(platform="android", cordova=False):
         with open(os.path.join(src_dir, 'www', 'theme', 'project.json'),'r') as f:
             plgins = json.load(f)["plugins"]
             for k, v in plgins["fieldtrip"].iteritems():
-                if v.replace('.', '').isdigit():
+                if re.match('^v?\d+.\d+.\d+', v):
                     plugins_list.append(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'))
         return plugins_list
 

@@ -774,6 +774,7 @@ var _base = {
      * @param recordType record/Form type - image, text, audio or custom
      */
     processAnnotation: function(group, recordType){
+        var lastError;
         var valid = true;
         var annotation = this.createRecord(recordType, group);
 
@@ -866,13 +867,22 @@ var _base = {
                 // Validate the record name
                 if($(control).attr('id') === this.TITLE_ID){
                     if(control.val()){
-                        // Use this control value as a record name
-                        annotation.record.name = control.val();
-                        // But don't include it as a record field
-                        ignoreField = true;
-                    }else{
+                        if(control.val().indexOf('/') < 0){
+                            // Use this control value as a record name
+                            annotation.record.name = control.val();
+                            // But don't include it as a record field
+                            ignoreField = true;
+                        }
+                        else{
+                            valid = false;
+                            lastError = 'Title cannot contain slashes (/)';
+                            return false;
+                        }
+                    }
+                    else{
                         $(control).addClass('ui-focus');
                         valid = false;
+                        lastError = 'Required field not populated';
                         return false;
                     }
                 }
@@ -882,6 +892,7 @@ var _base = {
                         field.val === "") {
                     $(control).addClass('ui-focus');
                     valid = false;
+                    lastError = 'Required field not populated';
                     return false;
                 }
             }
@@ -899,7 +910,7 @@ var _base = {
             }, 300);
         }
         else{
-            utils.inform('Required field not populated');
+            utils.inform(lastError);
         }
 
         // fire edit record event, this allows plugins to edit record
