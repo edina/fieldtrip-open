@@ -58,6 +58,9 @@ define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-templa
     // Array of functions that'll process the editor
     var processEditorPipeline = [];
 
+    // The html of the editor will pass through this functions after being displayed
+    var displayEditorPipeline = [];
+
     var EDITORS_METADATA = 'editors-metadata';
 
     if(utils.isMobileDevice()){
@@ -216,6 +219,8 @@ var _base = {
 
                 form.trigger('create');
 
+                that.processDisplayEditor(form);
+
                 // hide original input elements
                 $('input[capture]').parent().hide();
 
@@ -293,6 +298,16 @@ var _base = {
         promise.fail(function(err){
             console.error(err);
         });
+    },
+
+    /**
+     * Add a function to process the editor when is displayed
+     * @param function name
+     */
+    addDisplayEditorFunction: function(funcName) {
+        if (typeof funcName === 'function') {
+            displayEditorPipeline.push(funcName);
+        }
     },
 
     /**
@@ -940,6 +955,19 @@ var _base = {
         }
     },
 
+
+    /**
+     * Process the editor on display
+     * @param @form a jquery object containing the editor
+     */
+    processDisplayEditor: function($form) {
+        for (var i = 0, len = displayEditorPipeline.length; i < len; i++) {
+            var func = displayEditorPipeline[i];
+            if (typeof func === 'function') {
+                func.apply(null, arguments);
+            }
+        }
+    },
 
     /**
      * Implements the records.processEditor interface
