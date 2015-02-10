@@ -54,17 +54,20 @@ import sys
 import re
 
 
-CORDOVA_VERSION    = '3.6.3-0.2.13'
+CORDOVA_VERSION    = '4.2.0'
 OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION        = '2.1.2'
 BOWER_VERSION      = '1.3.12'
 JSHINT_VERSION     = '2.5.6'
 PLUGMAN_VERSION    = '0.22.10'
+PLATFORMS_VERSION = {
+    'android': '3.7.1'
+}
 
 # lowest supported android sdk version
 # could move to config if projects diverge
 MIN_SDK_VERSION = 14 # 4.0 Ice cream sandwich
-TARGET_SDK_VERSION = 19 # 4.4 Kitkat
+TARGET_SDK_VERSION = 21 # 5.0 Lollipop
 
 """
 Tools installed via npm.
@@ -817,7 +820,11 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
         # After prepare the project install the platform
-        local('cordova platform add {0}'.format(platform))
+        if platform in PLATFORMS_VERSION.keys():
+            print PLATFORMS_VERSION[platform]
+            platform_version = '@{0}'.format(PLATFORMS_VERSION[platform])
+
+        local('cordova platform add {0}{1}'.format(platform, platform_version))
 
     # generate config js
     generate_config_js(version=versions['project'],
@@ -846,7 +853,7 @@ def install_project(platform='android',
             # install openlayers
             with lcd(dist_path):
                 ol_tar_file_name = '%s.tar.gz' % ol_dir
-                ol_tar = 'http://github.com/openlayers/openlayers/releases/download/release-{0}/{1}'.format(OPENLAYERS_VERSION, ol_tar_file_name) 
+                ol_tar = 'http://github.com/openlayers/openlayers/releases/download/release-{0}/{1}'.format(OPENLAYERS_VERSION, ol_tar_file_name)
                 local('wget %s' % ol_tar)
                 local('tar xvfz %s' % ol_tar_file_name)
 
