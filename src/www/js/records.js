@@ -282,22 +282,28 @@ var _base = {
      * @param online optional parameter if the process is online of offline
      *               i.e. from the file system
      */
-    addEditor: function(fileEntry, group, online){
+    addEditor: function(fileEntry, group, online) {
         // Set the default value
         if(online === undefined){
             online = true;
         }
 
+        var deferred = new $.Deferred();
+
         console.debug('addEditor: ' + fileEntry.name + ' ' + group);
         var promise = file.readTextFile(fileEntry);
 
-        promise.done(function(data){
+        promise.done(function(data) {
             _this.processEditor(fileEntry.name, data, group, online);
+            deferred.resolve();
         });
 
-        promise.fail(function(err){
+        promise.fail(function(err) {
             console.error(err);
+            deferred.reject();
         });
+
+        return deferred.promise();
     },
 
     /**
