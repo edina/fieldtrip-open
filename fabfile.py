@@ -653,12 +653,15 @@ def install_plugins(target='local', cordova="True"):
                         bower_comps = os.path.join(plugin_src, 'bower_components')
                         if os.path.exists(bower_comps):
                             js_ext = os.path.join(www, 'js', 'ext', '')
+                            js_dirs = ['js', 'src']
                             for dep in os.listdir(bower_comps):
-                                js_ext_src = os.path.join(bower_comps, dep, 'js', '')
-                                if os.path.exists(js_ext_src):
-                                    local('cp {0}* {1}'.format(
-                                        js_ext_src,
-                                        js_ext))
+                                for js_dir in js_dirs:
+                                    ext_src = os.path.join(bower_comps,
+                                                           dep, js_dir, '')
+                                    if os.path.exists(ext_src):
+                                        local('cp {0}* {1}'.format(
+                                            ext_src,
+                                            js_ext))
                 else:
                     print 'Plugin has no www dir: {0}'.format(www)
                     exit(-1)
