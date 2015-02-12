@@ -215,17 +215,20 @@ def deploy_android(uninstall='False'):
             cmd = 'cordova run android 2>&1'
             out = local(cmd, capture=True)
 
-            if out and out.return_code != 0:
-                if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
+            # TODO
+            # currently a bug in cordova that returns 0 when cordova run android fails
+            # see https://issues.apache.org/jira/browse/CB-8460
+            # just check the output instead
+            #if out and out.return_code != 0:
+            if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
+                # app is installed with wrong certificate try and uninstall app
+                local('adb uninstall {0}'.format(_config('package', section='app')))
 
-                    # app is installed with wrong certificate try and uninstall app
-                    local('adb uninstall {0}'.format(_config('package', section='app')))
-
-                    # retry install
-                    local(cmd)
-                else:
-                    print out
-                    raise SystemExit(out.return_code)
+                # retry install
+                local(cmd)
+            #    else:
+            #        print out
+            #        raise SystemExit(out.return_code)
 
 @task
 def deploy_ios():
