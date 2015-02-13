@@ -239,6 +239,41 @@ var _base = {
     },
 
     /**
+     * Create the list view with the annotations
+     */
+    addAnnotations: function(annotations){
+        var html = '';
+        var template = _.template(recrowtemplate);
+        var update = false;
+        var layout = localStorage.getItem('records-layout');
+
+        for(var key in annotations){
+            if(annotations.hasOwnProperty(key)){
+                var annotation = annotations[key];
+                if(annotation){
+                    html += template({
+                        "id": key,
+                        "annotation": annotation,
+                        "fields": annotation.record.fields,
+                        "records": this,
+                        "layout": layout
+                    });
+                }else{
+                    delete annotations[key];
+                    update = true;
+                }
+            }
+        }
+
+        if(update){
+            this.setSavedRecords(annotations);
+        }
+
+        $('#saved-records-list-list').append(html);
+        $('#saved-records-list-list').trigger('create');
+    },
+
+    /**
      * Add an annotation to 'live' saved records page.
      * @param id annotation id.
      * @param annotation
@@ -380,6 +415,52 @@ var _base = {
      */
     clearSavedRecords: function(){
         localStorage.setItem(this.SAVED_RECORDS_KEY, '');
+    },
+
+    /**
+     * This will convert pre 1.5 records to the new geojson record format.
+     */
+    convertCheck: function(){
+        var newAnnotations = {};
+        var currentAnnotations = this.getSavedRecords();
+
+        if(currentAnnotations){
+            // check if first record has a geometry property
+            // if it doesn't then a convert is required
+            var convertRequired = false;
+            $.each(currentAnnotations, $.proxy(function(id, annotation){
+                convertRequired = typeof(annotation.record.geometry) === 'undefined';
+                return;
+            }));
+
+            if(convertRequired){
+                console.debug("Convert to new record format");
+                utils.printObj(currentAnnotations);
+
+                $.each(currentAnnotations, $.proxy(function(id, oldAnnotation){
+                    var oldRecord = oldAnnotation.record;
+                    var newAnnotation = this.createRecord(oldRecord.editor);
+
+                    newAnnotation.record.geometry.coordinates = [
+                        oldRecord.point.lon,
+                        oldRecord.point.lat,
+                        oldRecord.point.alt
+                    ];
+
+                    newAnnotation.record.name = oldRecord.name;
+                    newAnnotation.record.properties.fields = oldRecord.fields;
+                    newAnnotation.record.properties.timestamp = oldRecord.timestamp;
+
+                    newAnnotations[id] = newAnnotation;
+                    newAnnotations[id].isSynced = oldAnnotation.isSynced;
+                }, this));
+
+                console.debug("--------------------------------------------------");
+                utils.printObj(newAnnotations);
+
+                this.setSavedRecords(newAnnotations);
+            }
+        }
     },
 
     /**
@@ -1192,7 +1273,10 @@ var _base = {
 };
 
 var _ios = {
-     guid : (function() {
+    /**
+     * TODO - use juery.guid ?
+     */
+    guid : (function() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                .toString(16)
@@ -1264,6 +1348,24 @@ var _ios = {
     },
 
     /**
+     * get photo from local filesystem ie the gallery on ios
+     */
+    getPhoto: function(callback) {
+        var that = this;
+        if (navigator.camera !== undefined){
+            navigator.camera.getPicture(
+                function(fileURI){
+                    that.moveFileToPersistentStorage(fileURI, callback);
+                },
+                captureError,
+                this.getImageOptions(
+                    navigator.camera.PictureSourceType.SAVEDPHOTOALBUM,
+                    navigator.camera.MediaType.PICTURE)
+            );
+        }
+    },
+
+    /**
      * Invoke the device's audio recorder
      * ios version copys audio from tmp to permanent storage.
      * @param callback Function executed after successful recording.
@@ -1286,23 +1388,6 @@ var _ios = {
                 },
                 captureError,
                 {limit: 1}
-            );
-        }
-    },
-    /**
-     * get photo from local filesystem ie the gallery on ios
-     */
-    getPhoto: function(callback) {
-        var that = this;
-        if (navigator.camera !== undefined){
-            navigator.camera.getPicture(
-                function(fileURI){
-                    that.moveFileToPersistentStorage(fileURI, callback);
-                },
-                captureError,
-                this.getImageOptions(
-                    navigator.camera.PictureSourceType.SAVEDPHOTOALBUM,
-                    navigator.camera.MediaType.PICTURE)
             );
         }
     },
