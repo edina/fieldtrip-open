@@ -36,8 +36,8 @@ DAMAGE.
 /**
  * Main fieldtrip open UI interface.
  */
-define(['map', 'records', 'audio', 'utils', 'settings', 'underscore', 'text!templates/saved-records-list-template.html',], function(// jshint ignore:line
-    map, records, audio, utils, settings, _, recrowtemplate){
+define(['map', 'records', 'audio', 'utils', 'settings', 'underscore'], function(// jshint ignore:line
+    map, records, audio, utils, settings, _){
     var portraitScreenHeight;
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
@@ -298,6 +298,9 @@ var _ui = {
                 $('#home-splash-popup').popup('open');
             }
         }
+
+        // check if records need converting
+        records.convertCheck();
 
         this.pageChange();
         this.homePage();
@@ -635,56 +638,6 @@ var _ui = {
         this.toggleActive();
     },
 
-    addAnnotation: function(id, annotation){
-        var template = _.template(recrowtemplate);
-        var layout = localStorage.getItem('records-layout');
-
-        $('#saved-records-list-list').append(
-            template({
-                "id": id,
-                "annotation": annotation,
-                "fields": annotation.record.fields,
-                "records": records,
-                "layout": layout
-            })
-        ).trigger('create');
-    },
-
-    /*
-     * Create the list view with the annotations
-     */
-    addAnnotations: function(annotations){
-        var html = '';
-        var template = _.template(recrowtemplate);
-        var update = false;
-        var layout = localStorage.getItem('records-layout');
-
-        for(var key in annotations){
-            if(annotations.hasOwnProperty(key)){
-                var annotation = annotations[key];
-                if(annotation){
-                    html += template({
-                        "id": key,
-                        "annotation": annotation,
-                        "fields": annotation.record.fields,
-                        "records": records,
-                        "layout": layout
-                    });
-                }else{
-                    delete annotations[key];
-                    update = true;
-                }
-            }
-        }
-
-        if(update){
-            records.setSavedRecords(annotations);
-        }
-
-        $('#saved-records-list-list').append(html);
-        $('#saved-records-list-list').trigger('create');
-    },
-
     /**
      * Show Saved Records.
      */
@@ -716,7 +669,7 @@ var _ui = {
             $('.record-extra').toggle(isGrid);
         }
 
-        this.addAnnotations(annotations);
+        records.addAnnotations(annotations);
 
         // Annotations loaded at this point so we can setup layout
         // Check if preference previously set

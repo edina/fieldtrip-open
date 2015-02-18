@@ -56,10 +56,10 @@ import re
 
 CORDOVA_VERSION    = '4.2.0'
 OPENLAYERS_VERSION = '2.13.1'
-NPM_VERSION        = '2.1.2'
+NPM_VERSION        = '2.5.1'
 BOWER_VERSION      = '1.3.12'
-JSHINT_VERSION     = '2.5.6'
-PLUGMAN_VERSION    = '0.22.10'
+JSHINT_VERSION     = '2.6.0'
+PLUGMAN_VERSION    = '0.22.17'
 PLATFORMS_VERSION = {
     'android': '3.7.1'
 }
@@ -215,17 +215,20 @@ def deploy_android(uninstall='False'):
             cmd = 'cordova run android 2>&1'
             out = local(cmd, capture=True)
 
-            if out and out.return_code != 0:
-                if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
+            # TODO
+            # currently a bug in cordova that returns 0 when cordova run android fails
+            # see https://issues.apache.org/jira/browse/CB-8460
+            # just check the output instead
+            #if out and out.return_code != 0:
+            if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
+                # app is installed with wrong certificate try and uninstall app
+                local('adb uninstall {0}'.format(_config('package', section='app')))
 
-                    # app is installed with wrong certificate try and uninstall app
-                    local('adb uninstall {0}'.format(_config('package', section='app')))
-
-                    # retry install
-                    local(cmd)
-                else:
-                    print out
-                    raise SystemExit(out.return_code)
+                # retry install
+                local(cmd)
+            #    else:
+            #        print out
+            #        raise SystemExit(out.return_code)
 
 @task
 def deploy_ios():
@@ -830,6 +833,10 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
         # After prepare the project install the platform
+        # TODO
+        # platform version can be removed when the target plaform
+        # is the default for that cordova version
+        platform_version = ''
         if platform in PLATFORMS_VERSION.keys():
             print PLATFORMS_VERSION[platform]
             platform_version = '@{0}'.format(PLATFORMS_VERSION[platform])
