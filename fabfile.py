@@ -686,6 +686,8 @@ def install_project(platform='android',
     dist_dir - directory for unpacking openlayers
     target - runtime root
     project_branch - project branch name
+    config_url - location of the config.ini
+    config_port - port at which the config.ini will be fetched by ssh
     """
     if platform == 'android':
         _check_commands(['android', 'ant'])
@@ -1131,6 +1133,8 @@ def _check_commands(cmds):
 def _check_config(location=None, port=None):
     """
     If config.ini exists update from remote location, otherwise prompt user for location
+    location - location of the config.ini
+    port - port of the host of where the config.ini is
     """
     global config
 
