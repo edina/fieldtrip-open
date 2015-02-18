@@ -54,15 +54,12 @@ import sys
 import re
 
 
-CORDOVA_VERSION    = '4.2.0'
+CORDOVA_VERSION = '3.6.3-0.2.13'
 OPENLAYERS_VERSION = '2.13.1'
-NPM_VERSION        = '2.5.1'
-BOWER_VERSION      = '1.3.12'
-JSHINT_VERSION     = '2.6.0'
-PLUGMAN_VERSION    = '0.22.17'
-PLATFORMS_VERSION = {
-    'android': '3.7.1'
-}
+NPM_VERSION = '2.1.2'
+BOWER_VERSION = '1.3.12'
+JSHINT_VERSION = '2.5.6'
+PLUGMAN_VERSION = '0.22.10'
 
 # lowest supported android sdk version
 # could move to config if projects diverge
@@ -828,15 +825,7 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
         # After prepare the project install the platform
-        # TODO
-        # platform version can be removed when the target plaform
-        # is the default for that cordova version
-        platform_version = ''
-        if platform in PLATFORMS_VERSION.keys():
-            print PLATFORMS_VERSION[platform]
-            platform_version = '@{0}'.format(PLATFORMS_VERSION[platform])
-
-        local('cordova platform add {0}{1}'.format(platform, platform_version))
+        local('cordova platform add {0}'.format(platform))
 
     # generate config js
     generate_config_js(version=versions['project'],
@@ -951,8 +940,7 @@ def release_android(
                     print "Must release with a versioned cordova plugin: {0}".format(cplug)
                     exit(1)
             for name, version in plugins['fieldtrip'].items():
-                print name, version
-                if version[:3] == 'git':
+                if version[-3:] == 'git':
                     print "Must release with versioned fieldtrip plugin: {0}".format(name)
                     exit(1)
 
@@ -960,7 +948,8 @@ def release_android(
             bin_dir = os.path.join(android_runtime, 'bin')
             apkfile = os.path.join(bin_dir, file_name)
             with lcd(android_runtime):
-                local('ant clean release')
+                sdk_dir = local('which android', capture=True).split('tools')[0]
+                local('ant clean release -Dsdk.dir={0}'.format(sdk_dir))
 
             # sign the application
             unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(file_prefix)))
@@ -1346,10 +1335,10 @@ def _install_npm_command(cmd):
     """
     with settings(warn_only=True):
         version = npm_commands[cmd]['version']
-        out = local('npm install -g {0}@{1}'.format(cmd, version), capture=True)
+        out = local('npm install {0}@{1}'.format(cmd, version), capture=True)
         if out.return_code != 0:
-            print 'Using sudo'
-            local('sudo npm install -g {0}@{1}'.format(cmd, version))
+            print 'Problem installing {0}@{1}'.format(cmd, version)
+            exit(1)
 
 def _is_empty(any_structure):
     # TODO
@@ -1503,8 +1492,7 @@ def _write_data(fil, filedata):
     f.close()
 
 # import any project/plugin tasks
-root = _get_source()[0]
-proj_dir = _get_source()[1]
+root, proj_dir, src_dir  = _get_source()
 ptasks = [proj_dir]
 plugins = os.path.join(root, 'plugins')
 if os.path.exists(plugins):
@@ -1514,3 +1502,8 @@ for ptask in ptasks:
     if os.path.exists(os.path.join(ptask, 'fabtasks.py')):
         sys.path.append(ptask)
         import fabtasks
+
+# add node_modules/.bin to path
+os.environ['PATH'] = '{0}:{1}'.format(
+    os.path.join(root, 'node_modules/.bin'),
+    os.environ['PATH'])
