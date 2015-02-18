@@ -673,7 +673,9 @@ def install_plugins(target='local', cordova="True"):
 def install_project(platform='android',
                     dist_dir='apps',
                     target='local',
-                    project_branch='master'):
+                    project_branch='master',
+                    config_url=None,
+                    config_port=None):
     """
     Install Cordova runtime
 
@@ -681,6 +683,8 @@ def install_project(platform='android',
     dist_dir - directory for unpacking openlayers
     target - runtime root
     project_branch - project branch name
+    config_url - location of the config.ini
+    config_port - port at which the config.ini will be fetched by ssh
     """
     if platform == 'android':
         _check_commands(['android', 'ant'])
@@ -689,7 +693,7 @@ def install_project(platform='android',
     root, proj_home, src_dir = _get_source()
 
     # get config file
-    _check_config()
+    _check_config(config_url, config_port)
 
     target_dir, runtime = _get_runtime(target)
     js_ext_dir = os.sep.join(('www', 'js', 'ext'))
@@ -753,7 +757,7 @@ def install_project(platform='android',
             if "not a Cordova-based project" in out or installed_version != CORDOVA_VERSION:
                 # If the directory exists but it's not a cordova project or the
                 # cordova version is different from expected, remove runtime
-                if clean_runtime(target) == False:
+                if clean_runtime(target, config_url) == False:
                     exit(-1)
             else:
                 install_cordova = False
@@ -769,13 +773,16 @@ def install_project(platform='android',
         platform_path = os.sep.join((runtime, 'platforms', platform))
 
         if(os.path.exists(platform_path)):
-            msg = 'Platform {0} exists\nDo you wish to delete it(Y/n)? > '
-            answer = raw_input(msg.format(platform)).strip()
-            if len(answer) == 0 or answer.lower() == 'y':
+            if config_url:
                 local('cordova platform rm {0}'.format(platform))
             else:
-                print 'Choosing not continue. Nothing installed.'
-                exit(-1)
+                msg = 'Platform {0} exists\nDo you wish to delete it(Y/n)? > '
+                answer = raw_input(msg.format(platform)).strip()
+                if len(answer) == 0 or answer.lower() == 'y':
+                    local('cordova platform rm {0}'.format(platform))
+                else:
+                    print 'Choosing not continue. Nothing installed.'
+                    exit(-1)
 
         # create sym link to assets
         local('rm -rf www')
@@ -1112,34 +1119,37 @@ def _check_commands(cmds):
     for command in cmds:
         _check_command(command)
 
-def _check_config():
+def _check_config(location=None, port=None):
     """
     If config.ini exists update from remote location, otherwise prompt user for location
+    location - location of the config.ini
+    port - port of the host of where the config.ini is
     """
     global config
 
     root = _get_source()[0]
     conf_dir = os.sep.join((root, 'etc'))
     conf_file = os.sep.join((conf_dir, 'config.ini'))
-    if not os.path.exists(conf_file):
-        msg = '\nProvide location of config file > '
-        answer = raw_input(msg).strip()
-        if len(answer) > 0:
-            if answer.find('@') == -1:
-                if os.path.exists(answer):
-                    local('cp {0} {1}'.format(answer, conf_file))
+    if not location:
+        if not os.path.exists(conf_file):
+            msg = '\nProvide location of config file > '
+            answer = raw_input(msg).strip()
+            if len(answer) > 0:
+                if answer.find('@') == -1:
+                    if os.path.exists(answer):
+                        local('cp {0} {1}'.format(answer, conf_file))
+                    else:
+                        print "File not found, can't continue."
+                        exit(0)
                 else:
-                    print "File not found, can't continue."
-                    exit(0)
-            else:
-                port = _config('location_port')
-                if port:
-                    local('scp -P {0} {1} {2}'.format(port, answer, conf_dir))
-                else:
-                    local('scp {0} {1}'.format(answer, conf_dir))
+                    port = _config('location_port')
+                    if port:
+                        local('scp -P {0} {1} {2}'.format(port, answer, conf_dir))
+                    else:
+                        local('scp {0} {1}'.format(answer, conf_dir))
 
-    # pick up any changes from remote config
-    location = _config('location')
+        # pick up any changes from remote config
+        location = _config('location')
     print location
     if location[0: 4] == 'git@':
         # config is in secure git repo
@@ -1152,7 +1162,8 @@ def _check_config():
             local('git archive --remote={0} | tar -x --strip-components {1}'.format(
                 location, strip_comp))
     elif location.find('@') != -1:
-        port = _config('location_port')
+        if not port:
+            port = _config('location_port')
         if port:
             local("rsync -avz -e 'ssh -p {0}' {1} {2}".format(
                 port, location, conf_dir))
