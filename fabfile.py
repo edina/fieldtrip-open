@@ -1173,7 +1173,8 @@ def _check_config(location=None, port=None):
             local('git archive --remote={0} | tar -x --strip-components {1}'.format(
                 location, strip_comp))
     elif location.find('@') != -1:
-        port = _config('location_port')
+        if not port:
+            port = _config('location_port')
         if port:
             local("rsync -avz -e 'ssh -p {0}' {1} {2}".format(
                 port, location, conf_dir))
