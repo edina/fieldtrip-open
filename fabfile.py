@@ -336,7 +336,9 @@ def generate_html(platform="android", cordova=False):
             plgins = json.load(f)["plugins"]
             for k, v in plgins["fieldtrip"].iteritems():
                 if re.match('^v?\d+.\d+.\d+', v):
-                    plugins_list.append(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'))
+                    tmpl_path = os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates')
+                    if os.path.exists(tmpl_path):
+                        plugins_list.append(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'))
         return plugins_list
 
     #the jinja templates of core, the jinja project templates, the jinja templates of plugins
