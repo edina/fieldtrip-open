@@ -189,6 +189,29 @@ def clean():
                 delete_repo(os.sep.join((plugins, plugin)))
         local('rmdir plugins')
 
+
+@task
+def build(platform='android'):
+    """
+    Build the app for a specific platform
+    """
+
+    _check_commands(['cordova'])
+
+    # generate html for android
+    generate_html(platform, cordova=True)
+
+    with lcd(_get_runtime()[1]):
+        local('cordova build {0}'.format(platform))
+
+
+@task
+def build_android():
+    _check_commands(['ant', 'android'])
+
+    build('android')
+
+
 @task
 def deploy_android(uninstall='False'):
     """
@@ -196,22 +219,18 @@ def deploy_android(uninstall='False'):
 
     uninstall - use this flag to first uninstall app.
     """
+    _check_commands(['adb'])
 
-    _check_commands(['ant', 'adb', 'cordova', 'android'])
+    build_android()
 
-    # generate html for android
-    generate_html(cordova=True)
+    if _str2bool(uninstall):
+        local('adb uninstall {0}'.format(_config('package', section='app')))
 
     with lcd(_get_runtime()[1]):
-        if _str2bool(uninstall):
-            local('adb uninstall {0}'.format(_config('package', section='app')))
-
-        local('cordova build android')
-
         with settings(warn_only=True):
             cmd = 'cordova run android 2>&1'
             out = local(cmd, capture=True)
-
+            print out
             # TODO
             # currently a bug in cordova that returns 0 when cordova run android fails
             # see https://issues.apache.org/jira/browse/CB-8460
@@ -227,19 +246,25 @@ def deploy_android(uninstall='False'):
             #        print out
             #        raise SystemExit(out.return_code)
 
+
+@task
+def build_ios():
+    """
+    Build the ios app
+    """
+    _check_commands(['xcode-select'])
+    build('ios')
+
+
 @task
 def deploy_ios():
     """
-    Deploy to ios device connected to machine
+    Deploy to an iOS device connected to machine
     """
-    _check_command('cordova')
-
-    # generate html for ios
-    generate_html(platform="ios", cordova=True)
 
     with lcd(_get_runtime()[1]):
-        device = None
         local('cordova run ios')
+
 
 @task
 def generate_config_js(version=None, fetch_config=True):
