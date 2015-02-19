@@ -443,8 +443,7 @@ var _base = {
 
                     newAnnotation.record.geometry.coordinates = [
                         oldRecord.point.lon,
-                        oldRecord.point.lat,
-                        oldRecord.point.alt
+                        oldRecord.point.lat
                     ];
 
                     newAnnotation.record.name = oldRecord.name;
