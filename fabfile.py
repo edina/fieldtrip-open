@@ -38,6 +38,7 @@ from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings, 
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from html_generator import HtmlGenerator
+from jinja2 import Environment, FileSystemLoader
 
 import xml.etree.ElementTree as ET
 
