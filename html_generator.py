@@ -1,6 +1,11 @@
-import collections, json, os, re
+import collections
+import json
+import os
+import re
+import sys
+from copy import deepcopy
 from bs4 import BeautifulSoup
-from jinja2 import Environment, PackageLoader, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 class HtmlGenerator(object):
 
