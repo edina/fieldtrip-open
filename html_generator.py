@@ -107,7 +107,7 @@ class HtmlGenerator(object):
                             data["header"] = header_data
 
                         if "footer" in data:
-                            if not _is_empty(data["footer"]):
+                            if not self._is_empty(data["footer"]):
                                 footer_data2 = deepcopy(footer_data)
                                 data["footer"] = self._merge(footer_data2, data["footer"])
                         else:
