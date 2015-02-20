@@ -29,7 +29,6 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 """
 
-from bs4 import BeautifulSoup
 from copy import copy, deepcopy
 from configparser import ConfigParser, ExtendedInterpolation, NoOptionError
 from email.mime.image import MIMEImage
@@ -38,13 +37,12 @@ from email.mime.text import MIMEText
 from fabric.api import cd, env, execute, hosts, lcd, local, put, run, settings, task
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
-from jinja2 import Environment, PackageLoader, FileSystemLoader
+from html_generator import HtmlGenerator
 
 import xml.etree.ElementTree as ET
 
 import ast
 import codecs
-import collections
 import datetime
 import itertools
 import json
@@ -293,258 +291,8 @@ def generate_html(platform="android", cordova=False):
     #setup paths
     root, proj_home, src_dir = _get_source()
 
-    #the final destination of html generated files
-    export_path = os.sep.join((src_dir, 'www'))
-
-    def _get_plugins_templates():
-        """ get a list of directories with templates """
-        plugins_list = []
-        for d in os.listdir(os.path.join(root, 'plugins')):
-            d1 = os.path.join(root, 'plugins', d)
-            for dire in os.listdir(d1):
-                p = os.path.join(d1, dire)
-                if os.path.isdir(p) and not dire.startswith("."):
-                    tmpl_path = os.path.join(p, "templates")
-                    if os.path.exists(tmpl_path):
-                        plugins_list.append(tmpl_path)
-        with open(os.path.join(src_dir, 'www', 'theme', 'project.json'),'r') as f:
-            plgins = json.load(f)["plugins"]
-            for k, v in plgins["fieldtrip"].iteritems():
-                if re.match('^v?\d+.\d+.\d+', v):
-                    tmpl_path = os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates')
-                    if os.path.exists(tmpl_path):
-                        plugins_list.append(os.path.join('bower_components', 'fieldtrip-{0}'.format(k), 'src', 'templates'))
-        return plugins_list
-
-    #the jinja templates of core, the jinja project templates, the jinja templates of plugins
-    templates_path = {"core": os.sep.join((src_dir, 'templates')), "project":
-        os.path.join(proj_home, 'src', 'templates'),
-        "plugins": _get_plugins_templates()}
-
-    #function for merging data
-    def _do_merge(filename, data, path):
-        if os.path.exists(path) and filename in os.listdir(path):
-            with open(os.path.join(path, filename), 'r') as f:
-                new_data = json.load(f, object_pairs_hook=collections.OrderedDict)
-            print "DATA: merging {0}".format(os.path.join(path, filename))
-            return _merge(data, new_data)
-        else:
-            return data
-
-    #get data from different two paths and merge them
-    def _get_data(path1, filename, path2):
-        with open(os.path.join(path1, filename),'r') as f:
-            try:
-                json_object = json.load(f, object_pairs_hook=collections.OrderedDict)
-                return _do_merge(filename, json_object, path2)
-            except ValueError, e:
-                print "There was problem with the json file {0}".format(os.path.join(path1, filename))
-                sys.exit()
-
-    def _check_for_data(paths, filename):
-        _in_plugins = []
-        for d in paths["plugins"]:
-            if os.path.exists(os.path.join(d, filename)):
-                _in_plugins.append(d)
-        return _in_plugins
-
-    #get data and merge it
-    def _get_check_data(paths, filename):
-        data = None
-        with open(os.path.join(paths["core"], filename),'r') as f:
-            data = _do_merge(filename, json.load(f, object_pairs_hook=collections.OrderedDict), paths["project"])
-        for d in paths["plugins"]:
-            data = _do_merge(filename, data, d)
-        return data
-
-    #get header and footer data
-    def _get_header_footer_data(templates_path):
-        header_data = _get_data(templates_path["core"], 'header.json', templates_path["project"])
-        footer_data = _get_data(templates_path["core"], 'footer.json', templates_path["project"])
-        for d in templates_path["plugins"]:
-            if os.path.exists(os.path.join(d, 'header.json')):
-                _do_merge('header.json', header_data, d)
-            if os.path.exists(os.path.join(d, 'footer.json')):
-                _do_merge('footer.json', footer_data, d)
-        return header_data, footer_data
-
-    def _generate_templates(environ, templates):
-        for templ in templates:
-            print "TEMPLATE: generating template {0}".format(templates[templ])
-            script_template = environ.get_template(templates[templ])
-            _write_data(os.path.join(export_path, 'templates', templates[templ]), script_template.render())
-
-    def _check_for_template(name):
-        res = []
-        for t in _get_plugins_templates():
-            if name in os.listdir(t):
-                res.append(t)
-        return res
-
-    def _find_template(name):
-        pths = {}
-        for t in _check_for_template(name):
-            paths = t.split("/")
-            pths[paths[len(paths)-3]]=t
-        return pths
-
-    def _get_letter(obj):
-        """
-        Get the letter that corresponds to column in a jqm grid view based on the
-        number of elements in obj: see http://api.jquerymobile.com/1.3/grid-layout/
-        """
-
-        letter = 'a'
-        if len(obj) > 1:
-            i = len(obj) - 2
-            letter = chr(i + ord('a'))
-
-        return letter
-
-    def _is_valid_file(f):
-        return f.endswith("json") and not f in ["header.json", "footer.json", "settings.json"]
-
-    def _generate_settings(current_path, paths, header_data, footer_data):
-        """ generate setttings page """
-        environ = Environment(loader=FileSystemLoader(current_path))
-        settings=[]
-        #get all the settings templates from plugins
-        settings_in_plugins = _find_template('settings.html')
-        if os.path.exists(os.path.join(paths["project"], 'settings.html')):
-            settings_in_plugins["project"] = paths["project"]
-
-        #get the settings values from config
-        settings_config = _config(None, "settings")
-
-        for plg in settings_in_plugins:
-            settings_path = settings_in_plugins[plg]
-            environ_settings = Environment(loader=FileSystemLoader(settings_path))
-            tmpl = environ_settings.get_template('settings.html')
-            data = {}
-            if settings_config is not None:
-                #this is needed for when the plugins come through bower
-                if "fieldtrip-" in plg:
-                    plg = plg.replace("fieldtrip-", "")
-                if plg in settings_config.keys():
-                    value = settings_config[plg]
-                    if value.startswith('{'):
-                        data = json.loads(value, object_pairs_hook=collections.OrderedDict)
-                    else:
-                        data = value
-            settings.append(tmpl.render(settings=data))
-
-        header_template = environ.get_template("header.html")
-        footer_template = environ.get_template("footer.html")
-        template  = environ.get_template('settings.html')
-        output = template.render(settings="\n".join(settings),
-                            config = _config(),
-                            header=header_template.render(
-                                data=header_data,
-                                platform=platform),
-                            footer=footer_template.render(
-                                    data=footer_data,
-                                    platform=platform))
-        _write_data(os.sep.join((export_path, 'settings.html')), _prettify(output, 2))
-
-    def _create_html(current_path, paths, header_data, footer_data):
-        environ = Environment(loader=FileSystemLoader(current_path))
-        environ_core = Environment(loader=FileSystemLoader(paths["core"]))
-        environ_project = Environment(loader=FileSystemLoader(paths["project"]))
-        environ.globals["_get_letter"] = _get_letter
-        environ_project.globals["_get_letter"] = _get_letter
-
-        header_template = environ_core.get_template("header.html")
-        footer_template = environ_core.get_template("footer.html")
-
-        for path, dirs, files in os.walk(current_path):
-            for f in files:
-                if _is_valid_file(f):
-                    htmlfile = '{0}.html'.format(f.split(".")[0])
-                    htmlfilepath = os.path.join(path, htmlfile)
-                    jsonfilepath = os.path.join(path, f)
-
-                    data = None
-                    if current_path == paths["core"]:
-                        #check if the same json exists in any of the plugins and merge it
-                        data_in_plugins = _check_for_data(paths, f)
-                        if len(data_in_plugins)>0:
-                            for p in data_in_plugins:
-                                if data == None:
-                                    data = _get_data(current_path, f, p)
-                                else:
-                                    _merge(data, _get_data(current_path, f, p))
-
-                    #merge with the data in json
-                    if data:
-                        _do_merge(f, data, paths["project"])
-                    else:
-                        data = _get_data(current_path, f, paths["project"])
-
-                    #generate templates:
-                    if "templates" in data:
-                        _generate_templates(environ, data["templates"])
-
-                    if os.path.exists(htmlfilepath):
-                        print "generating file {0}".format(htmlfile)
-
-                        if "header" in data:
-                            _merge(data["header"], header_data)
-                        else:
-                            data["header"] = header_data
-
-                        if "footer" in data:
-                            if not _is_empty(data["footer"]):
-                                footer_data2 = deepcopy(footer_data)
-                                data["footer"] = _merge(footer_data2, data["footer"])
-                        else:
-                            data["footer"] = footer_data
-
-                        if "body" in data:
-                            body = _sorted(data["body"])
-                        else:
-                            body=""
-
-                        template = environ.get_template(htmlfile)
-                        indexheader_data = {"cordova": cordova, "title": header_data["title"]}
-
-                        popups=[]
-                        if "popups" in data:
-                            for popup in data["popups"]:
-                                res = _check_for_template(data["popups"][popup]["template"])
-                                if len(res) == 1:
-                                    environ_popup = Environment(loader=FileSystemLoader(res[0]))
-                                    popup_template = environ_popup.get_template(data["popups"][popup]["template"])
-                                    print "POPUP: adding {0} popup from plugins in {1}".format(data["popups"][popup]["template"], htmlfile)
-                                elif len(res) > 1:
-                                    print "There popup template {0} exists more than once. This needs to be fixed.".format(data["popups"][popup]["template"])
-                                    sys.exit()
-                                else:
-                                    popup_template = environ.get_template(data["popups"][popup]["template"])
-                                    print "POPUP: adding {0} popup from core in {1}".format(data["popups"][popup]["template"], htmlfile)
-                                popups.append(popup_template.render(data=data["popups"][popup]["data"]))
-
-                        output = template.render(
-                            header_data=indexheader_data,
-                            body=body,
-                            popups="\n".join(popups),
-                            platform=platform,
-                            header=header_template.render(
-                                data=data["header"],
-                                platform=platform),
-                            footer=footer_template.render(
-                                    data=data["footer"],
-                                    platform=platform))
-                        _write_data(os.sep.join((export_path, htmlfile)), _prettify(output, 2))
-
-    #generate header footer data firstly
-    header_data, footer_data = _get_header_footer_data(templates_path)
-    #generate the rest
-    _create_html(templates_path["core"], templates_path, header_data, footer_data)
-    _create_html(templates_path["project"], templates_path, header_data, footer_data)
-    _generate_settings(templates_path["core"], templates_path, header_data, footer_data)
-
-    for d in _get_plugins_templates():
-        _create_html(d, templates_path, header_data, footer_data)
+    htmlGenerator = HtmlGenerator(platform, cordova, root, proj_home, src_dir, _config(), _config(None, "settings"))
+    htmlGenerator.generate()
 
 @task
 def generate_html_ios():
@@ -1353,13 +1101,6 @@ def _install_npm_command(cmd):
             print 'Problem installing {0}@{1}'.format(cmd, version)
             exit(1)
 
-def _is_empty(any_structure):
-    # TODO
-    if any_structure:
-        return False
-    else:
-        return True
-
 def _is_in_branch(repo, branch):
     # checks if a git repository is in a specific branch
     is_in_branch = False
@@ -1387,38 +1128,6 @@ def _make_dirs(dirs):
     for d in dirs:
         _make_dir(d)
 
-def _merge(a, b, path=None):
-    """
-    merges b into a
-
-    #http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge
-    """
-    if path is None: path = []
-    for key in b:
-        if key in a:
-            if isinstance(a[key], dict) and isinstance(b[key], dict):
-                if _is_empty(b[key]):
-                    a[key] = b[key]
-                else:
-                    _merge(a[key], b[key], path + [str(key)])
-            elif a[key] == b[key]:
-                pass # same leaf value
-            else:
-                a[key] = b[key]
-        else:
-            a[key] = b[key]
-    return a
-
-def _prettify(output, indent='2'):
-    """ custom indentation for BeautifulSoup"""
-    soup = BeautifulSoup(output, "html5lib")
-    if len(soup.findAll('script')) > 0:
-        s = soup.prettify()
-    else:
-        s = soup.div.prettify()
-    r = re.compile(r'^(\s*)', re.MULTILINE)
-    return r.sub(r'\1\1', s)
-
 def _path_join(*dirs):
     # create path and make sure directory exists
     path = os.path.join(*dirs)
@@ -1432,11 +1141,6 @@ def _read_data(fil):
         f.close()
         return filedata
     return None
-
-def _sorted(dic):
-    """ TODO """
-    dic = collections.OrderedDict(sorted(dic.items(), key=lambda t: t[0]))
-    return dic
 
 def _str2bool(val):
     """Convert a string representation of truth to true (1) or false (0).
@@ -1499,7 +1203,10 @@ def _update_android_manifest(path):
         f.write(etree.tostring(root, pretty_print=True))
 
 def _write_data(fil, filedata):
-    """ TODO """
+    """
+    fil --> filename
+    filedata --> content that will be written in filename
+    """
     f = open(fil, 'w')
     f.write(filedata.encode('utf-8'))
     f.close()
