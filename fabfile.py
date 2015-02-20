@@ -312,7 +312,7 @@ def generate_html(platform="android", cordova=False):
     cordova - should cordova.js be used?
     """
     if isinstance(cordova, basestring):
-        cordova = str2bool(cordova)
+        cordova = _str2bool(cordova)
 
     #setup paths
     root, proj_home, src_dir = _get_source()
