@@ -207,8 +207,8 @@ var _base = {
 
                 $.each($('div[id^=fieldcontain-]'), function(index, item) {
                     var widgetType = item.id.match(/^fieldcontain-(.*?)-\d+$/)[1];
-                    var widgets = widgets.getWidgets(widgetType);
-                    widgets.initializeWidgets(widgets, index, item);
+                    var widgetsList = widgets.getWidgets(widgetType);
+                    widgets.initializeWidgets(widgetsList, index, item);
                 });
 
                 utils.appendDateTimeToInput("#form-text-1");

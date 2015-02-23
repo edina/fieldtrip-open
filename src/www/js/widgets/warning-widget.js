@@ -3,10 +3,6 @@ define(function() {
 
     var WIDGET_NAME = 'warning';
 
-    var addHandlers = function() {
-
-    };
-
     var initialize = function(index, item) {
         var $item = $(item);
         var popup = '<div data-role="popup" class="warning-popup">' +
