@@ -784,8 +784,8 @@ div.record-extra > div > img {
 .olControlScaleLine {
    display: block;
    position: absolute;
-   left: 3%;
-   top: 12%;
+   right: 3%;
+   bottom: 19%;
    font-size: xx-small;
 }
 
@@ -800,6 +800,27 @@ div.record-extra > div > img {
    border: solid 2px black;
    border-top: none;
    text-align: center;
+}
+
+.olControlPanel{
+  left: 6px;
+  top: 25px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.olControlPanel > div{
+  width: 50px;
+  height: 50px;
+  margin-top: 5px;
+}
+
+.olControlPanel .olControlDrawFeatureItemInactive {
+    background-image: url("./images/select-area_inactive.png");
+}
+.olControlPanel .olControlDrawFeatureItemActive {
+    background-image: url("./images/select-area_active.png");
 }
 
 /********* Leaflet *************/
