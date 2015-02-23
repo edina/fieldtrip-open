@@ -34,8 +34,13 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Camera, cordova */
 
-define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html', 'text!templates/camera-capture-template.html'], function(// jshint ignore:line
-    utils, file, _, recrowtemplate, cameraTemplate){
+define(function(require) {
+    // Require modules in simplified CommonJS wrapping
+    var utils = require('utils');
+    var file = require('file');
+    var _ = require('underscore');
+    var recrowtemplate = require('text!templates/saved-records-list-template.html');
+    var cameraTemplate = require('text!templates/camera-capture-template.html');
 
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     var EDITOR_CLASS = 'editor-class';
