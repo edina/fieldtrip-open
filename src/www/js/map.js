@@ -487,6 +487,7 @@ var _base = {
      */
     hideAnnotateLayer: function(){
         this.hideLayer(this.getAnnotateLayer());
+        this.toolbar.deactivate();
     },
 
     /**
@@ -640,8 +641,12 @@ var _base = {
     /**
      * Show annotation marker.
      */
-    showAnnotateLayer: function(){
-        this.getAnnotateLayer().setVisibility(true);
+    showAnnotateLayer: function(evt){
+        var layer = this.getAnnotateLayer();
+
+        layer.setVisibility(true);
+        //this.toolbar.activate();
+        //layer.map.getControlsByClass('olControlPanel').activate();
     },
 
     /**
@@ -880,6 +885,8 @@ var _base = {
             zoom: undefined,
             lonLat: lonlat
         });
+
+        this.showAnnotateLayer();
     },
 
     /**
@@ -905,6 +912,8 @@ var _base = {
             autocentre: options.autocentre,
             autopan: options.autopan
         });
+
+        this.showLocateLayer();
     },
 
     /**
@@ -944,6 +953,10 @@ var _openlayers = {
      * Set up openlayers map.
      */
     init: function(){
+        //Openlayers shortcuts
+        var DrawFeature = OpenLayers.Control.DrawFeature;
+        var RegularPolygon = OpenLayers.Handler.RegularPolygon;
+
         // get proj4js 2.x working with openlayer 2.13, see
         // http://osgeo-org.1560.x6.nabble.com/OL-2-13-1-latest-Proj4js-td5081636.html
         window.Proj4js = {
@@ -1121,6 +1134,49 @@ var _openlayers = {
                 style: locateLayerStyle,
             }
         );
+
+        var selectAreaOptions = {
+            title: 'Select an area',
+            // displayClass: 'olLocationFileSelectArea',
+            handlerOptions: {
+                sides: 4,
+                irregular:true,
+                persistent: false
+            },
+            type: OpenLayers.Control.TYPE_TOOL,
+            eventListeners: {
+                activate: function(evt) {
+                    console.debug(evt);
+                },
+                deactivate: function(evt) {
+                    console.debug(evt);
+                    var layer = evt.object.layer;
+                    layer.removeAllFeatures();
+                }
+            }
+        };
+
+        var selectArea = new DrawFeature(positionMarkerLayer,
+                                         RegularPolygon, selectAreaOptions);
+
+        selectArea.handler.callbacks.create = function() {
+            var layer = positionMarkerLayer;
+
+            if (layer.features.length > 0)
+            {
+                layer.removeAllFeatures();
+            }
+        };
+
+        var toolbar = new OpenLayers.Control.Panel({
+                            //displayClass: options.olToolBarClass,
+                            allowDepress: true
+                        });
+
+        toolbar.addControls([selectArea]);
+        this.toolbar = toolbar;
+        this.map.addControl(toolbar);
+        toolbar.deactivate();
 
         // add layers to map
         this.map.addLayers([positionMarkerLayer,
@@ -1703,7 +1759,6 @@ var _openlayers = {
         }
 
         // Create or move the feature
-        layer.setVisibility(true);
         if(annotationFeature.length === 0){
             var v = new OpenLayers.Feature.Vector(point, {'id': id});
             annotationFeature = [v];

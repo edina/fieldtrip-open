@@ -63,7 +63,7 @@ PLUGMAN_VERSION = '0.22.10'
 # lowest supported android sdk version
 # could move to config if projects diverge
 MIN_SDK_VERSION = 14 # 4.0 Ice cream sandwich
-TARGET_SDK_VERSION = 21 # 5.0 Lollipop
+TARGET_SDK_VERSION = 19 # 4.4 Kitkat
 
 """
 Tools installed via npm.

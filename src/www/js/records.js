@@ -34,8 +34,14 @@ DAMAGE.
 /* jshint multistr: true */
 /* global Camera, cordova */
 
-define(['utils', 'file', 'underscore', 'text!templates/saved-records-list-template.html', 'text!templates/camera-capture-template.html'], function(// jshint ignore:line
-    utils, file, _, recrowtemplate, cameraTemplate){
+define(function(require) {
+    // Require modules in simplified CommonJS wrapping
+    var utils = require('utils');
+    var file = require('file');
+    var _ = require('underscore');
+    var widgets = require('widgets');
+    var recrowtemplate = require('text!templates/saved-records-list-template.html');
+    var cameraTemplate = require('text!templates/camera-capture-template.html');
 
     var DOCUMENTS_SCHEME_PREFIX = "cdvfile://localhost/persistent";
     var EDITOR_CLASS = 'editor-class';
@@ -199,21 +205,11 @@ var _base = {
                     $(input).parent().append(btn);
                 });
 
-                // Create a popup and hide the original warning
-                $.each($('div[id^=fieldcontain-warning-]'), function(index, item){
-                    var $item = $(item);
-                    var popup = '<div data-role="popup" class="warning-popup">\
-                                   <h1>'+$item.find('label').text()+'</h1>\
-                                   <div>\
-                                     <img class="warning-icon" src="css/images/warning-icon@2x.png"/>\
-                                     <span>'+$item.find('textarea').attr('placeholder')+'</span>\
-                                   </div>\
-                                   <br />\
-                                   <a href="#" data-rel="back" data-role="button">Accept</a>\
-                                </div>';
-
-                    $('#annotate-form').append(popup);
-                }).hide();
+                $.each($('div[id^=fieldcontain-]'), function(index, item) {
+                    var widgetType = item.id.match(/^fieldcontain-(.*?)-\d+$/)[1];
+                    var widgetsList = widgets.getWidgets(widgetType);
+                    widgets.initializeWidgets(widgetsList, index, item);
+                });
 
                 utils.appendDateTimeToInput("#form-text-1");
 
@@ -955,12 +951,20 @@ var _base = {
                 field.val = $(entry).find('.annotate-audio-taken input').attr('value');
                 doLabel($(control).attr('id'));
             }
-            else if(type === 'warning'){
-                // Ignore this type of field
-                ignoreField = true;
-            }
-            else{
-                console.warn("No such control type: " + type + ". div id = " + divId);
+            else
+            {
+                var widgetsList = widgets.getWidgets(type);
+
+                if (widgetsList.length > 0) {
+                    // Check if it can be serialized
+                    if (widgets.serializeWidgets(widgetsList) === null) {
+                        ignoreField = true;
+                    }
+                }
+                else
+                {
+                    console.warn('No such control type: ' + type + '. div id = ' + divId);
+                }
             }
 
             // do some validation
