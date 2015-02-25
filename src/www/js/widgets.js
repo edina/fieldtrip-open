@@ -1,4 +1,4 @@
-define(function(require) {
+define(function(require, exports) {
     'use strict';
     var polygonWidget = require('widgets/polygon-widget');
     var warningWidget = require('widgets/warning-widget');
@@ -82,6 +82,7 @@ define(function(require) {
 
     // Register default widgets
     registerWidget(warningWidget);
+    registerWidget(polygonWidget);
 
     // Public interface
     return {
