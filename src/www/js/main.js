@@ -56,8 +56,8 @@ function onDeviceReady(){
             "underscore": "ext/underscore"
         },
         shim: {
-            'QUnit': {
-                exports: 'QUnit',
+            "QUnit": {
+                exports: "QUnit",
                 init: function() {
                     QUnit.config.autoload = false;
                     QUnit.config.autostart = false;

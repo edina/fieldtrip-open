@@ -255,6 +255,7 @@ var _ui = {
      * Initialise module.
      */
     init: function(){
+
         if(utils.showStartPopup()){
             $('a.external-link').on('vclick', function(evt){
                 evt.preventDefault();
@@ -635,6 +636,11 @@ var _ui = {
      */
     pageChange: function(){
         resizePage();
+        i18n.init({// jshint ignore:line
+            ns: { namespaces: ['index'], defaultNs: 'index'}
+        }, function(){
+            $("html").i18n();
+        });
         this.toggleActive();
     },
 
