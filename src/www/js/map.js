@@ -645,7 +645,7 @@ var _base = {
         var layer = this.getAnnotateLayer();
 
         layer.setVisibility(true);
-        this.toolbar.activate();
+        //this.toolbar.activate();
         //layer.map.getControlsByClass('olControlPanel').activate();
     },
 
