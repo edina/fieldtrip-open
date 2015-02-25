@@ -944,9 +944,9 @@ def _check_config(location=None, port=None):
             port = _config('location_port')
         if port:
             local("rsync -avz -e 'ssh -p {0}' {1} {2}".format(
-                port, location, conf_dir))
+                port, location, conf_file))
         else:
-            local('rsync -avz {0} {1}'.format(location, conf_dir))
+            local('rsync -avz {0} {1}'.format(location, conf_file))
     config = None # make sure it is re-read
 
 def _config(key=None, section='install'):
