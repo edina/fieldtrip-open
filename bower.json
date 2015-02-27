@@ -31,10 +31,12 @@
     },
     "dependency_locations": {
         "jquery": [
-            "dist/jquery.min.js"
+            "dist/jquery.min.js",
+            "dist/jquery.min.map"
         ],
         "jquery-mobile": [
             "jquery.mobile-x.x.min.js",
+            "jquery.mobile-x.x.min.map",
             "jquery.mobile-x.x.min.css"
         ],
         "leaflet": [

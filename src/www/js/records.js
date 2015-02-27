@@ -1081,6 +1081,14 @@ var _base = {
         // Add the type of the editor
         editorsObj[group][editorName].type = editorName;
 
+        //Add bbox if exists
+        var bbox = $('input[data-bbox]', html).data("bbox") || "";
+        editorsObj[group][editorName].bbox = bbox.split(",");
+
+        //Add bbox if exists
+        var recordGeometry = $('input[data-record-geometry]', html).data("record-geometry") || "point";
+        editorsObj[group][editorName].recordGeometry = recordGeometry;
+
         // Add the title wich will be displayed
         var title = $form.data('title');
         if(title !== undefined){
@@ -1152,18 +1160,16 @@ var _base = {
     /**
      * Save annotation with the coords currently selected.
      */
-    saveAnnotationWithCoords: function(annotation, coords){
-        annotation.record.geometry.coordinates = [
-            coords.lon,
-            coords.lat
-        ];
+    saveAnnotationWithCoords: function(annotation, geometry){
+        annotation.record.geometry = geometry;
 
-        if(typeof(coords.gpsPosition) !== 'undefined'){
-            annotation.record.geometry.coordinates[2] = coords.gpsPosition.altitude;
+        if(typeof(geometry.gpsPosition) !== 'undefined'){
+            annotation.record.geometry.coordinates[2] = geometry.gpsPosition.altitude;
 
+            //TO-DO investigation for the new change
             if(annotation.record.properties.hasOwnProperty('pos_acc') &&
-               coords.gpsPosition.accuracy !== undefined){
-                   annotation.record.properties.pos_acc = coords.gpsPosition.accuracy; // jshint ignore:line
+               geometry.gpsPosition.accuracy !== undefined){
+                   annotation.record.properties.pos_acc = geometry.gpsPosition.accuracy; // jshint ignore:line
             }
         }
 

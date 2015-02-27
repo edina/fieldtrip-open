@@ -668,8 +668,8 @@ div.record-extra > div > img {
 
 #annotate-preview-map {
     position: absolute;
-    top: 40%;
-    height: 45%;
+    top: 7%;
+    height: 90%;
     width: 96%;
     left: 2.5%;
     border: #2c3f62 solid 1px;
@@ -695,8 +695,36 @@ div.record-extra > div > img {
 }
 #annotate-preview-page .map-zoom-buttons{
     position: absolute;
-    top: 44%;
+    top: 20%;
 }
+
+#annotate-preview-page .map-control-buttons{
+    position: absolute;
+    top: 20%;
+    left: 5%;
+    z-index: 1000;
+}
+
+.ui-icon-capture-point {
+    background-image: url('./images/spritesheet.png');
+    background-position: -123px 0px;
+}
+
+.ui-icon-capture-line {
+    background-image: url('./images/spritesheet.png');
+    background-position: -2px 1px;
+}
+
+.ui-icon-capture-polygon {
+    background-image: url('./images/spritesheet.png');
+    background-position: -32px 0px;
+}
+
+.ui-icon-capture-box {
+    background-image: url('./images/spritesheet.png');
+    background-position: -63px 0px;
+}
+
 
 
 /********* Settings *************/
@@ -800,27 +828,6 @@ div.record-extra > div > img {
    border: solid 2px black;
    border-top: none;
    text-align: center;
-}
-
-.olControlPanel{
-  left: 6px;
-  top: 25px;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-}
-
-.olControlPanel > div{
-  width: 50px;
-  height: 50px;
-  margin-top: 5px;
-}
-
-.olControlPanel .olControlDrawFeatureItemInactive {
-    background-image: url("./images/select-area_inactive.png");
-}
-.olControlPanel .olControlDrawFeatureItemActive {
-    background-image: url("./images/select-area_active.png");
 }
 
 /********* Leaflet *************/

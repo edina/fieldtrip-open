@@ -473,13 +473,13 @@ var _ui = {
         }, this));
 
         $('#annotate-preview-ok').click($.proxy(function(){
-            var lonLat = map.getAnnotationCoords(false);
+            var coords = map.getAnnotationCoords(false);
             records.saveAnnotationWithCoords(
                 this.currentAnnotation,
-                lonLat);
+                coords.geometry);
 
             // update default location to be last selected location
-            map.setDefaultLocation(lonLat);
+            map.setDefaultLocation(coords.centroid);
 
             utils.gotoMapPage($.proxy(function(){
                 this.mapPageRecordCentred(this.currentAnnotation);
@@ -488,6 +488,17 @@ var _ui = {
         }, this));
 
         utils.touchScroll('#annotate-preview-detail');
+
+        map.enableControl('point');
+        $(".map-control-buttons a").click(function(){
+            var controlName = $(this).data("icon").split("-")[1];
+            console.log(controlName);
+            map.enableControl(controlName);
+        });
+
+        $("#preview-record").click(function(){
+            $("#map-preview-record-popup").popup('open');
+        });
 
         map.hideRecordsLayer();
         map.updateSize();

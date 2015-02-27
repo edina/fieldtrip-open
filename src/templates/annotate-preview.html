@@ -6,10 +6,6 @@
       <div class="content-header ui-header">
         <h2 class="capitalise"></h2>
       </div>
-      <div id="annotate-preview-detail">
-        <div id="annotate-preview-detail-image"></div>
-        <div id="annotate-preview-detail-meta"></div>
-      </div>
 
       <div id="annotate-preview-map"></div>
 
@@ -29,7 +25,23 @@
       <a data-role="button" class="map-zoom-button-in">+</a>
       <a data-role="button" class="map-zoom-button-out">-</a>
     </div>
+    <div data-role="controlgroup" data-type="vertical" class="map-control-buttons">
+      <a href="#" data-role="button" data-icon="capture-point" data-iconpos="notext">Point</a>
+      <a href="#" data-role="button" data-icon="capture-line" data-iconpos="notext">Line</a>
+      <a href="#" data-role="button" data-icon="capture-polygon" data-iconpos="notext">Polygon</a>
+      <a href="#" data-role="button" data-icon="capture-box" data-iconpos="notext">Box</a>
+    </div>
 
+  </div>
+
+  <div id="map-preview-record-popup" data-role="popup">
+    <a href="#" data-role="button" data-theme="b" data-icon="delete" data-iconpos="notext" class="ui-btn-right close">
+    </a>
+    <h3></h3>
+    <div id="annotate-preview-detail">
+      <div id="annotate-preview-detail-image"></div>
+      <div id="annotate-preview-detail-meta"></div>
+    </div>
   </div>
 
   {{footer}}

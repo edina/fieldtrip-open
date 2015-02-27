@@ -52,7 +52,7 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
     var serviceVersion = "1.0.0"; // TODO needs parameterised
 
     var ANNOTATE_POSITION_ATTR = 'annotate_pos';
-    var PADDLE_MARKER = 'paddle_marker';
+    var PADDLE_RECORD = 'paddle_record';
     var USER_LOCATION = 'locate';
     var RECORDS_LAYER = 'records_layer';
 
@@ -214,7 +214,7 @@ var _base = {
      * @return layer with the draggable icon.
      */
     getAnnotateLayer: function(){
-        return this.getLayer(PADDLE_MARKER);
+        return this.getLayer(PADDLE_RECORD);
     },
 
     /**
@@ -625,7 +625,7 @@ var _base = {
      */
     setDefaultLocation: function(point){
         var extLonLat = this.toExternal(point);
-        this.setDefaultLonLat(extLonLat.lon, extLonLat.lat);
+        this.setDefaultLonLat(extLonLat.x, extLonLat.y);
     },
 
     /**
@@ -766,9 +766,10 @@ var _base = {
             }, this));
             this.addMarkers(layer, features);
             if(annotation){
+                var point = this.getCentroid(annotation.record.geometry);
                 this.setCentre({
-                    lon: annotation.record.geometry.coordinates[0],
-                    lat: annotation.record.geometry.coordinates[1],
+                    lon: point.x,
+                    lat: point.y,
                     zoom: undefined,
                     external: false
                 });
@@ -1113,8 +1114,8 @@ var _openlayers = {
         positionMarkerStyle.externalGraphic = "css/images/marker.png";
         positionMarkerStyle.graphicYOffset = -64;
 
-        var positionMarkerLayer = new OpenLayers.Layer.Vector(
-            PADDLE_MARKER,
+        var captureRecordLayer = new OpenLayers.Layer.Vector(
+            PADDLE_RECORD,
             {
                 style: positionMarkerStyle,
                 visibility: false
@@ -1135,6 +1136,14 @@ var _openlayers = {
             }
         );
 
+        var drawFeatureListeners = {
+            activate: function(evt) {
+                evt.object.layer.removeAllFeatures();
+            },
+            deactivate: function(evt) {
+                evt.object.layer.removeAllFeatures();
+            }
+        };
         var selectAreaOptions = {
             title: 'Select an area',
             // displayClass: 'olLocationFileSelectArea',
@@ -1144,42 +1153,58 @@ var _openlayers = {
                 persistent: false
             },
             type: OpenLayers.Control.TYPE_TOOL,
-            eventListeners: {
-                activate: function(evt) {
-                    console.debug(evt);
-                },
-                deactivate: function(evt) {
-                    console.debug(evt);
-                    var layer = evt.object.layer;
-                    layer.removeAllFeatures();
-                }
-            }
+            eventListeners: drawFeatureListeners
         };
 
-        var selectArea = new DrawFeature(positionMarkerLayer,
-                                         RegularPolygon, selectAreaOptions);
+        var selectLineOptions = {
+            title: 'Select a line',
+            type: OpenLayers.Control.TYPE_TOOL,
+            eventListeners: drawFeatureListeners
+        };
 
-        selectArea.handler.callbacks.create = function() {
-            var layer = positionMarkerLayer;
+        var selectPolygonOptions = {
+            title: 'Select a line',
+            type: OpenLayers.Control.TYPE_TOOL,
+            eventListeners: drawFeatureListeners
+        };
 
-            if (layer.features.length > 0)
-            {
-                layer.removeAllFeatures();
+        var drawControls = {
+            point: new OpenLayers.Control.DragFeature(captureRecordLayer),
+            line: new DrawFeature(captureRecordLayer,
+                        OpenLayers.Handler.Path, selectLineOptions),
+            polygon: new DrawFeature(captureRecordLayer,
+                        OpenLayers.Handler.Polygon, selectPolygonOptions),
+            box: new DrawFeature(captureRecordLayer,
+                RegularPolygon, selectAreaOptions)
+        };
+        this.controls = drawControls;
+
+        var clearRecordLayer = function(){
+            if (captureRecordLayer.features.length > 0) {
+                captureRecordLayer.removeAllFeatures();
             }
         };
+        captureRecordLayer.events.register("beforefeatureadded", null, clearRecordLayer);
 
         var toolbar = new OpenLayers.Control.Panel({
-                            //displayClass: options.olToolBarClass,
-                            allowDepress: true
-                        });
+            //displayClass: options.olToolBarClass,
+            allowDepress: true
+        });
 
-        toolbar.addControls([selectArea]);
+        var toolbarControls = [];
+        for(var key in drawControls) {
+            toolbarControls.push(drawControls[key]);
+            this.map.addControl(drawControls[key]);
+        }
+
+
+        toolbar.addControls(toolbarControls);
         this.toolbar = toolbar;
         this.map.addControl(toolbar);
         toolbar.deactivate();
 
         // add layers to map
-        this.map.addLayers([positionMarkerLayer,
+        this.map.addLayers([captureRecordLayer,
                             recordsLayer,
                             locateLayer]);
 
@@ -1219,9 +1244,7 @@ var _openlayers = {
             altitude: defaultUserAltitude
         };
 
-        var drag = new OpenLayers.Control.DragFeature(positionMarkerLayer);
-        this.map.addControl(drag);
-        drag.activate();
+        drawControls.point.activate();
 
         this.minLocateZoomTo = this.map.getNumZoomLevels() - 3;
         this.setCentre({
@@ -1413,10 +1436,9 @@ var _openlayers = {
      */
     createMarker: function(options){
         var annotation = options.annotation;
+        var geojsonFormat = new OpenLayers.Format.GeoJSON();
         return new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Point(
-                annotation.record.geometry.coordinates[0],
-                annotation.record.geometry.coordinates[1]),
+            geojsonFormat.parseGeometry(annotation.record.geometry),
             {
                 'id': options.id,
                 'type': records.getEditorId(annotation)
@@ -1433,29 +1455,50 @@ var _openlayers = {
     },
 
     /**
+     * enable control, point, line, polygon, box on the map
+     * @param controlName {String}
+     */
+    enableControl: function(controlName){
+        for(var key in this.controls) {
+            var control = this.controls[key];
+            if(controlName === key) {
+                control.activate();
+            } else {
+                control.deactivate();
+            }
+        }
+    },
+
+    /**
      * Get current annotation coords (the paddle location).
      * @param ext In external projection? If not internal.
      * @return Current annotation coordinates.
      */
     getAnnotationCoords: function(ext){
-        var coords;
-        var features = this.getAnnotateLayer().getFeaturesByAttribute(
-            'id',
-            ANNOTATE_POSITION_ATTR);
+        var coords, centroid;
+        //var features = this.getAnnotateLayer().getFeaturesByAttribute(
+         //   'id',
+        //    ANNOTATE_POSITION_ATTR);
+        var features = this.getAnnotateLayer().features;
 
         if(features.length > 0){
             var geom = features[0].geometry;
-            coords = new OpenLayers.LonLat(geom.x, geom.y);
+            var geoJSON = new OpenLayers.Format.GeoJSON();
+            centroid = geom.getCentroid();
+            //coords = new OpenLayers.LonLat(geom.x, geom.y);
             if(ext){
-                coords = this.toExternal(coords);
+                geom = this.toExternal(geom);
             }
+            coords = JSON.parse(geoJSON.write(geom));
 
             // give the annotation altitude the altitude of the user
             // see https://redmine.edina.ac.uk/issues/5497
-            coords.gpsPosition = this.userLonLat.gpsPosition;
+            if(geom.type === "Point"){
+                coords.gpsPosition = this.userLonLat.gpsPosition;
+            }
         }
 
-        return coords;
+        return {geometry: coords, centroid: centroid};
     },
 
     /**
@@ -1463,6 +1506,16 @@ var _openlayers = {
      */
     getBaseLayer: function(){
         return this.map.baseLayer;
+    },
+
+    /**
+     * get centroid of geojson
+     * @param {Object} geometry of geojson
+     * @returns OpenLayers.Point
+     */
+    getCentroid: function(geometry){
+        var geojsonFormat = new OpenLayers.Format.GeoJSON();
+        return geojsonFormat.parseGeometry(geometry).getCentroid();
     },
 
     /**
@@ -1721,12 +1774,12 @@ var _openlayers = {
     },
 
     /**
-     * Reproject internal point to internal lonlat.
-     * @param Internal lonlat.
-     * @return Cloned external lonlat
+     * Reproject internal geom.
+     * @param Internal geom.
+     * @return Cloned external geom
      */
-    toExternal: function(lonlat){
-        return lonlat.clone().transform(
+    toExternal: function(geom){
+        return geom.clone().transform(
             this.internalProjection,
             this.externalProjection);
     },
@@ -2095,7 +2148,7 @@ var _leaflet = {
                 }),
             }
         );
-        this.layers[PADDLE_MARKER] = annotateLayer;
+        this.layers[PADDLE_RECORD] = annotateLayer;
         annotateLayer.addTo(this.map);
 
         if(this.showRecordsOnDisplay){
@@ -2114,7 +2167,7 @@ var _leaflet = {
      * @return Current annotation coordinates.
      */
     getAnnotationCoords: function(ext){
-        var lonLat = this.layers[PADDLE_MARKER].getLatLng();
+        var lonLat = this.layers[PADDLE_RECORD].getLatLng();
         lonLat.lon = lonLat.lng;
         return lonLat;
     },
