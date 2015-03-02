@@ -42,6 +42,8 @@ define(['map', 'records', 'audio', 'utils', 'settings', 'underscore'], function(
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
 
+    var widgets = require('widgets');
+
     var menuIds = {
         'home': ['home-page', 'settings-page'],
         'map': ['map-page'],
@@ -456,6 +458,10 @@ var _ui = {
             });
         }
 
+        var geometryObjects = JSON.parse(sessionStorage.getItem("editor-metadata")).geometryTypes;
+        var widgetsList = widgets.getWidgets("geometryType");
+        widgets.initializeWidgets(widgetsList, geometryObjects, ".map-control-buttons");
+
         var addMeta = function(label, text){
             $('#annotate-preview-detail-meta').append(
                 '<p><span>' + label + '</span>: ' + text + '</p>');
@@ -484,6 +490,7 @@ var _ui = {
             utils.gotoMapPage($.proxy(function(){
                 this.mapPageRecordCentred(this.currentAnnotation);
                 this.currentAnnotation = undefined;
+                map.enableControl('point');
             }, this));
         }, this));
 
@@ -492,7 +499,6 @@ var _ui = {
         map.enableControl('point');
         $(".map-control-buttons a").click(function(){
             var controlName = $(this).data("icon").split("-")[1];
-            console.log(controlName);
             map.enableControl(controlName);
         });
 

@@ -211,6 +211,18 @@ var _base = {
                     widgets.initializeWidgets(widgetsList, index, item);
                 });
 
+                //Add bbox if exists
+                var bbox = $('input[data-bbox]').data("bbox") || "";
+
+                //Add check for geometry type capture
+                var recordGeometry = $('input[data-record-geometry]').data("record-geometry") || "point";
+                var liveEditorMetadata = {
+                    "name": type,
+                    "bbox": bbox.split(","),
+                    "geometryTypes": recordGeometry.split(",")
+                };
+                sessionStorage.setItem("editor-metadata", JSON.stringify(liveEditorMetadata));
+
                 utils.appendDateTimeToInput("#form-text-1");
 
                 form.trigger('create');
