@@ -1463,6 +1463,14 @@ var _openlayers = {
             var control = this.controls[key];
             if(controlName === key) {
                 control.activate();
+                if(controlName === "point"){
+                    this.geoLocate({
+                        secretly: true,
+                        updateAnnotateLayer: true,
+                        useDefault: false,
+                        watch: true
+                    });
+                }
             } else {
                 control.deactivate();
             }
