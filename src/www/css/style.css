@@ -529,8 +529,8 @@ div.record-extra > div > img {
 #annotate-form{
     position: relative;
     padding: 1.5em 2em 0 2em;
-    max-height: 92%;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .button-wrapper p{
