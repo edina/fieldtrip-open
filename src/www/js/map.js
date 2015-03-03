@@ -1463,6 +1463,7 @@ var _openlayers = {
             var control = this.controls[key];
             if(controlName === key) {
                 control.activate();
+                $("#draw-"+controlName).removeClass("hide");
                 if(controlName === "point"){
                     this.geoLocate({
                         secretly: true,
@@ -1473,6 +1474,9 @@ var _openlayers = {
                 }
             } else {
                 control.deactivate();
+                if(!$("#draw-"+key).hasClass("hide")){
+                    $("#draw-"+key).addClass("hide");
+                }
             }
         }
     },
