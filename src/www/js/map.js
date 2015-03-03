@@ -1040,7 +1040,10 @@ var _openlayers = {
             // labels don't work on android
             //label : "${title}",
             graphicOpacity: 1,
-            graphicZIndex: 1
+            graphicZIndex: 1,
+            strokeColor: "yellow",
+            fillColor: "yellow",
+            fillOpacity: 0.3
         });
 
         // annotation styles
@@ -1098,6 +1101,7 @@ var _openlayers = {
 
         // vector layer for displaying records
         var styleMap = new OpenLayers.StyleMap({'default': recordsStyle});
+
         var recordsLayer = new OpenLayers.Layer.Vector(
             RECORDS_LAYER,
             {
@@ -1463,6 +1467,7 @@ var _openlayers = {
             var control = this.controls[key];
             if(controlName === key) {
                 control.activate();
+                $("#draw-"+controlName).removeClass("hide");
                 if(controlName === "point"){
                     this.geoLocate({
                         secretly: true,
@@ -1473,6 +1478,9 @@ var _openlayers = {
                 }
             } else {
                 control.deactivate();
+                if(!$("#draw-"+key).hasClass("hide")){
+                    $("#draw-"+key).addClass("hide");
+                }
             }
         }
     },

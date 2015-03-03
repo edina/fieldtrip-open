@@ -48,6 +48,10 @@ a:active, img:active{
     color: red;
 }
 
+.hide{
+    display: none;
+}
+
 .ui-content{
     padding: 0;
 }

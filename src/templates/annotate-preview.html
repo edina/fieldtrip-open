@@ -10,7 +10,11 @@
       <div id="annotate-preview-map"></div>
 
       <div id="annotate-preview-buttons" class="ui-grid-a">
-        <div id="annotate-preview-map-tip" class="ui-block-a">{{body["drag"]}}</div>
+        <div id="annotate-preview-map-tip" class="ui-block-a">
+          {% for item in body["drawElements"] %}
+           <div class="draw hide" id="draw-{{item}}">{{body["drawElements"][item]}}</div>
+          {% endfor %}
+        </div>
         <!-- <div class="ui-block-b" ></div> -->
         <div id="annotate-preview-ok" class="ui-block-a">
           <input type="submit" value="{{body["save"]}}">

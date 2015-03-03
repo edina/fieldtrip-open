@@ -22,7 +22,12 @@
         }
     },
     "body": {
-        "drag": "Drag pin to Reposition",
+        "drawElements": {
+            "point": "Drag pin to Reposition",
+            "line": "Click on the map",
+            "polygon": "Click on the map",
+            "box": "Click and drag on the map"
+        },
         "cancel" : "Cancel",
         "save" : "Save"
     },
