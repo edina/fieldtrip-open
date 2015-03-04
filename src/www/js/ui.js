@@ -42,8 +42,6 @@ define(['map', 'records', 'audio', 'utils', 'settings', 'underscore'], function(
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
 
-    var widgets = require('widgets');
-
     var menuIds = {
         'home': ['home-page', 'settings-page'],
         'map': ['map-page'],
