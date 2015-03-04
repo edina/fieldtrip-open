@@ -987,7 +987,7 @@ var _base = {
                     else {
                         field.val = serialized.value;
                         field.repr = serialized.repr;
-                        field.label = type;
+                        field.label = serialized.label;
                     }
                 }
                 else

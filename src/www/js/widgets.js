@@ -70,20 +70,27 @@ define(function(require, exports) {
             case 1:
                 result = {
                     value: values[0].value,
-                    repr: values[0].repr
+                    repr: values[0].repr,
+                    label: values[0].label
                 };
             break;
             default:
+                //TODO: Maybe several behaviours of a single widget shouldn't
+                //      be supported
+
                 value = {};
                 repr = '';
+                label = '';
                 for (i = 0, len = values.length; i < len; i++) {
                     $.extend(value, values[i].value);
                     repr += values[i].repr;
+                    label = values[i].label;
                 }
 
                 result = {
                     value: value,
-                    repr: repr
+                    repr: repr,
+                    label: label
                 };
         }
 
