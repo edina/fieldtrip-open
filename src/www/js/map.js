@@ -1490,9 +1490,9 @@ var _openlayers = {
                 $("#draw-"+controlName).removeClass("hide");
                 if(controlName === "point"){
                     this.geoLocate({
-                        secretly: true,
+                        secretly: false,
                         updateAnnotateLayer: true,
-                        useDefault: false,
+                        useDefault: true,
                         watch: true
                     });
                 }
