@@ -74,7 +74,7 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
                 for(var key in locations){
                     if(key === locale.value){
                         defaultUserLon = locations[key].lon;
-                        defaultUserLat = locations[key].lon;
+                        defaultUserLat = locations[key].lat;
                         break;
                     }
                 }
