@@ -68,7 +68,7 @@ define(function(require, exports) {
                 value = null;
             break;
             case 1:
-                value = values[1];
+                value = values[0];
             break;
             default:
                 value = {};

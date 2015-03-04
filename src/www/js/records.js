@@ -966,11 +966,14 @@ var _base = {
             else
             {
                 var widgetsList = widgets.getWidgets(type);
-
+                var serialized;
                 if (widgetsList.length > 0) {
+                    serialized = widgets.serializeWidgets(widgetsList, entry);
                     // Check if it can be serialized
-                    if (widgets.serializeWidgets(widgetsList) === null) {
+                    if (serialized === null) {
                         ignoreField = true;
+                    }else {
+                        field.val = serialized;
                     }
                 }
                 else
