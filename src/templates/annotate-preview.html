@@ -6,15 +6,15 @@
       <div class="content-header ui-header">
         <h2 class="capitalise"></h2>
       </div>
-      <div id="annotate-preview-detail">
-        <div id="annotate-preview-detail-image"></div>
-        <div id="annotate-preview-detail-meta"></div>
-      </div>
 
       <div id="annotate-preview-map"></div>
 
       <div id="annotate-preview-buttons" class="ui-grid-a">
-        <div id="annotate-preview-map-tip" class="ui-block-a">{{body["drag"]}}</div>
+        <div id="annotate-preview-map-tip" class="ui-block-a">
+          {% for item in body["drawElements"] %}
+           <div class="draw hide" id="draw-{{item}}">{{body["drawElements"][item]}}</div>
+          {% endfor %}
+        </div>
         <!-- <div class="ui-block-b" ></div> -->
         <div id="annotate-preview-ok" class="ui-block-a">
           <input type="submit" value="{{body["save"]}}">
@@ -29,7 +29,18 @@
       <a data-role="button" class="map-zoom-button-in">+</a>
       <a data-role="button" class="map-zoom-button-out">-</a>
     </div>
+    <div data-role="controlgroup" data-type="vertical" class="map-control-buttons"></div>
 
+  </div>
+
+  <div id="map-preview-record-popup" data-role="popup">
+    <a href="#" data-role="button" data-theme="b" data-icon="delete" data-iconpos="notext" class="ui-btn-right close">
+    </a>
+    <h3></h3>
+    <div id="annotate-preview-detail">
+      <div id="annotate-preview-detail-image"></div>
+      <div id="annotate-preview-detail-meta"></div>
+    </div>
   </div>
 
   {{footer}}

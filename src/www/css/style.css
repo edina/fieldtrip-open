@@ -48,6 +48,10 @@ a:active, img:active{
     color: red;
 }
 
+.hide{
+    display: none;
+}
+
 .ui-content{
     padding: 0;
 }
@@ -529,8 +533,8 @@ div.record-extra > div > img {
 #annotate-form{
     position: relative;
     padding: 1.5em 2em 0 2em;
-    max-height: 92%;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .button-wrapper p{
@@ -668,8 +672,8 @@ div.record-extra > div > img {
 
 #annotate-preview-map {
     position: absolute;
-    top: 40%;
-    height: 45%;
+    top: 7%;
+    height: 90%;
     width: 96%;
     left: 2.5%;
     border: #2c3f62 solid 1px;
@@ -695,8 +699,36 @@ div.record-extra > div > img {
 }
 #annotate-preview-page .map-zoom-buttons{
     position: absolute;
-    top: 44%;
+    top: 20%;
 }
+
+#annotate-preview-page .map-control-buttons{
+    position: absolute;
+    top: 20%;
+    left: 5%;
+    z-index: 1000;
+}
+
+.ui-icon-capture-point {
+    background-image: url('./images/spritesheet.png');
+    background-position: -123px 0px;
+}
+
+.ui-icon-capture-line {
+    background-image: url('./images/spritesheet.png');
+    background-position: -2px 1px;
+}
+
+.ui-icon-capture-polygon {
+    background-image: url('./images/spritesheet.png');
+    background-position: -32px 0px;
+}
+
+.ui-icon-capture-box {
+    background-image: url('./images/spritesheet.png');
+    background-position: -63px 0px;
+}
+
 
 
 /********* Settings *************/
@@ -784,8 +816,8 @@ div.record-extra > div > img {
 .olControlScaleLine {
    display: block;
    position: absolute;
-   left: 3%;
-   top: 12%;
+   right: 3%;
+   bottom: 19%;
    font-size: xx-small;
 }
 

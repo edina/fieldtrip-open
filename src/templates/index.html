@@ -16,6 +16,7 @@
     {% endif %}
     <script src="js/ext/jquery.js"></script>
     <script src="js/ext/jquery-mobile.js"></script>
+    <script src="js/ext/i18next.js"></script>
     <script data-main="js/main" src="js/ext/requirejs.js"></script>
   </head>
 
@@ -26,8 +27,9 @@
 
       <div id="home-content" class="non-map-body ui-content" role="main">
       {% for key, sections in body.iteritems() %}
-        <div id="home-page-{{sections.title.replace(' ', '-').lower()}}">
-          <h2>{{sections.title}}</h2>
+        {% if sections.title.en is defined %}
+        <div id="home-page-{{sections.title.en.replace(' ', '-').lower()}}">
+          <h2 data-i18n="{{sections.title.i18n}}"></h2>
           {% if sections|length > 0 %}
           <div class="nav-icons ui-grid-{{ _get_letter(sections["items"]) }}">
             {% for item in sections["items"] %}
@@ -43,6 +45,7 @@
           </div>
           {% endif %}
         </div>
+        {% endif %}
         {% endfor %}
         {{popups}}
       </div>

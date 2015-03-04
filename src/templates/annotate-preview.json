@@ -1,6 +1,16 @@
 {
     "header": {
         "buttons" : {
+            "record-info": {
+                "platforms": ["android", "ios"],
+                "class": "record-info",
+                "id": "preview-record",
+                "data-icon": "info",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext"
+            },
             "user-locate": {
                 "platforms": ["android", "ios"],
                 "class": "user-locate",
@@ -12,7 +22,12 @@
         }
     },
     "body": {
-        "drag": "Drag pin to Reposition",
+        "drawElements": {
+            "point": "Drag pin to Reposition",
+            "line": "Click on the map",
+            "polygon": "Click on the map",
+            "box": "Click and drag on the map"
+        },
         "cancel" : "Cancel",
         "save" : "Save"
     },

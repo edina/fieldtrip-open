@@ -42,6 +42,8 @@ define(['map', 'records', 'audio', 'utils', 'settings', 'underscore'], function(
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
 
+    var widgets = require('widgets');
+
     var menuIds = {
         'home': ['home-page', 'settings-page'],
         'map': ['map-page'],
@@ -255,6 +257,7 @@ var _ui = {
      * Initialise module.
      */
     init: function(){
+
         if(utils.showStartPopup()){
             $('a.external-link').on('vclick', function(evt){
                 evt.preventDefault();
@@ -455,6 +458,28 @@ var _ui = {
             });
         }
 
+        //generate map controls if there are configured inside the form
+        var geometryObjects = JSON.parse(sessionStorage.getItem("editor-metadata")).geometryTypes;
+        var polygonWidgetTpl = _.template(
+            '<a href="#" data-role="button" data-icon="capture-<%= geometry %>" data-iconpos="notext"><%= geometry %></a>'
+        );
+
+        if(geometryObjects.length > 1){
+            var $item = $(".map-control-buttons");
+            var html = [];
+            html.push('<div data-role="controlgroup" data-type="vertical" class="map-control-buttons">');
+
+            for(var i=0; i<geometryObjects.length; i++){
+                html.push(polygonWidgetTpl({
+                    geometry: geometryObjects[i]
+                }));
+            }
+            html.push('</div>');
+
+            $item.append(html.join(""));
+            $item.trigger('create');
+        }
+
         var addMeta = function(label, text){
             $('#annotate-preview-detail-meta').append(
                 '<p><span>' + label + '</span>: ' + text + '</p>');
@@ -472,21 +497,32 @@ var _ui = {
         }, this));
 
         $('#annotate-preview-ok').click($.proxy(function(){
-            var lonLat = map.getAnnotationCoords(false);
+            var coords = map.getAnnotationCoords(false);
             records.saveAnnotationWithCoords(
                 this.currentAnnotation,
-                lonLat);
+                coords.geometry);
 
             // update default location to be last selected location
-            map.setDefaultLocation(lonLat);
+            map.setDefaultLocation(coords.centroid);
 
             utils.gotoMapPage($.proxy(function(){
                 this.mapPageRecordCentred(this.currentAnnotation);
                 this.currentAnnotation = undefined;
+                map.enableControl('point');
             }, this));
         }, this));
 
         utils.touchScroll('#annotate-preview-detail');
+
+        map.enableControl('point');
+        $(".map-control-buttons a").click(function(){
+            var controlName = $(this).data("icon").split("-")[1];
+            map.enableControl(controlName);
+        });
+
+        $("#preview-record").click(function(){
+            $("#map-preview-record-popup").popup('open');
+        });
 
         map.hideRecordsLayer();
         map.updateSize();
@@ -635,6 +671,11 @@ var _ui = {
      */
     pageChange: function(){
         resizePage();
+        i18n.init({// jshint ignore:line
+            ns: { namespaces: ['index'], defaultNs: 'index'}
+        }, function(){
+            $("html").i18n();
+        });
         this.toggleActive();
     },
 

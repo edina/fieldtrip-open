@@ -26,14 +26,17 @@
         "requirejs": "2.1.15",
         "requirejs-text": "2.0.12",
         "spectrum": "1.5.1",
-        "underscore": "1.7.0"
+        "underscore": "1.7.0",
+        "i18next": "1.7.7"
     },
     "dependency_locations": {
         "jquery": [
-            "dist/jquery.min.js"
+            "dist/jquery.min.js",
+            "dist/jquery.min.map"
         ],
         "jquery-mobile": [
             "jquery.mobile-x.x.min.js",
+            "jquery.mobile-x.x.min.map",
             "jquery.mobile-x.x.min.css"
         ],
         "leaflet": [
@@ -66,6 +69,9 @@
         ],
         "underscore": [
             "underscore.js"
+        ],
+        "i18next": [
+            "i18next.js"
         ]
     }
 }

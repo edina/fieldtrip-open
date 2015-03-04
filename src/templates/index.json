@@ -20,7 +20,10 @@
     },
     "body": {
         "section1": {
-            "title": "Maps",
+            "title": {
+                "i18n": "section1.title",
+                "en": "Maps"
+            },
             "items": {
                 "item1": {
                     "div": {"class": "ui-block-a"},
@@ -31,7 +34,10 @@
             }
         },
         "section2": {
-            "title": "Capture",
+            "title": {
+                "i18n": "section2.title",
+                "en": "Capture"
+            },
             "items": {
                 "item1": {
                     "div": {"class": "ui-block-a"},
@@ -54,7 +60,10 @@
             }
         },
         "section3": {
-            "title": "Records",
+            "title": {
+                "i18n": "section3.title",
+                "en": "Records"
+            },
             "items": {
                 "item1": {
                     "div": {"class": "ui-block-a"},
@@ -65,7 +74,10 @@
             }
         },
         "section4": {
-            "title": "Development",
+            "title": {
+                "i18n": "section4.title",
+                "en": "Development"
+            },
             "items": {
                 "item1": {
                     "div": {

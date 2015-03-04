@@ -63,7 +63,7 @@ PLUGMAN_VERSION = '0.22.10'
 # lowest supported android sdk version
 # could move to config if projects diverge
 MIN_SDK_VERSION = 14 # 4.0 Ice cream sandwich
-TARGET_SDK_VERSION = 21 # 5.0 Lollipop
+TARGET_SDK_VERSION = 19 # 4.4 Kitkat
 
 """
 Tools installed via npm.
@@ -944,9 +944,9 @@ def _check_config(location=None, port=None):
             port = _config('location_port')
         if port:
             local("rsync -avz -e 'ssh -p {0}' {1} {2}".format(
-                port, location, conf_dir))
+                port, location, conf_file))
         else:
-            local('rsync -avz {0} {1}'.format(location, conf_dir))
+            local('rsync -avz {0} {1}'.format(location, conf_file))
     config = None # make sure it is re-read
 
 def _config(key=None, section='install'):
