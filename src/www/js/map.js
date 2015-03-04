@@ -66,7 +66,7 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
     var events = [];
 
     //change the default locations according to locale if exists
-    try {
+    if(navigator.globalization) {
         navigator.globalization.getLocaleName(
             function (locale) {
                 console.log('locale: ' + locale.value + '\n');
@@ -83,9 +83,6 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
                 console.error('Error getting locale\n');
             }
         );
-    }
-    catch(err){
-        console.error(err);
     }
 
     /**
