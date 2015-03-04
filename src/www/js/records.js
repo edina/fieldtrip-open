@@ -871,6 +871,17 @@ var _base = {
     },
 
     /**
+     * Print all records to console. By default android truncates long log
+     * messages, this ensures all records are printed to log.
+     */
+    printRecords: function(){
+        $.each(this.getSavedRecords(), function(id, record){
+            console.debug('id: ' + id);
+            utils.printObj(record);
+        });
+    },
+
+    /**
      * Process annotation/record from an HTML5 form.
      * @param recordType record/Form type - image, text, audio or custom
      */
