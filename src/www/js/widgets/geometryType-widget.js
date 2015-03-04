@@ -32,14 +32,14 @@ define(function(require, exports) {
             var $item = $(item);
             var html = [];
             html.push('<div data-role="controlgroup" data-type="vertical" class="map-control-buttons">');
-    
+
             for(var i=0; i<elements.length; i++){
                 html.push(polygonWidgetTpl({
                     geometry: elements[i]
                 }));
             }
             html.push('</div>');
-    
+
             $item.append(html.join(""));
             $item.trigger('create');
         }
@@ -57,7 +57,8 @@ define(function(require, exports) {
         // TODO: @rgamez
         return {
             serialize: false,
-            value: null
+            value: null,
+            repr: null
         };
     };
 

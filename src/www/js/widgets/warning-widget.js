@@ -37,7 +37,8 @@ define(function() {
     var serialize = function(html) {
         return {
             serialize: false,
-            value: null
+            value: null,
+            repr: null
         };
     };
 

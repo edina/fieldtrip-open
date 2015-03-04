@@ -972,8 +972,11 @@ var _base = {
                     // Check if it can be serialized
                     if (serialized === null) {
                         ignoreField = true;
-                    }else {
-                        field.val = serialized;
+                    }
+                    else {
+                        field.val = serialized.value;
+                        field.repr = serialized.repr;
+                        field.label = type;
                     }
                 }
                 else
