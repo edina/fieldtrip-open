@@ -458,9 +458,27 @@ var _ui = {
             });
         }
 
+        //generate map controls if there are configured inside the form
         var geometryObjects = JSON.parse(sessionStorage.getItem("editor-metadata")).geometryTypes;
-        var widgetsList = widgets.getWidgets("geometryType");
-        widgets.initializeWidgets(widgetsList, geometryObjects, ".map-control-buttons");
+        var polygonWidgetTpl = _.template(
+            '<a href="#" data-role="button" data-icon="capture-<%= geometry %>" data-iconpos="notext"><%= geometry %></a>'
+        );
+
+        if(geometryObjects.length > 1){
+            var $item = $(".map-control-buttons");
+            var html = [];
+            html.push('<div data-role="controlgroup" data-type="vertical" class="map-control-buttons">');
+
+            for(var i=0; i<geometryObjects.length; i++){
+                html.push(polygonWidgetTpl({
+                    geometry: geometryObjects[i]
+                }));
+            }
+            html.push('</div>');
+
+            $item.append(html.join(""));
+            $item.trigger('create');
+        }
 
         var addMeta = function(label, text){
             $('#annotate-preview-detail-meta').append(
