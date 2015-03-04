@@ -51,7 +51,8 @@ define(function(require, exports) {
      */
     var serializeWidgets = function(widgets) {
         var args = Array.prototype.slice.call(arguments, 1);
-        var value;
+        var result;
+        var value, repr;
         var valueWithError;
         var values = [];
         var i, len;
@@ -59,25 +60,35 @@ define(function(require, exports) {
         for (i = 0, len = widgets.length; i < len; i++) {
             valueWithError = widgets[i].serialize.apply(null, args);
             if (valueWithError.serialize === true) {
-                values.push(valueWithError.value);
+                values.push(valueWithError);
             }
         }
 
         switch (values.length) {
             case 0:
-                value = null;
+                result = null;
             break;
             case 1:
-                value = values[0];
+                result = {
+                    value: values[0].value,
+                    repr: values[0].repr
+                };
             break;
             default:
                 value = {};
+                repr = '';
                 for (i = 0, len = values.length; i < len; i++) {
-                    $.extend(value, values[i]);
+                    $.extend(value, values[i].value);
+                    repr += values[i].repr;
                 }
+
+                result = {
+                    value: value,
+                    repr: repr
+                };
         }
 
-        return value;
+        return result;
     };
 
     // Register default widgets
