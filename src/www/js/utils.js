@@ -294,6 +294,13 @@ return {
     },
 
     /**
+     * @returns {Object} of default locations
+     */
+    getDefaultLocations: function(){
+        return JSON.parse(config.defaultlocations);
+    },
+
+    /**
      * @return The document base of the app.
      */
     getDocumentBase: function(){

@@ -65,6 +65,29 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
     var baseLayer;
     var events = [];
 
+    //change the default locations according to locale if exists
+    try {
+        navigator.globalization.getLocaleName(
+            function (locale) {
+                console.log('locale: ' + locale.value + '\n');
+                var locations = utils.getDefaultLocations();
+                for(var key in locations){
+                    if(key === locale.value){
+                        defaultUserLon = locations[key].lon;
+                        defaultUserLat = locations[key].lon;
+                        break;
+                    }
+                }
+            },
+            function () {
+                console.error('Error getting locale\n');
+            }
+        );
+    }
+    catch(err){
+        console.error(err);
+    }
+
     /**
      * Fetch TMS capabilities from server and store as this.tileMapCapabilities.
      */
