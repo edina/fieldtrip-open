@@ -1,6 +1,5 @@
 define(function(require, exports) {
     'use strict';
-    var geometryTypeWidget = require('widgets/geometryType-widget');
     var warningWidget = require('widgets/warning');
 
     var widgetsRegister = {};
@@ -93,7 +92,6 @@ define(function(require, exports) {
 
     // Register default widgets
     registerWidget(warningWidget);
-    registerWidget(geometryTypeWidget);
 
     // Public interface
     return {
