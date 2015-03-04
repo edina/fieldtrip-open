@@ -1,7 +1,7 @@
-*.pyc
-.DS_Store
 *.ini
 *.keystore
+*.pyc
+.DS_Store
 botanitours
 bower_components
 env-sys
@@ -9,6 +9,6 @@ fieldtrip-*
 node_modules
 plugins
 project
-qrcode.jpg
+qrcode.*
 spatial-memories
 tmp
