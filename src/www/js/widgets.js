@@ -1,7 +1,7 @@
 define(function(require, exports) {
     'use strict';
     var geometryTypeWidget = require('widgets/geometryType-widget');
-    var warningWidget = require('widgets/warning-widget');
+    var warningWidget = require('widgets/warning');
 
     var widgetsRegister = {};
 
