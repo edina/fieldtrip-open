@@ -534,7 +534,7 @@ div.record-extra > div > img {
     position: relative;
     padding: 1.5em 2em 0 2em;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .button-wrapper p{
