@@ -235,6 +235,7 @@ var _base = {
                 // TODO: chain multiple popups
                 $('.warning-popup').popup('open');
 
+
                 callback();
             },
             error: function(jqXHR, status, error){
@@ -912,8 +913,11 @@ var _base = {
             };
 
             var setInputValue = function(control){
-                var val = control.val();
-                field.val = val.trim();
+                var val = $(control).val();
+                if(val){
+                    val = val.trim();
+                }
+                field.val = val;
             };
 
             var doInput = function(controlType){
