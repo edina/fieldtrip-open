@@ -1055,12 +1055,11 @@ var _base = {
             }, 300);
         }
         else {
-            var concat = function(memo, value) {
-                return memo + '\n' + value.msg;
-            };
-
-            lastError = _.reduce(valid, concat, '');
-            utils.inform(lastError);
+            var delayIn = 0;
+            _.each(valid, function(value) {
+                utils.slideNotification(value.msg, delayIn, 3000);
+                delayIn += 500;
+            });
         }
 
         // fire edit record event, this allows plugins to edit record
