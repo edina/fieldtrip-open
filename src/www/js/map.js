@@ -1163,9 +1163,6 @@ var _openlayers = {
         var drawFeatureListeners = {
             activate: function(evt) {
                 evt.object.layer.removeAllFeatures();
-            },
-            deactivate: function(evt) {
-                evt.object.layer.removeAllFeatures();
             }
         };
         var selectAreaOptions = {
@@ -1481,21 +1478,17 @@ var _openlayers = {
     /**
      * enable control, point, line, polygon, box on the map
      * @param controlName {String}
+     * @param updateAnnotateLayer {Boolean} update Annotate Layer
      */
-    enableControl: function(controlName){
+    enableControl: function(controlName, updateAnnotateLayer){
         for(var key in this.controls) {
             var control = this.controls[key];
             if(controlName === key) {
+                if(controlName === "point" && updateAnnotateLayer){
+                    this.updateAnnotateLayer(this.getUserCoords());
+                }
                 control.activate();
                 $("#draw-"+controlName).removeClass("hide");
-                if(controlName === "point"){
-                    this.geoLocate({
-                        secretly: false,
-                        updateAnnotateLayer: true,
-                        useDefault: true,
-                        watch: true
-                    });
-                }
             } else {
                 control.deactivate();
                 if(!$("#draw-"+key).hasClass("hide")){

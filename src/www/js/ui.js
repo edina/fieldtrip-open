@@ -457,7 +457,7 @@ var _ui = {
         }
 
         //generate map controls if there are configured inside the form
-        var geometryObjects = JSON.parse(sessionStorage.getItem("editor-metadata")).geometryTypes;
+        var geometryObjects = JSON.parse(sessionStorage.getItem("editor-metadata")).geometryTypes || ['point'];
         var polygonWidgetTpl = _.template(
             '<a href="#" data-role="button" data-icon="capture-<%= geometry %>" data-iconpos="notext"><%= geometry %></a>'
         );
@@ -506,16 +506,16 @@ var _ui = {
             utils.gotoMapPage($.proxy(function(){
                 this.mapPageRecordCentred(this.currentAnnotation);
                 this.currentAnnotation = undefined;
-                map.enableControl('point');
+                map.enableControl(geometryObjects[0]);
             }, this));
         }, this));
 
         utils.touchScroll('#annotate-preview-detail');
 
-        map.enableControl('point');
+        map.enableControl(geometryObjects[0], false);
         $(".map-control-buttons a").click(function(){
             var controlName = $(this).data("icon").split("-")[1];
-            map.enableControl(controlName);
+            map.enableControl(controlName, true);
         });
 
         $("#preview-record").click(function(){
