@@ -220,6 +220,37 @@ return {
     },
 
     /**
+     * Slide down some notifications from the top.
+     * It requires a div with the class notification-drawer after the head
+     * in the current page
+     *
+     * @param msg a message
+     * @param delayIn delay to show the message
+     * @param delayOut delay to remove the message
+     *
+     */
+    slideNotification: function(msg, delayIn, delayOut) {
+        var html = '<div>' + msg + '</div>';
+        var defaultDelayIn = 0;
+        var defaultDelayOut = 3000;
+
+        delayIn = delayIn || defaultDelayIn;
+        delayOut = delayOut || defaultDelayOut;
+
+        $(html)
+            .prependTo('.notification-drawer')
+            .hide()
+            .delay(delayIn)
+            .slideDown()
+            .delay(delayOut)
+            .slideUp()
+            .promise()
+            .done(function() {
+                this.remove();
+            });
+    },
+
+    /**
      * @param func the function to be called
      * @param args the arguments to pass to the callback function
      */
