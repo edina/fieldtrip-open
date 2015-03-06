@@ -896,7 +896,7 @@ var _base = {
      */
     processAnnotation: function(group, recordType){
         var lastError;
-        var valid = true;
+        var valid = [];
         var annotation = this.createRecord(recordType, group);
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
@@ -1012,26 +1012,33 @@ var _base = {
                             ignoreField = true;
                         }
                         else{
-                            valid = false;
-                            lastError = 'Title cannot contain slashes (/)';
-                            return false;
+                            $(control).addClass('error');
+                            valid.push({
+                                error: true,
+                                msg: field.label + ' cannot contain slashes (/)'
+                            });
+                            return;
                         }
                     }
                     else{
-                        $(control).addClass('ui-focus');
-                        valid = false;
-                        lastError = 'Required field not populated';
-                        return false;
+                        $(control).addClass('error');
+                        valid.push({
+                            error: true,
+                            msg: field.label + ' requires a value'
+                        });
+                        return;
                     }
                 }
                 // Validate the fields
                 else if(field.val === null ||
                         field.val === undefined ||
                         field.val === "") {
-                    $(control).addClass('ui-focus');
-                    valid = false;
-                    lastError = 'Required field not populated';
-                    return false;
+                    $(control).addClass('error');
+                    valid.push({
+                        error: true,
+                        msg: field.label + ' requires a value'
+                    });
+                    return;
                 }
             }
 
@@ -1040,15 +1047,19 @@ var _base = {
             }
         }, this));
 
-        if(valid){
+        if (valid.length === 0) {
             // nasty I know: but changing page in a setTimeout allows
             // time for the keyboard to close
             setTimeout(function(){
                 $('body').pagecontainer('change', 'annotate-preview.html');
             }, 300);
         }
-        else{
-            utils.inform(lastError);
+        else {
+            var delayIn = 0;
+            _.each(valid, function(value) {
+                utils.slideNotification(value.msg, delayIn, 3000);
+                delayIn += 500;
+            });
         }
 
         // fire edit record event, this allows plugins to edit record

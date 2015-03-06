@@ -64,6 +64,27 @@ a:active, img:active{
     text-transform: capitalize;
 }
 
+input.error,
+fieldset.error,
+textarea.error {
+    border: 2px solid red !important;
+}
+
+.notification-drawer {
+    width: 100%;
+    z-index: 9999;
+    position: absolute;
+}
+
+.notification-drawer > div{
+    min-height: 30px;
+    padding: 10px;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid #eeeeee;
+    font-size: 14px;
+}
+
 
 /********* Header *************/
 
