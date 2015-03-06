@@ -64,6 +64,12 @@ a:active, img:active{
     text-transform: capitalize;
 }
 
+input.error,
+fieldset.error,
+textarea.error {
+    border: 2px solid red !important;
+}
+
 
 /********* Header *************/
 
