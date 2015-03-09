@@ -957,7 +957,7 @@ var _base = {
             }
             else if(type === 'radio'){
                 var radioControl = $(entry).find('input:checked');
-                field.label = $(entry).find('div[role=heading]').text();
+                field.label = $(entry).find('legend').text();
                 setInputValue(radioControl);
             }
             else if(type === 'select'){
