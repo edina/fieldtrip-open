@@ -304,7 +304,7 @@ var _base = {
      * Add a new asset type. This allows plugins to define new types of assets.
      * @param type Asset type.
      */
-    addAssetType: function(type){
+    addAssetType: function(type, callback) {
         assetTypes.push(type);
 
         if(assetsDir){
@@ -313,6 +313,7 @@ var _base = {
                 'name': type,
                 'success': function(assetDir){
                     assetDirectories[type] = assetDir;
+                    utils.doCallback(callback, assetDir);
                 }
             });
         }
