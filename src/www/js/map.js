@@ -709,7 +709,9 @@ var _base = {
      * @param annotation
      */
     showRecordDetailPopup: function(annotation) {
-        var $popup = $('#map-record-popup');
+        var $popup = $('#map-record-popup').popup({
+            positionTo: '#map'
+        });
 
         $('#map-record-popup a.close').one('vclick', function(event){
             $popup.popup('close');
@@ -717,6 +719,9 @@ var _base = {
 
         $popup.one({
             popupbeforeposition: $.proxy(function() {
+                var maxHeight;
+                var containerHeight;
+                var contentHeight;
                 var record = annotation.record;
                 var showRecord = function(html){
                     $('#map-record-popup-text').append(html).trigger('create');
@@ -751,6 +756,18 @@ var _base = {
                 var coords = '<p id="coords"><span> Coordinates</span>: (' +
                     point.lon + ', '+ point.lat +')</p>';
                 showRecord(coords);
+
+                // Set the max height of the popup container
+                maxHeight = $('#map').height() - 60;
+                $popup.parent().css('max-height', maxHeight + 'px');
+
+                // Reset the height of the content to check if fits into the container
+                $('#map-record-popup').css('height', '100%');
+                contentHeight = $('#map-record-popup').height();
+
+                // Force to fit into the container
+                $('#map-record-popup')
+                    .css('height', Math.min(maxHeight, contentHeight) + 'px');
             }, this)
         });
     },

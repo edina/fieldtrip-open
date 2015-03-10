@@ -217,7 +217,13 @@ body .ui-loader-textonly{
 }
 
 #map-record-popup{
+    height: 100%;
     z-index: 2000;
+}
+
+#map-record-popup-text {
+    overflow-y: auto;
+    height: 90%;
 }
 
 /* Reduce font size of coordinates in map-record-popup text */
