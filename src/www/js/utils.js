@@ -68,7 +68,24 @@ if (!String.prototype.format) {
     };
 }
 
-define(['settings', 'config'], function(settings, config){
+define(['settings', 'config', 'underscore'], function(settings, config, _) {
+    var progressBarTemplate = _.template(
+        '<div class="download-item" style="width: <%= width %>px">' +
+            '<span class="label"><%= label %></span>' +
+            '<progress></progress>' +
+            '<span class="message"></span>' +
+        '</div>'
+    );
+
+    // Prepare the download popup
+    $('#download-popup').popup({
+        positionTo: '.ui-page-active .ui-content',
+        tolerance: '30,40,30,15',
+        beforeposition: function() {
+            var width = $(window).width() - 55;
+            $('.download-item').css('width', width + 'px');
+        }
+    });
 
     // list of UUID of devices used internally
     var priviligedUsers = [];
@@ -618,6 +635,63 @@ return {
         else {
             return false;
         }
+    },
+
+    /**
+     * Returns a new download progress bar
+     * @param label the Label for the progress label
+     * @returns an onject with start, progress and done methods.
+     */
+    newDownloadProgressBar: function(label) {
+        var width = $(window).width() - 55;
+
+        var html = progressBarTemplate({
+            label: label,
+            width: width
+        });
+
+        var $bar = $(html).appendTo('#download-popup');
+
+        var error = function(message, delay) {
+            delay = delay || 10000;
+
+            $bar.find('.message').html(message);
+            progress(0, 0);
+            destroyAfter(delay);
+        };
+
+        var destroyAfter = function(delay) {
+            setTimeout(function() {
+                var children;
+                $bar.remove();
+                children = $('#download-popup').children();
+
+                if (children.length === 0) {
+                    $('#download-popup').popup('close');
+                }
+            }, delay);
+        };
+
+        var done = function(delay) {
+            delay = delay || 2000;
+            destroyAfter(delay);
+        };
+
+        var progress = function(value, max) {
+            $bar.find('progress').attr('value', value);
+            $bar.find('progress').attr('max', max);
+        };
+
+        var start = function() {
+            $('#download-popup').popup('open');
+        };
+
+        return {
+            start: start,
+            progress: progress,
+            error: error,
+            done: done
+        };
     },
 
     /**

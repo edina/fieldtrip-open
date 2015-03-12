@@ -202,35 +202,53 @@ var _base =  {
      *                  is passed as an argument.
      * @param error - Optional function executed in the event of an error.
      */
-    ftDownload: function(source, target, success, error){
-        console.debug("download: " + source + " to " + target);
+    ftDownload: function(source, target, success, error) {
+        console.debug('Download: ' + source + ' to ' + target);
 
-        if(error === undefined){
-            error = $.proxy(function(error){
-                utils.informError("Problem with file tranfer: " + error);
-                console.error("Problem downloading file: " + source +
-                              " to: " + target +
-                              " error: " + this.getFileTransferErrorMsg(error) +
-                              "http status: " + error.http_status);// jshint ignore:line
-            }, this);
-        }
-
+        var _this = this;
         var ft = new FileTransfer();
+        var match = source.match(/.*\/(.*)$/);
+        var progressBar = utils.newDownloadProgressBar(match[1]);
 
-        // follow percent progress with popup
-        ft.onprogress = function(progressEvent){
-            if(progressEvent.lengthComputable){
-                utils.inform(Math.round((progressEvent.loaded / progressEvent.total)*100) + "%");
+        ft.onprogress = function(progressEvent) {
+            var percentage;
+            var loaded;
+            var total;
+
+            if (progressEvent.lengthComputable) {
+                loaded = progressEvent.loaded;
+                total = progressEvent.total;
+                percentage = Math.round((loaded / total) * 100) + '%';
+
+                progressBar.progress(loaded, total, percentage);
             }
         };
 
-        ft.download(
-            encodeURI(source),
-            target,
-            success,
-            error,
-            true
-        );
+        var onSuccess = function() {
+            progressBar.done(2000);
+            if (typeof success === 'function') {
+                success.apply(null, arguments);
+            }
+        };
+
+        var onError = function(err) {
+            var errorMsg = _this.getFileTransferErrorMsg(err);
+            progressBar.error(errorMsg);
+
+            if (typeof error === 'function') {
+                error.apply(null, arguments);
+            }
+            else {
+                console.error('Problem downloading file: ' + source +
+                              ' to: ' + target +
+                              ' error: ' + errorMsg +
+                              ' http status: ' + error.http_status); // jshint ignore:line
+            }
+        };
+
+        progressBar.start();
+
+        ft.download(encodeURI(source), target, onSuccess, onError, true);
     },
 
     /**
