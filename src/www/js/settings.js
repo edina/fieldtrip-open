@@ -127,7 +127,7 @@ return{
                 $('#settings-cordova').text('n/a');
             }
 
-            $('#settings-ftgb').on('vclick', function(){
+            $(document).on('vclick', '#settings-project', function(){
                 if(++devClickCount >= 10){
                     var devMode = ! JSON.parse(localStorage.getItem('devMode'));
                     if(devMode){
