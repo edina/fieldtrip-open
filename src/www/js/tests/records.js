@@ -34,62 +34,68 @@ DAMAGE.
 /* global equal, expect, test  */
 
 define(['records'], function(records) {
+    var data = [
+        {name: 'test1', editor: 'one.edtr', coordinates: [-3.186861, 55.941985]},
+        {name: 'test2', editor: 'two.edtr', coordinates: [-3.185070, 55.941397]},
+        {name: 'test3', editor: 'two.edtr', coordinates: [-3.185744, 55.940883]},
+        {name: 'test4', editor: 'two.edtr', coordinates: [-3.187450, 55.941443]}
+    ];
 
     var run = function() {
         module("Records", {
-            setup: function(){
-                records.clearSavedRecords();
-                var annotations = {
-                    "1": {
-                        "record":{
-                            "name": "one",
-                            "editor": "one.edtr"
-                        }
-                    },
-                    "2": {
-                        "record":{
-                            "name": "two",
-                            "editor": "two.edtr"
-                        }
-                    },
-                    "3": {
-                        "record":{
-                            "name": "three",
-                            "editor": "two.edtr"
-                        }
-                    },
-                    "4": {
-                        "record":{
-                            "name": "four",
-                            "editor": "two.edtr"
-                        }
-                    }
-                };
+            setup: function() {
+                var datum;
+                var annotations = {};
 
+                records.clearSavedRecords();
+
+                for (var i = 0, len = data.length - 1; i < len; i++) {
+                    datum = data[i];
+                    annotations[datum.name] = records.createRecord(datum.editor);
+                    annotations[datum.name].name = datum.name;
+                    annotations[datum.name]
+                        .record.geometry.coordinates = datum.coordinates;
+                }
+                console.debug(annotations);
                 records.setSavedRecords(annotations);
             }
         });
 
-        test('test records count', function(){
+        test('test records count', function() {
             expect(1);
             var annotations = records.getSavedRecords();
-            //console.log(annotations);
+            equal(Object.keys(annotations).length, 3);
+        });
+
+        test('create annotation', function() {
+            expect(1);
+            var datum = data[3];
+            var record;
+            var annotations;
+
+            record = records.createRecord(datum.editor);
+            records.saveAnnotation(datum.name, record);
+            annotations = records.getSavedRecords();
+
             equal(Object.keys(annotations).length, 4);
         });
 
-        test('test records filter', function(){
+        test('test records filter', function() {
             expect(1);
-            var annotations = records.getSavedRecords(function(annotation){
-                if(annotation.record.editor === 'two.edtr'){
+
+            var filterFunc = function(annotation) {
+                if (annotation.record.properties.editor === 'two.edtr') {
                     return true;
                 }
-                else{
+                else {
                     return false;
                 }
-            });
+            };
 
-            // there are three annotations with a two.edtr editor
-            equal(Object.keys(annotations).length, 3);
+            var annotations = records.getSavedRecords(filterFunc);
+
+            // there are two annotations with a two.edtr editor
+            equal(Object.keys(annotations).length, 2);
         });
     };
 
