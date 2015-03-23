@@ -1540,28 +1540,44 @@ var _openlayers = {
     },
 
     /**
-     * Covert a point object to internal projection.
-     * @param point A point object with external projection.
-     * @return A point object reprojected to internal projection.
+     * Convert a point to the internal projection
+     * @param point can be an object with the lat/lon or longitude/latitude or
+     *        a longitude, latitude array
+     * @return A point object reprojected to internal projection if longitude and
+     *         latitude where used in the input the return value use those keys
      */
-    pointToInternal: function(point){
-        var retValue;
+    pointToInternal: function(point) {
+        var latitude;
+        var longitude;
         var lonLat;
-        if(typeof(point.longitude) === 'undefined'){
-            lonLat = this.toInternal(
-                new OpenLayers.LonLat(point[0], point[1]));
-            retValue = {
-                'lon': lonLat.lon,
-                'lat': lonLat.lat
-            };
+        var retValue = {};
+        var fullNames = false;
+
+        if (Array.isArray(point)) {
+            longitude = point[0];
+            latitude = point[1];
         }
-        else{
-            lonLat = this.toInternal(
-                new OpenLayers.LonLat(point[0], point[1]));
-            retValue = {
-                'longitude': lonLat.lon,
-                'latitude': lonLat.lat
-            };
+        else {
+            if (point.latitude !== undefined && point.longitude !== undefined) {
+                longitude = point.longitude;
+                latitude = point.latitude;
+                fullNames = true;
+            }
+            else if (point.lat !== undefined && point.lon !== undefined) {
+                longitude = point.lon;
+                latitude = point.lat;
+            }
+        }
+
+        lonLat = this.toInternal(new OpenLayers.LonLat(longitude, latitude));
+
+        if (fullNames) {
+            retValue.longitude = lonLat.lon;
+            retValue.latitude = lonLat.lat;
+        }
+        else {
+            retValue.lon = lonLat.lon;
+            retValue.lat = lonLat.lat;
         }
 
         return retValue;
