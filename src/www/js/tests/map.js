@@ -34,24 +34,44 @@ DAMAGE.
 /* global equal, test */
 
 define(['map'], function(map) {
+    var wgs84 = {
+        lon: -3.18,
+        lat: 55.95
+    };
+
+    var os = {
+        lon: 326409.20,
+        lat: 673625.06
+    };
+
     var run = function() {
-        module("Map");
-        test('point reprojection', function(){
-            var wgs84 = {
-                'lon': -3.18,
-                'lat': 55.95
-            };
+        module('Map');
 
-            var os = {
-                'lon': 326409.20,
-                'lat': 673625.06
-            };
-
+        test('point reprojection toInternal {lon,lat}', function() {
             var newOs = map.pointToInternal(wgs84);
             equal(parseFloat(newOs.lon).toFixed(2), os.lon);
             equal(parseFloat(newOs.lat).toFixed(2), os.lat);
+        });
 
-            var newWgs84 = map.pointToExternal(os);
+        test('point reprojection toInternal {longitude,latitude}', function() {
+            var wsg84long = {
+                longitude: wgs84.lon,
+                latitude: wgs84.lat
+            };
+
+            var newOs = map.pointToInternal(wsg84long);
+            equal(parseFloat(newOs.longitude).toFixed(2), os.lon);
+            equal(parseFloat(newOs.latitude).toFixed(2), os.lat);
+        });
+
+        test('point reprojection toInternal [longitude,latitude]', function() {
+            var newOs = map.pointToInternal([wgs84.lon, wgs84.lat]);
+            equal(parseFloat(newOs.lon).toFixed(2), os.lon);
+            equal(parseFloat(newOs.lat).toFixed(2), os.lat);
+        });
+
+        test('point reprojection toExternal [lon,lat]', function() {
+            var newWgs84 = map.pointToExternal([os.lon, os.lat]);
             equal(parseFloat(newWgs84.lon).toFixed(2), wgs84.lon);
             equal(parseFloat(newWgs84.lat).toFixed(2), wgs84.lat);
         });
