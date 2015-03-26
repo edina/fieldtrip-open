@@ -734,20 +734,22 @@ var _base = {
                     var html;
                     var type = records.typeFromId(entry.id);
 
-                    if(type === 'image'){
-                        html = '<img src="' + entry.val + '" width=100%"/>';
-                        showRecord(html);
-                    }
-                    else if(type === 'audio'){
-                        require(['audio'], function(audio){
-                            html = audio.getNode(entry.val, entry.label + ':');
+                    if(typeof(entry.val) !== 'undefined'){
+                        if(type === 'image'){
+                            html = '<img src="' + entry.val + '" width=100%"/>';
                             showRecord(html);
-                        });
-                    }
-                    else if(entry.id !== 'text0'){ // ignore title element
-                        html = '<p><span>' + entry.label + '</span>: ' +
-                            entry.val + '</p>';
-                        showRecord(html);
+                        }
+                        else if(type === 'audio'){
+                            require(['audio'], function(audio){
+                                html = audio.getNode(entry.val, entry.label + ':');
+                                showRecord(html);
+                            });
+                        }
+                        else if(entry.id !== 'text0'){ // ignore title element
+                            html = '<p><span>' + entry.label + '</span>: ' +
+                                entry.val + '</p>';
+                            showRecord(html);
+                        }
                     }
                 });
 

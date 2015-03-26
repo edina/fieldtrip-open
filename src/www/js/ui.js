@@ -398,37 +398,39 @@ var _ui = {
                 $('#' + records.TITLE_ID).val(this.currentAnnotation.record.name);
                 $.each(this.currentAnnotation.record.properties.fields, function(i, entry){
                     var fieldType = records.typeFromId(entry.id);
-                    if(fieldType === 'text'){
-                        $('#' + entry.id + ' input').val(entry.val);
-                    }
-                    else if(fieldType === 'textarea'){
-                        $('#' + entry.id + ' textarea').val(entry.val);
-                    }
-                    else if(fieldType === 'image'){
-                        showImage('annotate-image-0', entry.val);
-                    }
-                    else if(fieldType === 'audio'){
-                        showAudio('annotate-audio-0',{label: entry.val});
-                    }
-                    else if(fieldType === 'checkbox'){
-                        $.each(entry.val.split(','), function(j, name){
-                            $('input[value=' + name + ']').prop('checked', true).checkboxradio('refresh');
-                        });
-                    }
-                    else if(fieldType === 'radio'){
-                        $('#' + entry.id + ' input[value=' + entry.val + ']').prop(
-                            "checked", true).checkboxradio("refresh");
-                    }
-                    else if(fieldType === 'range'){
-                        $('#' + entry.id + ' input').val(entry.val);
-                        $('#' + entry.id + ' input').slider('refresh');
-                    }
-                    else if(fieldType === 'select'){
-                        $('#' + entry.id + ' select').val(entry.val).attr(
-                            "selected", true).selectmenu("refresh");
-                    }
-                    else{
-                        console.warn("Unknown field type: " + fieldType);
+                    if(typeof(entry.val) !== 'undefined'){
+                        if(fieldType === 'text'){
+                            $('#' + entry.id + ' input').val(entry.val);
+                        }
+                        else if(fieldType === 'textarea'){
+                            $('#' + entry.id + ' textarea').val(entry.val);
+                        }
+                        else if(fieldType === 'image'){
+                            showImage('annotate-image-0', entry.val);
+                        }
+                        else if(fieldType === 'audio'){
+                            showAudio('annotate-audio-0', entry.val, {label: entry.val});
+                        }
+                        else if(fieldType === 'checkbox'){
+                            $.each(entry.val.split(','), function(j, name){
+                                $('input[value=' + name + ']').prop('checked', true).checkboxradio('refresh');
+                            });
+                        }
+                        else if(fieldType === 'radio'){
+                            $('#' + entry.id + ' input[value=' + entry.val + ']').prop(
+                                "checked", true).checkboxradio("refresh");
+                        }
+                        else if(fieldType === 'range'){
+                            $('#' + entry.id + ' input').val(entry.val);
+                            $('#' + entry.id + ' input').slider('refresh');
+                        }
+                        else if(fieldType === 'select'){
+                            $('#' + entry.id + ' select').val(entry.val).attr(
+                                "selected", true).selectmenu("refresh");
+                        }
+                        else{
+                            console.warn("Unknown field type: " + fieldType);
+                        }
                     }
                 });
             }
