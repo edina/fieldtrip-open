@@ -958,12 +958,18 @@ var _base = {
             }
             else if(type === 'image'){
                 control = $(entry).find('input');
-                field.val = $(entry).find('.annotate-image img').attr('src');
+                var src = $(entry).find('.annotate-image img').attr('src');
+                if(src){
+                    field.val = src;
+                }
                 doLabel($(entry).find('input').attr('id'));
             }
             else if(type === 'audio'){
                 control = $(entry).find('input[capture=microphone]');
-                field.val = $(entry).find('.annotate-audio-taken input').attr('value');
+                var value = $(entry).find('.annotate-audio-taken input').attr('value');
+                if(value){
+                    field.val = value;
+                }
                 doLabel($(control).attr('id'));
             }
             else if(type === 'warning'){

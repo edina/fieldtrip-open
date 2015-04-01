@@ -704,7 +704,7 @@ var _base = {
                     var html;
                     var type = records.typeFromId(entry.id);
 
-                    if(typeof(entry.val) !== 'undefined'){
+                    if(entry.val !== null){
                         if(type === 'image'){
                             html = '<img src="' + entry.val + '" width=100%"/>';
                             showRecord(html);
