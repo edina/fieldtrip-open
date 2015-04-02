@@ -445,40 +445,45 @@ var _ui = {
      */
     annotatePreviewPage: function(){
         map.display('annotate-preview-map');
-
-        if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
-            map.updateAnnotateLayer();
-            localStorage.setItem('ignore-centre-on-annotation', false);
-        }
-        else {
-            geoLocate({
-                secretly: false,
-                updateAnnotateLayer: true,
-                useDefault: true
-            });
-        }
-
         //generate map controls if there are configured inside the form
         var geometryObjects = JSON.parse(sessionStorage.getItem("editor-metadata")).geometryTypes || ['point'];
         var polygonWidgetTpl = _.template(
             '<a href="#" data-role="button" data-icon="capture-<%= geometry %>" data-iconpos="notext"><%= geometry %></a>'
         );
 
-        if(geometryObjects.length > 1){
-            var $item = $(".map-control-buttons");
-            var html = [];
-            html.push('<div data-role="controlgroup" data-type="vertical" class="map-control-buttons">');
-
-            for(var i=0; i<geometryObjects.length; i++){
-                html.push(polygonWidgetTpl({
-                    geometry: geometryObjects[i]
-                }));
-            }
-            html.push('</div>');
-
-            $item.append(html.join(""));
-            $item.trigger('create');
+        if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
+            map.updateAnnotateLayer();
+            localStorage.setItem('ignore-centre-on-annotation', false);
         }
+        else {
+            var updateAnnotate = true;
+            if(geometryObjects[0] !== "point"){
+                updateAnnotate = false;
+                map.showAnnotateLayer();
+            }
+            geoLocate({
+                secretly: false,
+                updateAnnotateLayer: updateAnnotate,
+                useDefault: true
+            });
+        }
+
+        var $item = $(".map-control-buttons");
+        var html = [];
+        html.push('<div data-role="controlgroup" data-type="vertical" class="map-control-buttons">');
+
+        html.push(polygonWidgetTpl({
+                geometry: "drag"
+            }));
+        for(var i=0; i<geometryObjects.length; i++){
+            html.push(polygonWidgetTpl({
+                geometry: geometryObjects[i]
+            }));
+        }
+        html.push('</div>');
+
+        $item.append(html.join(""));
+        $item.trigger('create');
 
         var addMeta = function(label, text){
             $('#annotate-preview-detail-meta').append(
@@ -508,7 +513,7 @@ var _ui = {
             utils.gotoMapPage($.proxy(function(){
                 this.mapPageRecordCentred(this.currentAnnotation);
                 this.currentAnnotation = undefined;
-                map.enableControl(geometryObjects[0]);
+                map.enableControl("drag", false);
             }, this));
         }, this));
 

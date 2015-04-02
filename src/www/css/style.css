@@ -756,6 +756,11 @@ div.record-extra > div > img {
     background-position: -63px 0px;
 }
 
+.ui-icon-capture-drag {
+    background-image: url('./images/spritesheet.png');
+    background-position: -143px 0px;
+}
+
 
 
 /********* Settings *************/

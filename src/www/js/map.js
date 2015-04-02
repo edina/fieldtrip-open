@@ -1215,7 +1215,8 @@ var _openlayers = {
             polygon: new DrawFeature(captureRecordLayer,
                         OpenLayers.Handler.Polygon, selectPolygonOptions),
             box: new DrawFeature(captureRecordLayer,
-                RegularPolygon, selectAreaOptions)
+                RegularPolygon, selectAreaOptions),
+            drag: new OpenLayers.Control.DragFeature(captureRecordLayer)
         };
         this.controls = drawControls;
 
