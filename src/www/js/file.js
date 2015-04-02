@@ -211,17 +211,21 @@ var _base =  {
         var progressBar = utils.newDownloadProgressBar(match[1]);
 
         ft.onprogress = function(progressEvent) {
-            var percentage;
+            var caption;
             var loaded;
             var total;
 
-            if (progressEvent.lengthComputable) {
-                loaded = progressEvent.loaded;
-                total = progressEvent.total;
-                percentage = Math.round((loaded / total) * 100) + '%';
+            loaded = progressEvent.loaded;
+            total = progressEvent.total;
 
-                progressBar.progress(loaded, total, percentage);
+            if (progressEvent.lengthComputable) {
+                caption = Math.round((loaded / total) * 100) + '%';
             }
+            else {
+                caption = progressEvent.loaded + ' bytes';
+            }
+
+            progressBar.progress(loaded, total, caption);
         };
 
         var onSuccess = function() {
