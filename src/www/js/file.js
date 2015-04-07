@@ -237,7 +237,8 @@ var _base =  {
 
         var onError = function(err) {
             var errorMsg = _this.getFileTransferErrorMsg(err);
-            progressBar.error(errorMsg);
+            var httpError = err.http_status; // jshint ignore:line
+            progressBar.error('Error: ' + httpError + ' ' + errorMsg);
 
             if (typeof error === 'function') {
                 error.apply(null, arguments);
@@ -246,7 +247,7 @@ var _base =  {
                 console.error('Problem downloading file: ' + source +
                               ' to: ' + target +
                               ' error: ' + errorMsg +
-                              ' http status: ' + error.http_status); // jshint ignore:line
+                              ' http status: ' + httpError);
             }
         };
 
