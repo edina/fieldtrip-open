@@ -71,7 +71,8 @@ if (!String.prototype.format) {
 define(['settings', 'config', 'underscore'], function(settings, config, _) {
     var progressBarTemplate = _.template(
         '<div class="download-item" style="width: <%= width %>px">' +
-            '<span class="label"><%= label %></span>' +
+            '<div class="progress-msg"></div>' +
+            '<div class="label"><%= label %></div>' +
             '<progress></progress>' +
             '<span class="message"></span>' +
         '</div>'
@@ -677,9 +678,12 @@ return {
             destroyAfter(delay);
         };
 
-        var progress = function(value, max) {
-            $bar.find('progress').attr('value', value);
-            $bar.find('progress').attr('max', max);
+        var progress = function(value, max, msg) {
+            if (max > 0) {
+                $bar.find('progress').attr('value', value);
+                $bar.find('progress').attr('max', max);
+            }
+            $bar.find('.progress-msg').html(msg);
         };
 
         var start = function() {
