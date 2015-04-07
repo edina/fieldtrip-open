@@ -186,7 +186,7 @@ var _base = {
             success: function(data){
                 var form = $('#annotate-form').append(data);
                 $.each($('input[capture=camera]'), function(index, input){
-                    $(input).parent().append(that.renderCameraExtras(index));
+                    $(input).parent().append(that.renderCameraExtras(index, cameraTemplate));
                 });
                 $.each($('input[capture=microphone]'), function(index, input){
                     var btn = '<div id="annotate-audio-' + index + '">\
@@ -1166,7 +1166,7 @@ var _base = {
      * @param index which is the id
      * @returns html rendered
      */
-    renderCameraExtras: function(index){
+    renderCameraExtras: function(index, tmpl){
         var fullSelected = '', normalSelected = '', CHECKED = 'checked';
 
         if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
@@ -1175,7 +1175,7 @@ var _base = {
         else{
             normalSelected = CHECKED;
         }
-        var template =  _.template(cameraTemplate);
+        var template =  _.template(tmpl);
         return template({"index": index, "fullSelected": fullSelected, "normalSelected": normalSelected});
     },
 
