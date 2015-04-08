@@ -206,7 +206,7 @@ var _base = {
                 });
 
                 $.each($('div[id^=fieldcontain-]'), function(index, item) {
-                    var widgetType = item.id.match(/^fieldcontain-(.*?)-\d+$/)[1];
+                    var widgetType = $(item).data('fieldtrip-type');
                     var widgetsList = widgets.getWidgets(widgetType);
                     widgets.initializeWidgets(widgetsList, index, item);
                 });
@@ -784,6 +784,8 @@ var _base = {
 
         return i;
     },
+
+    IMAGE_TYPE_NAME: IMAGE_TYPE_NAME,
 
     /**
      * Initialize the editors metadata in local storage
