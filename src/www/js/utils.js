@@ -657,7 +657,7 @@ return {
             delay = delay || 10000;
 
             $bar.find('.message').html(message);
-            progress(0, 0);
+            progress(0, 100);
             destroyAfter(delay);
         };
 
