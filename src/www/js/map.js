@@ -1850,6 +1850,17 @@ var _openlayers = {
     },
 
     /**
+     * Reproject geojson to external geom
+     * @param record {Object}
+     * @returns record {Object}
+     */
+    toExternalGeojson: function(record){
+        var geojsonFormat = new OpenLayers.Format.GeoJSON();
+        record.geometry = JSON.parse(geojsonFormat.write(this.toExternal(geojsonFormat.parseGeometry(record.geometry))));
+        return record;
+    },
+
+    /**
      * Update a vector layer centred on users location.
      * options:
      *   layer: The layer to update.
