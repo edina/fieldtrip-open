@@ -994,7 +994,7 @@ def release_android(
         _email(file_name, version, beta)
 
 @task
-def usage_stats():
+def usage_stats(year='2015'):
     """
     Print out some usage stats.
     """
@@ -1004,8 +1004,8 @@ def usage_stats():
     else:
         print 'No prime host defined.'
         exit(0)
-    print env
-    execute('_app_start_stats')
+    #print env
+    execute('_app_start_stats', year)
 
 @task
 def release_ios():
@@ -1043,7 +1043,7 @@ def update_app(platform='android'):
 
 
 @task
-def _app_start_stats():
+def _app_start_stats(year):
     """
     Print out android app start stats by version.
     """
@@ -1051,9 +1051,9 @@ def _app_start_stats():
     def fetch_month(version):
         months = {}
 
-        for i in range(1, 9):
+        for i in range(1, 11):
             month = {}
-            logname = "access_log.2014-{0}*".format(str(i).zfill(2))
+            logname = "access_log.{0}-{1}*".format(year, str(i).zfill(2))
             awk = "awk '{print $1}'"
             cmd = 'find /var/log/httpd/ -name {0} | xargs grep "Android {1}" | grep splash | {2}'.format(logname, version, awk)
             out = run(cmd)
@@ -1073,7 +1073,7 @@ def _app_start_stats():
             months[i] = month
         totals[version] = months
 
-    versions = ['2.3', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5']
+    versions = ['2.3', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5', '5.0']
     for version in versions:
         fetch_month(version)
     for version, months in totals.iteritems():
@@ -1085,6 +1085,10 @@ def _app_start_stats():
                 tcount = tcount + vals['count']
             print datetime.date(2014, i, 1).strftime('%B').ljust(10), str(len(month)).ljust(10), str(tcount).ljust(10)
         print '\n'
+
+@task
+def _auth_export_stats(year):
+    pass
 
 def _check_command(cmd):
     """
