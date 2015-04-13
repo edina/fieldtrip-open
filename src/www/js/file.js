@@ -437,6 +437,39 @@ var _base =  {
     },
 
     /*
+     * Read the content of a file entry as a json
+     * @param baseFileEntry the base entry where to locate the file
+     * @param filename the filename to read
+     * @return Returns a promise that resolves to the content of the file as a json
+     */
+    readJSONFromFS: function(baseFileEntry, filename) {
+        var deferred = $.Deferred();
+
+        baseFileEntry.getFile(
+            filename,
+            null,
+            function(fileentry) {
+                var promise = _this.readTextFile(fileentry);
+                var json;
+
+                promise.done(function(data) {
+                    try {
+                        json = JSON.parse(data);
+                        deferred.resolve(json);
+                    }
+                    catch (ex) {
+                        deferred.reject(ex);
+                    }
+                });
+            },
+            function(err) {
+                deferred.reject(err);
+            });
+
+        return deferred.promise();
+    },
+
+    /*
      * Read the content of a file entry as a text
      * @param fileEntry
      * @return Returns a promise that resolves to the content of a text file
