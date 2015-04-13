@@ -1821,6 +1821,18 @@ var _openlayers = {
     },
 
     /**
+     * show layer by name
+     * @param layerName
+     */
+    showLayerByName: function(layerName){
+        $.each(this.map.layers, $.proxy(function(i, layer){
+            if(layer.name.substr(0, layerName.length) === layerName){
+                this.showLayer(layer);
+            }
+        }, this));
+    },
+
+    /**
      * Reproject external point to internal lonlat.
      * @param External lonlat.
      * @return Cloned internal lonlat.
