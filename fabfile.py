@@ -771,19 +771,6 @@ def release_android(
     if email:
         _email(file_name, version, beta)
 
-@task
-def usage_stats():
-    """
-    Print out some usage stats.
-    """
-    host = _config('prime_host', section='common')
-    if host:
-        env.hosts = [host]
-    else:
-        print 'No prime host defined.'
-        exit(0)
-    print env
-    execute('_app_start_stats')
 
 @task
 def release_ios():
@@ -794,6 +781,52 @@ def release_ios():
     # TODO
     print 'Waiting for someone to do this.'
 
+@task
+def stats_usage(year='2015'):
+    """
+    Print out android app start stats by version.
+
+    year - collate stats in this year
+    """
+    totals = {}
+
+    versions = ['2.3', '4.0', '4.1', '4.2', '4.3', '4.4', '5.0']
+    for version in versions:
+        #fetch_month(version)
+        pattern = 'splash.+Android {0}'.format(version)
+        totals[version] = _stats_monthly(year, pattern)
+    for version, months in totals.iteritems():
+        print version,':'
+        print 'Month'.ljust(10), 'Unique'.ljust(10), 'Total'.ljust(10)
+        for i, month in months.iteritems():
+            tcount = 0
+            for ip, vals in month.iteritems():
+                tcount = tcount + vals['count']
+            print datetime.date(2014, i, 1).strftime('%B').ljust(10), str(len(month)).ljust(10), str(tcount).ljust(10)
+        print '\n'
+
+@task
+def stats_export(year='2015'):
+    """
+    Print authoring tool export stats.
+
+    year - collate stats in this year
+    """
+    totals = {}
+    types = ['geojson', 'kml', 'csv']
+    for type in types:
+        pattern = 'records/dropbox/.+filter=format&frmt={0}'.format(type)
+        totals[type] = _stats_monthly(year, pattern)
+
+    for type, months in totals.iteritems():
+        print type,':'
+        print 'Month'.ljust(10), 'Unique'.ljust(10), 'Total'.ljust(10)
+        for i, month in months.iteritems():
+            tcount = 0
+            for ip, vals in month.iteritems():
+                tcount = tcount + vals['count']
+            print datetime.date(2014, i, 1).strftime('%B').ljust(10), str(len(month)).ljust(10), str(tcount).ljust(10)
+        print '\n'
 
 @task
 def update_app(platform='android'):
@@ -819,50 +852,6 @@ def update_app(platform='android'):
         # see https://cordova.apache.org/docs/en/3.5.0/guide_platforms_android_config.md.html#Android%20Configuration
         _update_android_manifest(os.path.join(runtime, 'platforms', platform))
 
-
-@task
-def _app_start_stats():
-    """
-    Print out android app start stats by version.
-    """
-    totals = {}
-    def fetch_month(version):
-        months = {}
-
-        for i in range(1, 9):
-            month = {}
-            logname = "access_log.2014-{0}*".format(str(i).zfill(2))
-            awk = "awk '{print $1}'"
-            cmd = 'find /var/log/httpd/ -name {0} | xargs grep "Android {1}" | grep splash | {2}'.format(logname, version, awk)
-            out = run(cmd)
-            lines = out.split('\n')
-            for l in lines:
-                if len(l) == 0:
-                    continue
-                ip = l.split(':')[1].replace('\r', '')
-
-                if ip in month:
-                    month[ip]['count'] = month[ip]['count'] + 1
-                else:
-                    month[ip] = {
-                        'number': len(lines),
-                        'count': 1
-                    }
-            months[i] = month
-        totals[version] = months
-
-    versions = ['2.3', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5']
-    for version in versions:
-        fetch_month(version)
-    for version, months in totals.iteritems():
-        print version,':'
-        print 'Month'.ljust(10), 'Unique'.ljust(10), 'Total'.ljust(10)
-        for i, month in months.iteritems():
-            tcount = 0
-            for ip, vals in month.iteritems():
-                tcount = tcount + vals['count']
-            print datetime.date(2014, i, 1).strftime('%B').ljust(10), str(len(month)).ljust(10), str(tcount).ljust(10)
-        print '\n'
 
 def _check_command(cmd):
     """
@@ -1169,6 +1158,54 @@ def _read_data(fil):
         f.close()
         return filedata
     return None
+
+def _stats_monthly(year, pattern):
+    # calcluate monthly stats based on a grep pattern
+    months = {}
+
+    for i in range(1, 13):
+        month = {}
+
+        logname = "access_log.{0}-{1}*".format(year, str(i).zfill(2))
+        cmd = "find /var/log/httpd/ -name \"{0}\" | xargs grep -P \"{1}\" | awk '{{print $1}}'".format(
+            logname, pattern)
+
+        # get stats from prime
+        host = _config('prime_host', section='common')
+        env.hosts = [host]
+        out = execute('_stats_run_command', cmd)
+        lines = out[host]
+
+        # get stats from backup
+        host = _config('backup_host', section='common')
+        env.hosts = [host]
+        out = execute('_stats_run_command', cmd)
+        lines = lines + out[host]
+
+        for l in lines:
+            if len(l) == 0:
+                continue
+            ip = l.split(':')[1].replace('\r', '')
+
+            # ignore edina ip adresses
+            if ip[:11] == '129.215.169':
+                continue
+
+            if ip in month:
+                month[ip]['count'] = month[ip]['count'] + 1
+            else:
+                month[ip] = {
+                    'number': len(lines),
+                    'count': 1
+                }
+        months[i] = month
+    return months
+
+@task
+def _stats_run_command(cmd):
+    # run stats command and return results in a list
+    out = run(cmd)
+    return out.split('\n')
 
 def _str2bool(val):
     """Convert a string representation of truth to true (1) or false (0).
