@@ -261,7 +261,7 @@ var _ui = {
                 evt.preventDefault();
 
                 window.open(evt.currentTarget.href,
-                            '_blank',
+                            '_system',
                             'location=yes');
             });
 
