@@ -30,7 +30,8 @@ $ fab deploy_ios
 ### Release
 
 [Android](docs/RELEASE_ANDROID.md)
-[IOS]
+
+[IOS]()
 
 ### Project/Theme
 
