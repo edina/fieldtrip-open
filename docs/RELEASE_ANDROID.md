@@ -1,34 +1,29 @@
-The following outlines the steps for getting Fieldtrip Open app released on play store.
+The following outlines the steps for releasing a Fieldtrip Open app on play store.
 
 ### Create a private key
 
+See [Step 1 on Signing Your App Manually](http://developer.android.com/tools/publishing/app-signing.html#signing-manually)
+
+### Config
+
+Update keystore value in the release section of config.ini with location of keystore created above. E.g: [keystore configuration](https://github.com/edina/fieldtrip-open/blob/0.5.2/etc/config.example#L36)
+
+Ensure a tag/branch is defined for core, project and each cordova and fieldtrip plugin in project.json. E.g: [example project.json](https://github.com/edina/fieldtrip-gb/blob/1.5.0/theme/project.json). Do a clean install.
+
+### Perform Release
+
 ```
-$ keytool -genkey -v -keystore <my-release-key>.keystore
--alias <alias_name> -keyalg RSA -keysize 2048 -validity 10000
-```
-
-Then you need to store it somewhere and let Fieldtrip Open know of 
-where it is be defining inside the release are of the config file
-
-[keystore configuration](https://github.com/edina/fieldtrip-open/blob/master/etc/config.example#L36)
-
-After that you need to define tags/branches on each cordova, fieldtrip plugin, project and core software. 
-This will be defined inside the project.json file of the actual project e.g.
-
-[example project.json](https://github.com/edina/fieldtrip-cobweb-project/blob/master/theme/project.json)
-
-Then you need to go and checkout fieldtrip-open and the project you are using according to the tags/branches
-are mentioned inside the project.json.
-
-Next step is to clean, build and release:
-```
-fab clean
-fab deploy_android
 fab release_android:beta=False
 ```
 
+This creates a signed app and copies apks to machines defined by hosts value in release section of config.ini.
+
+#### Options
+
+* beta - to create release signed with key created above, this must be False.
+* email - send email to mailing addresses in email_official in config.ini?
+* overwrite - If True, apks will be overwritten on server.
 
 ### Use play store console for testers
 
-For this part you are going to need a a signed apk by following the steps above. Then you need to create a 
-google group that is going to be your testers and add this community to your app inside the play store console. 
+Create a google group that is going to be your testers and add this community to your app inside the play store console.
