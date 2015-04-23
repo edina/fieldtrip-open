@@ -13,17 +13,24 @@ $ fab install_project
 $ Provide location of config file > etc/config.example
 ```
 
-### Deploy Android
+### Deploy
+
+#### Android
 
 ```
 $ fab deploy_android
 ```
 
-### Deploy IOS
+#### IOS
 
 ```
 $ fab deploy_ios
 ```
+
+### Release
+
+[Android](docs/RELEASE_ANDROID.md)
+[IOS]
 
 ### Project/Theme
 
