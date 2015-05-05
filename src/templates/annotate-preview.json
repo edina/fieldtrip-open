@@ -23,7 +23,7 @@
     },
     "body": {
         "drawElements": {
-            "point": "Drag pin to Reposition",
+            "point": "Click on the map to Reposition",
             "line": "Click on the map",
             "polygon": "Click on the map",
             "box": "Click and drag on the map"

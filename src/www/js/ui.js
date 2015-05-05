@@ -460,6 +460,7 @@ var _ui = {
             if(geometryObjects[0] !== "point"){
                 updateAnnotate = false;
                 map.showAnnotateLayer();
+                createToolBar();
             }
             geoLocate({
                 secretly: false,
@@ -468,22 +469,24 @@ var _ui = {
             });
         }
 
-        var $item = $(".map-control-buttons");
-        var html = [];
-        html.push('<div data-role="controlgroup" data-type="vertical" class="map-control-buttons">');
+        var createToolBar = function() {
+            var $item = $(".map-control-buttons");
+            var html = [];
+            html.push('<div data-role="controlgroup" data-type="vertical" class="map-control-buttons">');
 
-        html.push(polygonWidgetTpl({
+            html.push(polygonWidgetTpl({
                 geometry: "drag"
             }));
-        for(var i=0; i<geometryObjects.length; i++){
-            html.push(polygonWidgetTpl({
-                geometry: geometryObjects[i]
-            }));
-        }
-        html.push('</div>');
+            for(var i=0; i<geometryObjects.length; i++){
+                html.push(polygonWidgetTpl({
+                    geometry: geometryObjects[i]
+                }));
+            }
+            html.push('</div>');
 
-        $item.append(html.join(""));
-        $item.trigger('create');
+            $item.append(html.join(""));
+            $item.trigger('create');
+        };
 
         var addMeta = function(label, text){
             $('#annotate-preview-detail-meta').append(

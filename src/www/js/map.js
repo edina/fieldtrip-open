@@ -1209,7 +1209,8 @@ var _openlayers = {
         };
 
         var drawControls = {
-            point: new OpenLayers.Control.DragFeature(captureRecordLayer),
+            pointDrag: new OpenLayers.Control.DragFeature(captureRecordLayer),
+            point: new OpenLayers.Control.DrawFeature(captureRecordLayer, OpenLayers.Handler.Point),
             line: new DrawFeature(captureRecordLayer,
                         OpenLayers.Handler.Path, selectLineOptions),
             polygon: new DrawFeature(captureRecordLayer,
