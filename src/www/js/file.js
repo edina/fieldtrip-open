@@ -455,11 +455,11 @@ var _base =  {
                 promise.done(function(data) {
                     try {
                         json = JSON.parse(data);
-                        deferred.resolve(json);
                     }
                     catch (ex) {
                         deferred.reject(ex);
                     }
+                    deferred.resolve(json);
                 });
             },
             function(err) {

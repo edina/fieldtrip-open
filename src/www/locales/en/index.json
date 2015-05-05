@@ -1,4 +1,13 @@
 {
+    "section1": {
+        "title": "Maps"
+    },
+    "section2": {
+        "title": "Capture"
+    },
+    "section3": {
+        "title": "Download and Sync"
+    },
     "section4": {
         "title": "Development"
     }
