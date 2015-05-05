@@ -451,24 +451,6 @@ var _ui = {
             '<a href="#" data-role="button" data-icon="capture-<%= geometry %>" data-iconpos="notext"><%= geometry %></a>'
         );
 
-        if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
-            map.updateAnnotateLayer();
-            localStorage.setItem('ignore-centre-on-annotation', false);
-        }
-        else {
-            var updateAnnotate = true;
-            if(geometryObjects[0] !== "point"){
-                updateAnnotate = false;
-                map.showAnnotateLayer();
-                createToolBar();
-            }
-            geoLocate({
-                secretly: false,
-                updateAnnotateLayer: updateAnnotate,
-                useDefault: true
-            });
-        }
-
         var createToolBar = function() {
             var $item = $(".map-control-buttons");
             var html = [];
@@ -487,6 +469,24 @@ var _ui = {
             $item.append(html.join(""));
             $item.trigger('create');
         };
+
+        if(localStorage.getItem('ignore-centre-on-annotation') === 'true'){
+            map.updateAnnotateLayer();
+            localStorage.setItem('ignore-centre-on-annotation', false);
+        }
+        else {
+            var updateAnnotate = true;
+            if(geometryObjects[0] !== "point"){
+                updateAnnotate = false;
+                map.showAnnotateLayer();
+                createToolBar();
+            }
+            geoLocate({
+                secretly: false,
+                updateAnnotateLayer: updateAnnotate,
+                useDefault: true
+            });
+        }
 
         var addMeta = function(label, text){
             $('#annotate-preview-detail-meta').append(
