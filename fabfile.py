@@ -1359,12 +1359,11 @@ def _is_in_branch(repo, branch):
     is_in_branch = False
     with lcd(repo):
         name = _get_branch_name(repo)
+        print name
         if name == branch:
             is_in_branch = True
-        else:
-            dfb = '(detached from {0})'.format(branch)
-            if dfb == name:
-                is_in_branch = True
+        elif '(detached from {0})'.format(branch) == name or '(HEAD detached at {0})'.format(branch) == name:
+            is_in_branch = True
 
     if not is_in_branch:
         print 'branch {0} does not match {1}'.format(name, branch)
