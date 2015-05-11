@@ -2,7 +2,6 @@
     "header": {
         "buttons" : {
             "record-info": {
-                "platforms": ["android", "ios"],
                 "class": "record-info",
                 "id": "preview-record",
                 "data-icon": "info",
@@ -12,7 +11,6 @@
                 "data-iconpos": "notext"
             },
             "user-locate": {
-                "platforms": ["android", "ios"],
                 "class": "user-locate",
                 "data-role": "button",
                 "data-inline": "true",

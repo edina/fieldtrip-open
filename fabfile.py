@@ -235,7 +235,7 @@ def deploy_android(uninstall='False'):
             # see https://issues.apache.org/jira/browse/CB-8460
             # just check the output instead
             #if out and out.return_code != 0:
-            if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
+            if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1 or out.find('INSTALL_FAILED_UPDATE_INCOMPATIBLE') != -1:
                 # app is installed with wrong certificate try and uninstall app
                 local('adb uninstall {0}'.format(_config('package', section='app')))
 
