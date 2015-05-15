@@ -131,7 +131,7 @@ var _base =  {
             dir.getFile(
                 fileName,
                 {create: false, exclusive: false},
-                function(fileEntry){
+                $.proxy(function(fileEntry){
                     fileEntry.remove(
                         function(entry){
                             console.debug("File deleted: " + fileName);
@@ -139,18 +139,18 @@ var _base =  {
                                 callback();
                             }
                         },
-                        function(error){
+                        $.proxy(function(error){
                             console.error("Failed to delete file: " + fileName +
                                           ". errcode = " + error.code +
                                           ". error = " + this.getFileErrorMsg(error.code));
-                        }
+                        }, this)
                     );
-                },
-                function(error){
+                }, this),
+                $.proxy(function(error){
                     console.error("Failed to get file: " + fileName +
                                   ". errcode = " + error.code +
                                   ". error = " + this.getFileErrorMsg(error.code));
-                }
+                }, this)
             );
         }
     },

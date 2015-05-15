@@ -1335,6 +1335,7 @@ var _openlayers = {
      * @param options
      *   id - layer id
      *   url - location of the KML file.
+     * @return new KML vector layer.
      */
     addKMLLayer: function(options){
         var layer = new OpenLayers.Layer.Vector(
