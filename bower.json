@@ -25,7 +25,7 @@
         "qunit": "1.15.0",
         "requirejs": "2.1.15",
         "requirejs-text": "2.0.12",
-        "spectrum": "1.5.1",
+        "spectrum": "1.7.0",
         "underscore": "1.7.0",
         "i18next": "1.7.7"
     },
