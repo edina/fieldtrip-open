@@ -111,12 +111,12 @@ and then add this part of code in your scripts object:
 
 Finally a 3 more files need to be added:
 
-1. .gitignore with content:
+- .gitignore with content:
 ```
 bower_components
 node_modules
 ```
-2. .jshintrc with content:
+- .jshintrc with content:
 ```
 {
     "camelcase": true,
@@ -146,7 +146,7 @@ node_modules
 }
 
 ```
-3. .release.json with content:
+- .release.json with content:
 ```
 {
     "non-interactive": false,
