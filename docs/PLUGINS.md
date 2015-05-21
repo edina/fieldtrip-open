@@ -79,8 +79,8 @@ npm run release
 ```
 For minor/major:
 ```
-npm run minor
-npm run major
+npm run release minor
+npm run release major
 ```
 After running the command line you've been asked a round of questions that you need to respond yes apart from the last one which is about publishing the repo on npm. This needs to be answered yes if it hasn't been published before otherwise no.
 
