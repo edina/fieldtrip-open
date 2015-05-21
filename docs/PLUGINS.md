@@ -69,7 +69,102 @@ $('head').prepend('<link rel="stylesheet" href="plugins/<myplugin>/css/style.css
 
 #### Release instructions
 
-For releasing the app:
+For releasing the app you need to install the packages first:
+```
+npm install
+```
+then there are 3 different versions to release: patch, minor, major. The commnad line below is using patch by default:
 ```
 npm run release
+```
+For minor/major:
+```
+npm run minor
+npm run major
+```
+After running the command line you've been asked a round of questions that you need to respond yes apart from the last one which is about publishing the repo on npm. This needs to be answered yes if it hasn't been published before otherwise no.
+
+If you want to run the release without replying to all these answers you need to run:
+```
+npm run release -- -n
+```
+
+Now if you need to create a new fieldtrip plugin you need to add 2 packages in your devDependencies of your package.json either manually:
+```
+  "devDependencies": {
+    "jshint": "2.5.3",
+    "release-it": "0.0.15"
+  },
+```
+
+or automatically:
+```
+npm install --save-dev jshint
+npm install --save-dev release-it
+```
+
+and then add this part of code in your scripts object:
+```
+"lint": "node_modules/jshint/bin/jshint src/www/js/**.js",
+"release": "npm run lint && node_modules/release-it/bin/release.js"
+```
+
+Finally a 3 more files need to be added:
+
+1. .gitignore with content:
+```
+bower_components
+node_modules
+```
+2. .jshintrc with content:
+```
+{
+    "camelcase": true,
+    "browser": true,
+    "globalstrict": true,
+    "globals": {
+        "console": false,
+        "define": false,
+        "device": false,
+        "FileTransfer": false,
+        "LocalFileSystem": false,
+        "localStorage": false,
+        "location": false,
+        "module": false,
+        "navigator": false,
+        "notification": false,
+        "OpenLayers": false,
+        "plugins": false,
+        "require": false,
+        "webdb": false,
+        "FileTransferError": false
+    },
+    "multistr": true,
+    "indent": "4",
+    "jquery": true,
+    "maxparams": "4"
+}
+
+```
+3. .release.json with content:
+```
+{
+    "non-interactive": false,
+    "dry-run": false,
+    "verbose": false,
+    "force": false,
+    "pkgFiles": ["package.json","bower.json"],
+    "increment": "patch",
+    "commitMessage": "Release %s",
+    "tagName": "%s",
+    "tagAnnotation": "Release %s",
+    "buildCommand": false,
+    "distRepo": false,
+    "distStageDir": ".stage",
+    "distBase": "dist",
+    "distFiles": ["**/*"],
+    "private": false,
+    "publish": false,
+    "publishPath": "."
+}
 ```
