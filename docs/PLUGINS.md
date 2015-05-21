@@ -65,3 +65,11 @@ Plugins can add a stylesheet by via javascript, e.g:
 ```
 $('head').prepend('<link rel="stylesheet" href="plugins/<myplugin>/css/style.css" type="text/css" />');
 ```
+
+
+#### Release instructions
+
+For releasing the app:
+```
+npm run release
+```
