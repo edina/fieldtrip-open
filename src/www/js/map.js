@@ -148,6 +148,10 @@ define(['records', 'utils', 'proj4'], function(// jshint ignore:line
 var _base = {
 
     /**
+     * GPS time out
+     */
+    EVT_GPS_TIMEOUT: 'evt-gps-timeout',
+    /**
      * Hide records on map event name.
      */
     EVT_HIDE_RECORDS: 'evt-hide-records',
@@ -428,6 +432,12 @@ var _base = {
                 if(!options.secretly){
                     utils.inform('GPS timed out');
                 }
+                // fire edit record event, this allows plugins to edit record
+                $.event.trigger(
+                    {
+                        type: this.EVT_GPS_TIMEOUT,
+                    }
+                );
             }
             else{
                 console.debug("GPS is not enabled");
@@ -437,11 +447,13 @@ var _base = {
             }
 
             if(options.useDefault){
-                //  just go to center of UK
+                //  just go to center of the map
+                var centre = this.getCentre(true);
+
                 var pos = {
                     coords: {
-                        longitude: defaultUserLon,
-                        latitude: defaultUserLat,
+                        longitude: centre.lon,
+                        latitude: centre.lat,
                         heading: defaultUserHeading,
                         altitude: defaultUserAltitude
                     }
