@@ -446,25 +446,32 @@ var _base = {
                 }
             }
 
+            var lon, lat;
             if(options.useDefault){
-                //  just go to center of the map
-                var centre = this.getCentre(true);
-
-                var pos = {
-                    coords: {
-                        longitude: centre.lon,
-                        latitude: centre.lat,
-                        heading: defaultUserHeading,
-                        altitude: defaultUserAltitude
-                    }
-                };
-
-                this.onPositionSuccess(pos, {
-                    updateAnnotateLayer: options.updateAnnotateLayer,
-                    hideLoadingDialog: false,
-                    autocenter: options.autocenter
-                });
+                //  just go to center of UK
+                lon = defaultUserLon;
+                lat = defaultUserLat;
             }
+            else{
+                // or the centre of the map
+                var centre = this.getCentre(true);
+                lon = centre.lon;
+                lat = centre.lat;
+            }
+            var pos = {
+                coords: {
+                    longitude: lon,
+                    latitude: lat,
+                    heading: defaultUserHeading,
+                    altitude: defaultUserAltitude
+                }
+            };
+
+            this.onPositionSuccess(pos, {
+                updateAnnotateLayer: options.updateAnnotateLayer,
+                hideLoadingDialog: false,
+                autocenter: options.autocenter
+            });
         }, this);
 
         if(options.watch){
