@@ -484,7 +484,7 @@ var _ui = {
             geoLocate({
                 secretly: false,
                 updateAnnotateLayer: updateAnnotate,
-                useDefault: true
+                useDefault: false
             });
         }
 
