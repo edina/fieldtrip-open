@@ -54,6 +54,8 @@ import re
 
 
 CORDOVA_VERSION = '3.6.3-0.2.13'
+CORDOVA_ANDROID_VERSION = '3.7.2' # security fix - can be removed when upgrading
+
 OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION = '2.1.2'
 BOWER_VERSION = '1.3.12'
@@ -609,8 +611,11 @@ def install_project(platform='android',
                     dest = os.sep.join((css_ext_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
 
-        # After prepare the project install the platform
-        local('cordova platform add {0}'.format(platform))
+        # install the platform
+        if CORDOVA_ANDROID_VERSION:
+            local('cordova platform add {0}@{1}'.format(platform, CORDOVA_ANDROID_VERSION))
+        else:
+            local('cordova platform add {0}'.format(platform))
 
     # generate config js
     generate_config_js(version=versions['project'],
@@ -737,10 +742,12 @@ def release_android(
                 local('ant clean release -Dsdk.dir={0}'.format(sdk_dir))
 
             # sign the application
-            unsigned_apkfile = os.sep.join((bin_dir, '{0}-release-unsigned.apk'.format(file_prefix)))
-            signed_apkfile = os.sep.join((bin_dir, '{0}-release-signed.apk'.format(file_prefix)))
+            unsigned_apkfile = os.path.join(bin_dir, '{0}-release-unsigned.apk'.format(file_prefix))
+            signed_apkfile = os.path.join(bin_dir, '{0}-release-signed.apk'.format(file_prefix))
             local('cp {0} {1}'.format(unsigned_apkfile, signed_apkfile))
-            keystore = _config('keystore', section='release')
+            keystore_name = _config('keystore_name', section='release')
+            keystore = os.path.join(_config('keystore_location', section='release'),
+                                    '{0}.keystore'.format(keystore_name))
 
             if keystore.find('@') != -1:
                 # if keystore is stored remotely copy it locally
@@ -752,7 +759,7 @@ def release_android(
             local('jarsigner -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore {0} {1} {2}'.format(
                 keystore,
                 signed_apkfile,
-                file_prefix))
+                keystore_name))
 
             # align the apk file
             local('zipalign -v 4 {0} {1}'.format(signed_apkfile, apkfile))
