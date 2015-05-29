@@ -55,6 +55,8 @@ import re
 
 
 CORDOVA_VERSION = '3.6.3-0.2.13'
+CORDOVA_ANDROID_VERSION = '3.7.2' # security fix - can be removed when upgrading
+
 OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION = '2.1.2'
 BOWER_VERSION = '1.3.12'
@@ -217,7 +219,7 @@ def deploy_android(uninstall='False'):
             # see https://issues.apache.org/jira/browse/CB-8460
             # just check the output instead
             #if out and out.return_code != 0:
-            if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1:
+            if out.find('INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES') != -1 or out.find('INSTALL_FAILED_UPDATE_INCOMPATIBLE') != -1:
                 # app is installed with wrong certificate try and uninstall app
                 local('adb uninstall {0}'.format(_config('package', section='app')))
 
@@ -831,8 +833,11 @@ def install_project(platform='android',
                     dest = os.sep.join((css_ext_dir, '{0}.css'.format(f_name)))
                 local('cp {0} {1}'.format(src, dest))
 
-        # After prepare the project install the platform
-        local('cordova platform add {0}'.format(platform))
+        # install the platform
+        if CORDOVA_ANDROID_VERSION:
+            local('cordova platform add {0}@{1}'.format(platform, CORDOVA_ANDROID_VERSION))
+        else:
+            local('cordova platform add {0}'.format(platform))
 
     # generate config js
     generate_config_js(version=versions['project'],
