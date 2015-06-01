@@ -151,6 +151,7 @@ var _base = {
      * GPS time out
      */
     EVT_GPS_TIMEOUT: 'evt-gps-timeout',
+
     /**
      * Hide records on map event name.
      */
@@ -463,7 +464,8 @@ var _base = {
                     longitude: lon,
                     latitude: lat,
                     heading: defaultUserHeading,
-                    altitude: defaultUserAltitude
+                    altitude: defaultUserAltitude,
+                    accuracy: null
                 }
             };
 
@@ -594,6 +596,12 @@ var _base = {
         this.updateUserPosition(position.coords.longitude,
                                 position.coords.latitude);
         this.userLonLat.gpsPosition = position.coords;
+        this.userLonLat.markerMoved = false;
+        console.log('Accuracy: '          + position.coords.accuracy        );
+        console.log('Altitude Accuracy: ' + position.coords.altitudeAccuracy);
+        console.log('Heading: '           + position.coords.heading         );
+        console.log('Speed: '             + position.coords.speed           );
+        console.log('Timestamp: '         + position.timestamp              );
 
         // update user position
         this.updateLocateLayer({
@@ -1246,6 +1254,10 @@ var _openlayers = {
             }
         };
         captureRecordLayer.events.register("beforefeatureadded", null, clearRecordLayer);
+        drawControls.point.events.register('featureadded', drawControls.point, $.proxy(function(evt) {
+            console.log('marker was moved');
+            this.userLonLat.markerMoved = true;
+        }, this));
 
         var toolbar = new OpenLayers.Control.Panel({
             //displayClass: options.olToolBarClass,
@@ -1546,9 +1558,6 @@ var _openlayers = {
      */
     getAnnotationCoords: function(ext){
         var coords, centroid;
-        //var features = this.getAnnotateLayer().getFeaturesByAttribute(
-         //   'id',
-        //    ANNOTATE_POSITION_ATTR);
         var features = this.getAnnotateLayer().features;
 
         if(features.length > 0){
@@ -1563,8 +1572,9 @@ var _openlayers = {
 
             // give the annotation altitude the altitude of the user
             // see https://redmine.edina.ac.uk/issues/5497
-            if(geom.type === "Point"){
+            if(geom instanceof OpenLayers.Geometry.Point){
                 coords.gpsPosition = this.userLonLat.gpsPosition;
+                coords.markerMoved = this.userLonLat.markerMoved;
             }
         }
 

@@ -162,6 +162,11 @@ var _base = {
     EVT_EDIT_ANNOTATION: 'evt-edit-annotation',
 
     /**
+     * Move marker on map
+     */
+    EVT_MOVE_ANNOTATION: 'evt-move-annotation',
+
+    /**
      * Initialise annotate page.
      * @param group group that owns the editor (default: EDITOR_GROUP.DEFAULT)
      * @param type editor type
@@ -1217,12 +1222,18 @@ var _base = {
         annotation.record.geometry = geometry;
 
         if(typeof(geometry.gpsPosition) !== 'undefined'){
-            annotation.record.geometry.coordinates[2] = geometry.gpsPosition.altitude;
+            if (geometry.gpsPosition.altitude !== null && !geometry.markerMoved) {
+                //there's a problem with OL when I add altitude
+                //annotation.record.geometry.coordinates[2] = geometry.gpsPosition.altitude;
+            }
 
-            //TO-DO investigation for the new change
-            if(annotation.record.properties.hasOwnProperty('pos_acc') &&
-               geometry.gpsPosition.accuracy !== undefined){
-                   annotation.record.properties.pos_acc = geometry.gpsPosition.accuracy; // jshint ignore:line
+            if (geometry.markerMoved) {
+                $.event.trigger(
+                    {
+                        type: this.EVT_MOVE_ANNOTATION,
+                    },
+                    annotation
+                );
             }
         }
 
