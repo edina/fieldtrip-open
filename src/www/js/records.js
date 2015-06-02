@@ -1227,14 +1227,13 @@ var _base = {
                 //annotation.record.geometry.coordinates[2] = geometry.gpsPosition.altitude;
             }
 
-            if (geometry.markerMoved) {
-                $.event.trigger(
-                    {
-                        type: this.EVT_MOVE_ANNOTATION,
-                    },
-                    annotation
-                );
-            }
+            $.event.trigger(
+                {
+                    type: this.EVT_MOVE_ANNOTATION,
+                },
+                [annotation,
+                geometry.markerMoved]
+            );
         }
 
         this.saveAnnotation(undefined, annotation);
