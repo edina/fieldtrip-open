@@ -1,21 +1,18 @@
 """
-Copyright (c) 2014, EDINA,
+Copyright (c) 2015, EDINA
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright notice, this
-   list of conditions and the following disclaimer in the documentation and/or
-   other materials provided with the distribution.
-3. All advertising materials mentioning features or use of this software must
-   display the following acknowledgement: This product includes software
-   developed by the EDINA.
-4. Neither the name of the EDINA nor the names of its contributors may be used to
-   endorse or promote products derived from this software without specific prior
-   written permission.
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this
+  list of conditions and the following disclaimer in the documentation and/or
+  other materials provided with the distribution.
+* Neither the name of EDINA nor the names of its contributors may be used to
+  endorse or promote products derived from this software without specific prior
+  written permission.
 
 THIS SOFTWARE IS PROVIDED BY EDINA ''AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -537,7 +534,8 @@ def install_project(platform='android',
             if "not a Cordova-based project" in out or installed_version != CORDOVA_VERSION:
                 # If the directory exists but it's not a cordova project or the
                 # cordova version is different from expected, remove runtime
-                if clean_runtime(target, config_url) == False:
+                if not clean_runtime(target):
+                    print 'Looks like a problem cleaning runtime'
                     exit(-1)
             else:
                 install_cordova = False
@@ -1295,6 +1293,8 @@ for ptask in ptasks:
         import fabtasks
 
 # add node_modules/.bin to path
+if not os.path.exists('node_modules'):
+    local('mkdir node_modules')
 os.environ['PATH'] = '{0}:{1}'.format(
     os.path.join(root, 'node_modules/.bin'),
     os.environ['PATH'])
