@@ -610,7 +610,7 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
         # install the platform
-        if CORDOVA_ANDROID_VERSION:
+        if CORDOVA_ANDROID_VERSION and platform is 'android':
             local('cordova platform add {0}@{1}'.format(platform, CORDOVA_ANDROID_VERSION))
         else:
             local('cordova platform add {0}'.format(platform))
