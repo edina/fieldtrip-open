@@ -50,14 +50,14 @@ import sys
 import re
 
 
-CORDOVA_VERSION = '3.6.3-0.2.13'
-CORDOVA_ANDROID_VERSION = '3.7.2' # security fix - can be removed when upgrading
+CORDOVA_VERSION = '4.3.1'
+CORDOVA_ANDROID_VERSION = None # can be used to enable alternative android version
 
 OPENLAYERS_VERSION = '2.13.1'
-NPM_VERSION = '2.1.2'
-BOWER_VERSION = '1.3.12'
-JSHINT_VERSION = '2.5.6'
-PLUGMAN_VERSION = '0.22.10'
+NPM_VERSION = '2.11.3'
+BOWER_VERSION = '1.4.1'
+JSHINT_VERSION = '2.8.0'
+PLUGMAN_VERSION = '0.23.1'
 
 # lowest supported android sdk version
 # could move to config if projects diverge
@@ -93,6 +93,8 @@ config = None
 def check_plugins():
     """
     Check if newer versions of cordova plugin are available.
+
+    Current version of plugman 0.23.3 not working, https://issues.apache.org/jira/browse/CB-9198
     """
     _check_command('plugman')
 
@@ -109,7 +111,7 @@ def check_plugins():
                     if info[0] == 'version':
                         latest_version = info[1].strip()
                 if version != latest_version:
-                    print '*** {0}@{1} newer plugin {2} available ***'.format(name, version, latest_version)
+                    print '*** {0}@{1} not using latest version {2} ***\n'.format(name, version, latest_version)
                 else:
                     print '{0} up to date'.format(name)
     else:
