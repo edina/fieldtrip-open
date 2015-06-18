@@ -124,6 +124,12 @@ return{
                 $('#settings-cordova').text('n/a');
             }
 
+            if (device) {
+                $('#settings-platform').text(device.platform);
+                $('#settings-platform-version').text(device.version);
+                $('#settings-device-model').text(device.model);
+            }
+
             $(document).on('vclick', '#settings-project', function(){
                 if(++devClickCount >= 10){
                     var devMode = ! JSON.parse(localStorage.getItem('devMode'));
