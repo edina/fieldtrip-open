@@ -11,23 +11,24 @@
         "George Hamilton <gmh04>",
         "Murray King <murrayk>",
         "Michael Koutroumpas <xmichael>",
-        "Panos Terzis <panterz>"
+        "Panos Terzis <panterz>",
+        "Ruben Gamez <rgamez>"
     ],
     "license": "BSD",
     "homepage": "http://fieldtripgb.blogs.edina.ac.uk/",
     "dependencies": {
-        "jquery": "1.11.1",
+        "jquery": "1.11.3",
         "jquery-mobile": "http://jquerymobile.com/resources/download/jquery.mobile-1.4.5.zip",
         "leaflet": "0.7.3",
         "leaflet.markercluster": "0.4.0",
-        "proj4": "2.2.2",
+        "proj4": "2.3.6",
         "proj4leaflet": "0.7.0",
-        "qunit": "1.15.0",
-        "requirejs": "2.1.15",
-        "requirejs-text": "2.0.12",
+        "qunit": "1.18.0",
+        "requirejs": "2.1.18",
+        "requirejs-text": "2.0.14",
         "spectrum": "1.7.0",
-        "underscore": "1.7.0",
-        "i18next": "1.7.7"
+        "underscore": "1.8.3",
+        "i18next": "1.9.0"
     },
     "dependency_locations": {
         "jquery": [
