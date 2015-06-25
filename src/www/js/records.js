@@ -137,6 +137,47 @@ define(function(require) {
         }
     };
 
+    var restorePersistentValues = function(form, group, type) {
+        var editorsMetadata = JSON.parse(localStorage.getItem('editors-metadata'));
+        var persistentValues = editorsMetadata[group][type].persistentValues || [];
+        var extractFieldType = /^fieldcontain-(.*?)-[0-9]+/;
+
+        persistentValues.forEach(function(field) {
+            var fieldType = extractFieldType.exec(field.id)[1];
+            var $field = $('#' + field.id, form);
+
+            switch (fieldType) {
+                case 'text':
+                    $('input[type="text"]', $field).val(field.val);
+                    break;
+                case 'range':
+                    $('input[type="range"]', $field).attr('value', field.val);
+                    break;
+                case 'textarea':
+                    $(fieldType, $field).val(field.val);
+                    break;
+                case 'checkbox':
+                    var values = field.val.split(',');
+                    $('fieldset > input', $field).filter(function() {
+                        return values.indexOf($(this).val()) > -1;
+                    }).prop('checked', true);
+                    break;
+                case 'radio':
+                    $('fieldset > input', $field).filter(function() {
+                        return $(this).val() == field.val;
+                    }).prop('checked', true);
+                    break;
+                case 'select':
+                    $('select > option', $field).filter(function() {
+                        return $(this).val() == field.val;
+                    }).prop('selected', true);
+                    break;
+                default:
+                    console.debug('Invalid persistent field: ' + fieldType);
+            }
+        });
+    };
+
     /************************** public interface  ******************************/
 var _this = {};
 
@@ -212,6 +253,8 @@ var _base = {
                     var widgetsList = widgets.getWidgets(widgetType);
                     widgets.initializeWidgets(widgetsList, index, item);
                 });
+
+                restorePersistentValues(form, group, type);
 
                 //Add bbox if exists
                 var bbox = $('input[data-bbox]').data("bbox") || "";
@@ -902,6 +945,7 @@ var _base = {
     processAnnotation: function(group, recordType){
         var lastError;
         var valid = [];
+        var persistentValues = [];
         var annotation = this.createRecord(recordType, group);
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
@@ -1019,6 +1063,7 @@ var _base = {
                         if(control.val().indexOf('/') < 0){
                             // Use this control value as a record name
                             annotation.record.name = control.val();
+                            field.val = control.val();
                             // But don't include it as a record field
                             ignoreField = true;
                         }
@@ -1053,12 +1098,22 @@ var _base = {
                 }
             }
 
+            // Save the value for the persistent fields
+            if ($(entry).data('persistent') === 'on') {
+                persistentValues.push(field);
+            }
+
             if(ignoreField === false){
                 annotation.record.properties.fields.push(field);
             }
         }, this));
 
         if (valid.length === 0) {
+            // Update the persistentValues for the editor
+            var editorsMetadata = JSON.parse(localStorage.getItem('editors-metadata'));
+            editorsMetadata[group][recordType].persistentValues = persistentValues;
+            localStorage.setItem('editors-metadata', JSON.stringify(editorsMetadata));
+
             // nasty I know: but changing page in a setTimeout allows
             // time for the keyboard to close
             setTimeout(function(){
