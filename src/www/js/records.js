@@ -48,6 +48,7 @@ define(function(require) {
         PRIVATE: 'private'  // Editors of an authenticated user
     };
     var IMAGE_TYPE_NAME = 'image';
+    var MULTIIMAGE_TYPE_NAME = 'multiimage';
     var AUDIO_TYPE_NAME = 'audio';
 
     var assetsDir;
@@ -74,6 +75,7 @@ define(function(require) {
                 assetsDir = dir;
 
                 _this.addAssetType(IMAGE_TYPE_NAME);
+                _this.addAssetType(MULTIIMAGE_TYPE_NAME);
                 _this.addAssetType(AUDIO_TYPE_NAME);
             }
         });
@@ -137,6 +139,47 @@ define(function(require) {
         }
     };
 
+    var restorePersistentValues = function(form, group, type) {
+        var editorsMetadata = JSON.parse(localStorage.getItem('editors-metadata'));
+        var persistentValues = editorsMetadata[group][type].persistentValues || [];
+        var extractFieldType = /^fieldcontain-(.*?)-[0-9]+/;
+
+        persistentValues.forEach(function(field) {
+            var fieldType = extractFieldType.exec(field.id)[1];
+            var $field = $('#' + field.id, form);
+
+            switch (fieldType) {
+                case 'text':
+                    $('input[type="text"]', $field).val(field.val);
+                    break;
+                case 'range':
+                    $('input[type="range"]', $field).attr('value', field.val);
+                    break;
+                case 'textarea':
+                    $(fieldType, $field).val(field.val);
+                    break;
+                case 'checkbox':
+                    var values = field.val.split(',');
+                    $('fieldset > input', $field).filter(function() {
+                        return values.indexOf($(this).val()) > -1;
+                    }).prop('checked', true);
+                    break;
+                case 'radio':
+                    $('fieldset > input', $field).filter(function() {
+                        return $(this).val() == field.val;
+                    }).prop('checked', true);
+                    break;
+                case 'select':
+                    $('select > option', $field).filter(function() {
+                        return $(this).val() == field.val;
+                    }).prop('selected', true);
+                    break;
+                default:
+                    console.debug('Invalid persistent field: ' + fieldType);
+            }
+        });
+    };
+
     /************************** public interface  ******************************/
 var _this = {};
 
@@ -188,7 +231,8 @@ var _base = {
             success: function(data){
                 var form = $('#annotate-form').append(data);
                 $.each($('input[capture=camera]'), function(index, input){
-                    $(input).parent().append(that.renderCameraExtras(index, cameraTemplate));
+                    var fieldType = that.typeFromId($(input).parents().parents().attr("id"));
+                    $(input).parent().append(that.renderCameraExtras(index, fieldType, cameraTemplate));
                 });
                 $.each($('input[capture=microphone]'), function(index, input){
                     var btn = '<div id="annotate-audio-' + index + '">\
@@ -212,6 +256,8 @@ var _base = {
                     var widgetsList = widgets.getWidgets(widgetType);
                     widgets.initializeWidgets(widgetsList, index, item);
                 });
+
+                restorePersistentValues(form, group, type);
 
                 //Add bbox if exists
                 var bbox = $('input[data-bbox]').data("bbox") || "";
@@ -902,6 +948,7 @@ var _base = {
     processAnnotation: function(group, recordType){
         var lastError;
         var valid = [];
+        var persistentValues = [];
         var annotation = this.createRecord(recordType, group);
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
@@ -981,6 +1028,16 @@ var _base = {
                 }
                 doLabel($(entry).find('input').attr('id'));
             }
+            else if(type === 'multiimage'){
+                var images = [];
+                $(entry).find('.annotate-image img').each(function(){
+                    images.push($(this).attr('src'));
+                });
+                if(images.length > 0){
+                    field.val = images;
+                }
+                doLabel($(entry).find('input').attr('id'));
+            }
             else if(type === 'audio'){
                 control = $(entry).find('input[capture=microphone]');
                 var value = $(entry).find('.annotate-audio-taken input').attr('value');
@@ -1019,6 +1076,7 @@ var _base = {
                         if(control.val().indexOf('/') < 0){
                             // Use this control value as a record name
                             annotation.record.name = control.val();
+                            field.val = control.val();
                             // But don't include it as a record field
                             ignoreField = true;
                         }
@@ -1053,12 +1111,22 @@ var _base = {
                 }
             }
 
+            // Save the value for the persistent fields
+            if ($(entry).data('persistent') === 'on') {
+                persistentValues.push(field);
+            }
+
             if(ignoreField === false){
                 annotation.record.properties.fields.push(field);
             }
         }, this));
 
         if (valid.length === 0) {
+            // Update the persistentValues for the editor
+            var editorsMetadata = JSON.parse(localStorage.getItem('editors-metadata'));
+            editorsMetadata[group][recordType].persistentValues = persistentValues;
+            localStorage.setItem('editors-metadata', JSON.stringify(editorsMetadata));
+
             // nasty I know: but changing page in a setTimeout allows
             // time for the keyboard to close
             setTimeout(function(){
@@ -1174,9 +1242,12 @@ var _base = {
     /**
      * function for rendering the extra options for camera on the form
      * @param index which is the id
+     * @param type the type of the image (image|multiimage)
+     * @param tmpl template of the buttons, it's needed as parameter because it's
+     * used by other plugins
      * @returns html rendered
      */
-    renderCameraExtras: function(index, tmpl){
+    renderCameraExtras: function(index, type, tmpl){
         var fullSelected = '', normalSelected = '', CHECKED = 'checked';
 
         if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
@@ -1186,7 +1257,7 @@ var _base = {
             normalSelected = CHECKED;
         }
         var template =  _.template(tmpl);
-        return template({"index": index, "fullSelected": fullSelected, "normalSelected": normalSelected});
+        return template({"index": index, "type": type, "fullSelected": fullSelected, "normalSelected": normalSelected});
     },
 
     /**
