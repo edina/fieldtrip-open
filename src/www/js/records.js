@@ -1242,6 +1242,9 @@ var _base = {
     /**
      * function for rendering the extra options for camera on the form
      * @param index which is the id
+     * @param type the type of the image (image|multiimage)
+     * @param tmpl template of the buttons, it's needed as parameter because it's
+     * used by other plugins
      * @returns html rendered
      */
     renderCameraExtras: function(index, type, tmpl){

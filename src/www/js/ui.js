@@ -316,6 +316,7 @@ var _ui = {
             // replace photo form element with image
             var showImage = function(id, url, type){
                 var parent = $('#' + id).parent();
+                //if type is image==single image then hide the take image buttons
                 if(type==="image"){
                     $('#' + id).hide();
                 }
