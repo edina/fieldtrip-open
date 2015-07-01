@@ -763,6 +763,13 @@ var _base = {
                             html = '<img src="' + entry.val + '" width=100%"/>';
                             showRecord(html);
                         }
+                        else if(type === 'multiimage'){
+                            html = "";
+                            for(var j=0; j<entry.val.length;j++){
+                                html += '<img src="' + entry.val[j] + '" width=100%"/>';
+                            }
+                            showRecord(html);
+                        }
                         else if(type === 'audio'){
                             require(['audio'], function(audio){
                                 html = audio.getNode(entry.val, entry.label + ':');

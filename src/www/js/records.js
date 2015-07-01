@@ -48,6 +48,7 @@ define(function(require) {
         PRIVATE: 'private'  // Editors of an authenticated user
     };
     var IMAGE_TYPE_NAME = 'image';
+    var MULTIIMAGE_TYPE_NAME = 'multiimage';
     var AUDIO_TYPE_NAME = 'audio';
 
     var assetsDir;
@@ -74,6 +75,7 @@ define(function(require) {
                 assetsDir = dir;
 
                 _this.addAssetType(IMAGE_TYPE_NAME);
+                _this.addAssetType(MULTIIMAGE_TYPE_NAME);
                 _this.addAssetType(AUDIO_TYPE_NAME);
             }
         });
@@ -229,7 +231,8 @@ var _base = {
             success: function(data){
                 var form = $('#annotate-form').append(data);
                 $.each($('input[capture=camera]'), function(index, input){
-                    $(input).parent().append(that.renderCameraExtras(index, cameraTemplate));
+                    var fieldType = that.typeFromId($(input).parents().parents().attr("id"));
+                    $(input).parent().append(that.renderCameraExtras(index, fieldType, cameraTemplate));
                 });
                 $.each($('input[capture=microphone]'), function(index, input){
                     var btn = '<div id="annotate-audio-' + index + '">\
@@ -1025,6 +1028,16 @@ var _base = {
                 }
                 doLabel($(entry).find('input').attr('id'));
             }
+            else if(type === 'multiimage'){
+                var images = [];
+                $(entry).find('.annotate-image img').each(function(){
+                    images.push($(this).attr('src'));
+                });
+                if(images.length > 0){
+                    field.val = images;
+                }
+                doLabel($(entry).find('input').attr('id'));
+            }
             else if(type === 'audio'){
                 control = $(entry).find('input[capture=microphone]');
                 var value = $(entry).find('.annotate-audio-taken input').attr('value');
@@ -1231,7 +1244,7 @@ var _base = {
      * @param index which is the id
      * @returns html rendered
      */
-    renderCameraExtras: function(index, tmpl){
+    renderCameraExtras: function(index, type, tmpl){
         var fullSelected = '', normalSelected = '', CHECKED = 'checked';
 
         if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) === this.IMAGE_SIZE_FULL){
@@ -1241,7 +1254,7 @@ var _base = {
             normalSelected = CHECKED;
         }
         var template =  _.template(tmpl);
-        return template({"index": index, "fullSelected": fullSelected, "normalSelected": normalSelected});
+        return template({"index": index, "type": type, "fullSelected": fullSelected, "normalSelected": normalSelected});
     },
 
     /**

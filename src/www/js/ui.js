@@ -314,9 +314,11 @@ var _ui = {
         var id;
         records.initPage(group, type, $.proxy(function(){
             // replace photo form element with image
-            var showImage = function(id, url){
+            var showImage = function(id, url, type){
                 var parent = $('#' + id).parent();
-                $('#' + id).hide();
+                if(type==="image"){
+                    $('#' + id).hide();
+                }
                 parent.append('<div class="annotate-image"><img src="' +
                               url + '"</img></div>');
             };
@@ -335,7 +337,7 @@ var _ui = {
             $('.annotate-image-take').click($.proxy(function(event){
                 id = $(event.target).parents('.image-chooser').attr('id');
                 records.takePhoto(function(media){
-                    showImage(id, media);
+                    showImage(id, media, records.typeFromId(id));
                 });
             }, this));
 
@@ -343,7 +345,7 @@ var _ui = {
             $('.annotate-image-get').click($.proxy(function(event){
                 id = $(event.target).parents('.image-chooser').attr('id');
                 records.getPhoto(function(media){
-                    showImage(id, media);
+                    showImage(id, media, records.typeFromId(id));
                 });
             }, this));
 
@@ -403,7 +405,10 @@ var _ui = {
                             $('#' + entry.id + ' textarea').val(entry.val);
                         }
                         else if(fieldType === 'image'){
-                            showImage('annotate-image-0', entry.val);
+                            showImage('annotate-image-0', entry.val, fieldType);
+                        }
+                        else if(fieldType === 'multiimage'){
+                            showImage('annotate-image-0', entry.val, fieldType);
                         }
                         else if(fieldType === 'audio'){
                             showAudio('annotate-audio-0', entry.val, {label: entry.val});
