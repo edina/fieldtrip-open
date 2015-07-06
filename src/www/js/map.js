@@ -1700,6 +1700,14 @@ var _openlayers = {
     },
 
     /**
+     * move layer over Annotation layer
+     * @para layer {Object}
+     */
+    moveLayerUnderAnnotation: function(layer){
+        this.map.setLayerIndex(this.getAnnotateLayer(), this.map.getLayerIndex(layer));
+    },
+
+    /**
      * Pan the map to the location marker if none get a location
      */
     panToLocationMarker: function(){
