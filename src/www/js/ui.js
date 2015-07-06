@@ -479,7 +479,7 @@ var _ui = {
         }
         else {
             var updateAnnotate = true;
-            if(geometryObjects[0] !== "point"){
+            if(geometryObjects[0] !== "point" || geometryObjects.length > 1){
                 updateAnnotate = false;
                 map.showAnnotateLayer();
                 createToolBar();
