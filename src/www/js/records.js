@@ -762,6 +762,7 @@ var _base = {
         if (navigator.camera !== undefined){
             navigator.camera.getPicture(
                 $.proxy(function(fileURI){
+                    //rename filename of image from modified.jpg?timestamp to modified_timestamp.jpg
                     var name = fileURI.substr(fileURI.lastIndexOf('/') + 1);
                     if(name.indexOf('?')){
                         var splits = name.split('?');
@@ -769,6 +770,7 @@ var _base = {
                         name = splits2[0]+"_"+splits[1]+"."+splits2[1];
                     }
                     var newFileURI = fileURI.substr(0, fileURI.lastIndexOf('/')+1) + name;
+                    //move image from cache folder to assets by renaming it
                     file.moveTo({
                         'path': fileURI,
                         'to': this.getAssetsDir(IMAGE_TYPE_NAME),
