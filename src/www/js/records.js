@@ -761,9 +761,23 @@ var _base = {
     getPhoto: function(callback) {
         if (navigator.camera !== undefined){
             navigator.camera.getPicture(
-                function(fileURI){
-                    callback(fileURI);
-                },
+                $.proxy(function(fileURI){
+                    var name = fileURI.substr(fileURI.lastIndexOf('/') + 1);
+                    if(name.indexOf('?')){
+                        var splits = name.split('?');
+                        var splits2 = splits[0].split('.');
+                        name = splits2[0]+"_"+splits[1]+"."+splits2[1];
+                    }
+                    var newFileURI = fileURI.substr(0, fileURI.lastIndexOf('/')+1) + name;
+                    file.moveTo({
+                        'path': fileURI,
+                        'to': this.getAssetsDir(IMAGE_TYPE_NAME),
+                        'newName': name,
+                        'success': function(newEntry){
+                            callback(newEntry.toURL());
+                        }
+                    });
+                }, this),
                 captureError,
                 this.getImageOptions(
                     navigator.camera.PictureSourceType.SAVEDPHOTOALBUM,

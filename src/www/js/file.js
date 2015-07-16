@@ -409,6 +409,7 @@ var _base =  {
      *   to - the target directory
      *   success - success function, see FileEntry.moveTo
      *   error - optional error function
+     *   newName - rename the file
      */
     moveTo: function(options){
         if(options.error === undefined){
@@ -424,7 +425,7 @@ var _base =  {
             function(fileEntry){
                 fileEntry.moveTo(
                     options.to,
-                    undefined,
+                    options.newName,
                     options.success,
                     options.error
                 );
