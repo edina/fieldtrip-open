@@ -410,7 +410,6 @@ var _base =  {
      *   newName - rename the file
      *   success - success function, see FileEntry.moveTo
      *   error - optional error function
-     *   newName - rename the file
      */
     moveTo: function(options){
         if(options.error === undefined){
