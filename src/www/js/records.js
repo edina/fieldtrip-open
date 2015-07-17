@@ -1212,14 +1212,21 @@ var _base = {
                 navigator.device.capture.captureAudio(
                     function(mediaFiles){
                         // move file to audio assets directory
+
+                        // can't guarantee audio plugin will generate
+                        // unique file name so do it ourself
                         var media = mediaFiles[0];
+                        var ext = media.name.split('.')[1];
+                        var name = 'audio' + $.guid + '.' + ext;
+
                         file.moveTo({
                             'path': media.fullPath,
                             'to': that.getAssetsDir(AUDIO_TYPE_NAME),
+                            'newName': name,
                             'success': function(newEntry){
                                 callback({
                                     url: newEntry.toURL(),
-                                    label: media.name,
+                                    label: name,
                                     duration: media.duration
                                 });
                             }

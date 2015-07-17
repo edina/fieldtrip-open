@@ -387,6 +387,7 @@ var _base =  {
      * @param options
      *   path - the full path to the original file.
      *   to - the target directory
+     *   newName - rename the file
      *   success - success function, see FileEntry.moveTo
      *   error - optional error function
      */
@@ -404,7 +405,7 @@ var _base =  {
             function(fileEntry){
                 fileEntry.moveTo(
                     options.to,
-                    undefined,
+                    options.newName,
                     options.success,
                     options.error
                 );
