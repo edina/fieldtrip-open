@@ -140,8 +140,7 @@ define(function(require) {
     };
 
     var restorePersistentValues = function(form, group, type) {
-        var editorsMetadata = JSON.parse(localStorage.getItem('editors-metadata'));
-        var persistentValues = editorsMetadata[group][type].persistentValues || [];
+        var persistentValues = _this.getPersistentValues(group, type);
         var extractFieldType = /^fieldcontain-(.*?)-[0-9]+/;
 
         persistentValues.forEach(function(field) {
@@ -756,6 +755,23 @@ var _base = {
     },
 
     /**
+     * Get the persistent values associated to the editor
+     * @param group Editor's group
+     * @param type Editor's type
+     * @returns an array of values
+     */
+    getPersistentValues: function(group, type) {
+        var persistentValues = [];
+        var editorsMetadata = _this.loadEditorsMetadata();
+        if (editorsMetadata[group] && editorsMetadata[group][type] &&
+            editorsMetadata[group][type].persistentValues) {
+            persistentValues = editorsMetadata[group][type].persistentValues;
+        }
+
+        return persistentValues;
+    },
+
+    /**
      * get photo from local filesystem
      */
     getPhoto: function(callback) {
@@ -1138,10 +1154,7 @@ var _base = {
         }, this));
 
         if (valid.length === 0) {
-            // Update the persistentValues for the editor
-            var editorsMetadata = JSON.parse(localStorage.getItem('editors-metadata'));
-            editorsMetadata[group][recordType].persistentValues = persistentValues;
-            localStorage.setItem('editors-metadata', JSON.stringify(editorsMetadata));
+            _this.setPersistentValues(persistentValues);
 
             // nasty I know: but changing page in a setTimeout allows
             // time for the keyboard to close
@@ -1330,6 +1343,22 @@ var _base = {
     saveEditorsMetadata: function(obj){
         var str = JSON.stringify(obj);
         localStorage.setItem(EDITORS_METADATA, str);
+    },
+
+    /**
+     * Set the values of the persistent values for given editor
+     * @param group Editor group
+     * @param type Editor name
+     * @param values and array of key:val items
+     */
+    setPersistentValues: function(group, type, values) {
+        var editorsMetadata = _this.loadEditorsMetadata();
+
+        if (editorsMetadata[group] && editorsMetadata[group][type]) {
+            editorsMetadata[group][type].persistentValues = values;
+        }
+
+        _this.saveEditorsMetadata(editorsMetadata);
     },
 
     /**
