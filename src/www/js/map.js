@@ -1656,6 +1656,14 @@ var _openlayers = {
     },
 
     /**
+     * Get openlayers map
+     * @return The map instance
+     */
+    getMap: function() {
+        return this.map;
+    },
+
+    /**
      * Hide openlayers map layer.
      * @param layer - the layer to hide.
      */
