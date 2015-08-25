@@ -620,6 +620,8 @@ var _ui = {
 
         map.startLocationUpdate();
         map.startCompass();
+
+        map.initLayersPanel();
     },
 
     /**

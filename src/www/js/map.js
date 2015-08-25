@@ -30,9 +30,12 @@ DAMAGE.
 
 /* global OpenLayers, L, Proj4js */
 
-
-define(['records', 'utils', 'proj4'], function(// jshint ignore:line
-    records, utils, proj4){
+define(function(require) {
+    // Import modules
+    var records = require('records');
+    var utils = require('utils');
+    var proj4 = require('proj4');
+    var _ = require('underscore');
 
     // default resolutions and bounds
     var resolutions = [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
@@ -224,12 +227,114 @@ var _base = {
     },
 
     /**
+     * Add a layer to the list of layers tracket in local storage
+     * @param layerId {String} an unique identifier for the layer UUID preferred
+     * @param layerName {String} a name for the layer that will be used in the layers list
+     * @param layerType {String} the type ie. the plugin that added the layer
+     * @param options {Object} any extra option used to process the layer
+     */
+    addLayerToLayersList: function(layerId, layerName, layerType, options) {
+        var addLayer = function(layers) {
+            if (layers === null) {
+                layers = {};
+            }
+
+            layers[layerId] = {
+                id: layerId,
+                name: layerName,
+                type: layerType,
+                options: options
+            };
+
+            return layers;
+        };
+
+        console.debug(arguments);
+        records.usingLocalStorage('layers')(addLayer);
+    },
+
+    /**
      * clear watch if already defined
      */
     clearGeoLocateWatch: function(){
         if(this.geoLocationWatchID !== undefined){
             navigator.geolocation.clearWatch(this.geoLocationWatchID);
         }
+    },
+
+    /**
+     * Initialize the side panel in the map page
+     */
+    initLayersPanel: function() {
+        $('#layers-panel').panel();
+        this.populateLayersPanel();
+    },
+
+    /**
+     * Reads the list of layers from local storage, creates the html markup
+     * and attaches the handlers
+     */
+    populateLayersPanel: function() {
+        var populatePanel = function(layers) {
+            var html;
+            var i = 0;
+            var $layersList = $('#layers-list');
+
+            if (layers === null) {
+                return;
+            }
+
+            $layersList.append('<ul>');
+            _(layers).forEach(function(layer) {
+                var $item;
+                var itemHtml = (
+                    '<li data-layerid="' + layer.id + '">' +
+                        '<label for="flip-checkbox-' + i + '">' +
+                            layer.name +
+                        '</label>' +
+                        '<input data-role="flipswitch"' +
+                                'name="flip-checkbox-' + i +
+                                'id="flip-checkbox-' + i +
+                                'class="show-layer" type="checkbox">' +
+                    '</li>'
+                );
+
+                $(itemHtml)
+                    .appendTo($layersList)
+                    .on('change', 'input', function(event) {
+                        var $target = $(event.target);
+                        if ($target.is(':checked')) {
+                            $target.trigger('enableLayer', [layer]);
+                        }
+                        else {
+                            $target.trigger('disableLayer', [layer]);
+                        }
+                    })
+                    .on('vclick', 'label', function(event) {
+                        var $target = $(event.target);
+                        $target.trigger('clickLayer', [layer]);
+                    });
+                i++;
+            });
+            $layersList.append('</ul>');
+
+            $layersList.trigger('create');
+        };
+
+        records.usingLocalStorage('layers')(populatePanel);
+    },
+
+    /**
+     * Suscribe to the controls placed in the layers list panel
+     * @param handlers {Object}
+     *     - enableLayer {function} triggered when the flipswitch is turned on
+     *     - disableLayer {function} triggered when the flipswitch is turned off
+     *     - clickLayer {function} triggered when the label is tapped
+     */
+    suscribeToLayersControl: function(handlers) {
+        $(document).on('enableLayer', '#layers-list > li', handlers.enableLayer);
+        $(document).on('disableLayer', '#layers-list > li', handlers.disableLayer);
+        $(document).on('clickLayer', '#layers-list > li', handlers.clickLayer);
     },
 
     /**

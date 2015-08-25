@@ -7,11 +7,27 @@
                 "data-inline": "true",
                 "data-transition": "none",
                 "data-iconpos": "notext"
+            },
+            "poi-layers":{
+                "href": "#layers-panel",
+                "class": "layers-icon",
+                "data-role": "button",
+                "data-inline": "true",
+                "data-transition": "none",
+                "data-iconpos": "notext"
             }
         }
     },
     "body": {
         "list": "List Records",
         "items" : "Records"
+    },
+    "popups": {
+        "popup3":{
+            "template": "layers-panel.html",
+            "data": {
+
+            }
+        }
     }
 }

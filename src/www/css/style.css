@@ -955,3 +955,27 @@ div.record-extra > div > img {
     white-space: nowrap;
     font-size: 16px;
 }
+
+/* Layers panel styling*/
+
+.ui-header .layers-icon {
+    background-image: url("images/layers.png");
+    background-size: 26px 26px;
+    background-position: 5px 5px;
+}
+
+ul#layers-list > li label {
+    position: relative;
+    overflow: auto;
+    margin-right: 96px;
+    line-height: 40px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+ul#layers-list > li .ui-flipswitch {
+    position: absolute;
+    right: 0.8em;
+    top: 0;
+    margin-top: 8px;
+}
