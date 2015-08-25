@@ -1258,6 +1258,21 @@ var _base = {
     },
 
     /**
+     * Read a value from local storage as a JSON
+     */
+    readJSON: function(key) {
+        var value;
+
+        try {
+            value = JSON.parse(localStorage.getItem(key));
+        }
+        catch (ex) {
+        }
+
+        return value;
+    },
+
+    /**
      * function for removing the metadata associated to an editor
      * @param group Record name
      * @param editorName Editor name
@@ -1371,6 +1386,16 @@ var _base = {
     },
 
     /**
+     * Store a value as a JSON string in localStorage
+     * @param item key of the itme in
+     * @param key -  the key of the item
+     * @param value - the object to store
+     */
+    storeJSON: function(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    },
+
+    /**
      * Invoke the device's audio recorder
      * @param callback Function executed after successful recording.
      */
@@ -1461,6 +1486,27 @@ var _base = {
     typeFromId: function(id){
         var s = id.indexOf('-') + 1;
         return id.substr(s, id.lastIndexOf('-') - s);
+    },
+
+    /**
+     * Helper function to read a value from localStorage modify it
+     * and save it back
+     * @param key - key of the value to use
+     * @returns a function where the parsed value will be used with an optional
+     *          return value that will be used for updating the stored value.
+     */
+    usingLocalStorage: function(key) {
+        _this = this;
+
+        return function(func) {
+            var currentValue, newValue;
+
+            currentValue = _this.readJSON(key);
+            newValue = func(currentValue);
+            if (newValue !== undefined) {
+                _this.storeJSON(key, newValue);
+            }
+        };
     }
 };
 
