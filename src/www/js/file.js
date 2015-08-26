@@ -262,6 +262,17 @@ var _base =  {
     },
 
     /**
+     * Resolve a FileEntry from a uri
+     */
+    resolveFileURL: function(fileURL) {
+        var deferred = $.Deferred();
+
+        window.resolveLocalFileSystemURL(fileURL, deferred.resolve, deferred.reject);
+
+        return deferred.promise();
+    },
+
+    /**
      * @param dir Directory on the device.
      * @return The full path of the directory without 'file://'.
      */
