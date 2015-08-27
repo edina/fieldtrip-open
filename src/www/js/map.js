@@ -254,6 +254,37 @@ var _base = {
     },
 
     /**
+     * Extract the coordinate reference system text from a geoJSON
+     * @param geoJSON a geoJSON
+     * @returns the crs as text
+     */
+    crsTextFromGeoJSON: function(geoJSON) {
+        var defaulGeoJSONProj = 'EPSG:4326';
+        var crsText = null;
+
+        if (typeof geoJSON !== 'object') {
+            console.warn('Invalid geoJSON Object');
+            return null;
+        }
+
+        // Use default GeoJSON projection
+        if (typeof geoJSON.crs !== 'object') {
+            return defaulGeoJSONProj;
+        }
+
+        if (geoJSON.type === 'name') {
+            if (geoJSON.properties && geoJSON.properties.name) {
+                crsText = geoJSON.properties.name;
+            }
+        }
+        else {
+            console.debug('Read crs from <' + geoJSON.type + '> not implemented');
+        }
+
+        return crsText;
+    },
+
+    /**
      * clear watch if already defined
      */
     clearGeoLocateWatch: function(){
@@ -1497,6 +1528,38 @@ var _openlayers = {
     },
 
     /**
+     * Add a geoJSON layer to the map
+     * @param name - the name of the layer
+     * @param geoJSON - a geoJSON
+     * @returns a new vector layer added to the map
+     */
+    addGeoJSONLayer: function(name, geoJSON) {
+        var features = (new OpenLayers.Format.GeoJSON()).read(geoJSON);
+        var mapProjection = this.getProjections()[0];
+        var geoJSONCRS = this.crsTextFromGeoJSON(geoJSON);
+        var geoJSONProjection;
+
+        var vectorLayer = this.addLayer({
+            id: name,
+            style: {}
+        });
+
+        geoJSONProjection = new OpenLayers.Projection(geoJSONCRS);
+        features.map(function(feature) {
+            if (feature.geometry) {
+                feature.geometry.transform(geoJSONProjection, mapProjection);
+            }
+            else {
+                console.warn('Feature doesn\'t contain a geometry to transform');
+            }
+        });
+
+        vectorLayer.addFeatures(features);
+
+        return vectorLayer;
+    },
+
+    /**
      * Add a new layer to the map.
      * @param options
      *   id - layer id
@@ -1895,6 +1958,35 @@ var _openlayers = {
         }
 
         return retValue;
+    },
+
+    /**
+     * Register selected/unselected events for the features in the map
+     * @param layer {Openlayers.Layer} a layer in the map
+     * @param handler {Object}
+     *     - selected {function} hsndler to be invoked when the feature is selected
+     *     - unselected {function} handler to be invoked when the feacture is unselected
+     */
+    registerFeatureEvents: function(layer, handler) {
+        var control ;
+
+        if (!(handler.selected || handler.unselected)) {
+            console.warn('Nothing to register');
+            return;
+        }
+
+        control = new OpenLayers.Control.SelectFeature(layer);
+
+        if (handler.selected) {
+            layer.events.register('featureselected', layer, handler.selected);
+        }
+
+        if (handler.unselected) {
+            layer.events.register('featureunselected', layer, handler.unselected);
+        }
+
+        this.map.addControl(control);
+        control.activate();
     },
 
     /**
