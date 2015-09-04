@@ -276,6 +276,10 @@ return {
         }
     },
 
+    endsWith: function (str, suffix) {
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    },
+
     /**
      * Helper function that sets the value of a JQM slider on/off element.
      * @param selector Jquery selector.
@@ -360,6 +364,10 @@ return {
     getEditorId: function(annotation){
         var record = annotation.record;
         return record.editor.substr(0, record.editor.indexOf('.'));
+    },
+
+    getFilename: function(str){
+        return str.substr(0, str.lastIndexOf('.'));
     },
 
     /**
