@@ -1539,10 +1539,7 @@ var _openlayers = {
         var geoJSONCRS = this.crsTextFromGeoJSON(geoJSON);
         var geoJSONProjection;
 
-        var vectorLayer = this.addLayer({
-            id: name,
-            style: {}
-        });
+        var vectorLayer = new OpenLayers.Layer.Vector(name);
 
         geoJSONProjection = new OpenLayers.Projection(geoJSONCRS);
         features.map(function(feature) {
@@ -1555,6 +1552,8 @@ var _openlayers = {
         });
 
         vectorLayer.addFeatures(features);
+
+        this.map.addLayer(vectorLayer);
 
         return vectorLayer;
     },
