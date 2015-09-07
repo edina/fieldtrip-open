@@ -2032,6 +2032,17 @@ var _openlayers = {
     },
 
     /**
+     * Set the style for a layer
+     * @param layer {OpenLayers.Layer} a layer where to apply the style
+     * @param style {Object} a css style as javascript Object
+     * @param name {String} (optional) the name of the style 'default' as default
+     */
+    setLayerStyle: function(layer, style, name) {
+        name = name || 'default';
+        layer.styleMap.styles[name] = new OpenLayers.Style(style);
+    },
+
+    /**
      * Add bounding box to layer and centre map.
      * @param options:
      *   layer - the layer to add box to
