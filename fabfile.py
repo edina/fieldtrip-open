@@ -432,7 +432,7 @@ def install_plugins(target='local', cordova="True"):
                             js_ext = os.path.join(www, 'js', 'ext', '')
                             if not os.path.exists(js_ext):
                                 local('mkdir -p {0}'.format(js_ext))
-                            js_dirs = ['js', 'src']
+                            js_dirs = ['js', 'src', 'dist']
                             for dep in os.listdir(bower_comps):
                                 for js_dir in js_dirs:
                                     ext_src = os.path.join(bower_comps,
