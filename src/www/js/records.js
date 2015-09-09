@@ -250,6 +250,18 @@ var _base = {
                     $(input).parent().append(btn);
                 });
 
+                var imageTypeOptions = ["checkbox", "radio"];
+                //replace labels with actual images that are part of the editor
+                $.each(imageTypeOptions, function(index, type) {
+                    $.each($('input[type="'+type+'"]'), function(){
+                        var $prev = $(this).prev();
+                        if($prev.is('img')){
+                            var elementValue = $prev.attr("src");
+                            $prev.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", $(window).width()*0.66);
+                        }
+                    });
+                });
+
                 $.each($('div[id^=fieldcontain-]'), function(index, item) {
                     var widgetType = $(item).data('fieldtrip-type');
                     var widgetsList = widgets.getWidgets(widgetType);
