@@ -305,10 +305,22 @@ var _base = {
      * and attaches the handlers
      */
     populateLayersPanel: function() {
+        var _this = this;
         var populatePanel = function(layers) {
             var html;
             var i = 0;
             var $layersList = $('#layers-list');
+            var itemTemplate = _.template(
+                '<li data-layerid="<%= layerId %>">' +
+                    '<label for="flip-checkbox-<%=index%>>">' +
+                        '<%=layerName%>' +
+                    '</label>' +
+                    '<input data-role="flipswitch"' +
+                            'name="flip-checkbox-<%=index%>' +
+                            'id="flip-checkbox-<%=index%>' +
+                            'class="show-layer" <%=checked%> type="checkbox">' +
+                '</li>'
+            );
 
             if (layers === null) {
                 return;
@@ -317,17 +329,19 @@ var _base = {
             $layersList.append('<ul>');
             _(layers).forEach(function(layer) {
                 var $item;
-                var itemHtml = (
-                    '<li data-layerid="' + layer.id + '">' +
-                        '<label for="flip-checkbox-' + i + '">' +
-                            layer.name +
-                        '</label>' +
-                        '<input data-role="flipswitch"' +
-                                'name="flip-checkbox-' + i +
-                                'id="flip-checkbox-' + i +
-                                'class="show-layer" type="checkbox">' +
-                    '</li>'
-                );
+                var itemHtml;
+                var checked = '';
+                var mapLayer = _this.getLayer(layer.id);
+                if (mapLayer !== undefined && _this.isLayerVisible(mapLayer)) {
+                    checked = 'checked';
+                }
+
+                itemHtml = itemTemplate({
+                    layerId: layer.id,
+                    layerName: layer.name,
+                    index: i,
+                    checked: checked
+                });
 
                 $(itemHtml)
                     .appendTo($layersList)
