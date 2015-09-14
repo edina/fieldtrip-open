@@ -249,7 +249,6 @@ var _base = {
             return layers;
         };
 
-        console.debug(arguments);
         records.usingLocalStorage('layers')(addLayer);
     },
 
