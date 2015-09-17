@@ -266,6 +266,8 @@ class HtmlGenerator(object):
         #check the folders inside the plugins folder and check for templates folders
         for d in os.listdir(os.path.join(self.root, 'plugins')):
             d1 = os.path.join(self.root, 'plugins', d)
+            if not os.path.isdir(d1):
+                continue
             for dire in os.listdir(d1):
                 p = os.path.join(d1, dire)
                 if os.path.isdir(p) and not dire.startswith("."):
