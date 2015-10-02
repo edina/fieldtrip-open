@@ -439,6 +439,20 @@ var _base = {
     },
 
     /**
+     * Get the object of registered layers in localstorage
+     * @returns {Object} of layers
+     */
+    getLayersFromLayerList: function() {
+        var _layers;
+
+        records.usingLocalStorage('layers')(function(layers) {
+            _layers = layers;
+        });
+
+        return _layers;
+    },
+
+    /**
      * Get the current location of the device.
      * @callback Function executed when position is found.
      */
@@ -781,6 +795,18 @@ var _base = {
      */
     removeLayer: function(layer){
         this.map.removeLayer(layer);
+    },
+
+    /**
+     * Remove a layer from the registered layers in localstorage
+     * @param {String} the id of the layer to remove
+     */
+    removeLayersFromLayerList: function(layerId) {
+        records.usingLocalStorage('layers')(function(layers) {
+            delete layers[layerId];
+
+            return layers;
+        });
     },
 
     /**
