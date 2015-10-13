@@ -836,6 +836,19 @@ def stats_export(year='2015'):
         print '\n'
 
 @task
+def stats_uploaded_records(year='2015'):
+    """
+    Based in the access logs reports the records posted per month
+    """
+    pattern = 'POST.*?\/pcapi\/records\/dropbox\/.*?\/([^\.]+) HTTP'
+    months = _stats_monthly(year, pattern)
+    for month, ips in months.iteritems():
+        tcount = 0
+        for ip, vals in ips.iteritems():
+            tcount = tcount + vals['count']
+        print datetime.date(int(year), month, 1).strftime('%B').ljust(10), str(tcount).ljust(10)
+
+@task
 def update_app(platform='android'):
     """
     Update the platform with latest configuration (android by default)
