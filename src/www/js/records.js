@@ -640,6 +640,7 @@ var _base = {
             dir = assetsDir;
         }
         file.deleteFile(fileName, dir, callback);
+        file.deleteDirectory(dir.toURL()+"/"+fileName.substr(0, fileName.lastIndexOf(".")), callback);
     },
 
     /**

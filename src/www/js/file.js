@@ -115,6 +115,31 @@ var _base =  {
     },
 
     /**
+     * Delete a directory from file system.
+     * @param dir The directory the file belongs to.
+     * @param callback Function will be called when file is successfully deleted.
+     */
+    deleteDirectory: function(dirName, callback){
+        if(dirName === undefined){
+            console.warn("Target directory not defined: " + dirName);
+        }
+        else{
+            this.resolveFileURL(dirName).done(function(dirEntry){
+                dirEntry.removeRecursively(function(entry){
+                    console.debug("Directory deleted: " + dirName);
+                    if(callback){
+                        callback();
+                    }
+                }, function(error){
+                    console.error("Failed to get file: " + dirName +
+                                  ". errcode = " + error.code +
+                                  ". error = " + this.getFileErrorMsg(error.code));
+                });
+            });
+        }
+    },
+
+    /**
      * Delete a file from file system.
      * @param fileName The name of the file to delete.
      * @param dir The directory the file belongs to.
