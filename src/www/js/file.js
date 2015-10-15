@@ -217,6 +217,33 @@ var _base =  {
     },
 
     /**
+     * Find file inside a directory
+     * @param {String} expr expression
+     * @param {String} url of the directory
+     * @returns {Object} a promise with the fileEntry if has been found
+     */
+    findFile: function(expr, targetUrl) {
+        var deferred = new $.Deferred();
+
+        this.resolveFileURL(targetUrl).done(function(dirEntry){
+            var directoryReader = dirEntry.createReader();
+            directoryReader.readEntries(function(entries){
+                var res;
+                for(var i=0; i<entries.length; i++){
+                    if(utils.endsWith(entries[i].name, expr)){
+                        res = entries[i];
+                    }
+                }
+                deferred.resolve(dirEntry, res);
+            });
+        }).fail(function(error){
+            deferred.reject(error);
+        });
+
+        return deferred.promise();
+    },
+
+    /**
      * Download file by file transfer.
      * @param source - the url of the file in the cloud
      * @param target - full path to the local file that transfer is saved to
@@ -456,18 +483,25 @@ var _base =  {
             };
         }
 
-        window.resolveLocalFileSystemURL(
-            options.path,
-            function(fileEntry){
-                fileEntry.moveTo(
-                    options.to,
-                    options.newName,
-                    options.success,
-                    options.error
-                );
-            },
-            options.error
-        );
+        var move = function(fileEntry){
+            fileEntry.moveTo(
+                options.to,
+                options.newName,
+                options.success,
+                options.error
+            );
+        };
+
+        if (typeof options.path === "string"){
+            window.resolveLocalFileSystemURL(
+                options.path,
+                move,
+                options.error
+            );
+        }
+        else{
+            move(options.path);
+        }
     },
 
     /*
