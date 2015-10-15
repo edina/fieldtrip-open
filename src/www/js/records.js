@@ -562,15 +562,23 @@ var _base = {
 
     /**
      * Delete all editor forms.
-     * @param callback Function executed when delete is complete.
+     * @returns a {Promise} that is resolved when it's done or rejected
      */
-    deleteAllEditors: function(callback){
+    deleteAllEditors: function() {
+        var deferred = $.Deferred();
+
         this.initEditorsMetadata();
         // easiest way to do this is to delete the directory and recreate it
-        file.deleteAllFilesFromDir(editorDirectories[EDITOR_GROUP.PRIVATE], function(dir){
-            editorDirectories[EDITOR_GROUP.PRIVATE] = dir;
-            callback();
-        });
+        file.deleteAllFilesFromDir(
+            editorDirectories[EDITOR_GROUP.PRIVATE],
+            function(dir) {
+                editorDirectories[EDITOR_GROUP.PRIVATE] = dir;
+                deferred.resolve(dir);
+            },
+            deferred.reject
+        );
+
+        return deferred.promise();
     },
 
     /**
