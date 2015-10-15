@@ -411,6 +411,32 @@ var _base = {
     },
 
     /**
+     * Add a list of editors
+     * @param entries {Array} of {FileEntry} pointing to each editor
+     * @param group of the editor records.EDITOR_GROUP
+     * @param online optional parameter if the process is online of offline
+     * @returns a {Promise} that is resolved then the process has finished or
+     *     is rejected.
+     */
+    addEditors: function(entries, group, online) {
+        var _this = this;
+        var addedEditors;
+        var mapEntries;
+
+        mapEntries = entries.map(function(entry) {
+            return _this.addEditor(entry, group, online);
+        });
+
+        addedEditors =
+            $.when.apply(null, mapEntries)
+                .then(function() {
+                    return Array.prototype.slice.call(arguments);
+                });
+
+        return addedEditors;
+    },
+
+    /**
      * Add a function to process the editor when is displayed
      * @param function name
      */
