@@ -416,11 +416,11 @@ var _ui = {
                         }
                         else if(fieldType === 'checkbox'){
                             $.each(entry.val.split(','), function(j, name){
-                                $('input[value=' + name + ']').prop('checked', true).checkboxradio('refresh');
+                                $('input[value="' + name + '"]').prop('checked', true).checkboxradio('refresh');
                             });
                         }
                         else if(fieldType === 'radio'){
-                            $('#' + entry.id + ' input[value=' + entry.val + ']').prop(
+                            $('#' + entry.id + ' input[value="' + entry.val + '"]').prop(
                                 "checked", true).checkboxradio("refresh");
                         }
                         else if(fieldType === 'range'){
