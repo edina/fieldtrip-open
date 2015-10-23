@@ -179,6 +179,52 @@ define(function(require) {
         });
     };
 
+    /**
+     * Start the edition of an input throught its label
+     *
+     * @param {String} element input selector
+     * @param {String} the context where to find the element in the DOM
+     * @returns {jQueryObject} the input inserted in the label
+     */
+    var startLabelEdition = function(element, context) {
+        var $element = $(element, context);
+        var $label = $('label[for=' + $element .attr('id') + ']', context);
+        var $labelEditable = $label.find('input');
+        var value;
+
+        if ($labelEditable.length === 0) {
+            value = $label.text();
+            $labelEditable = $('<input type="text" value="' + value + '" placeholder="Other"/>');
+            $label.html($labelEditable);
+            $labelEditable.on('input', function() {
+                $element.val($(this).val());
+            });
+        }
+
+        return $labelEditable;
+    };
+
+    /**
+     * Stops the edition an input throught its label
+     *
+     * @param {String} element selector
+     * @param {String} the context where to find the element in the DOM
+     * @returns {jQueryObject} the label
+     */
+    var stopLabelEdition = function(element, context) {
+        var $element = $(element, context);
+        var $label = $('label[for=' + $element .attr('id') + ']', context);
+        var $labelEditable = $label.find('input');
+        var value;
+
+        if ($labelEditable.length > 0) {
+            value = $labelEditable.val() || 'Other';
+            $label.html(value);
+        }
+
+        return $label;
+    };
+
     /************************** public interface  ******************************/
 var _this = {};
 
@@ -260,6 +306,19 @@ var _base = {
                             $prev.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", $(window).width()*0.66);
                         }
                     });
+                });
+
+                // Allow the edition of 'Other' label for radio fieldsets
+                $('fieldset', 'div[id^=fieldcontain-radio]').on('change', function() {
+                    var $this = $(this);
+                    var $selected = $this.find('input:checked');
+
+                    if ($selected.hasClass('other')) {
+                        startLabelEdition($selected, $this).focus();
+                    }
+                    else {
+                        stopLabelEdition('input.other', $this);
+                    }
                 });
 
                 $.each($('div[id^=fieldcontain-]'), function(index, item) {

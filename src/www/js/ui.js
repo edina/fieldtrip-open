@@ -397,7 +397,10 @@ var _ui = {
             if(this.currentAnnotation !== undefined){
                 $('#' + records.TITLE_ID).val(this.currentAnnotation.record.name);
                 $.each(this.currentAnnotation.record.properties.fields, function(i, entry){
+                    var $element, $other;
+
                     var fieldType = records.typeFromId(entry.id);
+                    var fieldSelector = '#' + entry.id;
                     if(typeof(entry.val) !== 'undefined'){
                         if(fieldType === 'text'){
                             $('#' + entry.id + ' input').val(entry.val);
@@ -416,12 +419,22 @@ var _ui = {
                         }
                         else if(fieldType === 'checkbox'){
                             $.each(entry.val.split(','), function(j, name){
-                                $('input[value="' + name + '"]').prop('checked', true).checkboxradio('refresh');
+                                $('input[value="' + name + '"]')
+                                    .prop('checked', true).checkboxradio('refresh');
                             });
                         }
                         else if(fieldType === 'radio'){
-                            $('#' + entry.id + ' input[value="' + entry.val + '"]').prop(
-                                "checked", true).checkboxradio("refresh");
+                            $element = $('input[value="' + entry.val + '"]', fieldSelector);
+                            $other = $('input.other', fieldSelector);
+
+                            if ($element.length === 0 && $other.length > 0) {
+                                $($other.attr('id'), fieldSelector).val(entry.val);
+                                $('label[for=' + $other.attr('id') + ']', fieldSelector)
+                                    .html(entry.val);
+                                $element = $other;
+                            }
+
+                            $element.prop("checked", true).checkboxradio("refresh");
                         }
                         else if(fieldType === 'range'){
                             $('#' + entry.id + ' input').val(entry.val);

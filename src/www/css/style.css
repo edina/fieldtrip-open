@@ -979,3 +979,12 @@ ul#layers-list > li .ui-flipswitch {
     top: 0;
     margin-top: 8px;
 }
+
+
+/* Editor styles */
+label.other > input {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
