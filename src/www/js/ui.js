@@ -419,8 +419,15 @@ var _ui = {
                         }
                         else if(fieldType === 'checkbox'){
                             $.each(entry.val.split(','), function(j, name){
-                                $('input[value="' + name + '"]')
-                                    .prop('checked', true).checkboxradio('refresh');
+                                $element = $('input[value="' + name + '"]', fieldSelector);
+                                $other = $('input.other', fieldSelector);
+                                if ($element.length === 0 && $other.length > 0) {
+                                    $($other.attr('id'), fieldSelector).val(name);
+                                    $('label[for=' + $other.attr('id') + ']', fieldSelector)
+                                        .html(name);
+                                    $element = $other;
+                                }
+                                $element.prop('checked', true).checkboxradio('refresh');
                             });
                         }
                         else if(fieldType === 'radio'){

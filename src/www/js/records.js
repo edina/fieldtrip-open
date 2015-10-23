@@ -321,6 +321,19 @@ var _base = {
                     }
                 });
 
+                // Allow the edition of 'Other' label for radio fieldsets
+                $('fieldset', 'div[id^=fieldcontain-checkbox]').on('change', function(event) {
+                    var $this = $(this);
+                    var $selected = $(event.target);
+
+                    if ($selected.hasClass('other')) {
+                        startLabelEdition($selected, $this).focus();
+                    }
+                    else {
+                        stopLabelEdition('input.other', $this);
+                    }
+                });
+
                 $.each($('div[id^=fieldcontain-]'), function(index, item) {
                     var widgetType = $(item).data('fieldtrip-type');
                     var widgetsList = widgets.getWidgets(widgetType);
