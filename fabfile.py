@@ -320,6 +320,8 @@ def generate_html(platform="android", cordova=False):
 
     htmlGenerator = HtmlGenerator(platform, cordova, root, proj_home, src_dir, _config(), _config(None, "settings"))
     htmlGenerator.generate()
+    #copy all the editors that exist inside the editors folder of the project
+    local('cp -r {0}/* {1}'.format(os.path.join(proj_home, 'src', 'editors'), os.path.join(src_dir, 'www', 'editors')))
 
 @task
 def generate_html_ios():
