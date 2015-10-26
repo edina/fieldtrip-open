@@ -162,7 +162,7 @@ define(function(require) {
         // Define the parts of the rule
         fieldRegExp = '(.*)';
         opsRegExp = '((?:' + _(operations).keys().join(')|(?:') + '))';
-        valueRegExp = '((?:.*)|(?:\'.*\'))';
+        valueRegExp = '(?:\'(.*)\')';
 
         // Match the three parts of the rule separated by one or more spaces
         ruleRegExp = fieldRegExp + '\\s+' + opsRegExp + '\\s+' + valueRegExp;
