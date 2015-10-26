@@ -425,7 +425,7 @@ var _base = {
                             .on('change', checkVisibility);
 
                         // Initialize
-                        checkVisibility();
+                        checkVisibility.apply(this);
                     }
                 });
 
