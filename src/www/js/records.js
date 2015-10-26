@@ -250,9 +250,13 @@ define(function(require) {
             value = $label.text();
             $labelEditable = $('<input type="text" value="' + value + '" placeholder="Other"/>');
             $label.html($labelEditable);
-            $labelEditable.on('input', function() {
-                $element.val($(this).val());
-            });
+            $labelEditable
+                .on('input', function() {
+                    $element.val($(this).val());
+                })
+                .on('blur', function() {
+                    stopLabelEdition(element, context);
+                });
         }
 
         return $labelEditable;
