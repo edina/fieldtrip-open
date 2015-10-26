@@ -155,8 +155,8 @@ define(function(require) {
         operations = {
             equal: function(a, b) { return a === b; },
             notEqual: function(a, b) { return a !== b; },
-            greaterThan: function(a, b) { return a > b; },
-            smallerThan: function(a, b) { return a < b; }
+            greaterThan: function(a, b) { return Number(a) > Number(b); },
+            smallerThan: function(a, b) { return Number(a) < Number(b); }
         };
 
         // Define the parts of the rule
