@@ -403,15 +403,11 @@ var _base = {
                         }
 
                         var checkVisibility = function() {
-                            var value;
                             var $fieldset = $(this);
-                            var serialized = $fieldset.serialize();
-                            var regex = new RegExp('fieldcontain-' + r.field + '=' + '(.*)');
-                            var matches = regex.exec(serialized);
+                            var serialized = $fieldset.serializeArray();
 
-                            if(matches && matches.length === 2) {
-                                value = matches[1];
-                                if (r.comparator(value, r.value)) {
+                            if(serialized.length > 0) {
+                                if (r.comparator(serialized[0].value, r.value)) {
                                     $element.show();
                                     return;
                                 }
