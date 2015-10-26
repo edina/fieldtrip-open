@@ -139,6 +139,60 @@ define(function(require) {
         }
     };
 
+    /**
+     * Parse a rule and returne its three components
+     *
+     * @params {String} rule A triplet with this structure 'fieldname operation value'
+     * @returns {Object} the parsed rule as or null if is not valid
+     *     - field {String} the name of the field
+     *     - comparator {function} a function that represents the operation
+     *     - value {String} the parsed value
+     */
+    var parseRule = function(rule) {
+        var field, operations, operation, value, comparator, matches;
+        var fieldRegExp, opsRegExp, valueRegExp, ruleRegExp;
+
+        operations = {
+            equal: function(a, b) { return a === b; },
+            notEqual: function(a, b) { return a !== b; },
+            greaterThan: function(a, b) { return a > b; },
+            smallerThan: function(a, b) { return a < b; }
+        };
+
+        // Define the parts of the rule
+        fieldRegExp = '(.*)';
+        opsRegExp = '((?:' + _(operations).keys().join(')|(?:') + '))';
+        valueRegExp = '((?:.*)|(?:\'.*\'))';
+
+        // Match the three parts of the rule separated by one or more spaces
+        ruleRegExp = fieldRegExp + '\\s+' + opsRegExp + '\\s+' + valueRegExp;
+        matches = (new RegExp(ruleRegExp)).exec(rule);
+
+        if (matches && matches.length === 4) {
+            field = matches[1];
+            operation = matches[2];
+            value = matches[3];
+        }
+        else {
+            console.warn('Malformed rule: ' + rule);
+            return null;
+        }
+
+        if (operations.hasOwnProperty(operation)) {
+            comparator = operations[operation];
+        }
+        else {
+            console.warn('Invalid operation: ' + operation);
+            return null;
+        }
+
+        return {
+            field: field,
+            comparator: comparator,
+            value: value
+        };
+    };
+
     var restorePersistentValues = function(form, group, type) {
         var persistentValues = _this.getPersistentValues(group, type);
         var extractFieldType = /^fieldcontain-(.*?)-[0-9]+/;
@@ -331,6 +385,43 @@ var _base = {
                     }
                     else {
                         stopLabelEdition('input.other', $this);
+                    }
+                });
+
+                // Attach the event that show or hide a field according some rule
+                $.each($('div[id^=fieldcontain-]'), function(index, element) {
+                    var $element = $(element);
+                    var rule = $element.attr('data-visibility');
+                    if (rule) {
+                        var r = parseRule(rule);
+                        if (r === null) {
+                            return;
+                        }
+
+                        var checkVisibility = function() {
+                            var value;
+                            var $fieldset = $(this);
+                            var serialized = $fieldset.serialize();
+                            var regex = new RegExp('fieldcontain-' + r.field + '=' + '(.*)');
+                            var matches = regex.exec(serialized);
+
+                            if(matches && matches.length === 2) {
+                                value = matches[1];
+                                if (r.comparator(value, r.value)) {
+                                    $element.show();
+                                    return;
+                                }
+                            }
+
+                            // Default to hide
+                            $element.hide();
+                        };
+
+                        $('fieldset', 'div[id^=fieldcontain-' + r.field + ']')
+                            .on('change', checkVisibility);
+
+                        // Initialize
+                        checkVisibility();
                     }
                 });
 
