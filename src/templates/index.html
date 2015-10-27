@@ -41,9 +41,13 @@
             {% for item in sections["items"] %}
               {% if sections["items"][item].keys()|length > 0 %}
               <div {% for key, value in sections["items"][item]["div"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+                {% if sections["items"][item]["a"]|length > 0 %}
                 <a {% for key, value in sections["items"][item]["a"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
-                  <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+                  {% if sections["items"][item]["img"]|length > 0 %}
+                    <img {% for key, value in sections["items"][item]["img"].iteritems() %} {{key}}="{{value}}" {% endfor %}>
+                  {% endif %}
                 </a>
+                {% endif %}
                 <p>{{sections["items"][item]["title"]}}</p>
               </div>
               {% endif %}

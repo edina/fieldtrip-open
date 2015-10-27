@@ -987,4 +987,15 @@ label.other > input {
     width: 100% !important;
     height: 100% !important;
 }
-
+.grids div {
+    display: table;
+    height: 100%;
+}
+.grids div > p {
+    display: table-cell;
+    vertical-align: middle;
+}
+.grids div > img {
+    display: table-cell;
+    vertical-align: middle;
+}

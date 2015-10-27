@@ -359,9 +359,13 @@ var _base = {
                 $.each(imageTypeOptions, function(index, type) {
                     $.each($('input[type="'+type+'"]'), function(){
                         var $prev = $(this).prev();
-                        if($prev.is('img')){
-                            var elementValue = $prev.attr("src");
-                            $prev.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", $(window).width()*0.66);
+                        var $img = $prev.find('img');
+                        if($img.is('img')){
+                            var elementValue = $img.attr("src");
+                            $img.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", "100%");
+                            $img.on('load', function(){
+                                $prev.find('p').height($(this).height());
+                            });
                         }
                     });
                 });
