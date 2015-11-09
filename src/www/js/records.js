@@ -206,6 +206,11 @@ var _base = {
     EVT_MOVE_ANNOTATION: 'evt-move-annotation',
 
     /**
+     * Photo has been taken event.
+     */
+    EVT_TAKE_PHOTO: 'evt-take-photo',
+
+    /**
      * Initialise annotate page.
      * @param group group that owns the editor (default: EDITOR_GROUP.DEFAULT)
      * @param type editor type
@@ -1513,9 +1518,16 @@ var _base = {
                     file.moveTo({
                         'path': fileURI,
                         'to': this.getAssetsDir(IMAGE_TYPE_NAME),
-                        'success': function(newEntry){
+                        'success': $.proxy(function(newEntry){
+                            /*$.event.trigger(
+                                {
+                                    type: this.EVT_TAKE_PHOTO,
+                                },
+                                [newEntry,
+                                150] // TODO get from form
+                            );*/
                             callback(newEntry.toURL());
-                        }
+                        }, this)
                     });
                 }, this),
                 captureError,
