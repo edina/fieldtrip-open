@@ -420,17 +420,19 @@ var _ui = {
                             showAudio('annotate-audio-0', entry.val, {label: entry.val});
                         }
                         else if(fieldType === 'checkbox'){
-                            $.each(entry.val.split(','), function(j, name){
-                                $element = $('input[value="' + name + '"]', fieldSelector);
-                                $other = $('input.other', fieldSelector);
-                                if ($element.length === 0 && $other.length > 0) {
-                                    $($other.attr('id'), fieldSelector).val(name);
-                                    $('label[for=' + $other.attr('id') + ']', fieldSelector)
-                                        .html(name);
-                                    $element = $other;
-                                }
-                                $element.prop('checked', true).checkboxradio('refresh');
-                            });
+                            if(entry.val !== null){
+                                $.each(entry.val.split(','), function(j, name){
+                                    $element = $('input[value="' + name + '"]', fieldSelector);
+                                    $other = $('input.other', fieldSelector);
+                                    if ($element.length === 0 && $other.length > 0) {
+                                        $($other.attr('id'), fieldSelector).val(name);
+                                        $('label[for=' + $other.attr('id') + ']', fieldSelector)
+                                            .html(name);
+                                        $element = $other;
+                                    }
+                                    $element.prop('checked', true).checkboxradio('refresh');
+                                });
+                            }
                         }
                         else if(fieldType === 'radio'){
                             $element = $('input[value="' + entry.val + '"]', fieldSelector);
