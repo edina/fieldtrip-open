@@ -33,8 +33,8 @@ DAMAGE.
 /**
  * Main fieldtrip open UI interface.
  */
-define(['map', 'records', 'audio', 'utils', 'settings', 'underscore'], function(// jshint ignore:line
-    map, records, audio, utils, settings, _){
+define(['map', 'records', 'audio', 'utils', 'settings', 'underscore', 'widgets'], function(// jshint ignore:line
+    map, records, audio, utils, settings, _, widgets){
     var portraitScreenHeight;
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
@@ -412,7 +412,9 @@ var _ui = {
                             showImage('annotate-image-0', entry.val, fieldType);
                         }
                         else if(fieldType === 'multiimage'){
-                            showImage('annotate-image-0', entry.val, fieldType);
+                            for(var j=0; j<entry.val.length;j++) {
+                                showImage('annotate-multiimage-0', entry.val[j], fieldType);
+                            }
                         }
                         else if(fieldType === 'audio'){
                             showAudio('annotate-audio-0', entry.val, {label: entry.val});
@@ -452,7 +454,13 @@ var _ui = {
                                 "selected", true).selectmenu("refresh");
                         }
                         else{
-                            console.warn("Unknown field type: " + fieldType);
+                            var widgetsList = widgets.getWidgets(fieldType);
+                            if (widgetsList.length > 0) {
+                                widgets.deserializeWidgets(widgetsList, entry);
+                            }
+                            else{
+                                console.warn("Unknown field type: " + fieldType);
+                            }
                         }
                     }
                 });
@@ -596,6 +604,7 @@ var _ui = {
         appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section2');
 
         capturePageListeners();
+        this.currentAnnotation = undefined;
     },
 
     /**
@@ -761,6 +770,17 @@ var _ui = {
                 $('#saved-record-delete-popup-name').text(
                     "'" + this.toBeDeleted.find('.saved-records-view a').text() + "'");
                 $('#saved-records-delete-popup').popup('open');
+            }, this)
+        );
+
+        //edit a saved record
+        $(document).off('click', '.saved-records-edit');
+        $(document).on(
+            'click',
+            '.saved-records-edit',
+            $.proxy(function(event){
+                this.currentAnnotation = records.getAnnotationDetailsById($(event.target).parents('li').attr("id")).annotation;
+                records.annotate(this.currentAnnotation.editorGroup, this.currentAnnotation.type);
             }, this)
         );
 

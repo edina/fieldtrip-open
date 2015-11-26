@@ -1,10 +1,16 @@
 <li id="<%= id %>">
-<div class="ui-grid-b">
+<div class="ui-grid-c">
     <div class="ui-block-b saved-records-view">
         <a href="#" class="ellipsis"><%= annotation.record.name %></a>
     </div>
     <div class="ui-block-c">
         <a href="#" class="saved-records-delete" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="b"></a>
+    </div>
+    <div class="ui-block-d">
+        <a href="#" class="saved-records-edit" data-role="button" data-icon="edit" data-iconpos="notext" data-theme="b"></a>
+    </div>
+    <div class="ui-block-d">
+        <a href="#" class="saved-records-edit" data-role="button" data-icon="edit" data-iconpos="notext" data-theme="b"></a>
     </div>
 
     <% if (layout === 'records-grid') { %>

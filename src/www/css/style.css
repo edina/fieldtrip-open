@@ -643,6 +643,11 @@ div.record-extra > div > img {
     width: 15%;
     background-color: rgba(255, 255, 255, 1);
 }
+/* edit button */
+#saved-records-list .ui-block-d{
+    width: 15%;
+    background-color: rgba(255, 255, 255, 1);
+}
 
 #saved-records-page-header{
     border-top-left-radius: 10px;
