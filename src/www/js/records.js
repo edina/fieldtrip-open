@@ -1690,8 +1690,7 @@ var _base = {
                                 {
                                     type: this.EVT_TAKE_PHOTO,
                                 },
-                                [newEntry,
-                                150] // TODO get from form
+                                [newEntry]
                             );*/
                             callback(newEntry.toURL());
                         }, this)
