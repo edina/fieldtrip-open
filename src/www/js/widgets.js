@@ -72,6 +72,19 @@ define(function(require, exports) {
     };
 
     /**
+     * Invoke the deserialize function of an Array of widgets
+     * @param widgets
+     * @return the value of merging the calls, null if no serialize is implemented
+     */
+    var deserializeWidgets = function(widgets) {
+        var args = Array.prototype.slice.call(arguments, 1);
+
+        for (var i = 0, len = widgets.length; i < len; i++) {
+            widgets[i].deserialize.apply(null, args);
+        }
+    };
+
+    /**
      * Invoke the serialize function of an Array of widgets
      * @param widgets
      * @return the value of merging the calls, null if no serialize is implemented
@@ -133,7 +146,8 @@ define(function(require, exports) {
         registerWidget: registerWidget,
         getWidgets: getWidgets,
         initializeWidgets: initializeWidgets,
-        serializeWidgets: serializeWidgets
+        serializeWidgets: serializeWidgets,
+        deserializeWidgets: deserializeWidgets
     };
 
 });

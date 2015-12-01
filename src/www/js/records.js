@@ -871,17 +871,40 @@ var _base = {
     },
 
     /**
+     * Get internal annotation id and record for a given record id. This only
+     * applies to non synced records.
+     * @param name Record id.
+     */
+    getAnnotationDetailsById: function(id) {
+        var details;
+        $.each(this.getSavedRecords(), function(i, annotation){
+            if(i === id && !annotation.isSynced){
+                details = {
+                    'id': i,
+                    'annotation': annotation
+                };
+                return false; // breaks loop!
+            }
+        });
+
+        return details;
+    },
+
+    /**
      * Get internal annotation id for a given record name. This only applies to
      * synced records.
      * @param name Record name.
+     * @param isSynced 
      */
-    getAnnotationId: function(name) {
+    getAnnotationId: function(name, isSynced) {
         var id;
         $.each(this.getSavedRecords(), function(i, annotation){
             // note: dropbox is case insensitive so we should be also
-            if(annotation.record.name.toLowerCase() === name.toLowerCase() &&
-               annotation.isSynced){
+            if(annotation.record.name.toLowerCase() === name.toLowerCase()){
                 id = i;
+                if(isSynced === undefined && annotation.isSynced){
+                    id = undefined;
+                }
                 return false; // breaks loop!
             }
         });
@@ -1566,8 +1589,9 @@ var _base = {
                 geometry.markerMoved]
             );
         }
+        var id = this.getAnnotationId(annotation.record.name);
 
-        this.saveAnnotation(undefined, annotation);
+        this.saveAnnotation(id, annotation);
     },
 
     /**
