@@ -1686,12 +1686,12 @@ var _base = {
                         'path': fileURI,
                         'to': this.getAssetsDir(IMAGE_TYPE_NAME),
                         'success': $.proxy(function(newEntry){
-                            /*$.event.trigger(
+                            $.event.trigger(
                                 {
                                     type: this.EVT_TAKE_PHOTO,
                                 },
                                 [newEntry]
-                            );*/
+                            );
                             callback(newEntry.toURL());
                         }, this)
                     });
