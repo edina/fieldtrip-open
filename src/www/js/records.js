@@ -1172,7 +1172,11 @@ var _base = {
         ];
 
         if(typeof(coords.gpsPosition) !== 'undefined'){
-            annotation.record.geometry.coordinates[2] = coords.gpsPosition.altitude;
+            if (coords.gpsPosition.hasOwnProperty('altitude') &&
+                coords.gpsPosition.altitude !== null)
+            {
+                annotation.record.geometry.coordinates[2] = coords.gpsPosition.altitude;
+            }
 
             if(annotation.record.properties.hasOwnProperty('pos_acc') &&
                coords.gpsPosition.accuracy !== undefined){
