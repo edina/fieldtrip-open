@@ -1,0 +1,14 @@
+[main]
+host = https://www.transifex.com
+
+[fieldtrip-open-project.mapjson]
+file_filter = src/www/locales/<lang>/map.json
+source_file = src/www/locales/en/map.json
+source_lang = en
+type = json
+
+[fieldtrip-open-project.indexjson]
+file_filter = src/www/locales/<lang>/index.json
+source_file = src/www/locales/en/index.json
+source_lang = en
+type = json
