@@ -26,8 +26,9 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
 
-define(function() {
-    'use strict';
+'use strict';
+
+define(function(require) {
     var _ = require('underscore');
 
     var WIDGET_NAME = 'warning';
