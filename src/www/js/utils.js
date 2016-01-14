@@ -499,7 +499,8 @@ return {
      * @return Is this an android device?
      */
     isAndroid: function(){
-        return isTouchDevice() && device.platform === 'Android';
+        return isTouchDevice() &&
+            typeof device === 'object' && device.platform === 'Android';
     },
 
     /**
