@@ -715,12 +715,6 @@ var _ui = {
      */
     pageChange: function(){
         resizePage();
-        i18n.init({// jshint ignore:line
-            ns: { namespaces: ['index'], defaultNs: 'index'},
-            lngWhitelist: ['en', 'de', 'gr', 'cy']
-        }, function(){
-            $("html").i18n();
-        });
         this.toggleActive();
     },
 
