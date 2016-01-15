@@ -1,5 +1,9 @@
 {
     "waitGPS": "Waiting for GPS fix",
     "gpsTimeout": "GPS timed out",
-    "gpsEnable": "Your GPS needs to be enabled."
+    "gpsEnable": "Your GPS needs to be enabled.",
+    "list_records": "List Records",
+    "records": "Records",
+    "show": "Show",
+    "hide": "Hide"
 }

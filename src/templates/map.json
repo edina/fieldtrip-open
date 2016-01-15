@@ -19,8 +19,14 @@
         }
     },
     "body": {
-        "list": "List Records",
-        "items" : "Records"
+        "list": {
+            "i18n": "map:list_records",
+            "en": "List Records"
+        },
+        "records": {
+            "i18n": "map:records",
+            "en": "Records"
+        }
     },
     "popups": {
         "popup3":{

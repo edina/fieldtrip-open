@@ -11,11 +11,13 @@
 
     <div id="map-records-buttons" class="ui-grid-b">
       <div id="map-records-buttons-list" class="ui-block-a">
-        <a href="saved-records.html" data-role="button">{{body["list"]}}</a>
+        <a data-i18n="{{body.list.i18n}}" href="saved-records.html" data-role="button">{{body.list.en}}</a>
       </div>
       <div class="ui-block-b"></div>
       <div id="map-records-buttons-ok" class="ui-block-c">
-        <a data-role="button"><span>Show</span> {{body["items"]}}</a>
+        <a data-role="button">
+          <span>Show</span>&nbsp;<span data-i18n="{{body.records.i18n}}">{{body.records.en}}</span>
+        </a>
       </div>
     </div>
 
