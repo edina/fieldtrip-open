@@ -1,18 +1,21 @@
 {
     "home": {
         "name": "Home",
+        "data-i18n": "footer:home",
         "href": "index.html",
         "class": "home-button fieldtrip-btn",
         "data-icon": "custom"
     },
     "map": {
         "name": "Map",
+        "data-i18n": "footer:map",
         "href": "map.html",
         "class": "map-button fieldtrip-btn",
         "data-icon": "custom"
     },
     "capture": {
         "name": "Capture",
+        "data-i18n": "footer:capture",
         "href": "capture.html",
         "class": "capture-button fieldtrip-btn",
         "data-icon": "custom"
