@@ -8,13 +8,14 @@ define(function(require) {
     i18next
         .use(i18nextXHRbackend)
         .init({
-            debug: true,
-            lng: 'es',
+            debug: false,
+            lng: 'en',
             fallbackLng: 'en',
             ns: [
                 'index',
                 'map',
-                'footer'
+                'footer',
+                'common'
             ],
             defaultNS: 'index',
             fallbackNS: 'common',
