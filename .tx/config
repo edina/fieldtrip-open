@@ -2,13 +2,13 @@
 host = https://www.transifex.com
 
 [fieldtrip-open-project.mapjson]
-file_filter = src/www/locales/<lang>/map.json
-source_file = src/www/locales/en/map.json
+file_filter = src/locales/<lang>/map.json
+source_file = src/locales/en/map.json
 source_lang = en
 type = KEYVALUEJSON
 
 [fieldtrip-open-project.indexjson]
-file_filter = src/www/locales/<lang>/index.json
-source_file = src/www/locales/en/index.json
+file_filter = src/locales/<lang>/index.json
+source_file = src/locales/en/index.json
 source_lang = en
 type = KEYVALUEJSON
