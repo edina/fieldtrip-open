@@ -198,6 +198,7 @@ def build(platform='android'):
 
     _check_commands(['cordova'])
 
+    merge_locales()
     # generate html for android
     generate_html(platform, cordova=True)
 
@@ -633,6 +634,8 @@ def install_project(platform='android',
     # process tempates
     generate_html(platform='desktop')
 
+    merge_locales()
+
     # check if /home/<user>/<dist_dir> exists
     dist_path = os.sep.join((os.environ['HOME'], dist_dir))
     if not os.path.exists(dist_path):
@@ -668,6 +671,108 @@ def install_project_android(target='local'):
     Install the android project in the cordova runtime
     """
     install_project(platform='android', target=target)
+
+
+def _find_translations(path):
+    """
+    Scan the path for translations and creates an array with paths where the
+    same combination lang/file was found in the following format:
+        {
+            'en': {
+                'namespace.json': [path1, path2]
+            },
+            'es': {
+                'namespace.json': [path1, path3]
+            }
+        }
+    """
+    list_locales = {}
+
+    if os.path.exists(path):
+        for root, dirs, files in os.walk(path):
+            lang = os.path.relpath(root, path)
+
+            for filename in files:
+                if not filename.endswith('.json'):
+                    continue
+
+                if lang not in list_locales.keys():
+                    list_locales[lang] = {}
+
+                if filename not in list_locales[lang].keys():
+                    list_locales[lang][filename] = []
+
+                list_locales[lang][filename].append(path)
+
+    return list_locales
+
+
+def _concat_translation_paths(dict_a, dict_b={}):
+    """
+    Combines two of the dictionaries returned for _find_translations
+    concatenating the array of paths when found
+    """
+    out_dict = dict.copy(dict_a)
+
+    for lang in out_dict.keys():
+        for filename in out_dict[lang].keys():
+            if lang in dict_b.keys() and filename in dict_b[lang].keys():
+                out_dict[lang][filename].extend(dict_b[lang][filename])
+
+    return out_dict
+
+
+@task
+def merge_locales():
+    """
+    Merge the translations from the core, plugins and project in that order
+    into a cleared www/locales directory
+    """
+
+    root, project, src = _get_source()
+
+    out_dir = os.path.join(src, 'www', 'locales')
+    core_locales_dir = os.path.join(src, 'locales')
+    project_locales_dir = os.path.join(project, 'src', 'locales')
+    plugins_dir = os.path.join(root, plugins)
+
+    # clear the locales output directory
+    with settings(warn_only=True):
+        local('rm -r {0}/*'.format(out_dir))
+
+    # find the translations in for core, plugins and project
+    core_files = _find_translations(core_locales_dir)
+    project_files = _find_translations(project_locales_dir)
+    plugin_files = []
+
+    for plugin in os.listdir(plugins_dir):
+        plugin_dir = os.path.join(plugins_dir, plugin)
+        if os.path.isdir(plugin_dir):
+            plugin_locales_dir = os.path.join(plugin_dir, 'src', 'locales')
+            plugin_files.append(_find_translations(plugin_locales_dir))
+
+    # merge the list of paths
+    locales_paths = _concat_translation_paths(core_files)
+    for plugin_locales in plugin_files:
+        locales_paths = _concat_translation_paths(locales_paths,
+                                                  plugin_locales)
+
+    locales_paths = _concat_translation_paths(locales_paths, project_files)
+
+    # merge and write the translations
+    for lang in locales_paths.iterkeys():
+        for file, paths in locales_paths[lang].iteritems():
+            out = {}
+            for path in paths:
+                with open(os.path.join(path, lang, file), 'r') as f:
+                    out.update(json.loads(f.read()))
+            lang_path = os.path.join(out_dir, lang)
+            if not os.path.exists(lang_path):
+                os.mkdir(lang_path)
+
+            with codecs.open(os.path.join(lang_path, file), 'w', 'utf8') as f:
+                f.write(json.dumps(out, ensure_ascii=False, indent=2))
+
 
 @task
 def release_android(

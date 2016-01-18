@@ -12,3 +12,4 @@ project
 qrcode.*
 spatial-memories
 tmp
+src/www/locales/*
