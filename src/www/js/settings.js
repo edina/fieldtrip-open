@@ -127,6 +127,7 @@ define(function(){
         $(document).on('change', '#settings-locales', function(evt) {
             var lang = $(evt.target).val();
             changeLanguage(lang);
+            localStorage.setItem('user-language', lang);
         });
     };
 

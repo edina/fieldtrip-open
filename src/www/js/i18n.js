@@ -25,6 +25,8 @@ define(function(require) {
                 loadPath: 'locales/{{lng}}/{{ns}}.json'
             }
         }, function(err, t) {
+            var userLng = localStorage.getItem('user-language');
+
             i18nextJquery.init(i18next, $, {
                 tName: 't',
                 i18nName: 'i18n',
@@ -40,6 +42,7 @@ define(function(require) {
                 $(event.target).localize();
             });
 
+            i18next.changeLanguage(userLng);
             $(document).localize();
         });
 });
