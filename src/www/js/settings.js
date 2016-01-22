@@ -155,7 +155,7 @@ return{
                 $('#settings-cordova').text('n/a');
             }
 
-            if (device) {
+            if (navigator.device) {
                 $('#settings-platform').text(device.platform);
                 $('#settings-platform-version').text(device.version);
                 $('#settings-device-model').text(device.model);
