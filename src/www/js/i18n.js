@@ -10,6 +10,8 @@ define(function(require) {
         .init({
             debug: false,
             lng: 'en',
+            preload: ['en', 'es', 'gr'],
+            lngs: ['en', 'es', 'gr'],
             fallbackLng: 'en',
             ns: [
                 'index',

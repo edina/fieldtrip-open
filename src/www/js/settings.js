@@ -99,6 +99,37 @@ define(function(){
         localStorage.setItem('settings', JSON.stringify(vals, undefined, 2));
     });
 
+
+    var changeLanguage = function(lang) {
+        $.i18n.changeLanguage(lang, function() {
+            console.log('Language changed to [' + lang + ']');
+            $(document).localize();
+        });
+    };
+
+    var initLocalesSelect = function() {
+        var languages = $.i18n.options.lngs;
+        var language = $.i18n.language;
+
+        var options = $.map($.i18n.options.lngs, function(lng) {
+            var lngName = $.i18n.t('language_name', {lng: lng});
+            return '<option value="' + lng + '">' + lngName + '</option>';
+        });
+
+        // Disable the event before selecting the cureent language
+        $(document).off('change', '#settings-locales');
+
+        $('#settings-locales')
+            .html(options.join(''))
+            .val(language)
+            .trigger('change');
+
+        $(document).on('change', '#settings-locales', function(evt) {
+            var lang = $(evt.target).val();
+            changeLanguage(lang);
+        });
+    };
+
     /************************** public interface  ******************************/
 
 return{
@@ -158,6 +189,8 @@ return{
                     $(id).trigger('change');
                 }
             });
+
+            initLocalesSelect();
         });
     },
 
