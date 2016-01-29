@@ -66,7 +66,7 @@ function onDeviceReady(){
         }
     });
 
-    require(['ui', 'map', 'records', 'i18n', 'tests/main'], function(ui, map, records, i18n, tests) {
+    require(['i18n', 'ui', 'map', 'records', 'tests/main'], function(i18n, ui, map, records, tests) {
         // called when all plugins are finished loading
         var pluginsComplete = function(){
             // initialise home page first time

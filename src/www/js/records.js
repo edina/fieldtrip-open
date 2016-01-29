@@ -37,6 +37,8 @@ define(function(require) {
     var file = require('file');
     var _ = require('underscore');
     var widgets = require('widgets');
+    var convert = require('convert');
+
     var recrowtemplate = require('text!templates/saved-records-list-template.html');
     var cameraTemplate = require('text!templates/camera-capture-template.html');
 
@@ -333,148 +335,143 @@ var _base = {
             url = file.appendFile(editorDirectories[group], type);
         }
 
-        $.ajax({
-            url: url,
-            dataType: "text",
-            success: function(data){
-                var form = $('#annotate-form').append(data);
-                $.each($('input[capture=camera]'), function(index, input){
-                    var fieldType = that.typeFromId($(input).parents().parents().attr("id"));
-                    $(input).parent().append(that.renderCameraExtras(index, fieldType, cameraTemplate));
-                });
-                $.each($('input[capture=microphone]'), function(index, input){
-                    var btn = '<div id="annotate-audio-' + index + '">\
+        // convert json contained within file to HTML string
+        var promise = convert.JSONtoHTML(url);
+        promise.done(function(data) {
+            var form = $('#annotate-form').append(data);
+            $.each($('input[capture=camera]'), function(index, input){
+                var fieldType = that.typeFromId($(input).parents().parents().attr("id"));
+                $(input).parent().append(that.renderCameraExtras(index, fieldType, cameraTemplate));
+            });
+            $.each($('input[capture=microphone]'), function(index, input){
+                var btn = '<div id="annotate-audio-' + index + '">\
 <a class="annotate-audio" href="#">\
 <img src="css/images/audio.png" alt="Take Audio"></a><p>Start</p>\
 </div>';
 
-                    $(input).parent().append(btn);
-                });
-                $.each($('input[capture=gps]'), function(index, input){
-                    var btn = '<div id="annotate-gps-' + index + '">\
+                $(input).parent().append(btn);
+            });
+            $.each($('input[capture=gps]'), function(index, input){
+                var btn = '<div id="annotate-gps-' + index + '">\
 <a class="annotate-image-get" href="#">\
 <img src="css/images/audio.png"></a><p>Take</p>\
 </div>';
 
-                    $(input).parent().append(btn);
-                });
+                $(input).parent().append(btn);
+            });
 
-                var imageTypeOptions = ["checkbox", "radio"];
-                //replace labels with actual images that are part of the editor
-                $.each(imageTypeOptions, function(index, type) {
-                    $.each($('input[type="'+type+'"]'), function(){
-                        var $prev = $(this).prev();
-                        var $img = $prev.find('img');
-                        if($img.is('img')){
-                            var elementValue = $img.attr("src");
-                            $img.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", "100%");
-                            $img.on('load', function(){
-                                $prev.find('p').height($(this).height());
-                            });
-                        }
-                    });
-                });
-
-                // Allow the edition of 'Other' label for radio fieldsets
-                $('fieldset', 'div[id^=fieldcontain-radio]').on('change', function() {
-                    var $this = $(this);
-                    var $selected = $this.find('input:checked');
-
-                    if ($selected.hasClass('other')) {
-                        startLabelEdition($selected, $this).focus();
-                    }
-                    else {
-                        stopLabelEdition('input.other', $this);
+            var imageTypeOptions = ["checkbox", "radio"];
+            //replace labels with actual images that are part of the editor
+            $.each(imageTypeOptions, function(index, type) {
+                $.each($('input[type="'+type+'"]'), function(){
+                    var $prev = $(this).prev();
+                    var $img = $prev.find('img');
+                    if($img.is('img')){
+                        var elementValue = $img.attr("src");
+                        $img.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", "100%");
+                        $img.on('load', function(){
+                            $prev.find('p').height($(this).height());
+                        });
                     }
                 });
+            });
 
-                // Allow the edition of 'Other' label for radio fieldsets
-                $('fieldset', 'div[id^=fieldcontain-checkbox]').on('change', function(event) {
-                    var $this = $(this);
-                    var $selected = $(event.target);
+            // Allow the edition of 'Other' label for radio fieldsets
+            $('fieldset', 'div[id^=fieldcontain-radio]').on('change', function() {
+                var $this = $(this);
+                var $selected = $this.find('input:checked');
 
-                    if ($selected.hasClass('other')) {
-                        startLabelEdition($selected, $this).focus();
+                if ($selected.hasClass('other')) {
+                    startLabelEdition($selected, $this).focus();
+                }
+                else {
+                    stopLabelEdition('input.other', $this);
+                }
+            });
+
+            // Allow the edition of 'Other' label for radio fieldsets
+            $('fieldset', 'div[id^=fieldcontain-checkbox]').on('change', function(event) {
+                var $this = $(this);
+                var $selected = $(event.target);
+
+                if ($selected.hasClass('other')) {
+                    startLabelEdition($selected, $this).focus();
+                }
+                else {
+                    stopLabelEdition('input.other', $this);
+                }
+            });
+
+            // Attach the event that show or hide a field according some rule
+            $.each($('div[id^=fieldcontain-]'), function(index, element) {
+                var $element = $(element);
+                var rule = $element.attr('data-visibility');
+                if (rule) {
+                    var r = parseRule(rule);
+                    if (r === null) {
+                        return;
                     }
-                    else {
-                        stopLabelEdition('input.other', $this);
-                    }
-                });
 
-                // Attach the event that show or hide a field according some rule
-                $.each($('div[id^=fieldcontain-]'), function(index, element) {
-                    var $element = $(element);
-                    var rule = $element.attr('data-visibility');
-                    if (rule) {
-                        var r = parseRule(rule);
-                        if (r === null) {
-                            return;
-                        }
+                    var checkVisibility = function() {
+                        var $fieldset = $(this);
+                        var serialized = $fieldset.serializeArray();
 
-                        var checkVisibility = function() {
-                            var $fieldset = $(this);
-                            var serialized = $fieldset.serializeArray();
-
-                            if(serialized.length > 0) {
-                                if (r.comparator(serialized[0].value, r.value)) {
-                                    $element.show();
-                                    return;
-                                }
+                        if(serialized.length > 0) {
+                            if (r.comparator(serialized[0].value, r.value)) {
+                                $element.show();
+                                return;
                             }
+                        }
 
-                            // Default to hide
-                            $element.hide();
-                        };
+                        // Default to hide
+                        $element.hide();
+                    };
 
-                        $('fieldset', 'div[id^=fieldcontain-' + r.field + ']')
-                            .on('change', checkVisibility);
+                    $('fieldset', 'div[id^=fieldcontain-' + r.field + ']')
+                        .on('change', checkVisibility);
 
-                        // Initialize
-                        checkVisibility.apply(this);
-                    }
-                });
+                    // Initialize
+                    checkVisibility.apply(this);
+                }
+            });
 
-                $.each($('div[id^=fieldcontain-]'), function(index, item) {
-                    var widgetType = $(item).data('fieldtrip-type');
-                    var widgetsList = widgets.getWidgets(widgetType);
-                    widgets.initializeWidgets(widgetsList, index, item);
-                });
+            $.each($('div[id^=fieldcontain-]'), function(index, item) {
+                var widgetType = $(item).data('fieldtrip-type');
+                var widgetsList = widgets.getWidgets(widgetType);
+                widgets.initializeWidgets(widgetsList, index, item);
+            });
 
-                restorePersistentValues(form, group, type);
+            restorePersistentValues(form, group, type);
 
-                //Add bbox if exists
-                var bbox = $('input[data-bbox]').data("bbox") || "";
+            //Add bbox if exists
+            var bbox = $('input[data-bbox]').data("bbox") || "";
 
-                //Add check for geometry type capture
-                var recordGeometry = $('input[data-record-geometry]').data("record-geometry") || "point";
-                var liveEditorMetadata = {
-                    "name": type,
-                    "bbox": bbox.split(","),
-                    "geometryTypes": recordGeometry.split(",")
-                };
-                sessionStorage.setItem("editor-metadata", JSON.stringify(liveEditorMetadata));
+            //Add check for geometry type capture
+            var recordGeometry = $('input[data-record-geometry]').data("record-geometry") || "point";
+            var liveEditorMetadata = {
+                "name": type,
+                "bbox": bbox.split(","),
+                "geometryTypes": recordGeometry.split(",")
+            };
+            sessionStorage.setItem("editor-metadata", JSON.stringify(liveEditorMetadata));
 
-                utils.appendDateTimeToInput("#form-text-1");
+            utils.appendDateTimeToInput("#form-text-1");
 
-                form.trigger('create');
+            form.trigger('create');
 
-                that.processDisplayEditor(form);
+            that.processDisplayEditor(form);
 
-                // hide original input elements
-                $('input[capture]').parent().hide();
+            // hide original input elements
+            $('input[capture]').parent().hide();
 
-                // TODO: chain multiple popups
-                $('.warning-popup').popup('open');
+            // TODO: chain multiple popups
+            $('.warning-popup').popup('open');
 
+            callback();
+        });
 
-                callback();
-            },
-            error: function(jqXHR, status, error){
-                var msg = "Problem with " + url + " : status=" +
-                    status + " : " + error;
-                console.error(msg);
-                utils.inform("Couldn't find the form " + type);
-            },
+        promise.fail(function(err) {
+            utils.inform(err);
         });
     },
 
@@ -552,7 +549,7 @@ var _base = {
 
     /**
      * Add an editor
-     * Read the cointent from a file entry and trigger the editor processing.
+     * Read the content from a file entry and trigger the editor processing.
      * @param fileEntry a fileentry to be read
      * @param group of the editor records.EDITOR_GROUP
      * @param online optional parameter if the process is online of offline
@@ -619,7 +616,7 @@ var _base = {
     },
 
     /**
-     * Add a function to the editor process pipelina
+     * Add a function to the editor process pipeline
      * @param function name
      */
     addProcessEditor: function(funcName){
@@ -894,7 +891,7 @@ var _base = {
      * Get internal annotation id for a given record name. This only applies to
      * synced records.
      * @param name Record name.
-     * @param isSynced 
+     * @param isSynced
      */
     getAnnotationId: function(name, isSynced) {
         var id;
@@ -1432,10 +1429,10 @@ var _base = {
      */
     processEditor: function(editorName, html, group, online){
         for(var i =0; i<processEditorPipeline.length; i++){
-           var process = processEditorPipeline[i];
-           if(typeof(process) === 'function'){
-               process.apply(null, arguments);
-           }
+            var process = processEditorPipeline[i];
+            if(typeof(process) === 'function'){
+                process.apply(null, arguments);
+            }
         }
     },
 
@@ -1456,12 +1453,12 @@ var _base = {
     /**
      * Implements the records.processEditor interface
      * @param editorName name of the editor
-     * @param html html content of the editor
+     * @param text content of the editor
      * @param group from records.EDITOR_GROUP
      * @param online boolean value if the processing is held online
      */
-    extractEditorMetadata: function(editorName, html, group, online){
-        var $form = $(html);
+    extractEditorMetadata: function(editorName, text, group, online){
+        var form = JSON.parse(text);
         var editorsObj = _this.loadEditorsMetadata();
         editorsObj[group][editorName] = editorsObj[group][editorName] || {};
 
@@ -1476,19 +1473,18 @@ var _base = {
         editorsObj[group][editorName].type = editorName;
 
         //Add bbox if exists
-        var bbox = $('input[data-bbox]', html).data("bbox") || "";
-        editorsObj[group][editorName].bbox = bbox.split(",");
+        editorsObj[group][editorName].bbox = form.bbox || "";
 
         //Add bbox if exists
-        var recordGeometry = $('input[data-record-geometry]', html).data("record-geometry") || "point";
-        editorsObj[group][editorName].recordGeometry = recordGeometry;
+        editorsObj[group][editorName].recordGeometry = form.geom || "point";
+
 
         // Add the title wich will be displayed
-        var title = $form.data('title');
+        var title = form.title;
         if(title !== undefined){
             editorsObj[group][editorName].title = title;
         }else{
-            var matches = editorName.match(/(.*).edtr$/);
+            var matches = editorName.match(/(.*).json$/);
             if(matches && matches.length > 1){
                 editorsObj[group][editorName].title = matches[1];
             }else{

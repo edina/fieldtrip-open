@@ -297,9 +297,6 @@ var _ui = {
             }
         }
 
-        // check if records need converting
-        records.convertCheck();
-
         this.pageChange();
         this.homePage();
     },
