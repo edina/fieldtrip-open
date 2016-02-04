@@ -293,7 +293,6 @@ var _base = {
     IMAGE_UPLOAD_SIZE: "imageUploadSize",
     IMAGE_SIZE_NORMAL: "imageSizeNormal",
     IMAGE_SIZE_FULL: "imageSizeFull",
-    TITLE_ID: 'form-text-1',
     EDITOR_GROUP: EDITOR_GROUP,
 
     /**
@@ -454,8 +453,6 @@ var _base = {
                 "geometryTypes": recordGeometry.split(",")
             };
             sessionStorage.setItem("editor-metadata", JSON.stringify(liveEditorMetadata));
-
-            utils.appendDateTimeToInput("#form-text-1");
 
             form.trigger('create');
 
@@ -1341,38 +1338,10 @@ var _base = {
 
             // do some validation
             if($(control).attr('required') === 'true' || $(control).attr('required') === 'required'){
-                // Validate the record name
-                if($(control).attr('id') === this.TITLE_ID){
-                    if(control.val()){
-                        if(control.val().indexOf('/') < 0){
-                            // Use this control value as a record name
-                            annotation.record.name = control.val();
-                            field.val = control.val();
-                            // But don't include it as a record field
-                            ignoreField = true;
-                        }
-                        else{
-                            $(control).addClass('error');
-                            valid.push({
-                                error: true,
-                                msg: field.label + ' cannot contain slashes (/)'
-                            });
-                            return;
-                        }
-                    }
-                    else{
-                        $(control).addClass('error');
-                        valid.push({
-                            error: true,
-                            msg: field.label + ' requires a value'
-                        });
-                        return;
-                    }
-                }
                 // Validate the fields
-                else if(field.val === null ||
-                        field.val === undefined ||
-                        field.val === "") {
+                if(field.val === null ||
+                   field.val === undefined ||
+                   field.val === "") {
                     $(control).addClass('error');
                     valid.push({
                         error: true,
@@ -1380,6 +1349,11 @@ var _base = {
                     });
                     return;
                 }
+            }
+
+            annotation.record.name = $('input[data-title="true"]').val();
+            if(annotation.record.name === undefined){
+                annotation.record.name = $('form').attr('data-title') + '-' + utils.getSimpleDate();
             }
 
             // Save the value for the persistent fields

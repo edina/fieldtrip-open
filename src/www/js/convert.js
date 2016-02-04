@@ -28,7 +28,8 @@ DAMAGE.
 
 'use strict';
 
-define(function(){
+define(function(require){
+    var utils = require('utils');
 
     /**
      * Replace charachters with the equivalent html5 entity
@@ -59,6 +60,12 @@ define(function(){
             form.geoms.join(",")+'" value="'+form.geoms.join(",")+'">\n';
         html+='</div>\n';
 
+        var titleField;
+        if(utils.checkNested(form, 'recordLayout', 'headers')){
+            // if header array is defined use first element as record title field
+            titleField = form.recordLayout.headers[0];
+        }
+
         form = form || [];
         form.fields.forEach(function(value) {
             var key = value.id;
@@ -84,7 +91,7 @@ define(function(){
 
             value.label = encodeEntities(value.label);
             switch (type) {
-                case 'text':
+            case 'text':
                     html+='<div class="fieldcontain" id="'+key+
                       '" data-fieldtrip-type="'+type+'" '+persistent+' '+
                       visibility+'>\n';
@@ -92,8 +99,13 @@ define(function(){
                         value.label+'</label>\n';
                     html+='<input name="form-'+type+'-'+n+'" id="form-'+type+'-'+n+
                               '" type="text" '+required+' placeholder="'+properties.placeholder+
-                              '" maxlength="'+properties["max-chars"]+'" value="'+properties.prefix+'">\n';
-                    html+='</div>\n';
+                              '" maxlength="'+properties["max-chars"]+'" value="'+properties.prefix+'"';
+
+                    if (key === titleField){
+                        html += ' data-title="true"';
+                    }
+
+                    html+='\n</div>\n';
                     break;
                 case 'textarea':
                     html+='<div class="fieldcontain" id="'+key+
