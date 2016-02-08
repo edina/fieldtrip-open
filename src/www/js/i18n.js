@@ -17,6 +17,7 @@ define(function(require) {
                 'index',
                 'map',
                 'footer',
+                'saved-records',
                 'common'
             ],
             defaultNS: 'index',
