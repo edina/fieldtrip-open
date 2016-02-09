@@ -32,7 +32,10 @@
         "popup3":{
             "template": "layers-panel.html",
             "data": {
-
+                "title": {
+                    "i18n": "map:layers_panel_title",
+                    "default": "Layers"
+                }
             }
         }
     }

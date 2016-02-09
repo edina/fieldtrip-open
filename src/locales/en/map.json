@@ -4,6 +4,7 @@
     "draw_control_line": "Click to create the points of the line, double tap to finish drawing",
     "draw_control_point": "Click on the map to reposition",
     "draw_control_polygon": "Click to create a vertex, double click to finish",
+    "layers_panel_title": "Layers",
     "waitGPS": "Waiting for GPS fix",
     "gpsTimeout": "GPS timed out",
     "gpsEnable": "Your GPS needs to be enabled.",
