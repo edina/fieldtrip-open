@@ -47,7 +47,9 @@
                   {% endif %}
                 </a>
                 {% endif %}
-                <p>{{sections["items"][item]["title"]}}</p>
+                <p data-i18n="{{sections["items"][item].i18n}}">
+                  {{sections["items"][item].title}}
+                </p>
               </div>
               {% endif %}
             {% endfor %}

@@ -21,7 +21,7 @@
     "body": {
         "section1": {
             "title": {
-                "i18n": "section1.title",
+                "i18n": "index:section_maps",
                 "en": "Maps"
             },
             "items": {
@@ -29,13 +29,14 @@
                     "div": {"class": "ui-block-a"},
                     "a": {"href": "map.html"},
                     "img": {"src": "css/images/online.png", "alt": "View Map"},
+                    "i18n": "index:online",
                     "title": "Online"
                 }
             }
         },
         "section2": {
             "title": {
-                "i18n": "section2.title",
+                "i18n": "index:section_capture",
                 "en": "Capture"
             },
             "items": {
@@ -43,25 +44,28 @@
                     "div": {"class": "ui-block-a"},
                     "a": {"class": "annotate-image-form", "href": "#"},
                     "img": {"src": "css/images/images.png", "alt": "Capture Image"},
+                    "i18n": "index:images",
                     "title": "Images"
                 },
                 "item2": {
                     "div": {"class": "ui-block-b"},
                     "a": {"class": "annotate-audio-form", "href": "#"},
                     "img": {"src": "css/images/audio.png", "alt": "Capture Audio"},
+                    "i18n": "index:audio",
                     "title": "Audio"
                 },
                 "item3": {
                     "div": {"class": "ui-block-c"},
                     "a": {"class": "annotate-text-form", "href": "#"},
                     "img": {"src": "css/images/text.png", "alt": "Capture Text"},
+                    "i18n": "index:text",
                     "title": "Text"
                 }
             }
         },
         "section3": {
             "title": {
-                "i18n": "section3.title",
+                "i18n": "index:section_records",
                 "en": "Records"
             },
             "items": {
@@ -69,13 +73,14 @@
                     "div": {"class": "ui-block-a"},
                     "a": {"href": "saved-records.html"},
                     "img": {"src": "css/images/documents.png", "alt": "Saved Records"},
+                    "i18n": "index:records",
                     "title": "Records"
                 }
             }
         },
         "section4": {
             "title": {
-                "i18n": "section4.title",
+                "i18n": "index:section_development",
                 "en": "Development"
             },
             "items": {
@@ -88,6 +93,7 @@
                         "src": "css/images/settings.png",
                         "alt": "Settings"
                     },
+                    "i18n": "index:settings",
                     "title": "Settings"
                 },
                 "item2": {
@@ -103,6 +109,7 @@
                         "src": "css/images/settings.png",
                         "alt": "Tests"
                     },
+                    "i18n": "index:unit_tests",
                     "title": "Unit Tests"
                 },
                 "item3": {
@@ -117,6 +124,7 @@
                         "src": "css/images/settings.png",
                         "alt": "System Tests"
                     },
+                    "i18n": "index:system_tests",
                     "title": "System Tests"
                 },
                 "item4": {
@@ -131,6 +139,7 @@
                         "src": "css/images/settings.png",
                         "alt": "Misc Test"
                     },
+                    "i18n": "index:create_records",
                     "title": "Create Records"
                 }
             }
@@ -140,24 +149,58 @@
         "popup1":{
             "template": "index-exit-popup.html",
             "data": {
-                "question": "Are you sure you want to exit Fieldtrip Open?",
-                "cancel": "Cancel",
-                "exit": "Exit"
+                "question": {
+                    "i18n": "index:exit_confirmation",
+                    "default": "Are you sure you want to exit Fieldtrip Open?"
+                },
+                "cancel": {
+                    "i18n": "common:cancel",
+                    "default": "Cancel"
+                },
+                "exit": {
+                    "i18n": "common:exit",
+                    "default": "Exit"
+                }
             }
         },
         "popup2":{
             "template": "index-eula-popup.html",
             "data": {
+                "app_name": "Fieldtrip Open",
                 "license": "http://fieldtripgb.blogs.edina.ac.uk/end-user-licence-agreement/",
-                "text": "Fieldtrip Open is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life.",
-                "logo1": "<img src=\"css/images/edina-logo-sm.png\" alt=\"EDINA logo\"><img src=\"css/images/jisc-logo-sm.png\" alt=\"JISC logo\">"
+                "text": "is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life.",
+                "logo1": "<img src=\"css/images/edina-logo-sm.png\" alt=\"EDINA logo\"><img src=\"css/images/jisc-logo-sm.png\" alt=\"JISC logo\">",
+                "accept": {
+                    "i18n": "index:accept_eula",
+                    "default": "Accept EULA"
+                },
+                "eula": {
+                    "i18n": "index:eula",
+                    "default": "End User License Agreement"
+                },
+                "title": {
+                    "i18n": "index:licence_title",
+                    "default": "Licence"
+                },
+                "text": {
+                    "i18n": "index:eula_text",
+                    "default": "is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life."
+                },
+                "warning": {
+                    "i18n": "common:warning",
+                    "default": "Warning"
+                }
             }
         },
         "popup3":{
             "template": "index-splash-popup.html",
             "data": {
+                "app_name": "Fieldtrip Open",
                 "license": "http://fieldtripgb.blogs.edina.ac.uk/end-user-licence-agreement/",
-                "text": "Fieldtrip Open is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life.",
+                "text": {
+                    "i18n": "index:splash_text",
+                    "default": "is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life."
+                },
                 "logo1": "<img src=\"css/images/edina-logo-sm.png\" alt=\"EDINA logo\"><img src=\"css/images/jisc-logo-sm.png\" alt=\"JISC logo\">"
             }
         },

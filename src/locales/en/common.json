@@ -1,7 +1,9 @@
 {
-    "language_name": "English",
     "cancel": "Cancel",
     "delete": "Delete",
     "details": "Details",
-    "save": "Save"
+    "exit": "Exit",
+    "language_name": "English",
+    "save": "Save",
+    "warning": "Warning"
 }

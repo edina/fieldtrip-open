@@ -1,21 +1,27 @@
 <div id="home-eula-popup" data-role="popup" data-overlay-theme="a">
   <div id="eula-content">
-    <strong>End User License Agreement</strong>
+    <strong data-i18n="{{data.eula.i18n}}">
+      {{data.eula.default}}
+    </strong>
     <p>
-      <a id="home-show-eula" class="external-link" href="{{data.license}}">
-        License
+      <a id="home-show-eula" class="external-link" href="{{data.license}}" data-i18n="{{data.title.i18n}}">
+        {{data.title.default}}
       </a>
     </p>
 
-    <strong>Warning:</strong>
-    <p>{{data.text}}</p>
+    <strong>
+      <span data-i18n="{{data.warning.i18n}}">{{data.warning.default}}</span>:</strong>
+    <p>
+    <span>{{data.app_name.default}}</span>&nbsp;<span data-i18n="{{data.text.i18n}}">{{data.text.default}}
+    </p>
 
     <div>
       {{data.logo1}}
     </div>
 
-    <a id="home-accept-eula" href="#" data-rel="back" data-role="button">Accept EULA</a>
-
+    <a id="home-accept-eula" href="#" data-rel="back" data-role="button" data-i18n="{{data.accept.i18n}}">
+      {{data.accept.default}}
+    </a>
   </div>
 
 </div>

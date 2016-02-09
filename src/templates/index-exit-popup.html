@@ -1,5 +1,11 @@
 <div id="home-exit-popup" data-role="popup">
-    <p>{{data["question"]}}</p>
-    <a data-role="button" data-inline="true" data-rel="back">{{data["cancel"]}}</a>
-    <a id="home-exit-confirm" data-role="button" data-inline="true">{{data["exit"]}}</a>
+    <p data-i18n="{{data['question'].i18n}}">
+        {{data.question.default}}
+    </p>
+    <a data-role="button" data-inline="true" data-rel="back" data-i18n="{{data.cancel.i18n}}">
+        {{data.cancel.default}}
+    </a>
+    <a id="home-exit-confirm" data-role="button" data-inline="true" data-i18n="{{data.exit.i18n}}">
+        {{data.exit.default}}
+    </a>
 </div>
