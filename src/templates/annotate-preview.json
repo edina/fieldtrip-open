@@ -21,13 +21,35 @@
     },
     "body": {
         "drawElements": {
-            "point": "Click on the map to Reposition",
-            "line": "Click on the map",
-            "polygon": "Click on the map",
-            "box": "Click and drag on the map"
+            "point": {
+                "en": "Click on the map to reposition",
+                "i18n": "map:draw_control_point"
+            },
+            "line": {
+                "en": "Click to create the points of the line, double tap to finish drawing",
+                "i18n": "map:draw_control_line"
+            },
+            "polygon": {
+                "en": "Click to create a vertex, double click to finish",
+                "i18n": "map:draw_control_polygon"
+            },
+            "box": {
+                "en": "Click and drag to draw the box, release to finish drawing",
+                "i18n": "map:draw_control_box"
+            },
+            "drag": {
+                "en": "Click over shape then drag it to move it",
+                "i18n": "map:draw_control_drag"
+            }
         },
-        "cancel" : "Cancel",
-        "save" : "Save"
+        "cancel" : {
+            "i18n": "common:cancel",
+            "en": "Cancel"
+        },
+        "save" : {
+            "i18n": "common:save",
+            "en": "Save"
+        }
     },
     "popups": {
 

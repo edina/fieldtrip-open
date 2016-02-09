@@ -1,4 +1,9 @@
 {
+    "draw_control_box": "Click and drag to draw the box, release to finish drawing",
+    "draw_control_drag": "Click over shape then drag it to move it",
+    "draw_control_line": "Click to create the points of the line, double tap to finish drawing",
+    "draw_control_point": "Click on the map to reposition",
+    "draw_control_polygon": "Click to create a vertex, double click to finish",
     "waitGPS": "Waiting for GPS fix",
     "gpsTimeout": "GPS timed out",
     "gpsEnable": "Your GPS needs to be enabled.",

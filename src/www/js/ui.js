@@ -525,7 +525,9 @@ var _ui = {
             $('#annotate-preview-detail-meta').append(
                 '<p><span>' + label + '</span>: ' + text + '</p>');
         };
-        $('.non-map-body-white h2').text(this.currentAnnotation.record.name + ' Details');
+        $('.non-map-body-white h2')
+            .text(this.currentAnnotation.record.name + ' ' +
+                    $.i18n.t('common:details'));
 
         $.each(this.currentAnnotation.record.properties.fields, $.proxy(function(i, entry){
             if(records.typeFromId(entry.id) === 'image'){
