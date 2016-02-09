@@ -17,6 +17,7 @@ define(function(require) {
                 'index',
                 'map',
                 'footer',
+                'project',
                 'saved-records',
                 'common'
             ],
