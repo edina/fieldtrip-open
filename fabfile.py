@@ -714,10 +714,12 @@ def _concat_translation_paths(dict_a, dict_b={}):
     """
     out_dict = dict.copy(dict_a)
 
-    for lang in out_dict.keys():
-        for filename in out_dict[lang].keys():
-            if lang in dict_b.keys() and filename in dict_b[lang].keys():
+    for lang in dict_b.keys():
+        for filename in dict_b[lang].keys():
+            if lang in out_dict.keys() and filename in out_dict[lang].keys():
                 out_dict[lang][filename].extend(dict_b[lang][filename])
+            else:
+                out_dict[lang][filename] = dict_b[lang][filename]
 
     return out_dict
 
