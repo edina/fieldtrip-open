@@ -24,7 +24,7 @@
             "en": "List Records"
         },
         "records": {
-            "i18n": "map:records",
+            "i18n": "common:records",
             "en": "Records"
         }
     },
