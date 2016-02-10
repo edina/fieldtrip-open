@@ -19,7 +19,8 @@ define(function(require) {
                 'footer',
                 'project',
                 'saved-records',
-                'common'
+                'common',
+                'offline-maps'
             ],
             defaultNS: 'index',
             fallbackNS: 'common',
