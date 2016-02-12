@@ -1,14 +1,20 @@
 {
-    "section1": {
-        "title": "Maps"
-    },
-    "section2": {
-        "title": "Capture"
-    },
-    "section3": {
-        "title": "Download and Sync"
-    },
-    "section4": {
-        "title": "Development"
-    }
+  "accept_eula": "Accept EULA",
+  "audio": "Audio",
+  "create_records": "Create records",
+  "eula": "End User License Agreement",
+  "eula_text": "is designed for purpose of field data capture. We DO NOT recommend this app for navigation or way finding due to possible inaccuracies and limited battery life.",
+  "exit_confirmation": "Are you sure you want to exit Fieldtrip Open?",
+  "images": "Images",
+  "licence_title": "Licence",
+  "online": "Online",
+  "records": "Records",
+  "section_capture": "Capture",
+  "section_development": "Development",
+  "section_maps": "Maps",
+  "section_records": "Records",
+  "settings": "Settings",
+  "system_tests": "System tests",
+  "text": "Text",
+  "unit_tests": "Unit tests"
 }

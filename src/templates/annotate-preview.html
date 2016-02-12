@@ -11,16 +11,22 @@
 
       <div id="annotate-preview-buttons" class="ui-grid-a">
         <div id="annotate-preview-map-tip" class="ui-block-a">
-          {% for item in body["drawElements"] %}
-           <div class="draw hide" id="draw-{{item}}">{{body["drawElements"][item]}}</div>
+          {% for item in body.drawElements.keys() %}
+          <span class="draw hide" id="draw-{{item}}" data-i18n="{{ body.drawElements[item].i18n }}">
+            {{ body.drawElements[item].en }}
+          </span>
           {% endfor %}
         </div>
         <!-- <div class="ui-block-b" ></div> -->
         <div id="annotate-preview-ok" class="ui-block-a">
-          <input type="submit" value="{{body["save"]}}">
+          <a data-role="button" data-i18n="{{ body.save.i18n }}">
+            {{ body.save.en }}
+          </a>
         </div>
         <div class="ui-block-b">
-          <a data-role="button" data-rel="back">{{body["cancel"]}}</a>
+          <a data-role="button" data-rel="back" data-i18n="{{ body.cancel.i18n }}">
+            {{ body.cancel.en }}
+          </a>
         </div>
       </div>
     </div>

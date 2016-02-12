@@ -24,7 +24,7 @@
             "en": "List Records"
         },
         "records": {
-            "i18n": "map:records",
+            "i18n": "common:records",
             "en": "Records"
         }
     },
@@ -32,7 +32,10 @@
         "popup3":{
             "template": "layers-panel.html",
             "data": {
-
+                "title": {
+                    "i18n": "map:layers_panel_title",
+                    "default": "Layers"
+                }
             }
         }
     }

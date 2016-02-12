@@ -1,5 +1,13 @@
 {
+    "draw_control_box": "Click y arrastra para dibujar el rectángulo",
+    "draw_control_drag": "Click sobre la forma y arrastra para moverla",
+    "draw_control_line": "Click para crear los puntos de la linea, doble click para finalizar",
+    "draw_control_point": "Click en el mapa para reposicionar el pin",
+    "draw_control_polygon": "Click para crear un vértice, doble-click para finalizar",
+    "layers_panel_title": "Capas",
     "waitGPS": "Esperando por señal del GPS",
     "gpsTimeout": "El GPS no ha respondido a tiempo",
-    "gpsEnable": "El GPS debe estar habilitado"
+    "gpsEnable": "El GPS debe estar habilitado",
+    "show": "Ocultar",
+    "hide": "Ver"
 }

@@ -1,5 +1,8 @@
 {
     "body": {
-        "close": "Close"
+        "close": {
+            "i18n": "common:close",
+            "en": "Close"
+        }
     }
 }

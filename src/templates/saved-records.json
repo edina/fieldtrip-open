@@ -1,6 +1,9 @@
 {
     "body": {
-        "view-records": "View Records",
+        "view-records": {
+            "en": "View Records",
+            "i18n": "saved-records:view_records"
+        },
         "buttons-toggle" : {
             "records-list":{
                 "id" : "records-list",
@@ -22,9 +25,18 @@
         "popup1":{
             "template": "saved-records-popup1.html",
             "data": {
-                "question": "Are you sure you want to delete record",
-                "cancel": "Cancel",
-                "delete": "Delete"
+                "question": {
+                    "en": "Are you sure you want to delete record",
+                    "i18n": "saved-records:delete_record_confirmation"
+                },
+                "cancel": {
+                    "en": "Cancel",
+                    "i18n": "common:cancel"
+                },
+                "delete": {
+                    "en": "Delete",
+                    "i18n": "common:delete"
+                }
             }
         },
         "popup2":{

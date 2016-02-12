@@ -1,7 +1,14 @@
 <div id="saved-records-delete-popup" data-role="popup">
-   <p>{{data["question"]}}
-     <span id="saved-record-delete-popup-name"></span>?
+   <p>
+      <span data-i18n="{{data.question.i18n}}">{{data.question.en}}</span>
+      <span id="saved-record-delete-popup-name"></span>?
    </p>
-   <a href="#" data-theme="b" data-role="button" data-inline="true" data-rel="back">{{data["cancel"]}}</a>
-   <a id="saved-record-delete-confirm" href="#" data-theme="b" data-role="button" data-inline="true">{{data["delete"]}}</a>
+   <a href="#" data-theme="b" data-role="button" data-inline="true"
+               data-rel="back" data-i18n="{{data.cancel.i18n}}">
+        {{data.cancel.en}}
+   </a>
+   <a href="#" id="saved-record-delete-confirm"
+      data-theme="b" data-role="button" data-inline="true" data-i18n="{{data.delete.i18n}}">
+        {{data.delete.en}}
+    </a>
 </div>

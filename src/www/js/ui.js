@@ -521,7 +521,9 @@ var _ui = {
             $('#annotate-preview-detail-meta').append(
                 '<p><span>' + label + '</span>: ' + text + '</p>');
         };
-        $('.non-map-body-white h2').text(this.currentAnnotation.record.name + ' Details');
+        $('.non-map-body-white h2')
+            .text(this.currentAnnotation.record.name + ' ' +
+                    $.i18n.t('common:details'));
 
         $.each(this.currentAnnotation.record.properties.fields, $.proxy(function(i, entry){
             if(records.typeFromId(entry.id) === 'image'){
@@ -658,13 +660,13 @@ var _ui = {
 
         // Set map page buttons when records are hidden.
         var mapPageRecordsHidden = function(){
-            $('#map-records-buttons-ok a span:first-child').text($.i18n.t('map:show'));
+            $('#map-records-buttons-ok a span:first-child').text($.i18n.t('map:hide'));
             $('#map-records-buttons-list a').hide();
         };
 
         $('#map-records-buttons-ok').click($.proxy(function(event){
             var label = $('#map-records-buttons-ok a').text().trim();
-            if(label.indexOf($.i18n.t('map:show')) > -1){
+            if(label.indexOf($.i18n.t('map:hide')) > -1){
                 this.mapPageRecordCentred();
             }
             else{
@@ -695,7 +697,7 @@ var _ui = {
      * Set up buttons when records are visible on map.
      */
     mapPageRecordsVisible: function(){
-        $('#map-records-buttons-ok a span:first-child').text($.i18n.t('map:hide'));
+        $('#map-records-buttons-ok a span:first-child').text($.i18n.t('map:show'));
         $('#map-records-buttons-list a').show();
     },
 

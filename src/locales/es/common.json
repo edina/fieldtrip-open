@@ -1,3 +1,10 @@
 {
-    "language_name": "Español"
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "details": "Detalles",
+    "exit": "Salir",
+    "language_name": "Español",
+    "records": "Registros",
+    "save": "Guardar",
+    "warning": "Warning"
 }

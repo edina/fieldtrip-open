@@ -6,7 +6,9 @@
         <div class="non-map-body-white ui-overlay-shadow">
             <div id="saved-records-page-header" class="content-header ui-grid-b ui-header">
                 <div class="ui-block-a">
-                    <h2>{{body["view-records"]}}</h2>
+                    <h2 data-i18n="{{ body["view-records"].i18n }}">
+                        {{ body["view-records"].en }}
+                    </h2>
                 </div>
                 <div class="ui-block-b" data-role="controlgroup" id="layout-toggle" data-type="horizontal">
                     {% if "buttons-toggle" in body%}

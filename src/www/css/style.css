@@ -723,11 +723,13 @@ div.record-extra > div > img {
     font-weight:bold;
     font-size :14px;
     margin-left:5px;
-    width:70%;
+    width: 100%;
     box-shadow:5px 5px 5px;
     z-index: 2147483647!important;
-    background-color: white;
+}
 
+#annotate-preview-map-tip .draw {
+    background-color: white;
 }
 #annotate-preview-page .map-zoom-buttons{
     position: absolute;

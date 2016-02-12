@@ -1,14 +1,20 @@
 {
-    "section1": {
-        "title": "Mapas"
-    },
-    "section2": {
-        "title": "Capturar"
-    },
-    "section3": {
-        "title": "Descarga y sincronización"
-    },
-    "section4": {
-        "title": "Desarrollo"
-    }
+  "accept_eula": "Aceptar EULA",
+  "audio": "Audio",
+  "create_records": "Crear registros",
+  "eula": "Licencia de usuario final (EULA)",
+  "eula_text": "",
+  "exit_confirmation": "Estás seguro que quieres salir de Fieldtrip Open?",
+  "images": "Imágenes",
+  "licence_title": "Licencia",
+  "online": "En línea",
+  "records": "Registros",
+  "section_capture": "Capturar",
+  "section_development": "Desarrollo",
+  "section_maps": "Mapas",
+  "section_records": "Registros",
+  "settings": "Configuración",
+  "system_tests": "Pruebas de sistema",
+  "text": "Texto",
+  "unit_tests": "Pruebas unitarias"
 }

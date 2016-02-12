@@ -1,14 +1,32 @@
 [main]
 host = https://www.transifex.com
 
-[fieldtrip-open-project.mapjson]
+[fieldtrip-open-project.common]
+file_filter = src/locales/<lang>/common.json
+source_file = src/locales/en/common.json
+source_lang = en
+type = KEYVALUEJSON
+
+[fieldtrip-open-project.footer]
+file_filter = src/locales/<lang>/footer.json
+source_file = src/locales/en/footer.json
+source_lang = en
+type = KEYVALUEJSON
+
+[fieldtrip-open-project.index]
+file_filter = src/locales/<lang>/index.json
+source_file = src/locales/en/index.json
+source_lang = en
+type = KEYVALUEJSON
+
+[fieldtrip-open-project.map]
 file_filter = src/locales/<lang>/map.json
 source_file = src/locales/en/map.json
 source_lang = en
 type = KEYVALUEJSON
 
-[fieldtrip-open-project.indexjson]
-file_filter = src/locales/<lang>/index.json
-source_file = src/locales/en/index.json
+[fieldtrip-open-project.saved-records]
+file_filter = src/locales/<lang>/saved-records.json
+source_file = src/locales/en/saved-records.json
 source_lang = en
 type = KEYVALUEJSON
