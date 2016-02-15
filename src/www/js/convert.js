@@ -43,8 +43,9 @@ define(function(require){
     /**
      * convert JSON string to html string
      * @param form a JSON representing the form
+     * @param fileName of the editor
      */
-    var jsonToHtml = function(jsonStr) {
+    var jsonToHtml = function(jsonStr, fileName) {
         var self = this;
         var form = JSON.parse(jsonStr);
 
@@ -223,7 +224,8 @@ define(function(require){
                     html+='<div class="button-wrapper button-dtree"></div>\n';
                     html+='</fieldset>\n';
                     html+='<input type="hidden" name="form-'+key+'" data-dtree="'+
-                        properties.filename+'" value="'+properties.filename+'">\n';
+                        utils.getFilename(fileName) +"/"+ properties.filename+
+                        '" value="'+properties.filename+'">\n';
                     html+='</div>\n';
                     break;
                 case 'multiimage':
@@ -290,13 +292,13 @@ define(function(require){
     };
 
     return {
-        json2html: function(formPath){
+        json2html: function(formPath, fileName){
             var deferred = new $.Deferred();
             $.ajax({
                 url: formPath,
                 dataType: "text",
                 success: function(data){
-                    deferred.resolve(jsonToHtml(data));
+                    deferred.resolve(jsonToHtml(data, fileName));
                 },
                 error: function(jqXHR, status, error){
                     var msg = "Problem with " + formPath + " : status=" +

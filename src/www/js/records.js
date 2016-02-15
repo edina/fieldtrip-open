@@ -334,7 +334,7 @@ var _base = {
         }
 
         // convert json contained within file to HTML string
-        var promise = convert.json2html(url);
+        var promise = convert.json2html(url, type);
         promise.done(function(data) {
             var form = $('#annotate-form').append(data);
             $.each($('input[capture=camera]'), function(index, input){
