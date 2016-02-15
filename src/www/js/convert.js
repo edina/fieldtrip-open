@@ -70,9 +70,7 @@ define(function(require){
         form.fields.forEach(function(value) {
             var key = value.id;
             var properties = value.properties;
-            var splits = key.split("-");
-            var type = splits[1];
-            var n = splits[2];
+            var type = value.type;
 
             var required = "";
             if(value.required) {
@@ -92,14 +90,18 @@ define(function(require){
             value.label = encodeEntities(value.label);
             switch (type) {
             case 'text':
-                    html+='<div class="fieldcontain" id="'+key+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+
                       '" data-fieldtrip-type="'+type+'" '+persistent+' '+
                       visibility+'>\n';
-                    html+='<label for="form-'+type+'-'+n+'">'+
+                    html+='<label for="form-'+key+'">'+
                         value.label+'</label>\n';
-                    html+='<input name="form-'+type+'-'+n+'" id="form-'+type+'-'+n+
+                    var inputValue = "";
+                    if(properties.prefix) {
+                        inputValue = properties.prefix + " (" + utils.getSimpleDate() + ")";
+                    }
+                    html+='<input name="form-'+key+'" id="form-'+key+
                               '" type="text" '+required+' placeholder="'+properties.placeholder+
-                              '" maxlength="'+properties["max-chars"]+'" value="'+properties.prefix+'"';
+                              '" maxlength="'+properties["max-chars"]+'" value="'+inputValue+'"';
 
                     if (key === titleField){
                         html += ' data-title="true"';
@@ -108,29 +110,29 @@ define(function(require){
                     html+='\n</div>\n';
                     break;
                 case 'textarea':
-                    html+='<div class="fieldcontain" id="'+key+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+
                         '" data-fieldtrip-type="'+type+'" '+persistent+' '+
                         visibility+'>\n';
-                    html+='<label for="form-'+type+'-'+n+'">'+
+                    html+='<label for="form-'+key+'">'+
                         value.label+'</label>\n';
-                    html+='<textarea name="form-'+type+'-'+n+'" id="form-'+type+'-'+n+
+                    html+='<textarea name="form-'+key+'" id="form-'+key+
                               '" '+required+' placeholder="'+properties.placeholder+
                               '"></textarea>\n';
                     html+='</div>\n';
                     break;
                 case 'range':
-                    html+='<div class="fieldcontain" id="'+key+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+
                         '" data-fieldtrip-type="'+type+'" '+persistent+' '+
                         visibility+'>\n';
-                    html+='<label for="form-'+type+'-'+n+'">'+
+                    html+='<label for="form-'+key+'">'+
                         (value.label)+'</label>\n';
-                    html+='<input name="form-'+type+'-'+n+'" id="form-'+type+'-'+n+
+                    html+='<input name="form-'+key+'" id="form-'+key+
                               '" type="range" '+required+' placeholder="'+properties.placeholder+
                               '" step="'+properties.step+'" min="'+properties.min+'" max="'+properties.max+'">\n';
                     html+='</div>\n';
                     break;
                 case 'checkbox':
-                    html+='<div class="fieldcontain" id="'+key+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+
                         '" data-fieldtrip-type="'+type+'" '+persistent+' '+
                         visibility+'>\n';
                     html+='<fieldset>\n<legend>'+value.label+'</legend>\n';
@@ -140,7 +142,7 @@ define(function(require){
                             html+='<div class="ui-grid-a grids">\n';
                             html+='<div class="ui-block-a"><p>'+v.value+'</p></div>\n';
                             html+='<div class="ui-block-b"><img src="'+
-                                getFilenameFromURL(v.image.src)+'"></div>\n';
+                                getFilenameFromURL(v.image.src)+'"></div></div>\n';
                             html+='</label>';
                             html+='<input name="'+key+'-'+k+'" id="'+key+
                                   '-'+k+'" value="'+v.value+'" type="'+type+'" '+
@@ -164,8 +166,8 @@ define(function(require){
                     html+='</fieldset>\n</div>\n';
                     break;
                 case 'radio':
-                    html+='<div class="fieldcontain" id="'+
-                        key+'" data-fieldtrip-type="'+type+'" '+persistent+' '+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+
+                        '" data-fieldtrip-type="'+type+'" '+persistent+' '+
                         visibility+'>\n';
                     html+='<fieldset>\n<legend>'+value.label+'</legend>\n';
                     properties.options.forEach(function(v, k) {
@@ -174,7 +176,7 @@ define(function(require){
                             html+='<div class="ui-grid-a grids">\n';
                             html+='<div class="ui-block-a"><p>'+v.value+'</p></div>\n';
                             html+='<div class="ui-block-b"><img src="'+
-                                getFilenameFromURL(v.image.src)+'"></div>\n';
+                                getFilenameFromURL(v.image.src)+'"></div></div>\n';
                             html+='</label>';
                             html+='<input name="'+key+'" id="'+key+'-'+k+
                                 '" value="'+v.value+'" type="'+
@@ -197,7 +199,7 @@ define(function(require){
                     html+='</fieldset>\n</div>\n';
                     break;
                 case 'select':
-                    html+='<div class="fieldcontain" id="'+key+'"'+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+'"'+
                         ' data-fieldtrip-type="'+type+'" '+persistent+' '+
                         visibility+'>\n';
                     html+='<fieldset>\n<legend>'+value.label+'</legend>\n';
@@ -206,7 +208,7 @@ define(function(require){
                         html+='<option value=""></option>\n';
                     }
                     else{
-                        html+='<select id="'+key+'">\n';
+                        html+='<select id="fieldcontain-'+key+'">\n';
                     }
                     properties.options.forEach(function(v, k) {
                         html+='<option value="'+v+'">'+v+'</option>\n';
@@ -214,13 +216,13 @@ define(function(require){
                     html+='</select>\n</fieldset>\n</div>\n';
                     break;
                 case 'dtree':
-                    html+='<div class="fieldcontain" id="'+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+
                         key+'" data-fieldtrip-type="'+type+'" '+visibility+'>\n';
-                    html+='<fieldset>\n<label for="fieldcontain-'+
-                        type+'-'+n+'">'+value.label+'</label>\n';
+                    html+='<fieldset>\n<label for="form-'+
+                        key+'">'+value.label+'</label>\n';
                     html+='<div class="button-wrapper button-dtree"></div>\n';
                     html+='</fieldset>\n';
-                    html+='<input type="hidden" data-dtree="'+
+                    html+='<input type="hidden" name="form-'+key+'" data-dtree="'+
                         properties.filename+'" value="'+properties.filename+'">\n';
                     html+='</div>\n';
                     break;
@@ -233,8 +235,8 @@ define(function(require){
                     if(properties.los === true){
                         cl = "camera-va";
                     }
-                    html+='<div class="fieldcontain" id="fieldcontain-'+
-                        type+'-1" data-fieldtrip-type="'+cl+'" '+visibility+'>\n';
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+'"'+
+                         'data-fieldtrip-type="'+cl+'" '+visibility+'>\n';
                     html+='<div class="button-wrapper button-'+cl+'">\n';
                     html+='<input name="form-image-1" id="form-image-1"'+
                         ' type="file" accept="image/png" capture="'+cl+'" '+
@@ -246,7 +248,7 @@ define(function(require){
                     html+='</div>\n</div>\n';
                     break;
                 case 'audio':
-                    html+='<div class="fieldcontain" id="fieldcontain-audio-1" data-fieldtrip-type="microphone" '+visibility+'>\n';
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+'" data-fieldtrip-type="microphone" '+visibility+'>\n';
                     html+='<div class="button-wrapper button-microphone">\n';
                     html+='<input name="form-audio-1" id="form-audio-1" type="file" accept="audio/*" capture="microphone" '+required+' class="microphone">\n';
                     html+='<label for="form-audio-1">'+value.label+'</label>\n';
@@ -256,15 +258,15 @@ define(function(require){
 
                     break;
                 case 'warning':
-                    html+='<div class="fieldcontain" id="'+key+'" data-fieldtrip-type="'+type+'">\n';
-                    html+='<label for="form-'+type+'-'+n+'">'+value.label+'</label>\n';
-                    html+='<textarea name="form-'+type+'-'+n+'" id="form-'+type+'-'+n+
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+'" data-fieldtrip-type="'+type+'">\n';
+                    html+='<label for="form-'+key+'">'+value.label+'</label>\n';
+                    html+='<textarea name="form-'+key+'" id="form-'+key+
                               '" '+required+' placeholder="'+properties.placeholder+
                               '"></textarea>\n';
                     html+='</div>\n';
                     break;
                 case 'section':
-                    html+='<div class="fieldcontain" id="'+key+'" data-fieldtrip-type="'+type+'">\n';
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+'" data-fieldtrip-type="'+type+'">\n';
                     html+='<h3>'+value.label+'</h3>\n';
                     html+='</div>\n';
                     break;

@@ -28,7 +28,6 @@ DAMAGE.
 
 "use strict";
 
-/* jshint multistr: true */
 /* global Camera, cordova */
 
 define(function(require) {
@@ -1228,7 +1227,7 @@ var _base = {
 
             var ignoreField = false;
             var field = {
-                id: divId,
+                id: divId.replace("fieldcontain-", ""),
                 val: null
             };
 
