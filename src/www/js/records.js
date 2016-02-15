@@ -1122,10 +1122,10 @@ var _base = {
         var isAsset = false;
 
         if(type === undefined){
-            type = this.typeFromId(field.id);
+            type = field.type;
         }
 
-        if($.inArray(type, assetTypes) != -1){
+        if($.inArray(field.type, assetTypes) !== -1){
             isAsset = true;
         }
 
@@ -1228,6 +1228,7 @@ var _base = {
             var ignoreField = false;
             var field = {
                 id: divId.replace("fieldcontain-", ""),
+                type: type,
                 val: null
             };
 

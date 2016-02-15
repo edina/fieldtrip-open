@@ -232,13 +232,13 @@ define(function(require){
                 case 'image':
                     var cl = "camera";
                     if(properties["multi-image"] === true){
-                        type = 'multiimage';
+                        key = key.replace("image", "multiimage");
                     }
                     if(properties.los === true){
                         cl = "camera-va";
                     }
                     html+='<div class="fieldcontain" id="fieldcontain-'+key+'"'+
-                         'data-fieldtrip-type="'+cl+'" '+visibility+'>\n';
+                         ' data-fieldtrip-type="'+cl+'" '+visibility+'>\n';
                     html+='<div class="button-wrapper button-'+cl+'">\n';
                     html+='<input name="form-image-1" id="form-image-1"'+
                         ' type="file" accept="image/png" capture="'+cl+'" '+
