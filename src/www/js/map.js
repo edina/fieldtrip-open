@@ -69,7 +69,7 @@ define(function(require) {
     if(navigator.globalization) {
         navigator.globalization.getLocaleName(
             function (locale) {
-                console.log('locale: ' + locale.value + '\n');
+                console.debug('locale: ' + locale.value);
                 var locations = utils.getDefaultLocations();
                 for(var key in locations){
                     if(key === locale.value){
@@ -757,11 +757,11 @@ var _base = {
                                 position.coords.latitude);
         this.userLonLat.gpsPosition = position.coords;
         this.userLonLat.markerMoved = false;
-        console.log('Accuracy: '          + position.coords.accuracy        );
-        console.log('Altitude Accuracy: ' + position.coords.altitudeAccuracy);
-        console.log('Heading: '           + position.coords.heading         );
-        console.log('Speed: '             + position.coords.speed           );
-        console.log('Timestamp: '         + position.timestamp              );
+        console.debug('Accuracy: '          + position.coords.accuracy        );
+        console.debug('Altitude Accuracy: ' + position.coords.altitudeAccuracy);
+        console.debug('Heading: '           + position.coords.heading         );
+        console.debug('Speed: '             + position.coords.speed           );
+        console.debug('Timestamp: '         + position.timestamp              );
 
         // update user position
         this.updateLocateLayer({
@@ -1434,7 +1434,6 @@ var _openlayers = {
         };
         captureRecordLayer.events.register("beforefeatureadded", null, clearRecordLayer);
         drawControls.point.events.register('featureadded', drawControls.point, $.proxy(function(evt) {
-            console.log('marker was moved');
             this.userLonLat.markerMoved = true;
         }, this));
 
