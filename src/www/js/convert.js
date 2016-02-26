@@ -83,7 +83,7 @@ define(function(require){
             }
             var visibility = "";
             if(properties.visibility) {
-                visibility = 'data-visibility="'+
+                visibility = 'data-visibility="fieldcontain-'+
                   properties.visibility.id.replace("fieldcontain-", "")+
                   ' '+properties.visibility.operator+' \''+properties.visibility.answer+'\'"';
             }
@@ -108,7 +108,7 @@ define(function(require){
                         html += ' data-title="true"';
                     }
 
-                    html+='\n</div>\n';
+                    html+='>\n</div>\n';
                     break;
                 case 'textarea':
                     html+='<div class="fieldcontain" id="fieldcontain-'+key+
@@ -156,7 +156,7 @@ define(function(require){
                                 required+'>\n';
                         }
                     });
-                    if (value.other === true) {
+                    if (value.properties.other === true) {
                         html+='<label for="'+key+'-'+properties.options.length+
                             '" class="other">' +$.i18n.t('checkbox.other')+
                             '</label>\n';
@@ -189,7 +189,7 @@ define(function(require){
                                 k+'" value="'+v.value+'" type="'+type+'" '+required+'>\n';
                         }
                     });
-                    if (value.other === true) {
+                    if (value.properties.other === true) {
                         html+='<label for="'+key+'-'+
                             properties.options.length+'" class="other">' +
                             $.i18n.t('radio.other')  + '</label>\n';
@@ -205,14 +205,14 @@ define(function(require){
                         visibility+'>\n';
                     html+='<fieldset>\n<legend>'+value.label+'</legend>\n';
                     if(required !== ""){
-                        html+='<select name="'+key+'" required="required">\n';
+                        html+='<select name="form-'+key+'" required="required">\n';
                         html+='<option value=""></option>\n';
                     }
                     else{
-                        html+='<select id="fieldcontain-'+key+'">\n';
+                        html+='<select name="form-'+key+'">\n';
                     }
                     properties.options.forEach(function(v, k) {
-                        html+='<option value="'+v+'">'+v+'</option>\n';
+                        html+='<option value="'+v.value+'">'+v.value+'</option>\n';
                     });
                     html+='</select>\n</fieldset>\n</div>\n';
                     break;

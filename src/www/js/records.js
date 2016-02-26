@@ -425,7 +425,7 @@ var _base = {
                         $element.hide();
                     };
 
-                    $('fieldset', 'div[id^=fieldcontain-' + r.field + ']')
+                    $('fieldset', 'div[id^=' + r.field + ']')
                         .on('change', checkVisibility);
 
                     // Initialize
