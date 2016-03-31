@@ -1210,13 +1210,28 @@ var _base = {
 
     /**
      * Process annotation/record from an HTML5 form.
+     * @param orgAnnotation existing annotation
+     * @param group form group
      * @param recordType record/Form type - image, text, audio or custom
      */
-    processAnnotation: function(group, recordType){
+    processAnnotation: function(orgAnnotation, group, recordType){
         var lastError;
         var valid = [];
         var persistentValues = [];
         var annotation = this.createRecord(recordType, group);
+
+        if(orgAnnotation === undefined){
+            annotation.record.name = $('input[data-title="true"]').val();
+            if(annotation.record.name === undefined){
+                annotation.record.name = $('form').attr('data-title') + '-' +
+                    utils.getSimpleDate();
+            }
+        }
+        else{
+            annotation.record.name = orgAnnotation.record.name;
+            annotation.record.geometry = orgAnnotation.record.geometry;
+            annotation.editing = true;
+        }
 
         $.each($('div[class=fieldcontain]'), $.proxy(function(i, entry){
             var divId = $(entry).attr('id');
@@ -1349,11 +1364,6 @@ var _base = {
                     });
                     return;
                 }
-            }
-
-            annotation.record.name = $('input[data-title="true"]').val();
-            if(annotation.record.name === undefined){
-                annotation.record.name = $('form').attr('data-title') + '-' + utils.getSimpleDate();
             }
 
             // Save the value for the persistent fields
@@ -1699,12 +1709,21 @@ var _base = {
     },
 
     /**
+     * Determine the form type from the div id.
      * @param id Field div id.
      * @return The control type for a field id.
      */
     typeFromId: function(id){
-        var s = id.indexOf('-') + 1;
-        return id.substr(s, id.lastIndexOf('-') - s);
+        var type;
+        if(id.startsWith("fieldcontain")){
+            var s = id.indexOf('-') + 1;
+            type = id.substr(s, id.lastIndexOf('-') - s);
+        }
+        else{
+            type = id.substr(0, id.indexOf('-'));
+        }
+
+        return type;
     },
 
     /**

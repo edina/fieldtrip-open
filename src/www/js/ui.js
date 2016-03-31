@@ -33,8 +33,15 @@ DAMAGE.
 /**
  * Main fieldtrip open UI interface.
  */
-define(['map', 'records', 'audio', 'utils', 'settings', 'underscore', 'widgets'], function(// jshint ignore:line
-    map, records, audio, utils, settings, _, widgets){
+define(function(require){
+    var map = require('map');
+    var records = require('records');
+    var audio = require('audio');
+    var utils = require('utils');
+    var settings = require('settings');
+    var _ = require('underscore');
+    var widgets = require('widgets');
+
     var portraitScreenHeight;
     var landscapeScreenHeight;
     var menuClicked, searchClicked;
@@ -387,7 +394,8 @@ var _ui = {
                 utils.hideKeyboard();
 
                 // process the form
-                this.currentAnnotation = records.processAnnotation(group, type);
+                this.currentAnnotation = records.processAnnotation(
+                    this.currentAnnotation, group, type);
             }, this));
 
             // if annotation in progress repopulate fields
@@ -396,13 +404,11 @@ var _ui = {
                     var $element, $other;
 
                     var fieldType = records.typeFromId(entry.id);
-                    var fieldSelector = '#' + entry.id;
+                    var fieldSelector = '#fieldcontain-' + entry.id;
+
                     if(typeof(entry.val) !== 'undefined'){
-                        if(fieldType === 'text'){
-                            $('#' + entry.id + ' input').val(entry.val);
-                        }
-                        else if(fieldType === 'textarea'){
-                            $('#' + entry.id + ' textarea').val(entry.val);
+                        if(fieldType === 'text' || fieldType === 'textarea'){
+                            $('#form-' + entry.id).val(entry.val);
                         }
                         else if(fieldType === 'image'){
                             showImage('annotate-image-0', entry.val, fieldType);
@@ -510,11 +516,20 @@ var _ui = {
                 map.showAnnotateLayer();
                 createToolBar();
             }
-            geoLocate({
-                secretly: false,
-                updateAnnotateLayer: updateAnnotate,
-                useDefault: false
-            });
+
+            if(this.currentAnnotation.editing &&
+               this.currentAnnotation.record.geometry.coordinates.length > 0){
+                // record being edited, centre on original
+                map.updateAnnotateLayerByGeometry(
+                    this.currentAnnotation.record.geometry);
+            }
+            else{
+                geoLocate({
+                    secretly: false,
+                    updateAnnotateLayer: updateAnnotate,
+                    useDefault: false
+                });
+            }
         }
 
         var addMeta = function(label, text){
@@ -537,6 +552,7 @@ var _ui = {
 
         $('#annotate-preview-ok').click($.proxy(function(){
             var coords = map.getAnnotationCoords(false);
+            delete this.currentAnnotation.editing;
             records.saveAnnotationWithCoords(
                 this.currentAnnotation,
                 coords.geometry);
@@ -689,7 +705,7 @@ var _ui = {
      * to leave map centred as is.
      */
     mapPageRecordCentred: function(annotation){
-        map.showRecordsLayer(annotation);
+        map.refreshRecords(annotation);
         this.mapPageRecordsVisible();
     },
 
@@ -774,8 +790,15 @@ var _ui = {
             'click',
             '.saved-records-edit',
             $.proxy(function(event){
-                this.currentAnnotation = records.getAnnotationDetailsById($(event.target).parents('li').attr("id")).annotation;
-                records.annotate(this.currentAnnotation.editorGroup, this.currentAnnotation.type);
+                var id = $(event.target).parents('li').attr("id");
+                this.currentAnnotation = records.getAnnotationDetailsById(id).annotation;
+
+                if(this.currentAnnotation){
+                    records.annotate(this.currentAnnotation.editorGroup, this.currentAnnotation.type);
+                }
+                else{
+	                console.debug("No record found for " + id);
+                }
             }, this)
         );
 

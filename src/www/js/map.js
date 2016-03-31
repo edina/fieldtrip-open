@@ -1129,10 +1129,25 @@ var _base = {
             layer: this.getAnnotateLayer(),
             id: ANNOTATE_POSITION_ATTR,
             zoom: undefined,
-            lonLat: lonlat
+            lonLat: lonlat,
+            autocentre: true
         });
 
         this.showAnnotateLayer();
+    },
+
+    /**
+     * Update annotate layer centred on geojson geometry.
+     * @param geom geojson geometry
+     */
+    updateAnnotateLayerByGeometry: function(geom){
+        if(geom.type === 'Point'){
+            var coords = geom.coordinates;
+            this.updateAnnotateLayer(new OpenLayers.LonLat(coords[0], coords[1]));
+        }
+        else{
+            console.debug("Type " + geom.type + " not yet supported");
+        }
     },
 
     /**
