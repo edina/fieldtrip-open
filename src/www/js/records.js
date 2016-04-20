@@ -1715,7 +1715,8 @@ var _base = {
      */
     typeFromId: function(id){
         var type;
-        if(id.startsWith("fieldcontain")){
+        var subStr = "fieldcontain";
+        if(id.substring(0, subStr.length) === subStr){
             var s = id.indexOf('-') + 1;
             type = id.substr(s, id.lastIndexOf('-') - s);
         }
