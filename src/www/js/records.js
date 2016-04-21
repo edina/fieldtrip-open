@@ -196,11 +196,11 @@ define(function(require) {
 
     var restorePersistentValues = function(form, group, type) {
         var persistentValues = _this.getPersistentValues(group, type);
-        var extractFieldType = /^fieldcontain-(.*?)-[0-9]+/;
+        var extractFieldType = /^(.*?)-[0-9]+/;
 
         persistentValues.forEach(function(field) {
             var fieldType = extractFieldType.exec(field.id)[1];
-            var $field = $('#' + field.id, form);
+            var $field = $('#fieldcontain-' + field.id, form);
 
             switch (fieldType) {
                 case 'text':
@@ -1377,7 +1377,7 @@ var _base = {
         }, this));
 
         if (valid.length === 0) {
-            _this.setPersistentValues(persistentValues);
+            _this.setPersistentValues(group, recordType, persistentValues);
 
             // nasty I know: but changing page in a setTimeout allows
             // time for the keyboard to close
