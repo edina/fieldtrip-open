@@ -262,7 +262,7 @@ def deploy_ios():
     """
     Deploy to an iOS device connected to machine
     """
-
+    build_ios()
     with lcd(_get_runtime()[1]):
         local('cordova run ios')
 
