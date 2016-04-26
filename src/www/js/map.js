@@ -446,7 +446,13 @@ var _base = {
         var _layers;
 
         records.usingLocalStorage('layers')(function(layers) {
+            if (layers === null) {
+              layers = {};
+            }
+
             _layers = layers;
+
+            return layers;
         });
 
         return _layers;
