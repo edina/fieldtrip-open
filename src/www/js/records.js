@@ -1728,6 +1728,16 @@ var _base = {
     },
 
     /**
+     * Determine the form type from editor property.
+     * @param record Record json object.
+     * @return form type.
+     */
+    typeFromRecord: function(record){
+        var editor = record.properties.editor;
+        return editor.substr(0, editor.indexOf('.json'));
+    },
+
+    /**
      * Helper function to read a value from localStorage modify it
      * and save it back
      * @param key - key of the value to use
