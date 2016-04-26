@@ -51,8 +51,11 @@ import re
 
 
 CORDOVA_VERSION = '4.3.1'
-CORDOVA_ANDROID_VERSION = None # can be used to enable alternative android version
-
+# Can be used to enable alternative platform version
+CORDOVA_PLATFORM_VERSION = {
+    'android': None,
+    'ios': None
+}
 OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION = '2.11.3'
 BOWER_VERSION = '1.4.1'
@@ -616,8 +619,9 @@ def install_project(platform='android',
                 local('cp {0} {1}'.format(src, dest))
 
         # install the platform
-        if CORDOVA_ANDROID_VERSION and platform is 'android':
-            local('cordova platform add {0}@{1}'.format(platform, CORDOVA_ANDROID_VERSION))
+        if CORDOVA_PLATFORM_VERSION.get(platform):
+            local('cordova platform add {0}@{1}'
+                .format(platform, CORDOVA_PLATFORM_VERSION[platform]))
         else:
             local('cordova platform add {0}'.format(platform))
 
