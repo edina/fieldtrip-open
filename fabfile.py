@@ -54,7 +54,7 @@ CORDOVA_VERSION = '4.3.1'
 # Can be used to enable alternative platform version
 CORDOVA_PLATFORM_VERSION = {
     'android': None,
-    'ios': '3.9.2'
+    'ios': None
 }
 OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION = '2.11.3'
