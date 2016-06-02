@@ -767,16 +767,16 @@ def merge_locales():
 
     # merge and write the translations
     for lang in locales_paths.iterkeys():
-        for file, paths in locales_paths[lang].iteritems():
+        for filename, paths in locales_paths[lang].iteritems():
             out = {}
             for path in paths:
-                with open(os.path.join(path, lang, file), 'r') as f:
+                with open(os.path.join(path, lang, filename), 'r') as f:
                     out.update(json.loads(f.read()))
             lang_path = os.path.join(out_dir, lang)
             if not os.path.exists(lang_path):
                 os.mkdir(lang_path)
 
-            with codecs.open(os.path.join(lang_path, file), 'w', 'utf8') as f:
+            with codecs.open(os.path.join(lang_path, filename), 'w', 'utf8') as f:
                 f.write(json.dumps(out, ensure_ascii=False, indent=2))
 
 
