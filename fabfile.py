@@ -766,9 +766,12 @@ def merge_locales():
     locales_paths = _concat_translation_paths(locales_paths, project_files)
 
     # merge and write the translations
+    catalog = {'namespaces': [], 'languages': []}
     for lang in locales_paths.iterkeys():
+        catalog['languages'].append(lang)
         for filename, paths in locales_paths[lang].iteritems():
             out = {}
+            namespace = re.sub('.json$', '', filename)
             for path in paths:
                 with open(os.path.join(path, lang, filename), 'r') as f:
                     out.update(json.loads(f.read()))
@@ -779,6 +782,12 @@ def merge_locales():
             with codecs.open(os.path.join(lang_path, filename), 'w', 'utf8') as f:
                 f.write(json.dumps(out, ensure_ascii=False, indent=2))
 
+            if namespace not in catalog['namespaces']:
+                catalog['namespaces'].append(namespace)
+
+    # Write the catalog with the languages and namespaces
+    with codecs.open(os.path.join(out_dir, 'catalog.json'), 'w', 'utf8') as f:
+        f.write(json.dumps(catalog))
 
 @task
 def release_android(
