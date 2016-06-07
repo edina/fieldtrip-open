@@ -103,9 +103,18 @@ def check_plugins():
 
     json_file = os.path.join(_get_source()[1], 'theme', 'project.json')
     if os.path.exists(json_file):
+
+        def version_check(name, version, latest_version):
+            if version != latest_version:
+                print '*** {0}@{1} not using latest version {2} ***\n'.format(
+                    name, version, latest_version)
+            else:
+                print '{0} up to date\n'.format(name)
+
         plugins = json.loads(open(json_file).read())['plugins']['cordova']
         for plugin in plugins:
             if '@' in plugin:
+                # plugin registry
                 name, version = plugin.split('@')
                 out = local('plugman info {0}'.format(name), capture=True)
                 lines = out.split('\n')
@@ -113,10 +122,16 @@ def check_plugins():
                     info = line.split(':')
                     if info[0] == 'version':
                         latest_version = info[1].strip()
-                if version != latest_version:
-                    print '*** {0}@{1} not using latest version {2} ***\n'.format(name, version, latest_version)
-                else:
-                    print '{0} up to date'.format(name)
+                version_check(name, version, latest_version)
+            elif plugin[:14] == 'https://github':
+                # github repo
+                if '#' in plugin:
+                    url, version = plugin.split('#')
+                    repo = url.split('github.com/')[1].replace('.git', '')
+                    api_url = 'https://api.github.com/repos/{0}/tags'.format(repo)
+                    out = local('curl {0}'.format(api_url), capture=True)
+                    latest_version = json.loads(out)[0]['name']
+                    version_check(url, version, latest_version)
     else:
         print 'Where is the plugins file?: {0}'.format(json_file)
         exit(-1)
