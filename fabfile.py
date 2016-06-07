@@ -54,7 +54,7 @@ CORDOVA_VERSION = '4.3.1'
 # Can be used to enable alternative platform version
 CORDOVA_PLATFORM_VERSION = {
     'android': None,
-    'ios': '3.9.2'
+    'ios': None
 }
 OPENLAYERS_VERSION = '2.13.1'
 NPM_VERSION = '2.11.3'
@@ -781,19 +781,28 @@ def merge_locales():
     locales_paths = _concat_translation_paths(locales_paths, project_files)
 
     # merge and write the translations
+    catalog = {'namespaces': [], 'languages': []}
     for lang in locales_paths.iterkeys():
-        for file, paths in locales_paths[lang].iteritems():
+        catalog['languages'].append(lang)
+        for filename, paths in locales_paths[lang].iteritems():
             out = {}
+            namespace = re.sub('.json$', '', filename)
             for path in paths:
-                with open(os.path.join(path, lang, file), 'r') as f:
+                with open(os.path.join(path, lang, filename), 'r') as f:
                     out.update(json.loads(f.read()))
             lang_path = os.path.join(out_dir, lang)
             if not os.path.exists(lang_path):
                 os.mkdir(lang_path)
 
-            with codecs.open(os.path.join(lang_path, file), 'w', 'utf8') as f:
+            with codecs.open(os.path.join(lang_path, filename), 'w', 'utf8') as f:
                 f.write(json.dumps(out, ensure_ascii=False, indent=2))
 
+            if namespace not in catalog['namespaces']:
+                catalog['namespaces'].append(namespace)
+
+    # Write the catalog with the languages and namespaces
+    with codecs.open(os.path.join(out_dir, 'catalog.json'), 'w', 'utf8') as f:
+        f.write(json.dumps(catalog))
 
 @task
 def release_android(

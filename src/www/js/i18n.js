@@ -4,24 +4,18 @@ define(function(require) {
     var i18next = require('ext/i18next');
     var i18nextJquery = require('ext/jquery-i18next');
     var i18nextXHRbackend = require('ext/i18next-xhr-backend');
+    var catalogText = require('text!../locales/catalog.json');
+    var catalog = JSON.parse(catalogText);
 
     i18next
         .use(i18nextXHRbackend)
         .init({
             debug: false,
             lng: 'en',
-            preload: ['cy', 'de', 'el', 'en', 'es'],
-            lngs: ['cy', 'de', 'el', 'en', 'es'],
+            preload: catalog.languages,
+            lngs: catalog.languages,
             fallbackLng: 'en',
-            ns: [
-                'index',
-                'map',
-                'footer',
-                'project',
-                'saved-records',
-                'common',
-                'offline-maps'
-            ],
+            ns: catalog.namespaces,
             defaultNS: 'index',
             fallbackNS: 'common',
             backend: {
