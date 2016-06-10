@@ -8,6 +8,7 @@
     "waitGPS": "Esperando por señal del GPS",
     "gpsTimeout": "El GPS no ha respondido a tiempo",
     "gpsEnable": "El GPS debe estar habilitado",
+    "list_records": "Lista de registros",
     "show": "Ocultar",
     "hide": "Ver"
 }
