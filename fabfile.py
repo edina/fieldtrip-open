@@ -1096,12 +1096,15 @@ def _check_config(location=None, port=None):
             local('rsync -avz {0} {1}'.format(location, conf_file))
     config = None # make sure it is re-read
 
-def _config(key=None, section='install'):
+def _config(key=None, section='install', folded=False):
     """
     Get config value for key.
 
     key - config key
     section - config section, e.g install, release or app
+    folded - If the expected value has been split in multiple lines for
+        readability but it is in reality a single long line, the line breaks
+        will be removed to restore that.
     """
 
     global config
@@ -1117,6 +1120,8 @@ def _config(key=None, section='install'):
             val = None
             try:
                 val = config.get(section, key)
+                if folded:
+                    val = val.replace('\n', '')
             except NoOptionError:
                 pass
             return val
