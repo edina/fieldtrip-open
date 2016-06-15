@@ -304,8 +304,9 @@ def generate_config_js(version=None, fetch_config=True):
 
     # convert items list into dictionary
     values = {}
-    for entry in config.items('app'):
-        values[str(entry[0])] = str(entry[1])
+    section = 'app'
+    for key, _ in config.items(section):
+        values[str(key)] = str(_config(key, section=section, folded=True))
     values['version'] = str(version)
 
     templates = os.sep.join((src_dir, 'templates'))
@@ -337,7 +338,10 @@ def generate_html(platform="android", cordova=False):
     #setup paths
     root, proj_home, src_dir = _get_source()
 
-    htmlGenerator = HtmlGenerator(platform, cordova, root, proj_home, src_dir, _config(), _config(None, "settings"))
+    htmlGenerator = HtmlGenerator(
+        platform, cordova, root, proj_home, src_dir, _config(),
+        _config(None, "settings", folded=True)
+    )
     htmlGenerator.generate()
     #copy all the editors that exist inside the editors folder of the project
     if os.path.exists(os.path.join(proj_home, 'src', 'editors')):
@@ -1215,7 +1219,7 @@ def _generate_config_xml():
     config_template = environ.get_template("config.xml")
     version = versions['project']
 
-    access_urls = _config('access_urls')
+    access_urls = _config('access_urls', folded=True)
     if access_urls:
         access_urls = access_urls.split(",")
     else:
