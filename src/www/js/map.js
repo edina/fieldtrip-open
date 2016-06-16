@@ -1234,7 +1234,14 @@ var _openlayers = {
 
         var bounds;
         if(this.isOSM()){
-            baseLayer = new OpenLayers.Layer.OSM();
+            baseLayer = new OpenLayers.Layer.OSM(
+                'OpenStreetMap',
+                [
+                    'https://a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+                    'https://b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+                    'https://c.tile.openstreetmap.org/${z}/${x}/${y}.png'
+                ]
+            );
             bounds = new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34);
             resolutions = [156543.03390625,
                            78271.516953125,
