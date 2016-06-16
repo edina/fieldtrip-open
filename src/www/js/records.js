@@ -980,7 +980,8 @@ var _base = {
             quality: 100,
             destinationType: Camera.DestinationType.FILE_URI,
             sourceType : sourceType,
-            encodingType: encodingType
+            encodingType: encodingType,
+            correctOrientation: true
         };
         if(localStorage.getItem(this.IMAGE_UPLOAD_SIZE) != this.IMAGE_SIZE_FULL){
             options.targetWidth = 640;
