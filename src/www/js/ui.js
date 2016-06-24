@@ -470,6 +470,12 @@ var _ui = {
                 });
             }
 
+            // work around problem with focus and keyboard poping up going from
+            // text boxes to radio or checkbox
+            $('input[type="radio"], input[type="checkbox"]').click(function(event){
+                $(':focus').blur();
+            });
+
             // ensure page is scrollable
             utils.touchScroll('#annotate-form');
         }, this));
@@ -738,7 +744,7 @@ var _ui = {
      */
     savedRecordsPage: function(event){
         var annotations = records.getSavedRecords();
-        //records.printRecords();
+        records.printRecords();
 
         /**
          * toggleDisplay
