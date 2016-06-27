@@ -82,5 +82,9 @@
         "i18next-xhr-backend": [
             "i18nextXHRBackend.min.js"
         ]
+    },
+    "resolutions": {
+        "jquery": "1.11.3"
+
     }
 }

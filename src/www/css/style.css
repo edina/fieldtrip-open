@@ -253,7 +253,7 @@ body .ui-loader-textonly{
 
 /********* Non map page *********/
 
-.non-map-body-white{
+.non-map-body{
     position: relative;
     left: 2%;
     background: white;
@@ -277,7 +277,7 @@ body .ui-loader-textonly{
     text-align: left;
 }
 
-.non-map-body-white h2{
+.non-map-body h2{
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     background: white;
@@ -562,6 +562,20 @@ div.record-extra > div > img {
     padding: 1.5em 2em 0 2em;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+#annotate-form p,
+#annotate-form label{
+    color: black;
+    text-shadow: none;
+}
+
+#annotate-form  .ui-radio label{
+    color: white;
+}
+
+#annotate-form .ui-input-text{
+    background-color: white;
 }
 
 .button-wrapper p{
