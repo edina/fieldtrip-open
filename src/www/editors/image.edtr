@@ -1,42 +1,32 @@
-<form id="annotate-image-record" data-ajax="false" novalidate>
-
-  <div class="fieldcontain" id="fieldcontain-text-1">
-    <label for="form-text-1">Title</label>
-    <input name="form-text-1"
-           id="form-text-1"
-           type="text"
-           required="required"
-           value="Image"
-           maxlength="40"/>
-  </div>
-
-  <div class="fieldcontain" id="fieldcontain-textarea-1">
-    <label for="form-textarea-1">Description</label>
-    <textarea name="form-textarea-1" id="form-textarea-1" placeholder=""></textarea>
-  </div>
-
-  <div class="fieldcontain" id="fieldcontain-image-1">
-    <div class="button-wrapper">
-      <label for="image-capture-1">Image</label>
-      <input name="image-capture-1"
-             id="image-capture-1"
-             type="file"
-             accept="image/png"
-             capture="camera"
-             value=""
-             required="required"
-             class="photo_capture" />
-    </div>
-  </div>
-
-
-  <div id="image-buttons" class="fieldcontain ui-grid-a">
-    <div class="ui-block-a">
-      <input data-theme="a" type="submit" value="Save"/>
-    </div>
-    <div class="ui-block-b">
-      <input data-theme="a" type="button" value="Cancel"/>
-    </div>
-  </div>
-
-</form>
+{
+    "title": "Title",
+    "geoms":["point"],
+    "recordLayout":{
+        "headers":[]
+    },
+    "fields":[
+        {
+            "id": "text-1",
+            "type": "text",
+            "required": false,
+            "persistent": false,
+            "properties":{
+                "prefix": "",
+                "placeholder":"",
+                "max-chars":"10"
+            },
+            "label": "Description"
+        },
+        {
+            "id":"image-1",
+            "type":"image",
+            "required":false,
+            "persistent":false,
+            "properties":{
+                "multi-image":false
+            },
+            "label":"Image"
+        }
+    ],
+    "extra":[]
+}
