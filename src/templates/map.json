@@ -7,14 +7,6 @@
                 "data-inline": "true",
                 "data-transition": "none",
                 "data-iconpos": "notext"
-            },
-            "poi-layers":{
-                "href": "#layers-panel",
-                "class": "layers-icon",
-                "data-role": "button",
-                "data-inline": "true",
-                "data-transition": "none",
-                "data-iconpos": "notext"
             }
         }
     },
