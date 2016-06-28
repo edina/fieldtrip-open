@@ -300,6 +300,11 @@ var _base = {
     EVT_DELETE_ANNOTATION: 'evt-delete-annotation',
 
     /**
+     * Event fired when editor is downloaded.
+     */
+    EVT_DOWNLOAD_EDITOR: 'evt-download-editor',
+
+    /**
      * Edit record format.
      */
     EVT_EDIT_ANNOTATION: 'evt-edit-annotation',
@@ -564,6 +569,15 @@ var _base = {
 
         promise.done(function(data) {
             _this.processEditor(fileEntry.name, data, group, online);
+
+            utils.printObj(data);
+            $.event.trigger(
+                {
+                    type: this.EVT_DOWNLOAD_EDITOR
+                },
+                [data]
+            );
+
             deferred.resolve();
         });
 
