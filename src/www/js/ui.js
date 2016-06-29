@@ -593,37 +593,7 @@ var _ui = {
      * Set up capture page.
      */
     capturePage: function(){
-        var blocks = ['a', 'b', 'c', 'd', 'e'];
-
-        var editorToHTML = function(index, group, editor){
-            var html = '<div class="ui-block-' + blocks[index % 5] + '">\
-                          <a \
-                            class="' + editor['class'] + '" \
-                            data-editor-type="' + editor.type +'"\
-                            data-editor-group="'+ editor.group +'"\
-                            href="#">\
-                              <img src="css/images/custom-'+group+'.png"> \
-                          </a>\
-                          <p>' + editor.title + '</p>\
-                        </div>';
-            return html;
-        };
-
-        var appendEditorButtons = function(group, section){
-            var editors = records.getEditorsByGroup(group);
-            var i = 0;
-            for(var key in editors){
-                if(editors.hasOwnProperty(key)){
-                    var editor = editors[key];
-                    var html = editorToHTML(i, group, editor);
-                    $(section).append(html);
-                    i++;
-                }
-            }
-        };
-
-        appendEditorButtons(records.EDITOR_GROUP.PRIVATE, '#capture-section2');
-        appendEditorButtons(records.EDITOR_GROUP.PUBLIC, '#capture-section2');
+        records.appendAllEditorButtons('#capture-section2');
 
         capturePageListeners();
         this.currentAnnotation = undefined;

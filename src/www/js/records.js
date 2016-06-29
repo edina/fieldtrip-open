@@ -141,6 +141,26 @@ define(function(require) {
     };
 
     /**
+     * Create HTML editor button.
+     * @param index
+     * @param group Editor group, see EDITOR_GROUP.
+     * @param editor Editor name.
+     */
+    var editorToHTML = function(index, group, editor){
+        var blocks = ['a', 'b', 'c', 'd', 'e'];
+        var html = '<div class="ui-block-' + blocks[index % 5] + '">\
+                      <a class="' + editor['class'] + '" \
+                        data-editor-type="' + editor.type +'"\
+                        data-editor-group="'+ editor.group +'"\
+                        href="#">\
+                        <img src="css/images/custom-'+group+'.png"> \
+                      </a>\
+                      <p>' + editor.title + '</p>\
+                    </div>';
+        return html;
+    };
+
+    /**
      * Parse a rule and returne its three components
      *
      * @params {String} rule A triplet with this structure 'fieldname operation value'
@@ -570,13 +590,12 @@ var _base = {
         promise.done(function(data) {
             _this.processEditor(fileEntry.name, data, group, online);
 
-            utils.printObj(data);
-            $.event.trigger(
-                {
-                    type: this.EVT_DOWNLOAD_EDITOR
-                },
-                [data]
-            );
+            // $.event.trigger(
+            //     {
+            //         type: this.EVT_DOWNLOAD_EDITOR
+            //     },
+            //     [data]
+            // );
 
             deferred.resolve();
         });
@@ -682,6 +701,33 @@ var _base = {
      */
     annotateText: function(){
         this.annotate(EDITOR_GROUP.DEFAULT, 'text.edtr');
+    },
+
+    /**
+     * Add survey/editor button to page.
+     * @param group Editor group, see EDITOR_GROUP
+     * @param section HTML element to attack button.
+     */
+    appendEditorButtons: function(group, section){
+        var editors = this.getEditorsByGroup(group);
+        var i = 0;
+        for(var key in editors){
+            if(editors.hasOwnProperty(key)){
+                var editor = editors[key];
+                var html = editorToHTML(i, group, editor);
+                $(section).append(html);
+                i++;
+            }
+        }
+    },
+
+    /**
+     * Add survey/editor buttons to page.
+     * @param section HTML element to attack button.
+     */
+    appendAllEditorButtons: function(section){
+        this.appendEditorButtons(EDITOR_GROUP.PRIVATE, section);
+        this.appendEditorButtons(EDITOR_GROUP.PUBLIC, section);
     },
 
     /**
