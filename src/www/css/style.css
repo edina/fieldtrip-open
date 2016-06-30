@@ -575,6 +575,7 @@ div.record-extra > div > img {
 }
 
 #annotate-form .ui-input-text{
+    color: black;
     background-color: white;
 }
 
