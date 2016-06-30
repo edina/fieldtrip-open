@@ -590,12 +590,12 @@ var _base = {
         promise.done(function(data) {
             _this.processEditor(fileEntry.name, data, group, online);
 
-            // $.event.trigger(
-            //     {
-            //         type: this.EVT_DOWNLOAD_EDITOR
-            //     },
-            //     [data]
-            // );
+            $.event.trigger(
+                {
+                    type: _this.EVT_DOWNLOAD_EDITOR
+                },
+                [data]
+            );
 
             deferred.resolve();
         });
@@ -709,7 +709,7 @@ var _base = {
      * @param section HTML element to attack button.
      */
     appendEditorButtons: function(group, section){
-        var editors = this.getEditorsByGroup(group);
+       var editors = this.getEditorsByGroup(group);
         var i = 0;
         for(var key in editors){
             if(editors.hasOwnProperty(key)){
@@ -725,7 +725,14 @@ var _base = {
      * Add survey/editor buttons to page.
      * @param section HTML element to attack button.
      */
-    appendAllEditorButtons: function(section){
+    appendAllEditorButtons: function(){
+        var section = '#capture-section2';
+        var config = utils.getConfig();
+        if(config.synccaptureid){
+            section = '#' + config.synccaptureid;
+        }
+
+        $(section).empty();
         this.appendEditorButtons(EDITOR_GROUP.PRIVATE, section);
         this.appendEditorButtons(EDITOR_GROUP.PUBLIC, section);
     },

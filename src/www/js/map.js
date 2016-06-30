@@ -1738,6 +1738,44 @@ var _openlayers = {
         });
     },
 
+    /*createClone: function(options){
+        var mapOptions = this.getOptions();
+        clone = new OpenLayers.Map(
+            options.div,
+            {
+                controls: [],
+                projection: mapOptions.projection,
+                displayProjection: mapOptions.displayProjection,
+                units: 'm',
+                resolutions: mapOptions.resolutions,
+                maxExtent: mapOptions.maxExtent,
+                theme: null,
+            }
+        );
+
+        var layer;
+        var baseLaser = this.getBaseLayer();
+        if(baseLaser instanceof OpenLayers.Layer.OSM){
+            layer = new OpenLayers.Layer.OSM(
+                baseLaser.name + '_' + options.zoom,
+                baseLaser.url
+            );
+        }
+        else{
+            layer = new OpenLayers.Layer.TMS(
+                "os",
+                baseLaser.url,
+                {
+                    layername: baseLaser.layername,
+                    type: baseLaser.type
+                }
+            );
+        }
+
+        clone.addLayer(layer);
+        return clone;
+    },*/
+
     /**
      * Create a marker for a given FT annotation.
      * @param options

@@ -82,19 +82,23 @@ define(function(require){
             records.annotateText();
         });
 
-        $('.annotate-custom-form').unbind();
-        $('.annotate-custom-form').on('vclick', function(event){
-            var $editor = $(event.currentTarget);
+        $(document).off('vclick', '.annotate-custom-form');
+        $(document).on(
+            'vclick',
+            '.annotate-custom-form',
+            function(event){
+                var $editor = $(event.currentTarget);
 
-            var group = $editor.attr('data-editor-group');
-            var type = $editor.attr('data-editor-type');
+                var group = $editor.attr('data-editor-group');
+                var type = $editor.attr('data-editor-type');
 
-            if(group === undefined){
-                group = records.EDITOR_GROUP.PRIVATE;
+                if(group === undefined){
+                    group = records.EDITOR_GROUP.PRIVATE;
+                }
+
+                records.annotate(group, type);
             }
-
-            records.annotate(group, type);
-        });
+        );
     };
 
     /**
@@ -593,8 +597,7 @@ var _ui = {
      * Set up capture page.
      */
     capturePage: function(){
-        records.appendAllEditorButtons('#capture-section2');
-
+        records.appendAllEditorButtons();
         capturePageListeners();
         this.currentAnnotation = undefined;
     },
@@ -603,6 +606,7 @@ var _ui = {
      * Set up home page.
      */
     homePage: function(event){
+        records.appendAllEditorButtons();
         capturePageListeners();
 
         utils.touchScroll('#home-content');
@@ -854,7 +858,6 @@ var _ui = {
     },
 };
 
-_ui.init();
 return _ui;
 
 });
