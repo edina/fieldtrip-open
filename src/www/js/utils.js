@@ -759,7 +759,7 @@ return {
      * @return Should end user license / splash be shown?
      */
     showStartPopup: function(){
-        if(config.enduserlicence && !this.isPrivilegedUser()){
+        if(this.str2bool(config.enduserlicence) && !this.isPrivilegedUser()){
             return true;
         }
         else{
