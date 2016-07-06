@@ -556,27 +556,18 @@ div.record-extra > div > img {
     }
 }
 
-
 #annotate-form{
     position: relative;
     padding: 1.5em 2em 0 2em;
     overflow-x: hidden;
     overflow-y: auto;
-}
-
-#annotate-form p,
-#annotate-form label{
     color: black;
+    background-color: white;
     text-shadow: none;
 }
 
-#annotate-form  .ui-radio label{
-    color: white;
-}
-
-#annotate-form .ui-input-text{
-    color: black;
-    background-color: white;
+#annotate-form legend{
+    font-size: 16px;
 }
 
 .button-wrapper p{
