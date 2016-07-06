@@ -541,6 +541,8 @@ var _base = {
 
     /**
      * @return Zoom level details.
+     *   current - current map level
+     *   max - maximum available zoom level
      */
     getZoomLevels: function(){
         return {
@@ -1738,9 +1740,15 @@ var _openlayers = {
         });
     },
 
-    /*createClone: function(options){
+    /**
+     * Create openlayers clone of main map.
+     * @param options
+     *   div - html div to attach map
+     *   zoom - current zoom level
+     */
+    createClone: function(options){
         var mapOptions = this.getOptions();
-        clone = new OpenLayers.Map(
+        var clone = new OpenLayers.Map(
             options.div,
             {
                 controls: [],
@@ -1773,8 +1781,20 @@ var _openlayers = {
         }
 
         clone.addLayer(layer);
+        clone.setBaseLayer(layer);
+
+        clone.getBaseLayer = function(){
+            return clone.baseLaser;
+        };
+        clone.getCentre = function(){
+            return clone.getCenter();
+        };
+        clone.getTileFileType = function(){
+            return 'png';
+        };
+
         return clone;
-    },*/
+    },
 
     /**
      * Create a marker for a given FT annotation.
