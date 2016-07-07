@@ -243,43 +243,20 @@ return {
     },
 
     /**
+     * Fetch config boolean value.
+     * @param key config property.
+     */
+    config2bool: function(key){
+        return this.str2bool(config[key]);
+    },
+
+    /**
      * Math.random should be unique because of its seeding algorithm.
      * Convert it to base 36 (numbers + letters), and grab the first 9 characters
      * after the decimal.
      */
     createUUID: function(){
         return '_' + Math.random().toString(36).substr(2, 9);
-    },
-
-    /**
-     * Slide down some notifications from the top.
-     * It requires a div with the class notification-drawer after the head
-     * in the current page
-     *
-     * @param msg a message
-     * @param delayIn delay to show the message
-     * @param delayOut delay to remove the message
-     *
-     */
-    slideNotification: function(msg, delayIn, delayOut) {
-        var html = '<div>' + msg + '</div>';
-        var defaultDelayIn = 0;
-        var defaultDelayOut = 3000;
-
-        delayIn = delayIn || defaultDelayIn;
-        delayOut = delayOut || defaultDelayOut;
-
-        $(html)
-            .prependTo('.notification-drawer')
-            .hide()
-            .delay(delayIn)
-            .slideDown()
-            .delay(delayOut)
-            .slideUp()
-            .promise()
-            .done(function() {
-                this.remove();
-            });
     },
 
     /**
@@ -768,6 +745,37 @@ return {
     },
 
     /**
+     * Slide down some notifications from the top.
+     * It requires a div with the class notification-drawer after the head
+     * in the current page
+     *
+     * @param msg a message
+     * @param delayIn delay to show the message
+     * @param delayOut delay to remove the message
+     *
+     */
+    slideNotification: function(msg, delayIn, delayOut) {
+        var html = '<div>' + msg + '</div>';
+        var defaultDelayIn = 0;
+        var defaultDelayOut = 3000;
+
+        delayIn = delayIn || defaultDelayIn;
+        delayOut = delayOut || defaultDelayOut;
+
+        $(html)
+            .prependTo('.notification-drawer')
+            .hide()
+            .delay(delayIn)
+            .slideDown()
+            .delay(delayOut)
+            .slideUp()
+            .promise()
+            .done(function() {
+                this.remove();
+            });
+    },
+
+    /**
      * @return whether the device support HTML5 canvas and toDataURL?
      */
     supportsToDataURL: function (){
@@ -784,6 +792,8 @@ return {
     },
 
     /**
+     * Convert a string to boolean value.
+     * @param val A boolean value.
      * @return String as a boolean value.
      */
     str2bool: function(val){
