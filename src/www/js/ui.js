@@ -313,6 +313,22 @@ var _ui = {
     },
 
     /**
+    * this is a hack to resolve an iOS issue where the form button
+    * is not rendered when user navigates away from home page
+    * removing the entire capture section when the user navigates
+    * is only way we found so far to get iOS to render the section properly.
+    * https://github.com/edina/fieldtrip-cps/issues/16
+    */
+
+    homePageRemove: function() {
+         if(utils.isIOSApp())
+         {
+           console.log('homePageRemove') ;
+           $('#home-page-capture').empty() ;
+         }
+    },
+
+    /**
      * Go to annotate screen.
      */
     annotatePage: function(){
@@ -606,6 +622,7 @@ var _ui = {
      * Set up home page.
      */
     homePage: function(event){
+
         records.appendAllEditorButtons();
         capturePageListeners();
 
@@ -626,6 +643,7 @@ var _ui = {
         }else{
             $('#home-page-development').hide();
         }
+
     },
 
     /**

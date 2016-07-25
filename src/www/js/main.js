@@ -117,6 +117,19 @@ function onDeviceReady(){
             'settings-page': ui.settingsPage
         };
 
+        /*
+              This event is being used as a hack to fix a problem in iOS
+              where the form button is not rendered after the user navigates
+              away from the home page. Hopefully we'll find a better solution.
+              https://github.com/edina/fieldtrip-cps/issues/16
+        */
+
+        $(document).on("pagecontainertransition", function (e, eui) {
+                    if(eui.prevPage[0].id === 'home-page'){
+                        ui.homePageRemove();
+                    }
+                });
+
         /* pageshow event is being deprecated in jquery 1.4 but due to the
            fieldtrip-open architecture, plugins relay in that event in order to
            initialize its views as pagecreate is deprecated but still present

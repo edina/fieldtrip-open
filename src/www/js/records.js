@@ -147,6 +147,7 @@ define(function(require) {
      * @param editor Editor name.
      */
     var editorToHTML = function(index, group, editor){
+
         var blocks = ['a', 'b', 'c', 'd', 'e'];
         var html = '<div class="ui-block-' + blocks[index % 5] + '">\
                       <a class="' + editor['class'] + '" \
@@ -157,6 +158,7 @@ define(function(require) {
                       </a>\
                       <p>' + editor.title + '</p>\
                     </div>';
+
         return html;
     };
 
@@ -709,7 +711,7 @@ var _base = {
      * @param section HTML element to attack button.
      */
     appendEditorButtons: function(group, section){
-       var editors = this.getEditorsByGroup(group);
+        var editors = this.getEditorsByGroup(group);
         var i = 0;
         for(var key in editors){
             if(editors.hasOwnProperty(key)){
@@ -728,7 +730,7 @@ var _base = {
     appendAllEditorButtons: function(){
         var section = '#capture-section2';
         var config = utils.getConfig();
-        if(config.synccaptureid){
+        if(config.hasOwnProperty('synccaptureid')){
             section = '#' + config.synccaptureid;
         }
 
