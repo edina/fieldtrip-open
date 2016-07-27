@@ -129,7 +129,7 @@ define(function(require){
                         (value.label)+'</label>\n';
                     html+='<input name="form-'+key+'" id="form-'+key+
                               '" type="range" '+required+' placeholder="'+properties.placeholder+
-                              '" step="'+properties.step+'" min="'+properties.min+'" max="'+properties.max+'">\n';
+                              '" step="'+properties.step+'" value="'+properties.min+'" min="'+properties.min+'" max="'+properties.max+'">\n';
                     html+='</div>\n';
                     break;
                 case 'checkbox':
