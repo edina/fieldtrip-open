@@ -158,7 +158,7 @@ define(function(require){
                     });
                     if (value.properties.other === true) {
                         html+='<label for="'+key+'-'+properties.options.length+
-                            '" class="other">' +$.i18n.t('checkbox.other')+
+                            '" class="other">' +$.i18n.t('form:other')+
                             '</label>\n';
                         html+='<input name="'+key+'" id="'+key+'-'+
                             properties.options.length+'" value="other"'+
@@ -192,7 +192,7 @@ define(function(require){
                     if (value.properties.other === true) {
                         html+='<label for="'+key+'-'+
                             properties.options.length+'" class="other">' +
-                            $.i18n.t('radio.other')  + '</label>\n';
+                            $.i18n.t('form:other')  + '</label>\n';
                         html+='<input name="'+key+'" id="'+key+'-'+
                             properties.options.length+'" value="other" class="other" type="'+
                             type+'" '+required+'>\n';
