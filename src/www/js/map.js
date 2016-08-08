@@ -1209,8 +1209,15 @@ var _base = {
     /**
      * Zoom map to the given extents.
      * @param extent An openlayers bounding box.
+     * @param transform Transform extent from external to internal?
      */
-    zoomToExtent: function(extent){
+    zoomToExtent: function(extent, transform){
+        if(transform){
+            extent.transform(
+                this.externalProjection,
+                this.internalProjection);
+        }
+
         this.map.zoomToExtent(extent);
     },
 
