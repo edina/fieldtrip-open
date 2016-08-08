@@ -116,9 +116,21 @@ define(function(require){
                         visibility+'>\n';
                     html+='<label for="form-'+key+'">'+
                         value.label+'</label>\n';
+
+
+                    if(properties.readOnly === true)
+                    {
                     html+='<textarea name="form-'+key+'" id="form-'+key+
-                              '" '+required+' placeholder="'+properties.placeholder+
+                              '" '+required+' rows=2 readOnly placeholder="'+properties.placeholder +
                               '"></textarea>\n';
+                    }
+                    else {
+
+                      html+='<textarea name="form-'+key+'" id="form-'+key+
+                                '" '+required+' rows=2  placeholder="'+properties.placeholder +
+                                '"></textarea>\n';
+                    }
+
                     html+='</div>\n';
                     break;
                 case 'range':
