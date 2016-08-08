@@ -570,6 +570,10 @@ div.record-extra > div > img {
     font-size: 16px;
 }
 
+#annotate-form label {
+    font-weight: bold;
+}
+
 .button-wrapper p{
     font-size: 12px !important;
     text-align: left;
