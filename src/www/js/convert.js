@@ -117,17 +117,20 @@ define(function(require){
                     html+='<label for="form-'+key+'">'+
                         value.label+'</label>\n';
 
+                    console.debug("textarea properties readOnly:" + properties.readOnly +
+                     " numrows:" + properties.numrows) ;
+
 
                     if(properties.readOnly === true)
                     {
                     html+='<textarea name="form-'+key+'" id="form-'+key+
-                              '" '+required+' rows=2 readOnly placeholder="'+properties.placeholder +
+                              '" '+required+' rows=' + properties.numrows+ ' readOnly placeholder="'+properties.placeholder +
                               '"></textarea>\n';
                     }
                     else {
 
                       html+='<textarea name="form-'+key+'" id="form-'+key+
-                                '" '+required+' rows=2  placeholder="'+properties.placeholder +
+                                '" '+required+' rows=' + properties.numrows  +' placeholder="'+properties.placeholder +
                                 '"></textarea>\n';
                     }
 
@@ -308,6 +311,7 @@ define(function(require){
             var deferred = new $.Deferred();
             $.ajax({
                 url: formPath,
+                cache:false,
                 dataType: "text",
                 success: function(data){
                     deferred.resolve(jsonToHtml(data, fileName));
