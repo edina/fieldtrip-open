@@ -574,6 +574,10 @@ div.record-extra > div > img {
     font-weight: bold;
 }
 
+#annotate-form textarea[readonly]::-webkit-input-placeholder{
+    color: black;
+}
+
 .button-wrapper p{
     font-size: 12px !important;
     text-align: left;
