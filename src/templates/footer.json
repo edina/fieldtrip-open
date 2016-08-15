@@ -2,7 +2,7 @@
     "home": {
         "name": "Home",
         "data-i18n": "footer:home",
-        "href": "index.html",
+        "href": "#home-page",
         "class": "home-button fieldtrip-btn",
         "data-icon": "custom"
     },
