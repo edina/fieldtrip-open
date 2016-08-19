@@ -385,10 +385,24 @@ var _base = {
                 $(input).parent().append(btn);
             });
 
+
+            $.each($("[data-fieldtrip-type='textarea']"), function(index, textarea){
+      
+                var $img = $(textarea).find('img') ;
+                if($img.is('img')){
+                    var elementValue = $img.attr("src");
+                    $img.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", "100%");
+
+                }
+            });
+
+
+
             var imageTypeOptions = ["checkbox", "radio"];
             //replace labels with actual images that are part of the editor
             $.each(imageTypeOptions, function(index, type) {
                 $.each($('input[type="'+type+'"]'), function(){
+
                     var $prev = $(this).prev();
                     var $img = $prev.find('img');
                     if($img.is('img')){

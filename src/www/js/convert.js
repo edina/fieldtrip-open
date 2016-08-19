@@ -117,9 +117,10 @@ define(function(require){
                     html+='<label for="form-'+key+'">'+
                         value.label+'</label>\n';
 
-                    console.debug("textarea properties readOnly:" + properties.readOnly +
-                     " numrows:" + properties.numrows) ;
-
+                    if(properties.imageCaption)
+                    {
+                      html+='<img src="'+ getFilenameFromURL(properties.imageCaption.src)+'">\n';
+                    }
 
                     if(properties.readOnly === true)
                     {
@@ -154,6 +155,8 @@ define(function(require){
                     html+='<fieldset>\n<legend>'+value.label+'</legend>\n';
                     properties.options.forEach(function(v, k) {
                         if("image" in v) {
+
+
                             html+='<label for="'+key+'-'+k+'">\n';
                             html+='<div class="ui-grid-a grids">\n';
                             html+='<div class="ui-block-a"><p>'+v.value+'</p></div>\n';
