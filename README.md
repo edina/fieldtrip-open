@@ -1,1 +1,1 @@
-Fieldtrip-Open is a mobile mapping and data collection platform.  Visit the [project wiki] (https://github.com/edina/fieldtrip-open/wiki) for detailed documentation.
+Fieldtrip-Open is a mobile mapping and data collection platform. This is the branch created for the Cat Watch app project.  Visit the [project wiki] (https://github.com/edina/fieldtrip-open/wiki) for detailed documentation.
