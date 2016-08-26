@@ -53,7 +53,7 @@ import re
 CORDOVA_VERSION = '4.3.1'
 # Can be used to enable alternative platform version
 CORDOVA_PLATFORM_VERSION = {
-    'android': None,
+    'android': '4.1.1',
     'ios': None
 }
 OPENLAYERS_VERSION = '2.13.1'

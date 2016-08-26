@@ -3,6 +3,15 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: 'unsafe-eval' 'unsafe-inline'
+    *.52.16.51.127 ;
+
+    img-src 'self' data: https: *.a.tile.openstreemap.org *.b.tile.openstreemap.org *.c.tile.openstreemap.org
+    *.52.16.51.127 ;
+
+    connect-src data: file: https://a.tile.openstreemap.org https://b.tile.openstreemap.org
+    https://c.tile.openstreemap.org http://52.16.51.127 ">
+
     <title>{{header_data["title"]}}</title>
 
     <!-- default styles -->
