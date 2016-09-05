@@ -835,13 +835,7 @@ def release_android(
 
     update_app('android')
 
-    # Read the project name from the ant build file
-    tree = ET.parse(os.sep.join((runtime, 'platforms', 'android', 'build.xml')))
-    root = tree.getroot()
-    if 'name' in root.attrib.keys():
-        file_prefix = root.attrib['name']
-    else:
-        file_prefix = _config('name').replace(' ', '')
+    file_prefix = 'android'
 
     # get app version
     theme_src = os.sep.join((proj_home, 'theme'))
@@ -852,12 +846,13 @@ def release_android(
 
     with lcd(runtime):
         android_runtime = os.path.join(runtime, 'platforms', 'android')
+        apkdir = os.path.join(android_runtime, 'build', 'outputs', 'apk')
 
         # do the build
         if _str2bool(beta):
             file_name = '{0}-debug.apk'.format(file_prefix)
-            apkfile = os.path.join(android_runtime, 'ant-build', file_name)
-            local('cordova build android')
+            apkfile = os.path.join(apkdir, file_name)
+            local('cordova build android --debug')
         else:
             # check plugin and project versions
             if versions['core'] == 'master':
@@ -877,15 +872,12 @@ def release_android(
                     exit(1)
 
             file_name = '{0}.apk'.format(file_prefix)
-            bin_dir = os.path.join(android_runtime, 'bin')
-            apkfile = os.path.join(bin_dir, file_name)
-            with lcd(android_runtime):
-                sdk_dir = local('which android', capture=True).split('tools')[0]
-                local('ant clean release -Dsdk.dir={0}'.format(sdk_dir))
+            apkfile = os.path.join(apkdir, file_name)
+            local('cordova build android --release')
 
             # sign the application
-            unsigned_apkfile = os.path.join(bin_dir, '{0}-release-unsigned.apk'.format(file_prefix))
-            signed_apkfile = os.path.join(bin_dir, '{0}-release-signed.apk'.format(file_prefix))
+            unsigned_apkfile = os.path.join(apkdir, '{0}-release-unsigned.apk'.format(file_prefix))
+            signed_apkfile = os.path.join(apkdir, '{0}-release-signed.apk'.format(file_prefix))
             local('cp {0} {1}'.format(unsigned_apkfile, signed_apkfile))
             keystore_name = _config('keystore_name', section='release')
             keystore = os.path.join(_config('keystore_location', section='release'),
