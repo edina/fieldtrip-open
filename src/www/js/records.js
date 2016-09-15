@@ -392,11 +392,17 @@ var _base = {
                 if($img.is('img')){
                     var elementValue = $img.attr("src");
                     $img.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", "100%");
-
                 }
             });
 
-
+            $.each($("[data-fieldtrip-type='static-image']"), function(index, staticImage){
+      
+                var $img = $(staticImage).find('img') ;
+                if($img.is('img')){
+                    var elementValue = $img.attr("src");
+                    $img.attr("src", utils.getFilename(url)+'/'+elementValue).css("width", "100%");
+                }
+            });
 
             var imageTypeOptions = ["checkbox", "radio"];
             //replace labels with actual images that are part of the editor

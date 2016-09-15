@@ -117,9 +117,9 @@ define(function(require){
                     html+='<label for="form-'+key+'">'+
                         value.label+'</label>\n';
 
-                    if(properties.imageCaption)
+                    if(properties['image-caption'])
                     {
-                      html+='<img src="'+ getFilenameFromURL(properties.imageCaption.src)+'">\n';
+                      html+='<img src="'+ getFilenameFromURL(properties['image-caption'].src)+'">\n';
                     }
 
                     if(properties.readOnly === true)
@@ -288,6 +288,18 @@ define(function(require){
                 case 'section':
                     html+='<div class="fieldcontain" id="fieldcontain-'+key+'" data-fieldtrip-type="'+type+'">\n';
                     html+='<h3>'+value.label+'</h3>\n';
+                    html+='</div>\n';
+                    break;
+                case 'static-image':
+                    html+='<div class="fieldcontain" id="fieldcontain-'+key+
+                        '" data-fieldtrip-type="'+type+'" '+persistent+' '+
+                        visibility+'>\n';
+                    html+='<h3>'+value.label+'</h3>\n';
+                    if(properties['image-caption'])
+                    {
+                      html+='<img src="'+ getFilenameFromURL(properties['image-caption'].src)+'">\n';
+                    }
+                    html+='<p>'+properties.caption+'</p>\n';
                     html+='</div>\n';
                     break;
             }
