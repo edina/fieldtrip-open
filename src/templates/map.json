@@ -18,6 +18,10 @@
         "records": {
             "i18n": "common:records",
             "en": "Records"
+        },
+        "upload":{
+            "i18n": "",
+            "en": "Upload"
         }
     },
     "popups": {

@@ -658,6 +658,7 @@ var _ui = {
     mapPageInit: function(){
 
         // Set map page buttons when records are hidden.
+        /*
         var mapPageRecordsHidden = function(){
             $('#map-records-buttons-ok a span:first-child').text($.i18n.t('map:show'));
             $('#map-records-buttons-list a').hide();
@@ -680,6 +681,8 @@ var _ui = {
         else{
             mapPageRecordsHidden();
         }
+        */
+        this.mapPageRecordCentred();
     },
 
     /**
