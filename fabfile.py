@@ -1396,7 +1396,9 @@ def _update_android_manifest(path):
     NS = {
         'android': ANS
     }
-    root = etree.parse(manifest)
+
+    parser = etree.XMLParser(remove_blank_text=True)
+    root = etree.parse(manifest, parser)
 
     def has_permission(name):
         exp = "uses-permission[@android:name='android.permission.{0}']".format(name)
@@ -1413,6 +1415,14 @@ def _update_android_manifest(path):
     for permission in permissions:
         if not has_permission(permission):
             add_permission(permission)
+
+    # location.gps uses-feature element now required for accurate gps
+    exp = "uses-feature[@android:name='android.hardware.location.gps']"
+    if len(root.xpath(exp, namespaces=NS)) == 0:
+        attr = '{{{0}}}name'.format(ANS)
+        val = 'android.hardware.location.gps'
+        up = etree.Element('uses-feature', attrib={attr: val})
+        root.xpath('/manifest')[0].append(up)
 
     # update min sdk verison
     us = root.xpath('/manifest/uses-sdk[@android:minSdkVersion]', namespaces=NS)[0]
