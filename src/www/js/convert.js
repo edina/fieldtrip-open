@@ -116,10 +116,10 @@ define(function(require){
                         visibility+'>\n';
                     html+='<label for="form-'+key+'">'+
                         value.label+'</label>\n';
-
-                    if(properties['image-caption'])
+                    var imageCaption;
+                    if((imageCaption=properties['image-caption']) || (imageCaption=properties.imageCaption))
                     {
-                      html+='<img src="'+ getFilenameFromURL(properties['image-caption'].src)+'">\n';
+                      html+='<img src="'+ getFilenameFromURL(imageCaption.src)+'">\n';
                     }
 
                     if(properties.readOnly === true)
@@ -295,9 +295,10 @@ define(function(require){
                         '" data-fieldtrip-type="'+type+'" '+persistent+' '+
                         visibility+'>\n';
                     html+='<h3>'+value.label+'</h3>\n';
-                    if(properties['image-caption'])
+                    var imageCaption2;
+                    if((imageCaption2=properties['image-caption']) || (imageCaption2=properties.imageCaption))
                     {
-                      html+='<img src="'+ getFilenameFromURL(properties['image-caption'].src)+'">\n';
+                      html+='<img src="'+ getFilenameFromURL(imageCaption2.src)+'">\n';
                     }
                     html+='<p>'+properties.caption+'</p>\n';
                     html+='</div>\n';
