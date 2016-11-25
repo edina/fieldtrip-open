@@ -12,13 +12,12 @@
   <author email="{{author_email}}" href="{{url}}">
     {{name}} Team
   </author>
-
-  {%for url in access_urls%}
-  <access origin="{{url}}" />
-  {%endfor%}
+  
+  <access origin="*" />
 
   <preference name="webviewbounce" value="true" />
   <preference name="keepRunning" value="true"/>
   <preference name="DisallowOverscroll" value="true" />
   <content src="index.html" />
+  
 </widget>
