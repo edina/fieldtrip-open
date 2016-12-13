@@ -6,6 +6,7 @@
 		if(typeof window.pcapi.setCloudProviderUrl === 'function'){
 			if(result !== null){
 				window.pcapi.setCloudProviderUrl(result[1]);
+				$('.sync-download-button').click();
 			}
 		}
 	};
