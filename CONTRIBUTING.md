@@ -1,4 +1,4 @@
-# Contributing to PCAPI
+# Contributing to Fieldtrip Open
 
 We openly welcome all contributions (bug reports, bug fixes, new features etc.). This document outlines the process of participating to this open source project.
 
